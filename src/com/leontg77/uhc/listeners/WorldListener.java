@@ -11,13 +11,17 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldInitEvent;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Timers;
+import com.leontg77.uhc.scenario.types.ChunkApocalypse;
+import com.leontg77.uhc.scenario.types.Voidscape;
 import com.leontg77.uhc.utils.GameUtils;
-import com.leontg77.uhc.worlds.terrain.AntiStripmine;
-import com.leontg77.uhc.worlds.terrain.AntiStripmine.ChunkOreRemover;
-import com.leontg77.uhc.worlds.terrain.AntiStripmine.WorldData;
+import com.leontg77.uhc.worlds.AntiStripmine;
+import com.leontg77.uhc.worlds.AntiStripmine.ChunkOreRemover;
+import com.leontg77.uhc.worlds.AntiStripmine.WorldData;
+import com.leontg77.uhc.worlds.pregen.Pregenner;
 
 /**
  * World listener class.
@@ -67,14 +71,20 @@ public class WorldListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
-		if (State.isState(State.SCATTER)) {
+	public void onChunkUnload(ChunkUnloadEvent event) {
+		if (State.isState(State.SCATTER) || Pregenner.getInstance().task != null || Voidscape.task != null || ChunkApocalypse.task != null) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler
 	public void onChunkPopulate(ChunkPopulateEvent event) {
+		Game game = Game.getInstance();
+		
+		if (!game.antiStripmine()) {
+			return;
+		}
+		
 		AntiStripmine strip = AntiStripmine.getInstance();
 		World world = event.getWorld();
 		
@@ -97,6 +107,12 @@ public class WorldListener implements Listener {
 
 	@EventHandler
 	public void onWorldInit(WorldInitEvent event) {
+		Game game = Game.getInstance();
+		
+		if (!game.antiStripmine()) {
+			return;
+		}
+		
 		AntiStripmine strip = AntiStripmine.getInstance();
 		World world = event.getWorld();
 		
