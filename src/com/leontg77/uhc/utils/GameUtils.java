@@ -55,49 +55,40 @@ public class GameUtils {
 	 */
 	public static String getState() {
 		State current = State.getState();
+		Game game = Game.getInstance();
 		
 		switch (current) {
+		case SCATTER:
 		case INGAME:
-			if (getTeamSize().startsWith("No") || Game.getInstance().isRecordedRound()) {
-				return "No games running.";
+			if (getTeamSize().startsWith("No") || game.isRecordedRound()) {
+				return "No games running";
 			} 
 			else if (getTeamSize().startsWith("Open")) {
-				return "Open for visitors.";
+				return "Open " + game.getScenarios();
 			} 
 			else {
-				return "Started.";
+				return "Match in progress";
 			}
 		case LOBBY:
 			if (Bukkit.getServer().hasWhitelist()) {
-				if (getTeamSize().startsWith("No") || Game.getInstance().isRecordedRound()) {
-					return "No games running.";
+				if (getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().startsWith("PrivateG")) {
+					return "No games running";
 				} 
 				else if (getTeamSize().startsWith("Open")) {
-					return "Open for visitors.";
+					return "Open " + Game.getInstance().getScenarios();
 				} 
 				else {
-					return "Not open yet.";
+					return "Whitelist is on";
 				}
-			} 
-			else {
+			} else {
 				if (getTeamSize().startsWith("Open")) {
-					return "Open for visitors.";
+					return "Open " + Game.getInstance().getScenarios();
 				} 
 				
-				return "Waiting for players...";
-			}
-		case SCATTER:
-			if (getTeamSize().startsWith("No") || Game.getInstance().isRecordedRound()) {
-				return "No games running.";
-			} 
-			else if (getTeamSize().startsWith("Open")) {
-				return "Open for visitors.";
-			} 
-			else {
-				return "Scattering...";
+				return "Whitelist is off";
 			}
 		default:
-			return "No games running.";
+			return "No games running";
 		}
 	}
 	
