@@ -1,4 +1,4 @@
-package com.leontg77.uhc;
+package com.leontg77.uhc.ubl;
 
 import static com.leontg77.uhc.Main.plugin;
 
