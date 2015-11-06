@@ -9,6 +9,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -27,7 +28,10 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.listeners.ArenaListener;
+import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
 import com.leontg77.uhc.worlds.WorldManager;
@@ -45,6 +49,9 @@ public class Arena {
 	private Game game = Game.getInstance();
 	private boolean enabled = false;
 	
+	public boolean reset = false;
+	public boolean wasEnabled = false;
+	
 	public Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 	public Objective arenaKills = board.getObjective("arenaKills");
 	
@@ -54,8 +61,8 @@ public class Arena {
 	private ArrayList<Long> seeds = new ArrayList<Long>();
 
 	private BukkitRunnable kitcycle;
-	private BukkitRunnable resetwarner;
-	private BukkitRunnable reset;
+	private BukkitRunnable regenwarner;
+	private BukkitRunnable regen;
 	
 	/**
 	 * Gets the instance of the class.
@@ -100,9 +107,9 @@ public class Arena {
 		this.enabled = true;
 		
 		if (game.pregameBoard()) {
-			Scoreboards.getInstance().setScore("§a ", 9);
-			Scoreboards.getInstance().setScore("§8» §cArena:", 8);
-			Scoreboards.getInstance().setScore("§8» §7/a ", 7);
+			Scoreboards.getInstance().setScore("§a ", 11);
+			Scoreboards.getInstance().setScore("§8» §cArena:", 10);
+			Scoreboards.getInstance().setScore("§8» §7/a ", 9);
 		}
 		
 		if (game.arenaBoard()) {
@@ -116,7 +123,7 @@ public class Arena {
 			setScore("§8» §a§lPvE", 0);
 		}
 
-		resetwarner = new BukkitRunnable() {
+		regenwarner = new BukkitRunnable() {
 			public void run() {
 			}
 		};
@@ -126,14 +133,14 @@ public class Arena {
 			}
 		};
 		
-		reset = new BukkitRunnable() {
+		regen = new BukkitRunnable() {
 			public void run() {
 			}
 		};
 		
-		resetwarner.runTaskTimer(Main.plugin, 1, 1);
+		regenwarner.runTaskTimer(Main.plugin, 1, 1);
 		kitcycle.runTaskTimer(Main.plugin, 1, 1);
-		reset.runTaskTimer(Main.plugin, 1, 1);
+		regen.runTaskTimer(Main.plugin, 1, 1);
 	}
 	
 	/**
@@ -153,6 +160,8 @@ public class Arena {
 			
 			board.resetScores(player.getName());
 			player.teleport(Main.getSpawn());
+			
+			user.setStat(Stat.ARENACKS, 0);
 		}
 		
 		if (game.pregameBoard()) {
@@ -174,17 +183,18 @@ public class Arena {
 		killstreak.clear();
 		players.clear();
 
-		resetwarner.cancel();
+		regenwarner.cancel();
 		kitcycle.cancel();
-		reset.cancel();
+		regen.cancel();
 
-		resetwarner = null;
+		regenwarner = null;
 		kitcycle = null;
-		reset = null;
+		regen = null;
 	}
 
 	public void reset() {
-		final boolean wasEnabled = isEnabled();
+		reset = true;
+		wasEnabled = isEnabled();
 		
 		if (wasEnabled) {
 			disable();
@@ -204,6 +214,10 @@ public class Arena {
 		world.setTime(6000);
 		
 		PlayerUtils.broadcast(Main.PREFIX + "Options setup, pregenning arena world.");
+		
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " set 200 0 0");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " fill 420");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
 	}
 
 	/**
@@ -258,6 +272,7 @@ public class Arena {
 		loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 2);
 		
 		player.teleport(loc);
+		player.setGameMode(GameMode.SURVIVAL);
 		player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 7));
 	}
 	
