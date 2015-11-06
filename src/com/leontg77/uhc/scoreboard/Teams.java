@@ -1,4 +1,4 @@
-package com.leontg77.uhc;
+package com.leontg77.uhc.scoreboard;
 
 import java.util.ArrayList;
 import java.util.Collections;

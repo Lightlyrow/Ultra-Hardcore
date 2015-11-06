@@ -1,10 +1,13 @@
-package com.leontg77.uhc;
+package com.leontg77.uhc.scoreboard;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+
+import com.leontg77.uhc.Game;
+import com.leontg77.uhc.Main;
 
 /**
  * The class for managing scoreboards.

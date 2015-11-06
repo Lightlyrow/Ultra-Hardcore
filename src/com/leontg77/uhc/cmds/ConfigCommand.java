@@ -14,6 +14,7 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.BorderShrink;
+import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -33,7 +34,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 	 * @author LeonTG77
 	 */
 	public enum ConfigValue {
-		APPLERATES, BORDERSHRINK, FLINTRATES, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PVP, RRNAME, SCENARIOS, TEAMSIZE, WORLD, FFA, HEADSHEAL, SHEARRATES;
+		APPLERATES, BORDERSHRINK, FLINTRATES, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PVP, RRNAME, SCENARIOS, TEAMSIZE, WORLD, FFA, HEADSHEAL, SHEARRATES, STATE;
 	}
 	
 	@Override
@@ -118,6 +119,19 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			}
 			game.setBorderShrink(border);
 			break;
+		case STATE:
+			State state;
+			
+			try {
+				state = State.valueOf(args[1].toUpperCase());
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild state.");
+				return true;
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "The server is now in §a" + state.name().toLowerCase() + "§7 mode.");
+			State.setState(state);
+			break;
 		case FFA:
 			if (args[1].equalsIgnoreCase("true")) {
 				game.setFFA(true);
@@ -155,7 +169,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + headheals + "§7 hearts.");
-			game.setShearRates(headheals);
+			game.setGoldenHeadsHeal(headheals);
 			break;
 		case HOST:
 			PlayerUtils.broadcast(Main.PREFIX + "The host has been changed to §a" + args[1] + "§7.");
