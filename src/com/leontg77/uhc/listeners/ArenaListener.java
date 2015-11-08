@@ -21,9 +21,9 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Stat;
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -65,6 +65,7 @@ public class ArenaListener implements Listener {
 		event.setDroppedExp(0);
 
 		user.increaseStat(Stat.ARENADEATHS);
+		user.setStat(Stat.ARENACKS, 0);
 		arena.removePlayer(player, true);
     	
 		ItemStack skull = new ItemStack(Material.GOLDEN_APPLE);
@@ -107,11 +108,12 @@ public class ArenaListener implements Listener {
 		Team kTeam = Teams.getInstance().getTeam(killer);
 		killer.setLevel(killer.getLevel() + 1);
 		
-		User uKiller = User.get(killer);
-		uKiller.increaseStat(Stat.ARENAKILLS);
+		User killUser = User.get(killer);
+		killUser.increaseStat(Stat.ARENAKILLS);
+		killUser.increaseStat(Stat.ARENACKS);
 		
-		if (uKiller.getStat(Stat.ARENAKILLS) > uKiller.getStat(Stat.ARENAKILLSTREAK)) {
-			uKiller.increaseStat(Stat.ARENAKILLSTREAK);
+		if (killUser.getStat(Stat.ARENAKS) < killUser.getStat(Stat.ARENACKS)) {
+			killUser.setStat(Stat.ARENAKS, killUser.getStat(Stat.ARENACKS));
 		}
 		
 		for (Player players : arena.getPlayers()) {
