@@ -25,7 +25,6 @@ import com.leontg77.uhc.Main;
  * 
  * @author LeonTG77
  */
-@SuppressWarnings("deprecation")
 public class PlayerUtils {
 	
 	/**
@@ -62,6 +61,7 @@ public class PlayerUtils {
 	 * @param name The name.
 	 * @return the offline player.
 	 */
+	@SuppressWarnings("deprecation")
 	public static OfflinePlayer getOfflinePlayer(String name) {
 		return Bukkit.getServer().getOfflinePlayer(name);
 	}
@@ -148,13 +148,10 @@ public class PlayerUtils {
 		}
 		
 		player.sendMessage(Main.PREFIX + "Your inventory was full, item was dropped on the ground.");
-		
 		Location loc = player.getLocation();
-		World world = player.getWorld();
 		
 		for (ItemStack leftOver : leftOvers.values()) {
-			Item item = world.dropItem(loc, leftOver);
-			item.setVelocity(EntityUtils.randomOffset());
+			BlockUtils.dropItem(loc, leftOver);
 		}
 	}
 
