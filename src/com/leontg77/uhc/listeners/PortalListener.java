@@ -15,6 +15,8 @@ import org.bukkit.event.player.PlayerPortalEvent;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.utils.LocationUtils;
 
 /**
@@ -69,13 +71,17 @@ public class PortalListener implements Listener {
 	        Location to = new Location(world, from.getX() * multiplier, from.getY(), from.getZ() * multiplier, from.getYaw(), from.getPitch());
 	        
 	        to = travel.findOrCreate(to);
-	        
 	        to = LocationUtils.findSafeLocationInsideBorder(to, 10, travel);
-
+	        
 	        if (to == null || to.getY() < 0) {
             	player.sendMessage(Main.PREFIX + "Could not teleport you, contact the staff now.");
 	        } else {
 	            event.setTo(to);
+
+		        if (to.getWorld().getEnvironment() == Environment.NETHER) {
+		        	User user = User.get(player);
+		        	user.increaseStat(Stat.NETHER);
+		        }
 	        }
 		}
 		
@@ -125,6 +131,9 @@ public class PortalListener implements Listener {
 			}
 			
 			event.setTo(to);
+
+        	User user = User.get(player);
+        	user.increaseStat(Stat.END);
 		}
     }
 
