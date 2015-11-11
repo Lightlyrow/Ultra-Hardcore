@@ -23,7 +23,7 @@ public class HealthCommand implements CommandExecutor {
 		ScenarioManager scen = ScenarioManager.getInstance();
 		
 		if (scen.getScenario("Paranoia").isEnabled() || scen.getScenario("TeamHealth").isEnabled()) {
-			sender.sendMessage(ChatColor.RED + "Opps, /h is disabled in this scenario.");
+			sender.sendMessage(ChatColor.RED + "Oops, /h is disabled in this scenario.");
 			return true;
 		}
 		
