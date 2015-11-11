@@ -29,9 +29,9 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
 	private static final int CHUNK_HEIGHT_LIMIT = 128;
     private static final int BLOCKS_PER_CHUNK = 16;
     private static final int STAIRCASE_START = 16;
-
+    
+    public static final String PREFIX = "§c[§dSlimyCrack§c] §e";
 	private boolean generation = false;
-	private boolean enabled = false;
 
 	public SlimyCrack() {
 		super("SlimyCrack", "There is a giant fissure generated through natural terrain which exposes ores, caves mineshafts and the like but at the bottom there are slime blocks except at the sides where there are gaps that players are still able to fall down. The crack goes through 0,0 and is parallel to the x axis.");
@@ -40,69 +40,103 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
 		main.getCommand("slimecrack").setExecutor(this);
 	}
 	
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
-	
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onDisable() {}
+
+	@Override
+	public void onEnable() {}
 
 	@EventHandler
     public void onFlow(BlockFromToEvent event) {
-        if (generation) {
-            event.setCancelled(true);
+        if (!generation) {
+        	return;
         }
+        
+        event.setCancelled(true);
     }
-	
+
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can have generate cracks.");
+			sender.sendMessage(ChatColor.RED + "Only players can generate cracks.");
 			return true;
 		}
 		
 		Player player = (Player) sender;
 		
-		if (cmd.getName().equalsIgnoreCase("slimecrack")) {
-			if (!isEnabled()) {
-				player.sendMessage(Main.PREFIX + "\"SlimyCrack\" is not enabled.");
-				return true;
-			}
-			
-			if (player.hasPermission("uhc.slimycrack.generate")) {
-				if (args.length < 4) {
-					player.sendMessage(ChatColor.RED + "Usage: /slimecrack <width> <length> <speed> <z>");
-	                return true;
-	            }
-
-	            int width;
-	            int length;
-	            int speed;
-	            boolean z;
-	            
-	            try {
-	                width = Integer.parseInt(args[0]);
-	                length = Integer.parseInt(args[1]);
-	                speed = Integer.parseInt(args[2]);
-	                z = (args[3].equalsIgnoreCase("true") ? true : false);
-	            } catch (NumberFormatException ex) {
-	            	player.sendMessage(ChatColor.RED + "Invaild number!");
-	                return true;
-	            }
-	            
-	            generate(player.getWorld(), length, width, speed, z);
-			} else {
-				sender.sendMessage(Main.NO_PERM_MSG);
-			}
+		if (!isEnabled()) {
+			sender.sendMessage(PREFIX + "SlimyCrack is not enabled.");
+			return true;
 		}
+		
+		if (!player.hasPermission("uhc.slimycrack")) {
+			sender.sendMessage(Main.NO_PERM_MSG);
+			return true;
+		}
+		
+		if (args.length < 4) {
+			player.sendMessage(ChatColor.RED + "Usage: /slimecrack <width> <length> <speed> <z>");
+            return true;
+        }
+
+        int width;
+        
+        try {
+            width = Integer.parseInt(args[0]);
+        } catch (Exception e) {
+        	player.sendMessage(ChatColor.RED + args[0] + " is not an vaild width.");
+            return true;
+        }
+
+        int length;
+        
+        try {
+            length = Integer.parseInt(args[1]);
+        } catch (Exception e) {
+        	player.sendMessage(ChatColor.RED + args[1] + " is not an vaild length.");
+            return true;
+        }
+
+        int speed;
+        
+        try {
+            speed = Integer.parseInt(args[2]);
+        } catch (Exception e) {
+        	player.sendMessage(ChatColor.RED + args[2] + " is not an vaild speed.");
+            return true;
+        }
+
+        boolean z;
+        
+        if (args[3].equalsIgnoreCase("true")) {
+        	z = true;
+        }
+        else if (args[3].equalsIgnoreCase("false")) {
+        	z = false;
+        }
+        else {
+        	player.sendMessage(ChatColor.RED + "Z can only be true or false, not " + args[3] + ".");
+            return true;
+        }
+        
+        generate(player.getWorld(), length, width, speed, z);
 		return true;
 	}
 	
-	public void generate(final World world, final int length, final int width, int speed, final boolean z2) {
+	/**
+	 * Generate the bigcrack.
+	 * 
+	 * @param world The world to use.
+	 * @param length The length to use.
+	 * @param width The width to use.
+	 * @param speed The speed to use.
+	 * @param useZ Wether to use the Z or X.
+	 */
+	public void generate(final World world, final int length, final int width, int speed, final boolean useZ) {
 		generation = true;
         
         int xChunk;
-        if (z2) {
+        if (useZ) {
             if (length % BLOCKS_PER_CHUNK == 0) {
                 xChunk = length / BLOCKS_PER_CHUNK;
             } else {
@@ -120,7 +154,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
         xChunk = xChunk * -1;
         
         int zChunk;
-        if (z2) {
+        if (useZ) {
             if (width % BLOCKS_PER_CHUNK == 0) {
                 zChunk = (width + STAIRCASE_START) / BLOCKS_PER_CHUNK;
             } else {
@@ -139,50 +173,44 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
         
         int delayMultiplier = 0;
         
-        if (z2) {
-            for (int x = xChunk; x <= xMaxChunk; x++) {
-                for (int z = zChunk; z <= zMaxChunk; z++) {
-                    final Chunk chunk = world.getChunkAt(x, z);
-                    new BukkitRunnable() {
-                        public void run() {
-                            populate(world, chunk, width, length, z2);
-    						
-    						for (Player online : PlayerUtils.getPlayers()) {
-    							PacketUtils.sendAction(online, Main.PREFIX.replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
-    						}
-                        }
-                    }.runTaskLater(Main.plugin, delayMultiplier * speed);
-                    delayMultiplier++;
-                }
-            }
-        } else {
+        for (int x = xChunk; x <= xMaxChunk; x++) {
             for (int z = zChunk; z <= zMaxChunk; z++) {
-            	for (int x = xChunk; x <= xMaxChunk; x++) {
-                    final Chunk chunk = world.getChunkAt(x, z);
-                    new BukkitRunnable() {
-                        public void run() {
-                            populate(world, chunk, width, length, z2);
-    						
-    						for (Player online : PlayerUtils.getPlayers()) {
-    							PacketUtils.sendAction(online, Main.PREFIX.replaceAll("UHC", "SlimyCrack") + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
-    						}
-                        }
-                    }.runTaskLater(Main.plugin, delayMultiplier * speed);
-                    delayMultiplier++;
-                }
+                final Chunk chunk = world.getChunkAt(x, z);
+                
+                new BukkitRunnable() {
+                    public void run() {
+                        populate(world, chunk, width, length, useZ);
+						
+						for (Player online : PlayerUtils.getPlayers()) {
+							PacketUtils.sendAction(online, PREFIX + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
+						}
+                    }
+                }.runTaskLater(Main.plugin, delayMultiplier * speed);
+                
+                delayMultiplier++;
             }
         }
         
         new BukkitRunnable() {
             public void run() {
             	generation = false;
-                PlayerUtils.broadcast(Main.PREFIX.replaceAll("UHC", "SlimyCrack") + "SlimyCrack generation finished!");
+                PlayerUtils.broadcast(PREFIX + "SlimyCrack generation finished!");
             }
         }.runTaskLater(Main.plugin, delayMultiplier * speed);
     }
 
-    public void populate(World world, Chunk chunk, int width, int length, boolean z2) {
+	/**
+	 * Populate a chunk.
+	 * 
+	 * @param world The world of the crack.
+	 * @param chunk The chunk to populate.
+	 * @param length The length of the crack.
+	 * @param width The width of the crack.
+	 * @param useZ Wether to use the Z or X.
+	 */
+    public void populate(World world, Chunk chunk, int width, int length, boolean useZ) {
         chunk.load();
+        
         for (int x = 0; x < BLOCKS_PER_CHUNK; x++) {
             for (int z = 0; z < BLOCKS_PER_CHUNK; z++) {
                 for (int y = CHUNK_HEIGHT_LIMIT - 1; y >= 0; y--) {
@@ -195,7 +223,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
                     
                     int stairWidth = width + STAIRCASE_START - y;
                     
-                    if (z2) {
+                    if (useZ) {
                         if (zLocation >= (width * -1) && zLocation <= width && xLocation <= length && xLocation >= (length * -1) && yLocation > STAIRCASE_START) {
                             block.setType(Material.AIR);
                         } else if (y <= STAIRCASE_START && y != 1) {
