@@ -1,9 +1,20 @@
 package com.leontg77.uhc.utils;
 
+import java.util.Random;
+
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+
+import com.leontg77.uhc.Main;
 
 /**
  * Block utilities class.
@@ -13,6 +24,71 @@ import org.bukkit.inventory.ItemStack;
  * @author LeonTG77
  */
 public class BlockUtils {
+	
+	/**
+	 * Display the block breaking sound and particles.
+	 * 
+	 * @param player The player who mined the block.
+	 * @param block The block that was broken.
+	 */
+	public static void blockBreak(Player player, Block block) {
+		// Loop all players in the breaking players world.
+		for (Player worldPlayer : player.getWorld().getPlayers()) {
+			// we do not want to display it to the breaker himself, that is done automaticly.
+        	if (worldPlayer == player) {
+        		continue;
+        	}
+        	
+        	// play the effect STEP_SOUND with the given block type at the blocks location.
+        	worldPlayer.playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
+        }
+	}
+	
+	public static void dropItem(final Location loc, final ItemStack toDrop) {
+		new BukkitRunnable() {
+        	public void run() {
+    			Item item = loc.getWorld().dropItem(loc, toDrop);
+    			item.setVelocity(randomOffset());
+        	}
+        }.runTaskLater(Main.plugin, 2);
+	}
+
+	public static void degradeDurabiliy(Player player) {
+		ItemStack newItem = player.getItemInHand();
+        
+        if (newItem.getType() == Material.AIR || newItem.getType().getMaxDurability() == 0) {
+            return;
+        }
+        
+        short durability = newItem.getDurability();
+        durability++;
+        
+        if (durability >= newItem.getType().getMaxDurability()) {
+            player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 1, 1);
+            player.setItemInHand(new ItemStack(Material.AIR));
+            return;
+        }
+        
+        newItem.setDurability(durability);
+        player.setItemInHand(newItem);
+	}
+
+	/**
+	 * Get a random offset for item dropping.
+	 * 
+	 * @return A vector with a random offset.
+	 */
+	private static Vector randomOffset() {
+		Random rand = new Random();
+		
+		double offsetX = rand.nextDouble() / 20;
+		double offsetZ = rand.nextDouble() / 20;
+
+		offsetX = offsetX - (rand.nextDouble() / 20);
+		offsetZ = offsetZ - (rand.nextDouble() / 20);
+		
+		return new Vector(offsetX, 0.2, offsetZ);
+	}
 
 	/**
 	 * Get the sapling that should be dropped from the leaf.
