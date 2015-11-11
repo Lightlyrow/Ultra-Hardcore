@@ -78,10 +78,10 @@ public class GiveCommand implements CommandExecutor {
 		}
 
 		ItemStack item = new ItemStack(material, amount, durability);
-		target.sendMessage(Main.PREFIX + "You recieved §a" + amount + " " + item.getType().name().toLowerCase().replaceAll("_", " ") + (amount > 1 ? "s" : "") + "§7.");
-		sender.sendMessage(Main.PREFIX + "You gave " + target.getName() + " §a" + amount + " " + item.getType().name().toLowerCase().replaceAll("_", " ") + (amount > 1 ? "s" : "") + "§7.");
-
 		PlayerUtils.giveItem(target, item);
+		
+		sender.sendMessage(Main.PREFIX + "You gave " + target.getName() + " §a" + amount + " " + item.getType().name().toLowerCase().replaceAll("_", " ") + (amount > 1 ? "s" : "") + "§7.");
+		target.sendMessage(Main.PREFIX + "You recieved §a" + amount + " " + item.getType().name().toLowerCase().replaceAll("_", " ") + (amount > 1 ? "s" : "") + "§7.");
 		return true;
 	}
 }
