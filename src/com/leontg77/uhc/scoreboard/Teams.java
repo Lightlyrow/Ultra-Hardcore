@@ -79,7 +79,6 @@ public class Teams {
 		}
 		
 		tempList.remove(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString());
-		list.remove(ChatColor.WHITE.toString());
 
 		list.addAll(tempList);
 		
