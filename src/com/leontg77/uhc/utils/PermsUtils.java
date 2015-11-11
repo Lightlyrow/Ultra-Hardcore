@@ -4,6 +4,7 @@ import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
@@ -69,12 +70,9 @@ public class PermsUtils {
 			perm.setPermission("uhc.fly", true);
 			perm.setPermission("uhc.info", true);
 			perm.setPermission("uhc.invsee", true);
+			perm.setPermission("uhc.chat", true);
 			perm.setPermission("uhc.kick", true);
 			perm.setPermission("uhc.mute", true);
-			perm.setPermission("uhc.pvp", true);
-			perm.setPermission("uhc.scenario", true);
-			perm.setPermission("uhc.sethealth", true);
-			perm.setPermission("uhc.setmaxhealth", true);
 			perm.setPermission("uhc.spectate", true);
 			perm.setPermission("uhc.seemsg", true);
 			perm.setPermission("uhc.cmdspy", true);
@@ -82,43 +80,47 @@ public class PermsUtils {
 			perm.setPermission("uhc.admin", true);
 			perm.setPermission("uhc.team", true);
 			perm.setPermission("uhc.tempban", true);
-			perm.setPermission("uhc.info", true);
 			perm.setPermission("uhc.tp", true);
 			perm.setPermission("uhc.whitelist", true);
 			
 			if (rank == Rank.TRIAL || rank == Rank.HOST) {
+				perm.setPermission("uhc.arena", true);
+				perm.setPermission("uhc.board", true);
+				perm.setPermission("uhc.butcher", true);
 				perm.setPermission("uhc.clearinv", true);
 				perm.setPermission("uhc.clearxp", true);
 				perm.setPermission("uhc.clearinv.other", true);
 				perm.setPermission("uhc.clearxp.other", true);
-				perm.setPermission("uhc.setmaxhealth", true);
-				perm.setPermission("uhc.arena", true);
-				perm.setPermission("uhc.heal.other", true);
-				perm.setPermission("uhc.feed.other", true);
-				perm.setPermission("uhc.heal", true);
-				perm.setPermission("uhc.feed", true);
-				perm.setPermission("uhc.sethealth", true);
-				perm.setPermission("uhc.scenario", true);
-				perm.setPermission("uhc.clearinv", true);
-				perm.setPermission("uhc.gamemode", true);
-				perm.setPermission("uhc.clearxp", true);
-				perm.setPermission("uhc.giveall", true);
-				perm.setPermission("uhc.spread", true);
-				perm.setPermission("uhc.random", true);
-				perm.setPermission("uhc.border", true);
 				perm.setPermission("uhc.config", true);
-				perm.setPermission("uhc.random", true);
-				perm.setPermission("uhc.start", true);
-				perm.setPermission("uhc.board", true);
-				perm.setPermission("uhc.vote", true);
-				perm.setPermission("uhc.heal", true);
-				perm.setPermission("uhc.world", true);
-				perm.setPermission("uhc.pregen", true);
 				perm.setPermission("uhc.end", true);
+				perm.setPermission("uhc.pvp", true);
 				perm.setPermission("uhc.feed", true);
+				perm.setPermission("uhc.feed.other", true);
+				perm.setPermission("uhc.gamemode", true);
+				perm.setPermission("uhc.giveall", true);
+				perm.setPermission("uhc.give", true);
+				perm.setPermission("uhc.heal", true);
+				perm.setPermission("uhc.heal.other", true);
+				perm.setPermission("uhc.pregen", true);
+				perm.setPermission("uhc.random", true);
+				perm.setPermission("uhc.scenario", true);
+				perm.setPermission("uhc.sethealth", true);
+				perm.setPermission("uhc.setmaxhealth", true);
+				perm.setPermission("uhc.start", true);
+				perm.setPermission("uhc.stats", true);
+				perm.setPermission("uhc.tps", true);
+				perm.setPermission("uhc.spread", true);
+				perm.setPermission("uhc.border", true);
+				perm.setPermission("uhc.vote", true);
+				perm.setPermission("uhc.world", true);
+				perm.setPermission("mysteryteams.admin", true);
 				
 				if (rank == Rank.HOST) {
+					perm.setPermission("uhc.timer", true);
+					perm.setPermission("uhc.text", true);
+					perm.setPermission("uhc.near", true);
 					perm.setPermission("uhc.skull", true);
+					perm.setPermission("uhc.edit", true);
 					perm.setPermission("uhc.speed", true);
 					perm.setPermission("uhc.invsee", true);
 					perm.setPermission("uhc.unban", true);
@@ -141,7 +143,7 @@ public class PermsUtils {
 		try {
 			player.removeAttachment(Main.permissions.get(player.getName()));
 		} catch (Exception e) {
-			// uhh...?
+			Bukkit.getLogger().warning("Couldn't remove " + player.getName() + "'s permissions.");
 		}
 		
 		Main.permissions.remove(player.getName());
