@@ -8,15 +8,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -36,10 +39,12 @@ import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.DateUtils;
+import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.NameUtils;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -117,21 +122,21 @@ public class Spectator {
 		for (ItemStack content : player.getInventory().getContents()) {
 			if (content != null) {
 				Item item = player.getWorld().dropItem(player.getLocation().getBlock().getLocation().add(0.5, 0.7, 0.5), content);
-				item.setVelocity(new Vector(0, 0.2, 0));
+				item.setVelocity(EntityUtils.randomOffset());
 			}
 		}
 
 		for (ItemStack armorContent : player.getInventory().getArmorContents()) {
 			if (armorContent != null && armorContent.getType() != Material.AIR) {
 				Item item = player.getWorld().dropItem(player.getLocation().getBlock().getLocation().add(0.5, 0.7, 0.5), armorContent);
-				item.setVelocity(new Vector(0, 0.2, 0));
+				item.setVelocity(EntityUtils.randomOffset());
 			}
 		}
 		
 		if (player.getTotalExperience() > 0) {
 			ExperienceOrb exp = player.getWorld().spawn(player.getLocation().getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
 			exp.setExperience(player.getTotalExperience());
-			exp.setVelocity(new Vector(0, 0.2, 0));
+			exp.setVelocity(EntityUtils.randomOffset());
 		}
 		
 		player.getInventory().setArmorContents(null);
@@ -141,7 +146,9 @@ public class Spectator {
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
 		
-		Teams.getInstance().joinTeam("spec", player);
+		if (!Game.getInstance().isRecordedRound()) {
+			Teams.getInstance().joinTeam("spec", player);
+		}
 		
 		if (!spectators.contains(player.getName())) {
 			spectators.add(player.getName());
@@ -179,14 +186,15 @@ public class Spectator {
 			}
 
 			player.sendMessage(Main.PREFIX + "You are no longer in spectator mode.");
-			player.teleport(Main.getSpawn());
 		}
 		
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
-
-		Teams.getInstance().leaveTeam(player);
+		
+		if (!Game.getInstance().isRecordedRound()) {
+			Teams.getInstance().leaveTeam(player);
+		}
 		
 		if (spectators.contains(player.getName())) {
 			spectators.remove(player.getName());
@@ -304,10 +312,25 @@ public class Spectator {
 	public static class SpecInfo implements Listener {
 		public static HashMap<String, Integer> totalDiamonds = new HashMap<String, Integer>();
 		public static HashMap<String, Integer> totalGold = new HashMap<String, Integer>();
-		public static HashSet<Location> locs = new HashSet<Location>();
 		
-		public static String prefix() {
-			return "§8[§9S§8] ";
+		public static HashSet<Location> locs = new HashSet<Location>();
+		private static final String PREFIX = "§8[§9S§8] §f";
+		
+		private Spectator spec = Spectator.getInstance();
+		
+		/**
+		 * Broadcast the given message to all people with specinfo.
+		 * 
+		 * @param message The message broadcasted.
+		 */
+		private void broadcast(String message) {
+			for (Player online : PlayerUtils.getPlayers()) {
+				if (!spec.hasSpecInfo(online)) {
+					continue;
+				}
+				
+				online.sendMessage(PREFIX + message);
+			}
 		}
 
 		@EventHandler
@@ -321,6 +344,7 @@ public class Spectator {
 
 				Location loc = block.getLocation();
 				Player player = event.getPlayer();
+				
 				int amount = 0;
 				
 				for (int x = loc.getBlockX() - 2; x <= loc.getBlockX() + 2; x++) {
@@ -340,11 +364,7 @@ public class Spectator {
 					totalGold.put(player.getName(), amount);
 				}
 				
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + totalGold.get(player.getName()) + "§f]");
-					}
-				}
+				broadcast("§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + totalGold.get(player.getName()) + "§f]");
 				return;
 			}
 			
@@ -355,6 +375,7 @@ public class Spectator {
 
 				Location loc = block.getLocation();
 				Player player = event.getPlayer();
+				
 				int amount = 0;
 				
 				for (int x = loc.getBlockX() - 2; x <= loc.getBlockX() + 2; x++) {
@@ -374,11 +395,7 @@ public class Spectator {
 					totalDiamonds.put(player.getName(), amount);
 				}
 				
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + totalDiamonds.get(player.getName()) + "§f]");
-					}
-				}
+				broadcast("§7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + totalDiamonds.get(player.getName()) + "§f]");
 			}
 		}
 
@@ -398,34 +415,29 @@ public class Spectator {
 
 		@EventHandler
 		public void onPlayerTeleport(PlayerTeleportEvent event) {
-			if (event.getCause() == TeleportCause.ENDER_PEARL) {
-				Player player = event.getPlayer();
-
-				if (Spectator.getInstance().isSpectating(player)) {
-					return;
-				}
-				
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§5Pearl: §a" + player.getName() + " §f<-> D:§d" + NumberUtils.convertDouble(event.getFrom().distance(event.getTo())) + "m.");
-					}
-				}
+			if (event.getCause() != TeleportCause.ENDER_PEARL) {
+				return;
 			}
+			
+			Player player = event.getPlayer();
+			broadcast("§5Pearl: §a" + player.getName() + " §f<-> D:§d" + NumberUtils.convertDouble(event.getFrom().distance(event.getTo())) + "m.");
 		}
 
 		@EventHandler
 		public void onPlayerPortal(PlayerPortalEvent event) {
+			if (event.getTo() == null) {
+			    return;
+			}
+			
 			Player player = event.getPlayer();
+			
+			World from = event.getFrom().getWorld();
+			World to = event.getTo().getWorld();
 
-			if (Spectator.getInstance().isSpectating(player)) {
-				return;
-			}
+			String fromEnv = from.getEnvironment().name().toLowerCase();
+			String toEnv = to.getEnvironment().name().toLowerCase();
 
-			for (Player online : PlayerUtils.getPlayers()) {
-				if (Spectator.getInstance().hasSpecInfo(online)) {
-					online.sendMessage(prefix() + "§dPortal:§6" + player.getName() + "§f from §a" + NameUtils.fixString(event.getFrom().getWorld().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase() + "§f to §c" + NameUtils.fixString(event.getTo().getWorld().getEnvironment().name(), true).replaceAll("Normal", "overworld").toLowerCase());
-				}
-			}
+			broadcast("§dPortal:§6" + player.getName() + "§f from §a" + fromEnv.replaceAll("normal", "overworld") + "§f to §c" + toEnv.replaceAll("normal", "overworld"));
 		}
 
 		@EventHandler
@@ -433,16 +445,13 @@ public class Spectator {
 			Player player = event.getPlayer();
 			ItemStack item = event.getItem();
 			
-			if (Spectator.getInstance().isSpectating(player)) {
-				return;
-			}
-			
 			if (event.getItem().getType() == Material.GOLDEN_APPLE) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§aHeal: §6" + player.getName() + "§f<->§6" + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§6Golden Head") ? "§5Golden Head" : "Golden Apple"));
-					}
+				if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
+					broadcast("§aHeal: §6" + player.getName() + "§f<->§5Golden Head");
+					return;
 				}
+				
+				broadcast("§aHeal: §6" + player.getName() + "§f<->§6Golden Apple");
 				return;
 			}
 			
@@ -461,46 +470,53 @@ public class Spectator {
 					}
 				}
 				
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						for (PotionEffect e : pot.getEffects()) {
-							online.sendMessage(prefix() + "§5Potion: §a" + player.getName() + "§f <-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fV:§dNormal");
-						}
+				for (PotionEffect effect : pot.getEffects()) {
+					String potName = NameUtils.getPotionName(effect.getType());
+					int duration = effect.getDuration() / 20;
+					
+					if ((effect.getDuration() / 20) > 0) {
+						broadcast("§5Potion: §a" + player.getName() + "§f <-> P:§d" + potName + " §fT:§d" + pot.getLevel() + " §fD:§d" + DateUtils.ticksToString(duration) + " §fV:§dNormal");
+						continue;
 					}
+					
+					broadcast("§5Potion: §a" + player.getName() + "§f <-> P:§d" + potName + " §fT:§d" + pot.getLevel() + " §fV:§dNormal");
 				}
 			}
 		}
 		
 		@EventHandler
 		public void onPotionSplash(PotionSplashEvent event) {
-			if (event.getPotion().getShooter() instanceof Player) {
-				Player player = (Player) event.getPotion().getShooter();
-				ItemStack item = event.getPotion().getItem();
-				Potion pot;
+			if (!(event.getPotion().getShooter() instanceof Player)) {
+				return;
+			}
+			
+			Player player = (Player) event.getPotion().getShooter();
+			ItemStack item = event.getPotion().getItem();
+			
+			Potion pot;
 
-				if (item.getDurability() == 16453) {
-					pot = new Potion(PotionType.INSTANT_HEAL, 1);
-				} else if (item.getDurability() == 16421) {
-					pot = new Potion(PotionType.INSTANT_HEAL, 2);
-				} else {
-					try {
-						pot = Potion.fromItemStack(item);
-					} catch (Exception e) {
-						return;
-					}
-				}
-				
-				if (Spectator.getInstance().isSpectating(player.getName())) {
+			if (item.getDurability() == 16453) {
+				pot = new Potion(PotionType.INSTANT_HEAL, 1);
+			} else if (item.getDurability() == 16421) {
+				pot = new Potion(PotionType.INSTANT_HEAL, 2);
+			} else {
+				try {
+					pot = Potion.fromItemStack(item);
+				} catch (Exception e) {
 					return;
 				}
+			}
+			
+			for (PotionEffect effect : pot.getEffects()) {
+				String potName = NameUtils.getPotionName(effect.getType());
+				int duration = effect.getDuration() / 20;
 				
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						for (PotionEffect e : pot.getEffects()) {
-							online.sendMessage(prefix() + "§5Potion: §a" + player.getName() + "§f <-> P:§d" + NameUtils.getPotionName(e.getType()) + " §fT:§d" + pot.getLevel() + ((e.getDuration() / 20) > 0 ? " §fD:§d" + DateUtils.ticksToString(e.getDuration() / 20) : "") + " §fV:§dSplash");
-						}
-					}
+				if ((effect.getDuration() / 20) > 0) {
+					broadcast("§5Potion: §a" + player.getName() + "§f <-> P:§d" + potName + " §fT:§d" + pot.getLevel() + " §fD:§d" + DateUtils.ticksToString(duration) + " §fV:§dSplash");
+					continue;
 				}
+				
+				broadcast("§5Potion: §a" + player.getName() + "§f <-> P:§d" + potName + " §fT:§d" + pot.getLevel() + " §fV:§dSplash");
 			}
 		}
 
@@ -508,116 +524,69 @@ public class Spectator {
 		public void onCraftItem(CraftItemEvent event) {
 			Player player = (Player) event.getWhoClicked();
 			ItemStack item = event.getRecipe().getResult();
-
-			if (Spectator.getInstance().isSpectating(player.getName())) {
-				return;
-			}
 			
 			if (item.getType() == Material.GOLDEN_APPLE) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§6" + (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equalsIgnoreCase("§6Golden Head") ? "§5Golden Head" : "Golden Apple"));
-					}
+				if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
+					broadcast("§2Craft§f: §a" + player.getName() + "§f<->§5Golden Head");
+					return;
 				}
+				
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§6Golden Apple");
 				return;
 			}
 			
 			if (item.getType() == Material.DIAMOND_HELMET) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Helmet");
-					}
-				}
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§bDia. Helmet");
 				return;
 			}
 			
 			if (item.getType() == Material.DIAMOND_CHESTPLATE) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Chest");
-					}
-				}
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§bDia. Chestplate");
 				return;
 			}
 			
 			if (item.getType() == Material.DIAMOND_LEGGINGS) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Leggings");
-					}
-				}
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§bDia. Leggings");
 				return;
 			}
 			
 			if (item.getType() == Material.DIAMOND_BOOTS) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Boots");
-					}
-				}
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§bDia. Boots");
 				return;
 			}
 			
 			if (item.getType() == Material.DIAMOND_SWORD) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§bDia. Sword");
-					}
-				}
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§bDia. Sword");
 				return;
 			}
 			
 			if (item.getType() == Material.BOW) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§dBow");
-					}
-				}
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§dBow");
 				return;
 			}
 			
 			if (item.getType() == Material.ANVIL) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§dAnvil");
-					}
-				}
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§dAnvil");
 				return;
 			}
 			
 			if (item.getType() == Material.ENCHANTMENT_TABLE) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§dEnchant. Table");
-					}
-				}
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§dEnchant. Table");
 				return;
 			}
 			
 			if (item.getType() == Material.BREWING_STAND_ITEM) {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().hasSpecInfo(online)) {
-						online.sendMessage(prefix() + "§2Craft§f: §a" + player.getName() + "§f<->§dBrewing Stand");
-					}
-				}
+				broadcast("§2Craft§f: §a" + player.getName() + "§f<->§dBrewing Stand");
 			}
 		}
 		
 		@EventHandler(ignoreCancelled = true)
 		public void onDamage(final EntityDamageEvent event) {
-			if (event.isCancelled()) {
-				return;
-			}
-			
 			if (!(event.getEntity() instanceof Player)) {
 				return;
 			}
 
 			final Player player = (Player) event.getEntity();
-			
-			if (Spectator.getInstance().isSpectating(player.getName())) {
-				return;
-			}
 			
 			if (event instanceof EntityDamageByEntityEvent) {
 				onDamageByOther(player, (EntityDamageByEntityEvent) event);
@@ -629,226 +598,80 @@ public class Spectator {
 
 			new BukkitRunnable() {
 				public void run() {
+					String name = NameUtils.fixString(cause.name().replace("_TICK", ""), true);
 					double damage = olddamage - player.getHealth();
 					
 					if (damage <= 0) {
 						return;
 					}
 					
-					if (cause == DamageCause.LAVA) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dLava §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.FIRE || cause == DamageCause.FIRE_TICK) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dFire §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					}  
-					else if (cause == DamageCause.CONTACT) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dCactus §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.DROWNING) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dDrowning §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.FALL) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dFall §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.LIGHTNING) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dLightning §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.MAGIC) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dMagic §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.POISON) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dPoison §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.STARVATION) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dStarving §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.SUFFOCATION) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dSuffocation §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.VOID) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dVoid §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-					} 
-					else if (cause == DamageCause.WITHER) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dWither §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (cause == DamageCause.BLOCK_EXPLOSION) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§dTNT §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d??? §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-					}
+					String health = NumberUtils.convertDouble((player.getHealth() / 2));
+					String taken = NumberUtils.convertDouble((damage / 2));
+					
+					broadcast("§5PvE§f:§c" + player.getName() + "§f<-§d" + name + " §f[§c" + health + "§f] [§6" + taken + "§f]");
 				}
 			}.runTaskLater(Main.plugin, 1);
 		}
 
 		private void onDamageByOther(final Player player, final EntityDamageByEntityEvent event) {
-			if (Spectator.getInstance().isSpectating(player.getName())) {
-				return;
-			}
-			
 			final double olddamage = player.getHealth();
 			
 			new BukkitRunnable() {
 				public void run() {
 					double damage = olddamage - player.getHealth();
+					Entity damager = event.getDamager();
+
+					String pHealth = NumberUtils.convertDouble((player.getHealth() / 2));
+					String taken = NumberUtils.convertDouble((damage / 2));
 					
-					if (damage <= 0) {
-						return;
-					}
-					
-					if (event.getDamager() instanceof Player) {
-						Player killer = (Player) event.getDamager();
+					if (damager instanceof Player) {
+						Player killer = (Player) damager;
 						
-						if (Spectator.getInstance().isSpectating(killer)) {
+						if (spec.isSpectating(killer)) {
 							return;
 						}
 						
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§4PvP§f:§a" + killer.getName() + "§f-M>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((killer.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					} 
-					else if (event.getDamager() instanceof Projectile) {
-						Projectile p = (Projectile) event.getDamager();
+						String kHealth = NumberUtils.convertDouble((killer.getHealth() / 2));
 						
-						if (p.getShooter() instanceof Player) {
-							Player shooter = (Player) p.getShooter();
+						broadcast("§4PvP§f:§a" + killer.getName() + "§f-M>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
+						return;
+					}
+					
+					if (damager instanceof Projectile) {
+						Projectile proj = (Projectile) damager;
+						ProjectileSource source = proj.getShooter();
+						
+						if (source instanceof Player) {
+							Player shooter = (Player) source;
+
+							String kHealth = NumberUtils.convertDouble((shooter.getHealth() / 2));
 							
-							if (p instanceof Arrow) {
-								for (Player online : PlayerUtils.getPlayers()) {
-									if (Spectator.getInstance().hasSpecInfo(online)) {
-										online.sendMessage(prefix() + "§4PvP§f:§a" + shooter.getName() + "§f-B>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((shooter.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-									}
-								}
-								return;
-							}
-							else {
-								for (Player online : PlayerUtils.getPlayers()) {
-									if (Spectator.getInstance().hasSpecInfo(online)) {
-										online.sendMessage(prefix() + "§4PvP§f:§a" + shooter.getName() + "§f-?P>§c" + player.getName() + " §f[§a" + NumberUtils.convertDouble((shooter.getHealth() / 2)) + "§f:§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-									}
-								}
+							if (proj instanceof Arrow) {
+								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-B>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
+							} else if (proj instanceof Snowball) {
+								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-S>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
+							} else if (proj instanceof Egg) {
+								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-E>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
+							} else if (proj instanceof FishHook) {
+								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-F>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
+							} else {
+								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-?P>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
 							}
 							return;
 						} 
-						else {
-							if (p.getShooter() instanceof Entity) {
-								Entity entity = (Entity) p.getShooter();
-								
-								for (Player online : PlayerUtils.getPlayers()) {
-									if (Spectator.getInstance().hasSpecInfo(online)) {
-										online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.getMobName(entity.getType()) + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-									}
-								}
-								return;
-							}
-							else {
-								for (Player online : PlayerUtils.getPlayers()) {
-									if (Spectator.getInstance().hasSpecInfo(online)) {
-										online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d??? §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-									}
-								}
-							}
+							
+						if (proj.getShooter() instanceof LivingEntity) {
+							LivingEntity entity = (LivingEntity) proj.getShooter();
+							broadcast("§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.getMobName(entity.getType()) + " §f[§c" + pHealth + "§f] [§6" + taken + "§f]");
+							return;
 						}
+						
+						broadcast("§5PvE§f:§c" + player.getName() + "§f<-§d?P §f[§c" + pHealth + "§f] [§6" + taken + "§f]");
 						return;
 					} 
-					else if (event.getDamager() instanceof LivingEntity) {
-						Entity e = event.getDamager();
-						
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.getMobName(e.getType()) + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					}
-					else if (event.getDamager() instanceof TNTPrimed) {
-						Entity e = event.getDamager();
-						
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.getMobName(e.getType()) + " §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-						return;
-					}
-					else {
-						for (Player online : PlayerUtils.getPlayers()) {
-							if (Spectator.getInstance().hasSpecInfo(online)) {
-								online.sendMessage(prefix() + "§5PvE§f:§c" + player.getName() + "§f<-§d??? §f[§c" + NumberUtils.convertDouble((player.getHealth() / 2)) + "§f] [§6" + NumberUtils.convertDouble((damage / 2)) + "§f]");
-							}
-						}
-					}
+
+					Entity entity = event.getDamager();
+					broadcast("§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.getMobName(entity.getType()) + " §f[§c" + pHealth + "§f] [§6" + taken + "§f]");
 				}
 			}.runTaskLater(Main.plugin, 1);
 		}
