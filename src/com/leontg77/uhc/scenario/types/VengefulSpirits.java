@@ -1,19 +1,22 @@
 package com.leontg77.uhc.scenario.types;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Blaze;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Ghast;
-import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.util.Vector;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.utils.BlockUtils;
 
 /**
  * VengefulSpirits scenario class
@@ -21,49 +24,62 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author LeonTG77
  */
 public class VengefulSpirits extends Scenario implements Listener {
-	private boolean enabled = false;
 	
 	public VengefulSpirits() {
 		super("VengefulSpirits", "When a player dies, above y 60 a ghast spawns and bellow y 60 a blaze spawns, you can only get their head by killing that mob.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-		
-		if (enable) {
-			Game.getInstance().setGoldenHeads(false);
-		}
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
+	@Override
+	public void onEnable() {
+		// I don't want the code to place the normal skulls so then
+		// I disable them instead since I have a custom dropping
+		Game game = Game.getInstance();
+		game.setGoldenHeads(false);
 	}
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
-		if (event.getEntity() instanceof Blaze || event.getEntity() instanceof Ghast) {
-			if (event.getEntity().getCustomName() == null) {
-				return;
-			}
-			
-			ItemStack skull = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
-			SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-			skullMeta.setOwner(event.getEntity().getCustomName());
-			skull.setItemMeta(skullMeta);
-			Item item = event.getEntity().getWorld().dropItem(event.getEntity().getLocation().add(0.5, 0.7, 0.5), skull);
-			item.setVelocity(new Vector(0, 0.2, 0));
+		Entity entity = event.getEntity();
+		
+		// check if the entity is a blaze or a ghast, if not return.
+		if (!(entity instanceof Blaze) && !(entity instanceof Ghast)) {
+			return;
 		}
+		
+		// if the entity has no name, return.
+		if (entity.getCustomName() == null) {
+			return;
+		}
+		
+		ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+		SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+		skullMeta.setOwner(entity.getCustomName().substring(14)); // the player name starts after 14 caracters.
+		skull.setItemMeta(skullMeta);
+		
+		// drop the created item.
+		BlockUtils.dropItem(entity.getLocation(), skull);
 	}
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (event.getEntity().getLocation().getBlockY() <= 60) {
-			Blaze blaze = event.getEntity().getWorld().spawn(event.getEntity().getLocation(), Blaze.class);
-			blaze.setCustomName(event.getEntity().getName());
+		Player player = event.getEntity();
+		
+		Location loc = player.getLocation();
+		World world = player.getWorld();
+		
+		// if the player is below y=60 we want to spawn a blaze.
+		if (loc.getBlockY() < 60) {
+			// spawn the blaze and name it.
+			Blaze blaze = world.spawn(loc, Blaze.class);
+			blaze.setCustomName("The Spirit of " + player.getName());
+			return;
 		} 
-		else {
-			Ghast ghast = event.getEntity().getWorld().spawn(event.getEntity().getLocation(), Ghast.class);
-			ghast.setCustomName(event.getEntity().getName());
-		}
+
+		// they're above y=60, spawn a ghast and name it.
+		Ghast ghast = world.spawn(loc, Ghast.class);
+		ghast.setCustomName("The Spirit of " + player.getName());
 	}
 }
