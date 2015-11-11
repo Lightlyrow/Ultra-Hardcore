@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Game;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
 
 /**
@@ -48,19 +50,34 @@ public class GameUtils {
 		return worlds;
 	}
 	
+	public static List<Player> getGamePlayers() {
+		List<Player> list = new ArrayList<Player>();
+    	Spectator spec = Spectator.getInstance();
+		
+		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+			if (spec.isSpectating(online) || !GameUtils.getGameWorlds().contains(online.getWorld())) {
+				continue;
+			}
+			
+			list.add(online);
+		}
+		
+		return list;
+	}
+	
 	/**
 	 * Gets a string version of the current state.
 	 * 
 	 * @return The string version.
 	 */
-	public static String getState() {
+	public static String getMOTDMessage() {
 		State current = State.getState();
 		Game game = Game.getInstance();
 		
 		switch (current) {
 		case SCATTER:
 		case INGAME:
-			if (getTeamSize().startsWith("No") || game.isRecordedRound()) {
+			if (GameUtils.getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonPrivate")) {
 				return "No games running";
 			} 
 			else if (getTeamSize().startsWith("Open")) {
@@ -71,7 +88,7 @@ public class GameUtils {
 			}
 		case LOBBY:
 			if (Bukkit.getServer().hasWhitelist()) {
-				if (getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().startsWith("PrivateG")) {
+				if (GameUtils.getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonPrivate")) {
 					return "No games running";
 				} 
 				else if (getTeamSize().startsWith("Open")) {
@@ -170,8 +187,20 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("Itz_Isaac")) {
 			return "Isaac";
 		}
+		else if (host.equalsIgnoreCase("SpookySwift")) {
+			return "Badfan";
+		}
+		else if (host.equalsIgnoreCase("AxlurUSC")) {
+			return "Axlur";
+		}
+		else if (host.equalsIgnoreCase("LimitDTW")) {
+			return "Limit";
+		}
 		else if (host.equalsIgnoreCase("BLA2K14")) {
 			return "BLA2K14";
+		}
+		else if (host.equalsIgnoreCase("MajorWoof")) {
+			return "MajorWoof";
 		}
 		return host;
 	}
@@ -192,8 +221,20 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("Isaac")) {
 			return "Isaac";
 		}
+		else if (host.equalsIgnoreCase("axlur") || host.equalsIgnoreCase("AxlurUHC") || host.equalsIgnoreCase("AxlurUSC")) {
+			return "Axlur";
+		}
+		else if (host.equalsIgnoreCase("Limit") || host.equalsIgnoreCase("LimitDTW")) {
+			return "Limit";
+		}
+		else if (host.equalsIgnoreCase("Badfan") || host.equalsIgnoreCase("SpookySwift")) {
+			return "Badfan";
+		}
 		else if (host.equalsIgnoreCase("BLA2K14")) {
 			return "BLA2K14";
+		}
+		else if (host.equalsIgnoreCase("MajorWoof") || host.equalsIgnoreCase("Major")) {
+			return "MajorWoof";
 		}
 		return host;
 	}
@@ -214,11 +255,20 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("Isaac")) {
 			return "Itz_Isaac";
 		}
+		else if (host.equalsIgnoreCase("Badfan")) {
+			return "SpookySwift";
+		}
 		else if (host.equalsIgnoreCase("Axlur")) {
-			return "AxlurUHC";
+			return "AxlurUSC";
 		}
 		else if (host.equalsIgnoreCase("BLA2K14")) {
 			return "BLA2K14";
+		}
+		else if (host.equalsIgnoreCase("Limit")) {
+			return "LimitDTW";
+		}
+		else if (host.equalsIgnoreCase("MajorWoof")) {
+			return "MajorWoof";
 		}
 		return host;
 	}
