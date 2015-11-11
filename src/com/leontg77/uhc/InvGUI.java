@@ -83,27 +83,35 @@ public class InvGUI {
 		ItemMeta pvpminingMeta = pvpmining.getItemMeta();
 		pvpminingMeta.setDisplayName("§8» §6PvP & Mining Stats §8«");
 		lore.add(" ");
-		lore.add("§8» §7Highest Arena Killstreak: §a" + user.getStat(Stat.ARENAKILLSTREAK));
-		lore.add("§8» §7Highest Killstreak: §a" + user.getStat(Stat.KILLSTREAK));
+		lore.add("§8» §7Highest Arena Killstreak: §a" + user.getStat(Stat.ARENAKS));
+		lore.add("§8» §7Highest Killstreak: §a" + user.getStat(Stat.KS));
 		lore.add(" ");
 		lore.add("§8» §7Kills: §a" + user.getStat(Stat.KILLS));
 		lore.add("§8» §7Deaths: §a" + user.getStat(Stat.DEATHS));
+		
+		double kdr;
 		if (user.getStat(Stat.DEATHS) == 0) {
-			lore.add("§8» §7KDR: §a" + user.getStat(Stat.KILLS));
+			kdr = ((double) user.getStat(Stat.KILLS));
 		} else {
-			lore.add("§8» §7KDR: §a" + user.getStat(Stat.KILLS) / user.getStat(Stat.DEATHS));
+			kdr = ((double) user.getStat(Stat.KILLS)) / ((double) user.getStat(Stat.DEATHS));
 		}
+		
+		lore.add("§8» §7KDR: §a" + NumberUtils.convertDouble(kdr));
 		lore.add(" ");
 		lore.add("§8» §7Diamonds mined: §a" + user.getStat(Stat.DIAMONDS));
 		lore.add("§8» §7Gold mined: §a" + user.getStat(Stat.GOLD));
 		lore.add(" ");
 		lore.add("§8» §7Arena Kills: §a" + user.getStat(Stat.ARENAKILLS));
 		lore.add("§8» §7Arena Deaths: §a" + user.getStat(Stat.ARENADEATHS));
+		
+		double arenakdr;
 		if (user.getStat(Stat.ARENADEATHS) == 0) {
-			lore.add("§8» §7Arena KDR: §a" + user.getStat(Stat.ARENAKILLS));
+			arenakdr = ((double) user.getStat(Stat.ARENAKILLS));
 		} else {
-			lore.add("§8» §7Arena KDR: §a" + user.getStat(Stat.ARENAKILLS) / user.getStat(Stat.ARENADEATHS));
+			arenakdr = ((double) user.getStat(Stat.ARENAKILLS)) / ((double) user.getStat(Stat.ARENADEATHS));
 		}
+		
+		lore.add("§8» §7Arena KDR: §a" + NumberUtils.convertDouble(arenakdr));
 		lore.add(" ");
 		pvpminingMeta.setLore(lore); 
 		pvpminingMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
@@ -424,7 +432,7 @@ public class InvGUI {
 		
 		ItemStack pearl = new ItemStack (Material.ENDER_PEARL);
 		ItemMeta peralMeta = pearl.getItemMeta();
-		peralMeta.setDisplayName((game.goldenHeads() ? "§a" : "§c") + "Pearl Damage");
+		peralMeta.setDisplayName((game.pearlDamage() ? "§a" : "§c") + "Pearl Damage");
 		pearl.setItemMeta(peralMeta);
 		inv.setItem(2, pearl);
 		
@@ -808,9 +816,11 @@ public class InvGUI {
 		ItemMeta miscIMeta = miscI.getItemMeta();
 		miscIMeta.setDisplayName("§8» §6Misc. Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled, deals 1 heart." : "§cDisabled."));
 		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Saturation Fix: §aEnabled.");
+		lore.add(" ");
+		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled, deals 1 heart." : "§cDisabled."));
+		lore.add("§8» §7Quartz XP: §c50% reduced.");
 		lore.add(" ");
 		lore.add("§8» §7Border shrinks: §6" + NameUtils.fixString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
 		lore.add("§8» §7The border will kill you if you go outside!");
@@ -836,7 +846,7 @@ public class InvGUI {
 		ArrayList<String> specL = new ArrayList<String>();
 		
 		int i = 1;
-		int j = 0;
+		int j = -1;
 		
 		for (File file : folder.listFiles()) {
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -883,7 +893,7 @@ public class InvGUI {
 		}
 		
 		i = 1;
-		j = 0;
+		j = -1;
 		
 		for (String sL : staffL) {
 			if (staffs.length() > 0) {
@@ -906,7 +916,7 @@ public class InvGUI {
 		}
 		
 		i = 1;
-		j = 0;
+		j = -1;
 		
 		for (String pL : specL) {
 			if (specs.length() > 0) {
@@ -929,7 +939,7 @@ public class InvGUI {
 		}
 		
 		i = 1;
-		j = 0;
+		j = -1;
 		
 		for (OfflinePlayer ops : Bukkit.getServer().getOperators()) {
 			if (owners.length() > 0) {
@@ -967,7 +977,7 @@ public class InvGUI {
 			lore.add("§8» §7" + split);
 		}
 		lore.add(" ");
-		lore.add("§8» §7Specs:");
+		lore.add("§8» §9Specs:");
 		for (String split : specs.toString().split("-")) {
 			lore.add("§8» §7" + split);
 		}
