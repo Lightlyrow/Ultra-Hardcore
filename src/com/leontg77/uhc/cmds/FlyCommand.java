@@ -55,12 +55,12 @@ public class FlyCommand implements CommandExecutor {
 		}
 		
 		if (target.getAllowFlight()) {
-			sender.sendMessage(Main.PREFIX + "You disabled §a" + target.getName() + "'s §7 fly mode.");
+			sender.sendMessage(Main.PREFIX + "You disabled §a" + target.getName() + "'s §7fly mode.");
 			target.sendMessage(Main.PREFIX + "Your fly mode is now disabled.");
 			target.setAllowFlight(false);
 			target.setFlying(false);
 		} else {
-			sender.sendMessage(Main.PREFIX + "You enabled §a" + target.getName() + "'s §7 fly mode.");
+			sender.sendMessage(Main.PREFIX + "You enabled §a" + target.getName() + "'s §7fly mode.");
 			target.sendMessage(Main.PREFIX + "Your fly mode is now enabled.");
 			target.setAllowFlight(true);
 		}
