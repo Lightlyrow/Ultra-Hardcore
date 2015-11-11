@@ -5,6 +5,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main.BorderShrink;
+import com.leontg77.uhc.Main.HardcoreHearts;
+import com.leontg77.uhc.scoreboard.Scoreboards;
 import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -327,25 +329,6 @@ public class Game {
 	}
 
 	/**
-	 * Enable or disable stats.
-	 * 
-	 * @param enable True to enable, false to disable.
-	 */
-	public void setStats(boolean enable) {
-		settings.getConfig().set("misc.stats", enable);
-		settings.saveConfig();
-	}
-
-	/**
-	 * Get if stats are enabled.
-	 * 
-	 * @return True if it is, false otherwise.
-	 */
-	public boolean stats() {
-		return settings.getConfig().getBoolean("misc.stats", true);
-	}
-
-	/**
 	 * Mute or unmute the chat
 	 * 
 	 * @param mute True to mute, false to unmute.
@@ -664,6 +647,12 @@ public class Game {
 	public void setHardcoreHearts(boolean enable) {
 		settings.getConfig().set("feature.hardcoreHearts.enabled", enable);
 		settings.saveConfig();
+		
+		if (enable) {
+			HardcoreHearts.enable();
+		} else {
+			HardcoreHearts.disable();
+		}
 	}
 
 	public boolean hardcoreHearts() {
