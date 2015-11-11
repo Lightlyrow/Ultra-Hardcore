@@ -1,6 +1,7 @@
 package com.leontg77.uhc.cmds;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -10,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Joiner;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
@@ -219,23 +221,15 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			game.setPvP(pvp);
 			break;
 		case RRNAME:
-			StringBuilder nameBuilder = new StringBuilder();
+			String rrname = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
 			
-			for (int ni = 1; ni < args.length; ni++) {
-				nameBuilder.append(args[ni]).append(" ");
-			}
-			
-			game.setRRName(nameBuilder.toString().trim());
+			game.setRRName(rrname);
 			PlayerUtils.broadcast(Main.PREFIX + "The recorded round is now called §a" + game.getRRName() + "§7.");
 			break;
 		case SCENARIOS:
-			StringBuilder scenarioBuilder = new StringBuilder();
+			String scens = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
 			
-			for (int ni = 1; ni < args.length; ni++) {
-				scenarioBuilder.append(args[ni]).append(" ");
-			}
-			
-			game.setScenarios(scenarioBuilder.toString().trim());
+			game.setScenarios(scens);
 			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + game.getScenarios() + "§7.");
 			break;
 		case SHEARRATES:
