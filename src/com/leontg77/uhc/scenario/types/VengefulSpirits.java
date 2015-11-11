@@ -50,13 +50,8 @@ public class VengefulSpirits extends Scenario implements Listener {
 			return;
 		}
 		
-		// if the entity has no name, return.
-		if (entity.getCustomName() == null) {
-			return;
-		}
-		
-		// if the entity starts with the prefix, otherwise return.
-		if (!entity.getCustomName().startsWith(PREFIX)) {
+		// if the entity has no name or it doesn't start with the prefix, return.
+		if (entity.getCustomName() == null || !entity.getCustomName().startsWith(PREFIX)) {
 			return;
 		}
 		
