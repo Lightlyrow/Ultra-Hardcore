@@ -1,6 +1,5 @@
 package com.leontg77.uhc.scenario.types;
 
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -19,7 +18,7 @@ public class Timber extends Scenario implements Listener {
 	private boolean enabled = false;
 	
 	public Timber() {
-		super("Timber", "When chopping down a tree the entire thing will chop.");
+		super("Timber", "When chopping down a tree the entire tree will chop.");
 	}
 
 	public void setEnabled(boolean enable) {
@@ -30,7 +29,6 @@ public class Timber extends Scenario implements Listener {
 		return enabled;
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		Block block = event.getBlock();
@@ -42,7 +40,6 @@ public class Timber extends Scenario implements Listener {
 		block = block.getRelative(BlockFace.UP);
 		
 		while (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
-			block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
 			block.breakNaturally();
 			block = block.getRelative(BlockFace.UP);
 		}
