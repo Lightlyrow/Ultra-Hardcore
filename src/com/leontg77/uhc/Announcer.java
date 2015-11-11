@@ -48,7 +48,7 @@ public class Announcer {
 		messages.add("The server runs off a custom uhc plugin by §6LeonTG77§7.");
 		messages.add("Wonder if you are lagging? Use §a/ms §7or §a/tps§7.");
 		messages.add("Follow our twitter for games and updates, §a@ArcticUHC§7!");
-		messages.add("You can apply for a rank at: §6http://goo.gl/forms/O6tklNcrEu§7!");
+		messages.add("You can apply for a rank at §6http://goo.gl/forms/O6tklNcrEu");
 		
 		Main.plugin.getLogger().info("The announcer has been setup.");
 	}
