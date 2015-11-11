@@ -1,5 +1,6 @@
 package com.leontg77.uhc.scenario.types;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Biome;
 import org.bukkit.command.Command;
@@ -8,10 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.NameUtils;
@@ -22,34 +21,19 @@ import com.leontg77.uhc.utils.NameUtils;
  * @author LeonTG77
  */
 public class BiomeParanoia extends Scenario implements Listener, CommandExecutor {
-	private boolean enabled = false;
+	public static final String PREFIX = "§7[§6BP§7] §f";
 
 	public BiomeParanoia() {
 		super("BiomeParanoia", "Your tab name color is the color of the biome you are in, /bl for biome colors.");
-		Main main = Main.plugin;
 		
-		main.getCommand("bl").setExecutor(this);
+		Bukkit.getPluginCommand("bl").setExecutor(this);
 	}
 	
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
-	
-	public boolean isEnabled() {
-		return enabled;
-	}
-	
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		Biome biome = player.getLocation().getBlock().getBiome();
-		
-		if (Spectator.getInstance().isSpectating(player)) {
-			return;
-		}
-		
-		player.setPlayerListName(biomeColor(biome) + player.getName());
-	}
+	@Override
+	public void onDisable() {}
+
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
@@ -67,7 +51,7 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!isEnabled()) {
-			sender.sendMessage(Main.PREFIX + "\"BiomeParanoia\" is not enabled.");
+			sender.sendMessage(PREFIX + "BiomeParanoia is not enabled.");
 			return true;
 		}
 		
@@ -85,7 +69,7 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 			biomes.append(biomeColor(b) + NameUtils.fixString(b.name(), true));
 		}
 
-		sender.sendMessage(Main.PREFIX + "All biome colors:");
+		sender.sendMessage(PREFIX + "List of all biome colors:");
 		sender.sendMessage(biomes.toString().trim());
 		return true;
 	}
