@@ -3,9 +3,9 @@ package com.leontg77.uhc.cmds;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.BanList.Type;
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
+import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

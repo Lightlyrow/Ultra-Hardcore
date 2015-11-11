@@ -5,9 +5,9 @@ import static com.leontg77.uhc.Main.plugin;
 import java.util.List;
 import java.util.Random;
 
-import com.leontg77.uhc.Settings;
-
 import net.minecraft.server.v1_8_R3.BiomeBase;
+
+import com.leontg77.uhc.Settings;
 
 /**
  * BiomeSwap class.

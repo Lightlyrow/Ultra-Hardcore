@@ -4,8 +4,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 import org.bukkit.BanEntry;
-import org.bukkit.BanList.Type;
 import org.bukkit.BanList;
+import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Scoreboards;
+import com.leontg77.uhc.scoreboard.Scoreboards;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 

@@ -9,7 +9,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
-import com.leontg77.uhc.Teams;
+import com.leontg77.uhc.scoreboard.Teams;
 
 /**
  * Pm command class.

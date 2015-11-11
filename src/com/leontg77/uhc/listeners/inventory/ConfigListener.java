@@ -10,7 +10,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Scoreboards;
+import com.leontg77.uhc.scoreboard.Scoreboards;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**

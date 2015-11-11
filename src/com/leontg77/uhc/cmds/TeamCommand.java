@@ -22,9 +22,9 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Spectator;
-import com.leontg77.uhc.Teams;
+import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -576,9 +576,9 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			PlayerUtils.broadcast(Main.PREFIX + "Team management has been enabled.");
 
 			if (game.pregameBoard()) {
-				board.setScore("§e ", 12);
-				board.setScore("§8» §cTeam:", 11);
-				board.setScore("§8» §7/team", 10);
+				board.setScore("§e ", 14);
+				board.setScore("§8» §cTeam:", 13);
+				board.setScore("§8» §7/team", 12);
 			}
 			game.setTeamManagement(true);
 			return true;

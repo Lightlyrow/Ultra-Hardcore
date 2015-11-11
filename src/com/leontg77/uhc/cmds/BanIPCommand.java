@@ -14,7 +14,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Scoreboards;
+import com.leontg77.uhc.scoreboard.Scoreboards;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
