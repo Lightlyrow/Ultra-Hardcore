@@ -2,9 +2,11 @@ package com.leontg77.uhc.listeners;
 
 import java.util.Random;
 
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -14,10 +16,13 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.State;
+import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
@@ -34,8 +39,8 @@ public class BlockListener implements Listener {
 	
 	@EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-    	Player player = event.getPlayer();
-		Block block = event.getBlock();
+    	final Player player = event.getPlayer();
+		final Block block = event.getBlock();
     	
     	if (State.isState(State.SCATTER)) {
     		event.setCancelled(true);
@@ -46,19 +51,105 @@ public class BlockListener implements Listener {
     		event.setCancelled(true);
 			return;
     	}
+		
+		if (block.getType() == Material.QUARTZ_ORE) {
+			event.setExpToDrop(event.getExpToDrop() / 2);
+			return;
+		}
+		
+		if (block.getType() == Material.DIAMOND_ORE) {
+			User user = User.get(player);
+			user.increaseStat(Stat.DIAMONDS);
+			return;
+		}
+		
+		if (block.getType() == Material.GOLD_ORE) {
+			User user = User.get(player);
+			user.increaseStat(Stat.GOLD);
+			return;
+		}
     	
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			return;
 		}
+		
+		if (block.getType() == Material.GLOWSTONE) {
+			if (game.tier2()) {
+				return;
+			}
+			
+			event.setCancelled(true);
+            block.setType(Material.AIR);
+            
+            ItemStack newItem = player.getItemInHand();
+            
+            if (newItem.getType() != Material.AIR && newItem.getType().getMaxDurability() > 0) {
+                short durability = newItem.getDurability();
+                durability++;
+                newItem.setDurability(durability);
+                
+                if (durability >= newItem.getType().getMaxDurability()) {
+                    player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 1, 1);
+                    player.setItemInHand(new ItemStack(Material.AIR));
+                    return;
+                }
+                
+                player.setItemInHand(newItem);
+            }
+            
+            for (Player online : player.getWorld().getPlayers()) {
+            	if (online == player) {
+            		continue;
+            	}
+            	
+            	online.playEffect(block.getLocation(), Effect.STEP_SOUND, Material.GRAVEL);
+            }
+
+            new BukkitRunnable() {
+            	public void run() {
+        			Item item = player.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GLOWSTONE));
+        			item.setVelocity(EntityUtils.randomOffset());
+            	}
+            }.runTaskLater(Main.plugin, 1);
+			return;
+		}
     	
-		Random rand = new Random();
+		final Random rand = new Random();
 		
 		if (block.getType() == Material.GRAVEL) {
-			if (rand.nextInt(99) < game.getFlintRates()) {
-				Main.toReplace.put(Material.GRAVEL, new ItemStack (Material.FLINT));
-			} else {
-				Main.toReplace.put(Material.FLINT, new ItemStack (Material.GRAVEL));
-			}
+			event.setCancelled(true);
+            block.setType(Material.AIR);
+            
+            ItemStack newItem = player.getItemInHand();
+            
+            if (newItem.getType() != Material.AIR && newItem.getType().getMaxDurability() > 0) {
+                short durability = newItem.getDurability();
+                durability++;
+                newItem.setDurability(durability);
+                
+                if (durability >= newItem.getType().getMaxDurability()) {
+                    player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 1, 1);
+                    player.setItemInHand(new ItemStack(Material.AIR));
+                    return;
+                }
+                
+                player.setItemInHand(newItem);
+            }
+            
+            for (Player online : player.getWorld().getPlayers()) {
+            	if (online == player) {
+            		continue;
+            	}
+            	
+            	online.playEffect(block.getLocation(), Effect.STEP_SOUND, Material.GRAVEL);
+            }
+
+            new BukkitRunnable() {
+            	public void run() {
+        			Item item = player.getWorld().dropItem(block.getLocation(), new ItemStack(rand.nextInt(99) < game.getFlintRates() ? Material.FLINT : Material.GRAVEL));
+        			item.setVelocity(EntityUtils.randomOffset());
+            	}
+            }.runTaskLater(Main.plugin, 1);
 			return;
 		}
 		
@@ -87,14 +178,15 @@ public class BlockListener implements Listener {
 
 				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
 				item.setVelocity(EntityUtils.randomOffset());
-			} else {
-				if (rand.nextInt(99) >= game.getAppleRates()) {
-					return;
-				}
-
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
-				item.setVelocity(EntityUtils.randomOffset());
+				return;
+			} 
+			
+			if (rand.nextInt(99) >= game.getAppleRates()) {
+				return;
 			}
+
+			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+			item.setVelocity(EntityUtils.randomOffset());
 			return;
 		}
 		
@@ -117,14 +209,15 @@ public class BlockListener implements Listener {
 				
 				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
 				item.setVelocity(EntityUtils.randomOffset());
-			} else {
-				if (rand.nextInt(99) >= game.getAppleRates()) {
-					return;
-				}
+				return;
+			} 
 				
-				Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
-				item.setVelocity(EntityUtils.randomOffset());
+			if (rand.nextInt(99) >= game.getAppleRates()) {
+				return;
 			}
+			
+			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+			item.setVelocity(EntityUtils.randomOffset());
 		}
     }
 
