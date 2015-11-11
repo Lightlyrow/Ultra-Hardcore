@@ -28,6 +28,8 @@ import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scenario.types.Kings;
+import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
@@ -194,11 +196,11 @@ public class Timers {
 				SpecInfo.totalDiamonds.clear();
 				SpecInfo.totalGold.clear();
 				
-				PlayerUtils.broadcast("§8» --------------------------------- «");
+				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
 				PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in: §a" + pvp + " minutes.");
 				PlayerUtils.broadcast(Main.PREFIX + "Meetup is in: §a" + meetup + " minutes.");
-				PlayerUtils.broadcast("§8» --------------------------------- «");
+				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 
 				for (Player online : PlayerUtils.getPlayers()) {
 					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
@@ -212,8 +214,8 @@ public class Timers {
 				}
 				
 				for (String entry : sb.board.getEntries()) {
-					if (sb.getScore(entry) > 0) {
-						sb.setScore(entry, sb.getScore(entry) + 50);
+					if (entry.equals("§a§o@ArcticUHC") || sb.getScore(entry) > 0) {
+						sb.setScore(entry, sb.getScore(entry) - 9);
 					}
 				}
 				
@@ -248,6 +250,7 @@ public class Timers {
 					}
 					
 					User user = User.get(online);
+					user.setStat(Stat.CKS, 0);
 					
 					if (spec.isSpectating(online)) {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
@@ -376,6 +379,8 @@ public class Timers {
 							world.getWorldBorder().setSize(300, meetup * 60);
 						}
 					}
+					
+					game.setPregameBoard(false);
 					
 					for (String entry : sb.board.getEntries()) {
 						if (!entry.equals("§8» §a§lPvE")) {
