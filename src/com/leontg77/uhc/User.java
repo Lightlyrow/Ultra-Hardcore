@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -265,6 +266,34 @@ public class User {
 	}
 	
 	/**
+	 * Set the given stat to a new value
+	 * 
+	 * @param stat The stat setting.
+	 * @param value The new value.
+	 */
+	public void setStat(Stat stat, int value) {
+		Game game = Game.getInstance();
+		
+		if (game.isRecordedRound()) {
+			return;
+		}
+		
+		String statName = stat.name().toLowerCase();
+		
+		if (stat == Stat.ARENADEATHS || stat == Stat.ARENAKS  || stat == Stat.ARENACKS || stat == Stat.ARENAKILLS) {
+			if (!Bukkit.hasWhitelist()) {
+				config.set("stats." + statName, value);
+				saveFile();
+			}
+		} else {
+			if (State.isState(State.INGAME)) {
+				config.set("stats." + statName, value);
+				saveFile();
+			}
+		}
+	}
+	
+	/**
 	 * Increase the given stat by 1.
 	 * 
 	 * @param stat the stat increasing.
@@ -276,15 +305,20 @@ public class User {
 			return;
 		}
 		
-		if (!game.stats()) {
-			return;
-		}
-		
 		String statName = stat.name().toLowerCase();
 		int current = config.getInt("stats." + statName, 0);
 		
-		config.set("stats." + statName, current + 1);
-		saveFile();
+		if (stat == Stat.ARENADEATHS || stat == Stat.ARENAKS  || stat == Stat.ARENACKS || stat == Stat.ARENAKILLS) {
+			if (!Bukkit.hasWhitelist()) {
+				config.set("stats." + statName, current + 1);
+				saveFile();
+			}
+		} else {
+			if (State.isState(State.INGAME) || stat == Stat.WINS) {
+				config.set("stats." + statName, current + 1);
+				saveFile();
+			}
+		}
 	}
 	
 	/**
@@ -376,6 +410,6 @@ public class User {
 	 * @author LeonTG77
 	 */
 	public enum Stat {
-		DEATHS, KILLS, WINS, GAMESPLAYED, ARENAKILLS, ARENADEATHS, ARENAKILLSTREAK, GOLDENAPPLESEATEN, GOLDENHEADSEATEN, HORSESTAMED, WOLVESTAMED, NETHER, END, DIAMONDS, GOLD, HOSTILEMOBKILLS, ANIMALKILLS, KILLSTREAK, DAMAGETAKEN, POTIONS;
+		DEATHS, KILLS, WINS, GAMESPLAYED, ARENAKILLS, ARENADEATHS, ARENAKS, ARENACKS, GOLDENAPPLESEATEN, GOLDENHEADSEATEN, HORSESTAMED, WOLVESTAMED, NETHER, END, DIAMONDS, GOLD, HOSTILEMOBKILLS, ANIMALKILLS, KS, CKS, DAMAGETAKEN, POTIONS;
 	}
 }
