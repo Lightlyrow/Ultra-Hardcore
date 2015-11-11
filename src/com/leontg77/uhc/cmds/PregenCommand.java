@@ -28,13 +28,13 @@ public class PregenCommand implements CommandExecutor {
 			if (args.length > 0) {
 				if (args[0].equalsIgnoreCase("cancel")) {
 					PlayerUtils.broadcast(Main.PREFIX + "Cancelling pregen.");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill cancel");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload fill cancel");
 					return true;
 				}
 				
 				if (args[0].equalsIgnoreCase("pause")) {
 					PlayerUtils.broadcast(Main.PREFIX + "Pausing pregen.");
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill pause");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload fill pause");
 					return true;
 				}
 			}
@@ -61,9 +61,9 @@ public class PregenCommand implements CommandExecutor {
 		
 		PlayerUtils.broadcast(Main.PREFIX + "Starting pregen of world §a" + world.getName() + "§7.");
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " set " + radius + " 0 0");
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " fill 420");
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " set " + radius + " 0 0");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload fill confirm");
 		return true;
 	}
 }
