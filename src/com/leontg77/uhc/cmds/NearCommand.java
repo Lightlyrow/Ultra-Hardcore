@@ -39,6 +39,10 @@ public class NearCommand implements CommandExecutor {
 			if (near instanceof Player) {
 				Player nearby = (Player) near;
 				
+				if (nearby == player) {
+					continue;
+				}
+				
 				if (!player.canSee(nearby)) {
 					continue;
 				}
@@ -47,9 +51,7 @@ public class NearCommand implements CommandExecutor {
 					nearList.append("§8, ");
 				}
 				
-				if (nearby != player) {
-					nearList.append("§a" + nearby.getName() + "§7(§c" + ((int) player.getLocation().distance(nearby.getLocation())) + "m§7)§a");
-				}
+				nearList.append("§a" + nearby.getName() + "§7(§c" + ((int) player.getLocation().distance(nearby.getLocation())) + "m§7)§a");
 			}
 		}
 		
