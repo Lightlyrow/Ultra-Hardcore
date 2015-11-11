@@ -24,6 +24,7 @@ import com.leontg77.uhc.utils.BlockUtils;
  * @author LeonTG77
  */
 public class VengefulSpirits extends Scenario implements Listener {
+	private static final String PREFIX = "§fThe Spirit of ";
 	
 	public VengefulSpirits() {
 		super("VengefulSpirits", "When a player dies, above y 60 a ghast spawns and bellow y 60 a blaze spawns, you can only get their head by killing that mob.");
@@ -54,9 +55,14 @@ public class VengefulSpirits extends Scenario implements Listener {
 			return;
 		}
 		
+		// if the entity starts with the prefix, otherwise return.
+		if (!entity.getCustomName().startsWith(PREFIX)) {
+			return;
+		}
+		
 		ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-		skullMeta.setOwner(entity.getCustomName().substring(14)); // the player name starts after 14 caracters.
+		skullMeta.setOwner(entity.getCustomName().substring(PREFIX.length())); // Set the owner to the name, but remove the prefix from it.
 		skull.setItemMeta(skullMeta);
 		
 		// drop the created item.
@@ -74,12 +80,12 @@ public class VengefulSpirits extends Scenario implements Listener {
 		if (loc.getBlockY() < 60) {
 			// spawn the blaze and name it.
 			Blaze blaze = world.spawn(loc, Blaze.class);
-			blaze.setCustomName("The Spirit of " + player.getName());
+			blaze.setCustomName(PREFIX + player.getName());
 			return;
 		} 
 
 		// they're above y=60, spawn a ghast and name it.
 		Ghast ghast = world.spawn(loc, Ghast.class);
-		ghast.setCustomName("The Spirit of " + player.getName());
+		ghast.setCustomName(PREFIX + player.getName());
 	}
 }
