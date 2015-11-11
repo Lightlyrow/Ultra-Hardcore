@@ -3,6 +3,7 @@ package com.leontg77.uhc;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -15,12 +16,12 @@ import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.FishHook;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -37,13 +38,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.scoreboard.Teams;
-import com.leontg77.uhc.utils.BlockBreakUtils;
+import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.NameUtils;
@@ -53,16 +53,18 @@ import com.leontg77.uhc.utils.PlayerUtils;
 /**
  * The spectator class to manage spectating.
  * <p>
- * This class contains methods for enabling/disabling spec mode, toggling spec mode and managing vanishing.
+ * This class contains methods for enabling/disabling spec mode, 
+ * toggling spec mode and managing vanishing, specinfo and commandspy.
+ * As well it has the class for specinfo events.
  * 
  * @author LeonTG77
  */
 public class Spectator {
-	private static Spectator manager = new Spectator();
+	private static Spectator instance = new Spectator();
 	
-	public HashSet<String> spectators = new HashSet<String>();
-	public HashSet<String> specinfo = new HashSet<String>();
-	public HashSet<String> cmdspy = new HashSet<String>();
+	public Set<String> spectators = new HashSet<String>();
+	public Set<String> specinfo = new HashSet<String>();
+	public Set<String> cmdspy = new HashSet<String>();
 	
 	/**
 	 * Gets the instance of the class.
@@ -70,27 +72,15 @@ public class Spectator {
 	 * @return The instance.
 	 */
 	public static Spectator getInstance() {
-		return manager;
+		return instance;
 	}
 	
 	/**
 	 * Enable spectator mode for the given player.
 	 * 
 	 * @param player the player enabling for.
-	 * @param force force the enabling.
 	 */
-	public void enableSpecmode(Player player, boolean force) {
-		if (force) {
-			player.sendMessage(Main.PREFIX + "You are now in spectator mode, do not spoil.");
-		} else {
-			if (isSpectating(player)) {
-				player.sendMessage(Main.PREFIX + "Your spectator mode is already enabled.");
-				return;
-			}
-
-			player.sendMessage(Main.PREFIX + "You are now in spectator mode, do not spoil.");
-		}
-		
+	public void enableSpecmode(Player player) {
 		ItemStack compass = new ItemStack (Material.COMPASS);
 		ItemMeta compassMeta = compass.getItemMeta();
 		compassMeta.setDisplayName(ChatColor.GREEN + "Teleporter");
@@ -115,48 +105,74 @@ public class Spectator {
 		tpMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click to teleport to 0,0."));
 		tp.setItemMeta(tpMeta);
 		
+		// remove the spectator items just to make sure they won't drop.
 		player.getInventory().remove(compass);
 		player.getInventory().remove(vision);
 		player.getInventory().remove(nether);
 		player.getInventory().remove(tp);
 		
+		// loop thru the players inventory contents and drop any found to the ground.
 		for (ItemStack content : player.getInventory().getContents()) {
-			if (content != null) {
-				BlockBreakUtils.dropItem(player.getLocation(), content);
+			// the current loop value is null, hop over.
+			if (content == null) {
+				continue;
 			}
+			
+			BlockUtils.dropItem(player.getLocation(), content);
 		}
 
+		// loop thru the players armor contents and drop any found to the ground.
 		for (ItemStack armorContent : player.getInventory().getArmorContents()) {
-			if (armorContent != null && armorContent.getType() != Material.AIR) {
-				BlockBreakUtils.dropItem(player.getLocation(), armorContent);
+			// armor contents never seem to be null so i'm checking the type for air as well.
+			if (armorContent == null || armorContent.getType() == Material.AIR) {
+				continue;
 			}
+			
+			BlockUtils.dropItem(player.getLocation(), armorContent);
 		}
 		
+		// check if the player has any experience, if so, drop it.
 		if (player.getTotalExperience() > 0) {
-			ExperienceOrb exp = player.getWorld().spawn(player.getLocation().getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
+			ExperienceOrb exp = player.getWorld().spawn(player.getLocation(), ExperienceOrb.class);
 			exp.setExperience(player.getTotalExperience());
 		}
 		
-		player.getInventory().setArmorContents(null);
-		player.getInventory().clear();
+		User user = User.get(player);
 		
+		// reset the players inventory, xp and effects
+		user.resetInventory();
+		user.resetExp();
+		user.resetEffects();
+		
+		// set them in spectator mode and reset their fly/walk speed.
 		player.setGameMode(GameMode.SPECTATOR);
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
+
+		Teams teams = Teams.getInstance();
+		Game game = Game.getInstance();
 		
-		if (!Game.getInstance().isRecordedRound()) {
-			Teams.getInstance().joinTeam("spec", player);
+		// if the game isn't an recorded round, join the spec team.
+		if (!game.isRecordedRound()) {
+			teams.joinTeam("spec", player);
+		}
+
+		// add them as a spectator and enable spec info.
+		spectators.add(player.getName());
+		specinfo.add(player.getName());
+		
+		// check for permission before enabling commandspy.
+		if (player.hasPermission("uhc.cmdspy")) {
+			cmdspy.add(player.getName());
 		}
 		
-		if (!spectators.contains(player.getName())) {
-			spectators.add(player.getName());
-		}
-		
+		// set the items at the correct spots.
 		player.getInventory().setItem(1, tp);
 		player.getInventory().setItem(3, compass);
 		player.getInventory().setItem(5, nether);
 		player.getInventory().setItem(7, vision);
 		
+		// loop all players, vanish the player and show him the other spectators and show the spectators him.
 		for (Player online : PlayerUtils.getPlayers()) {
 			if (isSpectating(online)) {
 				online.showPlayer(player);
@@ -174,34 +190,33 @@ public class Spectator {
 	 * @param player the player disabling for.
 	 * @param force force the disabling.
 	 */
-	public void disableSpecmode(Player player, boolean force) {
-		if (force) {
-			player.sendMessage(Main.PREFIX + "You are no longer in spectator mode.");
-		} else {
-			if (!isSpectating(player)) {
-				player.sendMessage(Main.PREFIX + "Your spectator mode is not enabled.");
-				return;
-			}
-
-			player.sendMessage(Main.PREFIX + "You are no longer in spectator mode.");
-		}
-		
+	public void disableSpecmode(Player player) {
+		// set their gamemode back to survival and reset their walk/fly speed.
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
 		
-		if (!Game.getInstance().isRecordedRound()) {
-			Teams.getInstance().leaveTeam(player);
+		Teams teams = Teams.getInstance();
+		Game game = Game.getInstance();
+		
+		// if the game isn't an recorded round, leave their team.
+		if (!game.isRecordedRound()) {
+			teams.leaveTeam(player);
 		}
+
+		// remove them them as a spectator and disable spec info and commandspy.
+		spectators.remove(player.getName());
+		specinfo.remove(player.getName());
+		cmdspy.remove(player.getName());
 		
-		if (spectators.contains(player.getName())) {
-			spectators.remove(player.getName());
-		}
+		User user = User.get(player);
 		
-		player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-		player.getInventory().setArmorContents(null);
-		player.getInventory().clear();
+		// reset the players inventory, xp and effects
+		user.resetInventory();
+		user.resetExp();
+		user.resetEffects();
 		
+		// loop all players, hide the spectators for the player and unvanish him for everyone else.
 		for (Player online : PlayerUtils.getPlayers()) {
 			if (isSpectating(online)) {
 				player.hidePlayer(online);
@@ -218,12 +233,11 @@ public class Spectator {
 	 * 
 	 * @param player the player toggling for.
 	 */
-	public void toggle(Player player, boolean force) {
+	public void toggle(Player player) {
 		if (isSpectating(player)) {
-			enableSpecmode(player, force);
-		} 
-		else {
-			disableSpecmode(player, force);
+			enableSpecmode(player);
+		} else {
+			disableSpecmode(player);
 		}
 	}
 	
@@ -257,6 +271,7 @@ public class Spectator {
 	 * @param player the player.
 	 */
 	public void hideSpectators(Player player) {
+		// loop all players, hide the spectators for the player and unvanish everyone else.
 		for (Player online : PlayerUtils.getPlayers()) {
 			if (isSpectating(online)) {
 				player.hidePlayer(online);
@@ -275,15 +290,7 @@ public class Spectator {
 	 * @return <code>true</code> if the player has specinfo, <code>false</code> otherwise.
 	 */
 	public boolean hasSpecInfo(Player player) {
-		if (!spectators.contains(player.getName())) {
-			return false;
-		}
-		
-		if (specinfo.contains(player.getName())) {
-			return false;
-		}
-		
-		return true;
+		return specinfo.contains(player.getName());
 	}
 	
 	/**
@@ -293,11 +300,7 @@ public class Spectator {
 	 * @return <code>true</code> if the player has cmdspy, <code>false</code> otherwise.
 	 */
 	public boolean hasCommandSpy(Player player) {
-		if (cmdspy.contains(player.getName())) {
-			return false;
-		}
-		
-		return true;
+		return cmdspy.contains(player.getName());
 	}
 	
 	/**
@@ -308,12 +311,10 @@ public class Spectator {
 	 * @author LeonTG77
 	 */
 	public static class SpecInfo implements Listener {
-		public static HashMap<String, Integer> totalDiamonds = new HashMap<String, Integer>();
-		public static HashMap<String, Integer> totalGold = new HashMap<String, Integer>();
+		private HashMap<String, Integer> totalDiamonds = new HashMap<String, Integer>();
+		private HashMap<String, Integer> totalGold = new HashMap<String, Integer>();
 		
-		public static HashSet<Location> locs = new HashSet<Location>();
-		private static final String PREFIX = "§8[§9S§8] §f";
-		
+		private HashSet<Location> locs = new HashSet<Location>();
 		private Spectator spec = Spectator.getInstance();
 		
 		/**
@@ -327,11 +328,11 @@ public class Spectator {
 					continue;
 				}
 				
-				online.sendMessage(PREFIX + message);
+				online.sendMessage("§8[§9S§8] §f" + message);
 			}
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 		public void onBlockBreak(BlockBreakEvent event) {
 			Block block = event.getBlock();
 			
@@ -397,7 +398,7 @@ public class Spectator {
 			}
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 		public void onBlockPlace(BlockPlaceEvent event) {
 			Block block = event.getBlockPlaced();
 			
@@ -411,7 +412,7 @@ public class Spectator {
 			}
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 		public void onPlayerTeleport(PlayerTeleportEvent event) {
 			if (event.getCause() != TeleportCause.ENDER_PEARL) {
 				return;
@@ -421,7 +422,7 @@ public class Spectator {
 			broadcast("§5Pearl: §a" + player.getName() + " §f<-> D:§d" + NumberUtils.convertDouble(event.getFrom().distance(event.getTo())) + "m.");
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 		public void onPlayerPortal(PlayerPortalEvent event) {
 			if (event.getTo() == null) {
 			    return;
@@ -438,7 +439,7 @@ public class Spectator {
 			broadcast("§dPortal:§6" + player.getName() + "§f from §a" + fromEnv.replaceAll("normal", "overworld") + "§f to §c" + toEnv.replaceAll("normal", "overworld"));
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 		public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 			Player player = event.getPlayer();
 			ItemStack item = event.getItem();
@@ -482,7 +483,7 @@ public class Spectator {
 			}
 		}
 		
-		@EventHandler
+		@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 		public void onPotionSplash(PotionSplashEvent event) {
 			if (!(event.getPotion().getShooter() instanceof Player)) {
 				return;
@@ -518,7 +519,7 @@ public class Spectator {
 			}
 		}
 
-		@EventHandler
+		@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 		public void onCraftItem(CraftItemEvent event) {
 			Player player = (Player) event.getWhoClicked();
 			ItemStack item = event.getRecipe().getResult();
@@ -578,7 +579,7 @@ public class Spectator {
 			}
 		}
 		
-		@EventHandler(ignoreCancelled = true)
+		@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 		public void onDamage(final EntityDamageEvent event) {
 			if (!(event.getEntity() instanceof Player)) {
 				return;
@@ -587,7 +588,7 @@ public class Spectator {
 			final Player player = (Player) event.getEntity();
 			
 			if (event instanceof EntityDamageByEntityEvent) {
-				onDamageByOther(player, (EntityDamageByEntityEvent) event);
+				onEntityDamageByEntity(player, (EntityDamageByEntityEvent) event);
 				return;
 			}
 			
@@ -611,7 +612,7 @@ public class Spectator {
 			}.runTaskLater(Main.plugin, 1);
 		}
 
-		private void onDamageByOther(final Player player, final EntityDamageByEntityEvent event) {
+		private void onEntityDamageByEntity(final Player player, final EntityDamageByEntityEvent event) {
 			final double olddamage = player.getHealth();
 			
 			new BukkitRunnable() {
@@ -660,7 +661,7 @@ public class Spectator {
 							
 						if (proj.getShooter() instanceof LivingEntity) {
 							LivingEntity entity = (LivingEntity) proj.getShooter();
-							broadcast("§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.getMobName(entity.getType()) + " §f[§c" + pHealth + "§f] [§6" + taken + "§f]");
+							broadcast("§5PvE§f:§c" + player.getName() + "§f<-§d" + EntityUtils.getMobName(entity.getType()) + " §f[§c" + pHealth + "§f] [§6" + taken + "§f]");
 							return;
 						}
 						
@@ -669,7 +670,7 @@ public class Spectator {
 					} 
 
 					Entity entity = event.getDamager();
-					broadcast("§5PvE§f:§c" + player.getName() + "§f<-§d" + NameUtils.getMobName(entity.getType()) + " §f[§c" + pHealth + "§f] [§6" + taken + "§f]");
+					broadcast("§5PvE§f:§c" + player.getName() + "§f<-§d" + EntityUtils.getMobName(entity.getType()) + " §f[§c" + pHealth + "§f] [§6" + taken + "§f]");
 				}
 			}.runTaskLater(Main.plugin, 1);
 		}
