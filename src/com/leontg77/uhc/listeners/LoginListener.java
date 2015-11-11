@@ -17,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -166,13 +165,13 @@ public class LoginListener implements Listener {
 		user.saveFile();
 		
 		Spectator spec = Spectator.getInstance();
-		Entity veh = player.getVehicle();
+		PacketUtils.removeTabList(player);
 		
 		PermsUtils.removePermissions(player);
 		event.setQuitMessage(null);
 		
-		if (veh != null) {
-			veh.eject();
+		if (player.isInsideVehicle()) {
+			player.leaveVehicle();
 		}
 		
 		if (!spec.isSpectating(player)) {
@@ -226,6 +225,7 @@ public class LoginListener implements Listener {
 				"\n" +
 				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
 				);
+				PermsUtils.removePermissions(player);
 			}
 			else if (ip.getBanEntry(adress) != null) {
 				if (player.hasPermission("uhc.staff")) {
@@ -245,10 +245,33 @@ public class LoginListener implements Listener {
 				"\n" +
 				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
 				);
+				PermsUtils.removePermissions(player);
 			}
 			else {
 				event.allow();
 			}
+			return;
+		}
+		
+		if (PlayerUtils.getPlayers().size() >= game.getMaxPlayers()) {
+			if (game.isRecordedRound()) {
+				return;
+			}
+			
+			if (player.isWhitelisted() || player.isOp()) {
+				event.allow();
+				return;
+			}
+			
+			if (player.hasPermission("uhc.staff")) {
+				if (State.isState(State.INGAME)) {
+					event.allow();
+					return;
+				}
+			} 
+
+			event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
+			PermsUtils.removePermissions(player);
 			return;
 		}
 		
@@ -258,15 +281,11 @@ public class LoginListener implements Listener {
 				return;
 			}
 			
-			if (game.isRecordedRound()) {
-				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
-				return;
-			}
-			
 			String teamSize = GameUtils.getTeamSize();
 			
-			if (teamSize.startsWith("No")) {
+			if (teamSize.startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
 				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
+				PermsUtils.removePermissions(player);
 			}
 			else if (teamSize.startsWith("Open")) {
 				Bukkit.setWhitelist(false);
@@ -276,9 +295,11 @@ public class LoginListener implements Listener {
 			else {
 				if (State.isState(State.LOBBY)) {
 					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has not opened yet,\n§ccheck the post for open time.\n\n§7Match post: §a" + game.getMatchPost());
+					PermsUtils.removePermissions(player);
 				}
 				else {
 					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has already started");
+					PermsUtils.removePermissions(player);
 				}
 			}
 			
@@ -297,34 +318,12 @@ public class LoginListener implements Listener {
 					String kickMsg = event.getKickMessage();
 					
 					event.disallow(Result.KICK_WHITELIST, "§4§lPre-whitelist is disabled for Mole games\n\n" + kickMsg);
+					PermsUtils.removePermissions(player);
 					return;
 				}
 				
 				event.allow();
 			}
-			return;
-		}
-		
-		if (PlayerUtils.getPlayers().size() >= game.getMaxPlayers()) {
-			if (game.isRecordedRound()) {
-				return;
-			}
-			
-			if (player.isWhitelisted()) {
-				event.allow();
-				return;
-			}
-			
-			if (player.hasPermission("uhc.staff")) {
-				if (State.isState(State.INGAME)) {
-					event.allow();
-					return;
-				}
-			} 
-
-			event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
-		} else {
-			event.allow();
 		}
 	}
 }
