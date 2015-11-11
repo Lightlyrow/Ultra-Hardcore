@@ -8,9 +8,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.NameUtils;
 
@@ -37,10 +39,27 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 		return enabled;
 	}
 	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		Biome biome = player.getLocation().getBlock().getBiome();
+		
+		if (Spectator.getInstance().isSpectating(player)) {
+			return;
+		}
+		
+		player.setPlayerListName(biomeColor(biome) + player.getName());
+	}
+	
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		Biome biome = player.getLocation().getBlock().getBiome();
+		
+		if (Spectator.getInstance().isSpectating(player)) {
+			player.setPlayerListName(null);
+			return;
+		}
 		
 		player.setPlayerListName(biomeColor(biome) + player.getName());
 	}
@@ -51,8 +70,6 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 			sender.sendMessage(Main.PREFIX + "\"BiomeParanoia\" is not enabled.");
 			return true;
 		}
-		
-		sender.sendMessage(Main.PREFIX + "All biome colors:");
 		
 		StringBuilder biomes = new StringBuilder();
 		
@@ -67,7 +84,8 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 			
 			biomes.append(biomeColor(b) + NameUtils.fixString(b.name(), true));
 		}
-		
+
+		sender.sendMessage(Main.PREFIX + "All biome colors:");
 		sender.sendMessage(biomes.toString().trim());
 		return true;
 	}
@@ -216,49 +234,27 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 	private boolean isSendable(Biome biome) {
 		switch (biome) {
 		case BEACH:
-			return true;
 		case BIRCH_FOREST:
-			return true;
 		case COLD_TAIGA:
-			return true;
 		case DESERT:
-			return true;
 		case EXTREME_HILLS:
-			return true;
 		case FLOWER_FOREST:
-			return true;
 		case FOREST:
-			return true;
 		case HELL:
-			return true;
 		case ICE_PLAINS:
-			return true;
 		case ICE_PLAINS_SPIKES:
-			return true;
 		case JUNGLE:
-			return true;
 		case MEGA_TAIGA:
-			return true;
 		case MESA:
-			return true;
 		case MUSHROOM_ISLAND:
-			return true;
 		case OCEAN:
-			return true;
 		case PLAINS:
-			return true;
 		case RIVER:
-			return true;
 		case ROOFED_FOREST:
-			return true;
 		case SAVANNA:
-			return true;
 		case SKY:
-			return true;
 		case SUNFLOWER_PLAINS:
-			return true;
 		case SWAMPLAND:
-			return true;
 		case TAIGA:
 			return true;
 		default:
