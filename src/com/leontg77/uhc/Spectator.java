@@ -43,6 +43,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.utils.BlockBreakUtils;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.NameUtils;
@@ -121,22 +122,19 @@ public class Spectator {
 		
 		for (ItemStack content : player.getInventory().getContents()) {
 			if (content != null) {
-				Item item = player.getWorld().dropItem(player.getLocation().getBlock().getLocation().add(0.5, 0.7, 0.5), content);
-				item.setVelocity(EntityUtils.randomOffset());
+				BlockBreakUtils.dropItem(player.getLocation(), content);
 			}
 		}
 
 		for (ItemStack armorContent : player.getInventory().getArmorContents()) {
 			if (armorContent != null && armorContent.getType() != Material.AIR) {
-				Item item = player.getWorld().dropItem(player.getLocation().getBlock().getLocation().add(0.5, 0.7, 0.5), armorContent);
-				item.setVelocity(EntityUtils.randomOffset());
+				BlockBreakUtils.dropItem(player.getLocation(), armorContent);
 			}
 		}
 		
 		if (player.getTotalExperience() > 0) {
 			ExperienceOrb exp = player.getWorld().spawn(player.getLocation().getBlock().getLocation().add(0.5, 0.7, 0.5), ExperienceOrb.class);
 			exp.setExperience(player.getTotalExperience());
-			exp.setVelocity(EntityUtils.randomOffset());
 		}
 		
 		player.getInventory().setArmorContents(null);
