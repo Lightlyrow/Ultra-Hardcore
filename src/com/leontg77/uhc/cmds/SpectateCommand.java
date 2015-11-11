@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.State;
+import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -85,16 +87,31 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		if (args[0].equalsIgnoreCase("toggle")) {
+			if (State.isState(State.INGAME) && GameUtils.getGameWorlds().contains(target.getWorld())) {
+				sender.sendMessage(Main.PREFIX + "You cannot go in spec mode while in the game world.");
+				return true;
+			}
+			
 			spec.toggle(target, false);
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("on")) {
+			if (State.isState(State.INGAME) && GameUtils.getGameWorlds().contains(target.getWorld())) {
+				sender.sendMessage(Main.PREFIX + "You cannot go in spec mode while in the game world.");
+				return true;
+			}
+			
 			spec.enableSpecmode(target, false);
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("off")) {
+			if (State.isState(State.INGAME) && GameUtils.getGameWorlds().contains(target.getWorld())) {
+				sender.sendMessage(Main.PREFIX + "You cannot go out of spec mode while in the game world.");
+				return true;
+			}
+			
 			spec.disableSpecmode(target, false);
 			return true;
 		}
@@ -118,7 +135,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 			
 			if (spec.cmdspy.contains(target.getName())) {
 				spec.cmdspy.remove(target.getName());
-				target.sendMessage(Main.PREFIX + "Your commandspy has been disabled.");
+				target.sendMessage(Main.PREFIX + "Your commandspy has been enabled.");
 			} else {
 				spec.cmdspy.add(target.getName());
 				target.sendMessage(Main.PREFIX + "Your commandspy has been disabled.");
@@ -183,7 +200,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 	        	}
         	}
         	else if (args[0].equalsIgnoreCase("off")) {
-	        	if (!args[1].equals("")) {
+	        	if (args[1].equals("")) {
 	        		for (Player online : PlayerUtils.getPlayers()) {
         				if (Spectator.getInstance().isSpectating(online)) {
 	        				toReturn.add(online.getName());
