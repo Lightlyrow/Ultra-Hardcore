@@ -2,6 +2,7 @@ package com.leontg77.uhc.listeners;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,6 +12,7 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldInitEvent;
 
+import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.State;
@@ -18,10 +20,11 @@ import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.scenario.types.ChunkApocalypse;
 import com.leontg77.uhc.scenario.types.Voidscape;
 import com.leontg77.uhc.utils.GameUtils;
+import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.AntiStripmine;
 import com.leontg77.uhc.worlds.AntiStripmine.ChunkOreRemover;
 import com.leontg77.uhc.worlds.AntiStripmine.WorldData;
-import com.leontg77.uhc.worlds.pregen.Pregenner;
+import com.wimbli.WorldBorder.Events.WorldBorderFillFinishedEvent;
 
 /**
  * World listener class.
@@ -72,7 +75,7 @@ public class WorldListener implements Listener {
 	
 	@EventHandler
 	public void onChunkUnload(ChunkUnloadEvent event) {
-		if (State.isState(State.SCATTER) || Pregenner.getInstance().task != null || Voidscape.task != null || ChunkApocalypse.task != null) {
+		if (State.isState(State.SCATTER) || Voidscape.task != null || ChunkApocalypse.task != null) {
 			event.setCancelled(true);
 		}
 	}
@@ -117,5 +120,27 @@ public class WorldListener implements Listener {
 		World world = event.getWorld();
 		
 		strip.registerWorld(world);
+	}
+
+	@EventHandler
+	public void onWorldBorderFillFinished(WorldBorderFillFinishedEvent event) {
+		Arena arena = Arena.getInstance();
+		World world = event.getWorld();
+		
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " clear");
+		
+		if (arena.reset) {
+			PlayerUtils.broadcast(Main.PREFIX + "Arena reset complete");
+			
+			if (arena.wasEnabled) {
+				arena.enable();
+			}
+			
+			arena.wasEnabled = false;
+			arena.reset = false;
+			return;
+		}
+
+		PlayerUtils.broadcast(Main.PREFIX + "Pregen of world '§a" + world.getName() + "§7' finished.");
 	}
 }
