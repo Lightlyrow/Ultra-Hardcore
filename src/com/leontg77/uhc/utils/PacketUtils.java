@@ -68,6 +68,38 @@ public class PacketUtils {
 	}
 	
 	/**
+	 * Removes a tablist for the given player.
+	 * 
+	 * @param player the player.
+	 */
+	public static void removeTabList(Player player) {
+		Game game = Game.getInstance();
+
+		if (game.isRecordedRound()) {
+	        return;
+		} 
+		
+		CraftPlayer craft = (CraftPlayer) player;
+		
+		IChatBaseComponent headerJSON = ChatSerializer.a("");
+		IChatBaseComponent footerJSON = ChatSerializer.a("");
+	        
+		PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
+	 
+		try {
+			Field field = headerPacket.getClass().getDeclaredField("b");
+			field.setAccessible(true);
+			field.set(headerPacket, footerJSON);
+		}
+		catch (Exception e) {
+			Bukkit.getServer().getLogger().severe("§cCould not send tab list packets to " + player.getName());
+			return;
+		}
+		        
+		craft.getHandle().playerConnection.sendPacket(headerPacket);
+	}
+	
+	/**
 	 * Sends a message in action bar to the given player.
 	 * 
 	 * @param player the player.
