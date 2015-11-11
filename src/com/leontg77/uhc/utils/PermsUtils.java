@@ -39,15 +39,15 @@ public class PermsUtils {
     		}
         }
 		
-		if (!found) {
-			return;
-		}
-		
 		if (Main.permissions.get(player.getName()) == null) {
 			Main.permissions.put(player.getName(), player.addAttachment(Main.plugin));
 		}
 
 		PermissionAttachment perm = Main.permissions.get(player.getName());
+		
+		if (!found) {
+			return;
+		}
 		
 		User user = User.get(player);
 		Rank rank = user.getRank();
@@ -96,9 +96,7 @@ public class PermsUtils {
 				perm.setPermission("uhc.pvp", true);
 				perm.setPermission("uhc.feed", true);
 				perm.setPermission("uhc.feed.other", true);
-				perm.setPermission("uhc.gamemode", true);
 				perm.setPermission("uhc.giveall", true);
-				perm.setPermission("uhc.give", true);
 				perm.setPermission("uhc.heal", true);
 				perm.setPermission("uhc.heal.other", true);
 				perm.setPermission("uhc.pregen", true);
@@ -107,24 +105,33 @@ public class PermsUtils {
 				perm.setPermission("uhc.sethealth", true);
 				perm.setPermission("uhc.setmaxhealth", true);
 				perm.setPermission("uhc.start", true);
-				perm.setPermission("uhc.stats", true);
+				perm.setPermission("uhc.spectate.other", true);
 				perm.setPermission("uhc.tps", true);
 				perm.setPermission("uhc.spread", true);
+				perm.setPermission("uhc.timer", true);
 				perm.setPermission("uhc.border", true);
 				perm.setPermission("uhc.vote", true);
 				perm.setPermission("uhc.world", true);
 				perm.setPermission("mysteryteams.admin", true);
+				perm.setPermission("uhc.bestbtc", true);
+				perm.setPermission("uhc.bestpve", true);
+				perm.setPermission("uhc.bigcrack", true);
+				perm.setPermission("uhc.slimycrack", true);
+				perm.setPermission("mysteryteams.admin", true);
+				perm.setPermission("mysteryteams.admin", true);
+				perm.setPermission("mysteryteams.admin", true);
+				perm.setPermission("mysteryteams.admin", true);
+				perm.setPermission("mysteryteams.admin", true);
+				perm.setPermission("mysteryteams.admin", true);
+				perm.setPermission("mysteryteams.admin", true);
 				
 				if (rank == Rank.HOST) {
-					perm.setPermission("uhc.timer", true);
-					perm.setPermission("uhc.text", true);
+					perm.setPermission("uhc.give", true);
+					perm.setPermission("uhc.gamemode", true);
 					perm.setPermission("uhc.near", true);
-					perm.setPermission("uhc.skull", true);
-					perm.setPermission("uhc.edit", true);
 					perm.setPermission("uhc.speed", true);
 					perm.setPermission("uhc.invsee", true);
-					perm.setPermission("uhc.unban", true);
-					perm.setPermission("uhc.spectate.other", true);
+					perm.setPermission("uhc.tp.other", true);
 				}
 			}
 		}
@@ -136,7 +143,7 @@ public class PermsUtils {
 	 * @param player the player.
 	 */
 	public static void removePermissions(Player player) {
-		if (Main.permissions.get(player.getName()) == null) {
+		if (!Main.permissions.containsKey(player.getName())) {
 			return;
 		}
 		
