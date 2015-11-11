@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
@@ -59,6 +58,7 @@ import com.leontg77.uhc.cmds.ConfigCommand;
 import com.leontg77.uhc.cmds.EditCommand;
 import com.leontg77.uhc.cmds.EndCommand;
 import com.leontg77.uhc.cmds.FeedCommand;
+import com.leontg77.uhc.cmds.FireCommand;
 import com.leontg77.uhc.cmds.FlyCommand;
 import com.leontg77.uhc.cmds.GamemodeCommand;
 import com.leontg77.uhc.cmds.GiveCommand;
@@ -125,6 +125,10 @@ import com.leontg77.uhc.listeners.inventory.SpectatorListener;
 import com.leontg77.uhc.listeners.inventory.StatsListener;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.ubl.UBL;
+import com.leontg77.uhc.ubl.UBLListener;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -140,7 +144,6 @@ import com.leontg77.uhc.worlds.WorldManager;
  * @author LeonTG77
  */
 public class Main extends JavaPlugin {
-	private Logger logger = getLogger();
 	public static Main plugin;
 
 	public static final String PREFIX = "§4§lUHC §8» §7";
@@ -161,12 +164,11 @@ public class Main extends JavaPlugin {
 	public static Recipe headRecipe;
 	public static Recipe melonRecipe;
 	
-	private static Settings settings = Settings.getInstance();
 	
 	@Override
 	public void onDisable() {
 		PluginDescriptionFile file = getDescription();
-		logger.info(file.getName() + " is now disabled.");
+		getLogger().info(file.getName() + " is now disabled.");
 		
 		BiomeSwap.getInstance().resetBiomes();
 		saveData();
@@ -177,10 +179,11 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		PluginDescriptionFile file = getDescription();
-		logger.info(file.getName() + " v" + file.getVersion() + " is now enabled.");
+		getLogger().info(file.getName() + " v" + file.getVersion() + " is now enabled.");
+		getLogger().info("The plugin was created by LeonTG77.");
 		
 		plugin = this;
-		settings.setup();
+		Settings.getInstance().setup();
 	    
 		WorldManager.getInstance().loadWorlds();
 
@@ -200,13 +203,12 @@ public class Main extends JavaPlugin {
 		
 		recoverData();
 		addRecipes();
-
-		ProtocolManager protocol = ProtocolLibrary.getProtocolManager();
-		PluginManager manager = Bukkit.getServer().getPluginManager();
 		
 		if (game.hardcoreHearts()) {
-		    protocol.addPacketListener(new HardcoreHearts(this));
+			HardcoreHearts.enable();
 		}
+
+		PluginManager manager = Bukkit.getServer().getPluginManager();
 
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new EntityListener(), this);
@@ -215,6 +217,7 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new PlayerListener(), this);
 		manager.registerEvents(new PortalListener(), this);
 		manager.registerEvents(new WorldListener(), this);
+		manager.registerEvents(new UBLListener(), this);
 
 		manager.registerEvents(new ConfigListener(), this);
 		manager.registerEvents(new HOFListener(), this);
@@ -238,6 +241,7 @@ public class Main extends JavaPlugin {
 		getCommand("edit").setExecutor(new EditCommand());
 		getCommand("end").setExecutor(new EndCommand());
 		getCommand("feed").setExecutor(new FeedCommand());
+		getCommand("fire").setExecutor(new FireCommand());
 		getCommand("fly").setExecutor(new FlyCommand());
 		getCommand("gamemode").setExecutor(new GamemodeCommand());
 		getCommand("giveall").setExecutor(new GiveallCommand());
@@ -304,7 +308,7 @@ public class Main extends JavaPlugin {
 						dataFiles.delete();
 						totalDatafiles++;
 					} catch (Exception e) {
-						logger.warning("Could not delete " + dataFiles.getName() + ".");
+						getLogger().warning("Could not delete " + dataFiles.getName() + ".");
 					}
 				}
 			}
@@ -315,7 +319,7 @@ public class Main extends JavaPlugin {
 						statsFiles.delete();
 						totalStatsfiles++;
 					} catch (Exception e) {
-						logger.warning("Could not delete " + statsFiles.getName() + ".");
+						getLogger().warning("Could not delete " + statsFiles.getName() + ".");
 					}
 				}
 			}
@@ -421,6 +425,8 @@ public class Main extends JavaPlugin {
 	 * @return The lobby spawnpoint.
 	 */
 	public static Location getSpawn() {
+		Settings settings = Settings.getInstance();
+		
 		World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world", "lobby"));
 		double x = settings.getData().getDouble("spawn.x", 0.5);
 		double y = settings.getData().getDouble("spawn.y", 33.0);
@@ -462,6 +468,7 @@ public class Main extends JavaPlugin {
 	 * Save all the data to the data file.
 	 */
 	public void saveData() {
+		Settings settings = Settings.getInstance();
 		settings.getData().set("state", State.getState().name());
 		
 		List<String> list = new ArrayList<String>();
@@ -490,6 +497,7 @@ public class Main extends JavaPlugin {
 	 * Recover all the data from the data files.
 	 */
 	public void recoverData() {
+		Settings settings = Settings.getInstance();
 		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
 		
 		try {
@@ -497,7 +505,7 @@ public class Main extends JavaPlugin {
 				kills.put("kills." + name, settings.getData().getInt("kills." + name));
 			}
 		} catch (Exception e) {
-			logger.warning("Could not recover kills data.");
+			getLogger().warning("Could not recover kills data.");
 		}
 		
 		try {
@@ -505,7 +513,7 @@ public class Main extends JavaPlugin {
 				teamKills.put("teamkills." + name, settings.getData().getInt("teamkills." + name));
 			}
 		} catch (Exception e) {
-			logger.warning("Could not recover team kills data.");
+			getLogger().warning("Could not recover team kills data.");
 		}
 		
 		try {
@@ -515,7 +523,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 		} catch (Exception e) {
-			logger.warning("Could not recover team data.");
+			getLogger().warning("Could not recover team data.");
 		}
 		
 		try {
@@ -523,7 +531,7 @@ public class Main extends JavaPlugin {
 				ScenarioManager.getInstance().getScenario(scen).enable();
 			}
 		} catch (Exception e) {
-			logger.warning("Could not recover scenario data.");
+			getLogger().warning("Could not recover scenario data.");
 		}
 	}
 	
@@ -615,13 +623,15 @@ public class Main extends JavaPlugin {
 	}
 	
 	/**
-	 * Hardcore hearts class
+	 * Hardcore hearts class.
 	 * <p> 
 	 * This class manages the hardcore hearts feature.
 	 *
 	 * @author ghowden
 	 */
-	public class HardcoreHearts extends PacketAdapter {
+	public static class HardcoreHearts extends PacketAdapter {
+		private static ProtocolManager protocol = ProtocolLibrary.getProtocolManager();
+		private static HardcoreHearts heart = new HardcoreHearts(Main.plugin);
 
 		/**
 		 * Constructor for HardcoreHearts.
@@ -637,6 +647,14 @@ public class Main extends JavaPlugin {
 	        if (event.getPacketType().equals(Play.Server.LOGIN)) {
 	            event.getPacket().getBooleans().write(0, true);
 	        }
+	    }
+	    
+	    public static void enable() {
+		    protocol.addPacketListener(heart);
+	    }
+	    
+	    public static void disable() {
+		    protocol.removePacketListener(heart);
 	    }
 	}
 }
