@@ -12,6 +12,7 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldInitEvent;
 
+import com.leontg77.pregenner.events.WorldBorderFillFinishedEvent;
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
@@ -24,7 +25,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.AntiStripmine;
 import com.leontg77.uhc.worlds.AntiStripmine.ChunkOreRemover;
 import com.leontg77.uhc.worlds.AntiStripmine.WorldData;
-import com.wimbli.WorldBorder.Events.WorldBorderFillFinishedEvent;
 
 /**
  * World listener class.
@@ -127,10 +127,10 @@ public class WorldListener implements Listener {
 		Arena arena = Arena.getInstance();
 		World world = event.getWorld();
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " clear");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " clear");
 		
 		if (arena.reset) {
-			PlayerUtils.broadcast(Main.PREFIX + "Arena reset complete");
+			PlayerUtils.broadcast(Arena.PREFIX + "Arena reset complete");
 			
 			if (arena.wasEnabled) {
 				arena.enable();
