@@ -18,6 +18,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -155,6 +156,29 @@ public class Kings extends Scenario implements Listener, CommandExecutor {
 			target.setMaxHealth(20);
 			target.setHealth(20);
 			kings.remove(target.getName());
+		}
+		
+		if (cmd.getName().equalsIgnoreCase("randomkings")) {
+			if (!isEnabled()) {
+				sender.sendMessage(Main.PREFIX + "\"Kings\" is not enabled.");
+				return true;
+			}
+			
+			for (Team team : Teams.getInstance().getTeamsWithPlayers()) {
+				Player target = Bukkit.getPlayer(team.getEntries().iterator().next());
+				
+				PotionEffect effectOne = new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 0); 
+				PotionEffect effectTwo = new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1726272000, 0); 
+				PotionEffect effectThree = new PotionEffect(PotionEffectType.SPEED, 1726272000, 0); 
+				
+				target.addPotionEffect(effectOne); 
+				target.addPotionEffect(effectTwo);
+				target.addPotionEffect(effectThree);
+				
+				target.setMaxHealth(40);
+				target.setHealth(40);
+				kings.add(target.getName());
+			}
 		}
 		return true;
 	}
