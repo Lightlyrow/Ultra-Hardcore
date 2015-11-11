@@ -7,15 +7,20 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Rabbit;
@@ -31,16 +36,21 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.spigotmc.event.entity.EntityMountEvent;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.State;
+import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -111,7 +121,21 @@ public class EntityListener implements Listener {
 	
 	@EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-    	Entity entity = event.getEntity();
+    	LivingEntity entity = event.getEntity();
+    	Player killer = entity.getKiller();
+    	
+    	if (killer != null) {
+    		User user = User.get(killer);
+    		
+    		if (entity instanceof Monster) {
+    			user.increaseStat(Stat.HOSTILEMOBKILLS);
+    			return;
+    		}
+    		
+    		if (entity instanceof Animals) {
+    			user.increaseStat(Stat.ANIMALKILLS);
+    		}
+    	}
     	
     	if (entity instanceof Ghast && game.ghastDropGold()) {
     		for (ItemStack drop : event.getDrops()) {
@@ -141,9 +165,6 @@ public class EntityListener implements Listener {
     	if (!(entity instanceof Witch)) {
     		return;
         }
-    	
-    	Witch witch = (Witch) entity;
-		Player killer = witch.getKiller();
 		
 		if (killer == null) {
 			return;
@@ -187,7 +208,36 @@ public class EntityListener implements Listener {
 		if (entity instanceof Player || entity instanceof Minecart || entity instanceof ArmorStand || entity instanceof Painting || entity instanceof ItemFrame) {
 			if (entity.getWorld().getName().equals("lobby")) {
 	    		event.setCancelled(true);
+	    		return;
 	    	}
+			
+			if (entity instanceof Player) {
+				final Player player = (Player) entity;
+				final double olddamage = player.getHealth();
+
+				new BukkitRunnable() {
+					public void run() {
+						double damage = olddamage - player.getHealth();
+						
+						User user = User.get(player);
+						Game game = Game.getInstance();
+						
+						if (game.isRecordedRound()) {
+							return;
+						}
+						
+						if (!State.isState(State.INGAME)) {
+							return;
+						}
+						
+						String statName = Stat.DAMAGETAKEN.name().toLowerCase();
+						int current = user.getFile().getInt("stats." + statName, 0);
+						
+						user.getFile().set("stats." + statName, current + damage);
+						user.saveFile();
+					}
+				}.runTaskLater(Main.plugin, 1);
+			}
 		}
 	}
 	
@@ -294,4 +344,44 @@ public class EntityListener implements Listener {
 			}
 		}
 	}
+
+	/**
+	 * @author ghowden
+	 */
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityMount(EntityMountEvent event) {
+    	if (game.horseArmor()) {
+    		return;
+    	}
+    	
+        if (event.getEntityType() != EntityType.PLAYER || event.getMount().getType() != EntityType.HORSE) {
+        	return;
+        }
+
+        Horse horse = (Horse) event.getMount();
+        ItemStack armor = horse.getInventory().getArmor();
+
+        if (armor != null && armor.getType() != Material.AIR) {
+            event.getEntity().sendMessage(Main.PREFIX + "Dropped horse's armour on the ground as it is disabled");
+            horse.getInventory().setArmor(null);
+            
+            Item item = horse.getWorld().dropItemNaturally(horse.getLocation(), armor);
+            item.setVelocity(EntityUtils.randomOffset());
+        }
+    }
+    
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityTame(EntityTameEvent event) {
+    	Player player = (Player) event.getOwner();
+    	User user = User.get(player);
+    	
+    	if (event.getEntity() instanceof Wolf) {
+    		user.increaseStat(Stat.WOLVESTAMED);
+    		return;
+    	}
+    	
+    	if (event.getEntity() instanceof Horse) {
+    		user.increaseStat(Stat.HORSESTAMED);
+    	}
+    }
 }
