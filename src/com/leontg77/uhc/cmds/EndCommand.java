@@ -26,17 +26,16 @@ import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Parkour;
-import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.State;
-import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.User;
-import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.WorldManager;
@@ -69,6 +68,9 @@ public class EndCommand implements CommandExecutor {
 			return true;
 		}
 
+		Spectator spec = Spectator.getInstance();
+		Game game = Game.getInstance();
+		
 		Settings settings = Settings.getInstance();
 		ArrayList<String> winners = new ArrayList<String>();
 		
@@ -79,8 +81,14 @@ public class EndCommand implements CommandExecutor {
 		for (int i = 1; i < args.length; i++) {
 			OfflinePlayer winner = PlayerUtils.getOfflinePlayer(args[i]);
 			
-			User data = User.get(winner);
-			data.increaseStat(Stat.WINS);
+			User user = User.get(winner);
+
+			if (!game.isRecordedRound()) {
+				user.getFile().set("stats.wins", user.getFile().getInt("stats.wins") + 1);
+			}
+			
+			user.getFile().set("stats.cks", 0);
+			user.saveFile();
 			
 			PlayerUtils.broadcast("§8» §7" + args[i]);
 			winners.add(args[i]);
@@ -97,6 +105,9 @@ public class EndCommand implements CommandExecutor {
 		
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		Date date = new Date();
+
+		Fireworks firework = Fireworks.getInstance();
+		Parkour parkour = Parkour.getInstance();
 		
 		int matchcount = 1;
 		
@@ -104,22 +115,18 @@ public class EndCommand implements CommandExecutor {
 			matchcount = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
 		}
 
-		settings.getHOF().set(host + "." + matchcount + ".date", dateFormat.format(date));
-		settings.getHOF().set(host + "." + matchcount + ".winners", winners);
-		settings.getHOF().set(host + "." + matchcount + ".kills", kills);
-		settings.getHOF().set(host + "." + matchcount + ".teamsize", GameUtils.getTeamSize().trim());
-		settings.getHOF().set(host + "." + matchcount + ".scenarios", Game.getInstance().getScenarios());
-		settings.saveHOF();
+		if (!game.isRecordedRound()) {
+			settings.getHOF().set(host + "." + matchcount + ".date", dateFormat.format(date));
+			settings.getHOF().set(host + "." + matchcount + ".winners", winners);
+			settings.getHOF().set(host + "." + matchcount + ".kills", kills);
+			settings.getHOF().set(host + "." + matchcount + ".teamsize", GameUtils.getTeamSize().trim());
+			settings.getHOF().set(host + "." + matchcount + ".scenarios", game.getScenarios());
+			settings.saveHOF();
+		}
 		
 		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
 			scen.disable();
 		}
-
-		Fireworks firework = Fireworks.getInstance();
-		Parkour parkour = Parkour.getInstance();
-		
-		Spectator spec = Spectator.getInstance();
-		Game game = Game.getInstance();
 
 		for (Player online : PlayerUtils.getPlayers()) {
 			for (Player onlineTwo : PlayerUtils.getPlayers()) {
@@ -160,6 +167,7 @@ public class EndCommand implements CommandExecutor {
 
 		game.setScenarios("games running");
 		game.setMatchPost("none");
+		game.setMaxPlayers(150);
 		game.setTeamSize(0);
 		game.setFFA(true);
 		
