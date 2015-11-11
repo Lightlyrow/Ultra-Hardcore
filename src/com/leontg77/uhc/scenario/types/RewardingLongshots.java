@@ -21,7 +21,7 @@ public class RewardingLongshots extends Scenario implements Listener {
 	private boolean enabled = false;
 	
 	public RewardingLongshots() {
-		super("RewardingLongshots", "When shooting and hitting people with a bow from a variable distance, you will be rewarded with various different items.");
+		super("RewardingLongshots+", "When shooting and hitting people with a bow from a variable distance, you will be rewarded with various different items, the + means it gives you bows/arrows for getting longshots as well.");
 	}
 
 	public void setEnabled(boolean enable) {
@@ -48,23 +48,19 @@ public class RewardingLongshots extends Scenario implements Listener {
 		Player killer = (Player) damager.getShooter();
 		double distance = killer.getLocation().distance(player.getLocation());
 
-		PlayerUtils.broadcast("§9[RewardingLongshots] §f" + killer.getName() + " got a longshot of " + NumberUtils.convertDouble(distance) + " blocks.");
+		PlayerUtils.broadcast("§7[§9Rewarding Longshots§7] §r" + killer.getName() + "just got a longshot of " + NumberUtils.convertDouble(distance) + " metres!");
 		
 		if (distance >= 30 && distance <= 49) {
-			PlayerUtils.giveItem(killer, new ItemStack(Material.ARROW, 8));
 			PlayerUtils.giveItem(killer, new ItemStack(Material.IRON_INGOT));
 		}
 
 		if (distance >= 50 && distance <= 99) {
-			PlayerUtils.giveItem(killer, new ItemStack(Material.ARROW, 16));
 			PlayerUtils.giveItem(killer, new ItemStack(Material.GOLD_INGOT));
 			PlayerUtils.giveItem(killer, new ItemStack(Material.IRON_INGOT));
 			return;
 		} 
 
 		if (distance >= 100 && distance <= 199) {
-			PlayerUtils.giveItem(killer, new ItemStack(Material.BOW));
-			PlayerUtils.giveItem(killer, new ItemStack(Material.ARROW, 32));
 			PlayerUtils.giveItem(killer, new ItemStack(Material.GOLD_INGOT));
 			PlayerUtils.giveItem(killer, new ItemStack(Material.IRON_INGOT));
 			PlayerUtils.giveItem(killer, new ItemStack(Material.DIAMOND));
@@ -72,11 +68,21 @@ public class RewardingLongshots extends Scenario implements Listener {
 		}
 
 		if (distance >= 200) {
-			PlayerUtils.giveItem(killer, new ItemStack(Material.BOW, 2));
-			PlayerUtils.giveItem(killer, new ItemStack(Material.ARROW, 64));
 			PlayerUtils.giveItem(killer, new ItemStack(Material.GOLD_INGOT, 3));
 			PlayerUtils.giveItem(killer, new ItemStack(Material.IRON_INGOT, 2));
 			PlayerUtils.giveItem(killer, new ItemStack(Material.DIAMOND, 5));
 		}
+	}
+
+	@Override
+	protected void onEnable() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void onDisable() {
+		// TODO Auto-generated method stub
+		
 	}
 }
