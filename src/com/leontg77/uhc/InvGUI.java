@@ -481,6 +481,7 @@ public class InvGUI {
 		ItemStack strip = new ItemStack (Material.DIAMOND_PICKAXE);
 		ItemMeta stripMeta = strip.getItemMeta();
 		stripMeta.setDisplayName((game.antiStripmine() ? "§a" : "§c") + "Anti Stripmine");
+		stripMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		strip.setItemMeta(stripMeta);
 		inv.setItem(21, strip);
 		
