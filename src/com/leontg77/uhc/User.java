@@ -274,7 +274,7 @@ public class User {
 	public void setStat(Stat stat, int value) {
 		Game game = Game.getInstance();
 		
-		if (game.isRecordedRound()) {
+		if (game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
 			return;
 		}
 		
@@ -301,7 +301,7 @@ public class User {
 	public void increaseStat(Stat stat) {
 		Game game = Game.getInstance();
 		
-		if (game.isRecordedRound()) {
+		if (game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
 			return;
 		}
 		
