@@ -9,7 +9,6 @@ import org.bukkit.scoreboard.DisplaySlot;
 
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scoreboard.Scoreboards;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -29,38 +28,44 @@ public class ArenaCommand implements CommandExecutor {
 			if (args.length > 0) {
 				if (args[0].equalsIgnoreCase("enable")) {
 					if (arena.isEnabled()) {
-						sender.sendMessage(Main.PREFIX + "Arena is already enabled.");
+						sender.sendMessage(Arena.PREFIX + "Arena is already enabled.");
 						return true;
 					}
 					
-					PlayerUtils.broadcast(Main.PREFIX + "The arena has been enabled.");
+					PlayerUtils.broadcast(Arena.PREFIX + "The arena has been enabled.");
 					arena.enable();
 					return true;
-				} else if (args[0].equalsIgnoreCase("disable")) {
+				} 
+
+				if (args[0].equalsIgnoreCase("disable")) {
 					if (!arena.isEnabled()) {
-						sender.sendMessage(Main.PREFIX + "Arena is not enabled.");
+						sender.sendMessage(Arena.PREFIX + "Arena is not enabled.");
 						return true;
 					}
 
-					PlayerUtils.broadcast(Main.PREFIX + "The arena has been disabled.");
+					PlayerUtils.broadcast(Arena.PREFIX + "The arena has been disabled.");
 					arena.disable();
 					return true;
-				} else if (args[0].equalsIgnoreCase("reset")) {
+				} 
+
+				if (args[0].equalsIgnoreCase("reset")) {
 					arena.reset();
 					return true;
-				} else if (args[0].equalsIgnoreCase("board")) {
+				} 
+
+				if (args[0].equalsIgnoreCase("board")) {
 					if (game.arenaBoard()) {
 						for (String entry : arena.board.getEntries()) {
 							arena.resetScore(entry);
 						}
 						
-						PlayerUtils.broadcast(Main.PREFIX + "The arena board has been disabled.");
+						PlayerUtils.broadcast(Arena.PREFIX + "The arena board has been disabled.");
 						game.setArenaBoard(false);
 						
 						Scoreboards board = Scoreboards.getInstance();
 						board.kills.setDisplaySlot(DisplaySlot.SIDEBAR);
 					} else {
-						PlayerUtils.broadcast(Main.PREFIX + "The arena board has been enabled.");
+						PlayerUtils.broadcast(Arena.PREFIX + "The arena board has been enabled.");
 						arena.arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
 						
 						game.setPregameBoard(false);
@@ -75,36 +80,35 @@ public class ArenaCommand implements CommandExecutor {
 		}
 		
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can use arenas.");
+			sender.sendMessage(ChatColor.RED + "Only players can use the arena.");
 			return true;
 		}
 		
 		Player player = (Player) sender;
 		
-		if (args.length > 0  && args[0].equalsIgnoreCase("leave")) {
+		if (args.length > 0 && args[0].equalsIgnoreCase("leave")) {
 			if (arena.isEnabled()) {
 				if (!arena.hasPlayer(player)) {
-					player.sendMessage(Main.PREFIX + "You are not in the arena.");
+					player.sendMessage(Arena.PREFIX + "You are not in the arena.");
 					return true;
 				}
 				
 				arena.removePlayer(player, false);;
-			}
-			else {
-				player.sendMessage(Main.PREFIX + "The arena is currently disabled.");
+			} else {
+				player.sendMessage(Arena.PREFIX + "The arena is currently disabled.");
 			}
 			return true;
 		}
 		
 		if (arena.isEnabled()) {
 			if (arena.hasPlayer(player)) {
-				player.sendMessage(Main.PREFIX + "You are already in the arena.");
+				player.sendMessage(Arena.PREFIX + "You are already in the arena.");
 				return true;
 			}
 			
 			arena.addPlayer(player);
 		} else {
-			player.sendMessage(Main.PREFIX + "The arena is currently disabled.");
+			player.sendMessage(Arena.PREFIX + "The arena is currently disabled.");
 		}
 		return true;
 	}
