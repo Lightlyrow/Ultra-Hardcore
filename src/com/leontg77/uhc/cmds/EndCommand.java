@@ -83,7 +83,7 @@ public class EndCommand implements CommandExecutor {
 			
 			User user = User.get(winner);
 
-			if (!game.isRecordedRound()) {
+			if (!game.isRecordedRound() && !game.getHost().equalsIgnoreCase("LeonsPrivate")) {
 				user.getFile().set("stats.wins", user.getFile().getInt("stats.wins") + 1);
 			}
 			
@@ -125,7 +125,7 @@ public class EndCommand implements CommandExecutor {
 		}
 		
 		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
-			scen.disable();
+			scen.setEnabled(false);
 		}
 
 		for (Player online : PlayerUtils.getPlayers()) {
