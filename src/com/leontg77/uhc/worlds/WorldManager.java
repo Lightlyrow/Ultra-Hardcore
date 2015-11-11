@@ -2,14 +2,14 @@ package com.leontg77.uhc.worlds;
 
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
-import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
 import org.bukkit.WorldBorder;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
+import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.utils.FileUtils;
@@ -112,13 +112,10 @@ public class WorldManager {
 		}
 		
 		Bukkit.getServer().unloadWorld(world, false);
+		settings.getWorlds().set("worlds." + world.getName(), null);
+		settings.saveWorlds();
 		
-		if (FileUtils.deleteWorld(world.getWorldFolder())) {
-			settings.getWorlds().set("worlds." + world.getName(), null);
-			settings.saveWorlds();
-			return true;
-		}
-		return false;
+		return FileUtils.deleteWorld(world.getWorldFolder());
 	}
 	
 	/**
