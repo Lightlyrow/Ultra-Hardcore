@@ -11,7 +11,6 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User;
-import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * Stats command class.
@@ -23,20 +22,6 @@ public class StatsCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		Game game = Game.getInstance();
-		
-		if (args.length > 0) {
-			if (args[0].equalsIgnoreCase("enable")) {
-				PlayerUtils.broadcast(Main.PREFIX + "Stats has been enabled.");
-				game.setStats(true);
-				return true;
-			}
-			
-			if (args[0].equalsIgnoreCase("disable")) {
-				PlayerUtils.broadcast(Main.PREFIX + "Stats has been disabled.");
-				game.setStats(false);
-				return true;
-			}
-		}
 		
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Only players can view the own stats.");
