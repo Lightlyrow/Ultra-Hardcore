@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.utils.DateUtils;
 
@@ -57,13 +56,6 @@ public class ReplyCommand implements CommandExecutor {
     	}
     	
         CommandSender target = Main.msg.get(sender);
-        Spectator spec = Spectator.getInstance();
-        
-        if (spec.isSpectating(sender.getName()) && !spec.isSpectating(target.getName()) && !sender.hasPermission("uhc.seemsg") && !target.hasPermission("uhc.seemsg")) {
-    		sender.sendMessage(Main.PREFIX + "You cannot message players while a spectator.");
-        	return true;
-    	}
-               
         StringBuilder message = new StringBuilder();
                
         for (int i = 0; i < args.length; i++) {
