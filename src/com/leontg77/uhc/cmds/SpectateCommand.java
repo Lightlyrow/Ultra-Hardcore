@@ -87,8 +87,8 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		if (args[0].equalsIgnoreCase("toggle")) {
-			if (State.isState(State.INGAME) && GameUtils.getGameWorlds().contains(target.getWorld())) {
-				sender.sendMessage(Main.PREFIX + "You cannot go in spec mode while in the game world.");
+			if (GameUtils.getGameWorlds().contains(target.getWorld())) {
+				sender.sendMessage(Main.PREFIX + "You cannot toggle spec mode while in the game world.");
 				return true;
 			}
 			
@@ -107,7 +107,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		if (args[0].equalsIgnoreCase("off")) {
-			if (State.isState(State.INGAME) && GameUtils.getGameWorlds().contains(target.getWorld())) {
+			if (GameUtils.getGameWorlds().contains(target.getWorld())) {
 				sender.sendMessage(Main.PREFIX + "You cannot go out of spec mode while in the game world.");
 				return true;
 			}
