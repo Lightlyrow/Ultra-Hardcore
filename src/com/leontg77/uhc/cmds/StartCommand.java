@@ -21,7 +21,7 @@ public class StartCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
 		if (!sender.hasPermission("uhc.start")) {
-			sender.sendMessage(ChatColor.RED + "You do not have access to that command.");
+			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
