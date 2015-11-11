@@ -16,7 +16,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Horse;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
@@ -37,7 +36,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.EntityTameEvent;
-import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -50,7 +48,7 @@ import com.leontg77.uhc.State;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.utils.EntityUtils;
+import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -63,18 +61,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
  */
 public class EntityListener implements Listener {
 	private Game game = Game.getInstance();
-	
-	@EventHandler
-	public void onItemSpawn(ItemSpawnEvent event) {
-		Item item = event.getEntity();
-		ItemStack itemStack = item.getItemStack();
-		Material itemType = itemStack.getType();
-		
-		if (Main.toReplace.containsKey(itemType)) {
-			item.setItemStack(Main.toReplace.get(itemType));
-			Main.toReplace.remove(itemType);
-	    }
-	}
 	 
 	@EventHandler
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
@@ -222,7 +208,7 @@ public class EntityListener implements Listener {
 						User user = User.get(player);
 						Game game = Game.getInstance();
 						
-						if (game.isRecordedRound()) {
+						if (game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
 							return;
 						}
 						
@@ -326,7 +312,7 @@ public class EntityListener implements Listener {
 		
 		ScenarioManager scen = ScenarioManager.getInstance();
 		
-    	if (game.isRecordedRound() || scen.getScenario("RewardingLongshots").isEnabled()) {
+    	if (game.isRecordedRound() || scen.getScenario("RewardingLongshots").isEnabled() || scen.getScenario("RewardingLongshots+").isEnabled()) {
 			return;
 		}
     	
@@ -362,11 +348,10 @@ public class EntityListener implements Listener {
         ItemStack armor = horse.getInventory().getArmor();
 
         if (armor != null && armor.getType() != Material.AIR) {
-            event.getEntity().sendMessage(Main.PREFIX + "Dropped horse's armour on the ground as it is disabled");
+            event.getEntity().sendMessage(Main.PREFIX + "Dropped horse's armour on the ground as it is disabled.");
             horse.getInventory().setArmor(null);
             
-            Item item = horse.getWorld().dropItemNaturally(horse.getLocation(), armor);
-            item.setVelocity(EntityUtils.randomOffset());
+            BlockUtils.dropItem(horse.getLocation(), armor);
         }
     }
     
