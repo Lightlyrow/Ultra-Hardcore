@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.worlds.pregen.Pregenner;
+import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * Pregen command class.
@@ -17,7 +17,6 @@ import com.leontg77.uhc.worlds.pregen.Pregenner;
  */
 public class PregenCommand implements CommandExecutor {
 
-	@SuppressWarnings("unused")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.hasPermission("uhc.pregen")) {
@@ -25,12 +24,19 @@ public class PregenCommand implements CommandExecutor {
 			return true;
 		}
 		
-		Pregenner pregen = Pregenner.getInstance();
-		
 		if (args.length < 2) {
-			if (args.length > 0 && args[0].equalsIgnoreCase("cancel")) {
-				/*pregen.stop();*/
-				return true;
+			if (args.length > 0) {
+				if (args[0].equalsIgnoreCase("cancel")) {
+					PlayerUtils.broadcast(Main.PREFIX + "Cancelling pregen.");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill cancel");
+					return true;
+				}
+				
+				if (args[0].equalsIgnoreCase("pause")) {
+					PlayerUtils.broadcast(Main.PREFIX + "Pausing pregen.");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill pause");
+					return true;
+				}
 			}
 			
 			sender.sendMessage(Main.PREFIX + "Usage: /pregen <world> <radius>");
@@ -49,11 +55,15 @@ public class PregenCommand implements CommandExecutor {
 		try {
 			radius = Integer.parseInt(args[1]);
 		} catch (Exception e) {
-			sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild radius.");
+			sender.sendMessage(ChatColor.RED + args[1] + "is not a vaild radius");
 			return true;
 		}
 		
-		/*pregen.start(world, radius, false);*/
+		PlayerUtils.broadcast(Main.PREFIX + "Starting pregen of world §a" + world.getName() + "§7.");
+		
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " set " + radius + " 0 0");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " fill 420");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
 		return true;
 	}
 }
