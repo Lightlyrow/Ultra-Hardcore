@@ -26,12 +26,10 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.listeners.ArenaListener;
 import com.leontg77.uhc.scoreboard.Scoreboards;
-import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
 import com.leontg77.uhc.worlds.WorldManager;
@@ -46,8 +44,10 @@ import com.leontg77.uhc.worlds.WorldManager;
  */
 public class Arena {
 	private static Arena instance = new Arena();
-	private Game game = Game.getInstance();
 	private boolean enabled = false;
+	
+	public static final String PREFIX = "§4§lArena §8» §7";
+	private BukkitRunnable regen;
 	
 	public boolean reset = false;
 	public boolean wasEnabled = false;
@@ -56,14 +56,10 @@ public class Arena {
 	public Objective arenaKills = board.getObjective("arenaKills");
 	
 	public HashMap<Player, Integer> killstreak = new HashMap<Player, Integer>();
-	private ArrayList<Player> players = new ArrayList<Player>();
 	
+	private ArrayList<Player> players = new ArrayList<Player>();
 	private ArrayList<Long> seeds = new ArrayList<Long>();
 
-	private BukkitRunnable kitcycle;
-	private BukkitRunnable regenwarner;
-	private BukkitRunnable regen;
-	
 	/**
 	 * Gets the instance of the class.
 	 * 
@@ -103,17 +99,21 @@ public class Arena {
 	 * Enable the arena
 	 */
 	public void enable() {
-		Bukkit.getServer().getPluginManager().registerEvents(new ArenaListener(), plugin);
+		Game game = Game.getInstance();
+		
+		Bukkit.getPluginManager().registerEvents(new ArenaListener(), plugin);
 		this.enabled = true;
 		
 		if (game.pregameBoard()) {
-			Scoreboards.getInstance().setScore("§a ", 11);
-			Scoreboards.getInstance().setScore("§8» §cArena:", 10);
-			Scoreboards.getInstance().setScore("§8» §7/a ", 9);
+			Scoreboards boards = Scoreboards.getInstance();
+			
+			boards.setScore("§a ", 11);
+			boards.setScore("§8» §cArena:", 10);
+			boards.setScore("§8» §7/a ", 9);
 		}
 		
 		if (game.arenaBoard()) {
-			PlayerUtils.broadcast(Main.PREFIX + "The arena board has been enabled.");
+			PlayerUtils.broadcast(PREFIX + "The arena board has been enabled.");
 			arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
 			
 			game.setPregameBoard(false);
@@ -122,31 +122,34 @@ public class Arena {
 			setScore("§8» §a§lPvE", 1);
 			setScore("§8» §a§lPvE", 0);
 		}
-
-		regenwarner = new BukkitRunnable() {
-			public void run() {
-			}
-		};
-		
-		kitcycle = new BukkitRunnable() {
-			public void run() {
-			}
-		};
 		
 		regen = new BukkitRunnable() {
+			int time = 30;
+			
 			public void run() {
+				time--;
+				
+				if (time == 15 || time == 10 || time == 5 || time == 1) {
+					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a" + time + " §7minutes.");
+					return;
+				}
+			
+				if (time == 0) {
+					time = 30;
+					reset();
+				}
 			}
 		};
 		
-		regenwarner.runTaskTimer(Main.plugin, 1, 1);
-		kitcycle.runTaskTimer(Main.plugin, 1, 1);
-		regen.runTaskTimer(Main.plugin, 1, 1);
+		regen.runTaskTimer(Main.plugin, 1200, 1200);
 	}
 	
 	/**
 	 * Disable the arena
 	 */
 	public void disable() {
+		Game game = Game.getInstance();
+		
 		HandlerList.unregisterAll(new ArenaListener());
 		this.enabled = false;
 		
@@ -165,9 +168,11 @@ public class Arena {
 		}
 		
 		if (game.pregameBoard()) {
-			Scoreboards.getInstance().resetScore("§a ");
-			Scoreboards.getInstance().resetScore("§8» §cArena:");
-			Scoreboards.getInstance().resetScore("§8» §7/a ");
+			Scoreboards boards = Scoreboards.getInstance();
+			
+			boards.resetScore("§a ");
+			boards.resetScore("§8» §cArena:");
+			boards.resetScore("§8» §7/a ");
 		}
 		
 		if (game.arenaBoard()) {
@@ -175,7 +180,7 @@ public class Arena {
 				resetScore(entry);
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "The arena board has been disabled.");
+			PlayerUtils.broadcast(PREFIX + "The arena board has been disabled.");
 			Scoreboards.getInstance().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
 			game.setArenaBoard(false);
 		}
@@ -183,12 +188,7 @@ public class Arena {
 		killstreak.clear();
 		players.clear();
 
-		regenwarner.cancel();
-		kitcycle.cancel();
 		regen.cancel();
-
-		regenwarner = null;
-		kitcycle = null;
 		regen = null;
 	}
 
@@ -200,7 +200,7 @@ public class Arena {
 			disable();
 		}
 		
-		PlayerUtils.broadcast(Main.PREFIX + "The arena is resetting, lag incoming.");
+		PlayerUtils.broadcast(PREFIX + "The arena is resetting, lag incoming.");
 		WorldManager manager = WorldManager.getInstance();
 		
 		World world = Bukkit.getServer().getWorld("arena");
@@ -208,16 +208,16 @@ public class Arena {
 		manager.deleteWorld(world);
 		manager.createWorld("arena", 200, seeds.get(new Random().nextInt(seeds.size())), Environment.NORMAL, WorldType.NORMAL);
 		
-		PlayerUtils.broadcast(Main.PREFIX + "World reset done, setting up world options...");
+		PlayerUtils.broadcast(PREFIX + "World reset done, setting up world options...");
 
 		world.setGameRuleValue("doDaylightCycle", "false");
 		world.setTime(6000);
 		
-		PlayerUtils.broadcast(Main.PREFIX + "Options setup, pregenning arena world.");
+		PlayerUtils.broadcast(PREFIX + "Options setup, pregenning arena world.");
 		
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " set 200 0 0");
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb " + world.getName() + " fill 420");
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "wb fill confirm");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " set 200 0 0");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload fill confirm");
 	}
 
 	/**
@@ -263,7 +263,7 @@ public class Arena {
 			return;
 		}
 
-		player.sendMessage(Main.PREFIX + "You joined the arena.");
+		player.sendMessage(PREFIX + "You joined the arena.");
 		
 		killstreak.put(player, 0);
 		players.add(player);
@@ -273,7 +273,7 @@ public class Arena {
 		
 		player.teleport(loc);
 		player.setGameMode(GameMode.SURVIVAL);
-		player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 7));
+		player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 7));
 	}
 	
 	/**
@@ -289,28 +289,25 @@ public class Arena {
 			return;
 		}
 
-		player.sendMessage(Main.PREFIX + "You left the arena.");
-		Team team = Teams.getInstance().getTeam(player);
+		player.sendMessage(PREFIX + "You left the arena.");
 
 		if (killstreak.containsKey(player) && killstreak.get(player) > 4) {
-			PlayerUtils.broadcast(Main.PREFIX + "§6" + player.getName() + "'s §7killstreak of §a" + Arena.getInstance().killstreak.get(player) + " §7was shut down from leaving the arena");
-		}
-		
-		for (Player p : Arena.getInstance().getPlayers()) {
-			p.sendMessage("§8» " + (team == null ? "§f" : team.getPrefix()) + player.getName() + " §fdied from leaving the arena");
+			PlayerUtils.broadcast(PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + killstreak.get(player) + " §7was shut down from leaving!");
 		}
 
 		killstreak.put(player, 0); 
 		
 		User user = User.get(player);
+		
+		user.setStat(Stat.ARENACKS, 0);
 		user.reset();
+		
+		board.resetScores(player.getName());
+		player.teleport(Main.getSpawn());
 		
 		if (player.isDead()) {
 			player.spigot().respawn();
 		}
-		
-		board.resetScores(player.getName());
-		player.teleport(Main.getSpawn());
 	}
 	
 	/**
