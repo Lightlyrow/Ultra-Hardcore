@@ -46,11 +46,11 @@ public class EntityUtils {
 	public static Vector randomOffset() {
 		Random rand = new Random();
 		
-		double offsetX = rand.nextDouble() / 16;
-		double offsetZ = rand.nextDouble() / 16;
+		double offsetX = rand.nextDouble() / 20;
+		double offsetZ = rand.nextDouble() / 20;
 
-		offsetX = offsetX - (rand.nextDouble() / 16);
-		offsetZ = offsetZ - (rand.nextDouble() / 16);
+		offsetX = offsetX - (rand.nextDouble() / 20);
+		offsetZ = offsetZ - (rand.nextDouble() / 20);
 		
 		return new Vector(offsetX, 0.2, offsetZ);
 	}
