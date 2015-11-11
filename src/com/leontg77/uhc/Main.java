@@ -158,7 +158,6 @@ public class Main extends JavaPlugin {
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
 	
-	public static HashMap<Material, ItemStack> toReplace = new HashMap<Material, ItemStack>();
 	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
 	
 	public static Recipe headRecipe;
@@ -210,6 +209,7 @@ public class Main extends JavaPlugin {
 
 		PluginManager manager = Bukkit.getServer().getPluginManager();
 
+		// register all listeners.
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new EntityListener(), this);
 		manager.registerEvents(new InventoryListener(), this);
@@ -219,6 +219,7 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new WorldListener(), this);
 		manager.registerEvents(new UBLListener(), this);
 
+		// register all inventory listeners.
 		manager.registerEvents(new ConfigListener(), this);
 		manager.registerEvents(new HOFListener(), this);
 		manager.registerEvents(new InfoListener(), this);
@@ -227,6 +228,7 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new SpectatorListener(), this);
 		manager.registerEvents(new StatsListener(), this);
 
+		// register all commands.
 		getCommand("arena").setExecutor(new ArenaCommand());
 		getCommand("ban").setExecutor(new BanCommand());
 		getCommand("banip").setExecutor(new BanIPCommand());
@@ -370,7 +372,7 @@ public class Main extends JavaPlugin {
 					    online.setPlayerListName(percentColor + online.getName());
 					}
 
-					Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
+					Scoreboard sb = Scoreboards.getInstance().board;
 					int percent = Integer.parseInt(NumberUtils.makePercent(online.getHealth()).substring(2));
 					
 					Objective tabList = sb.getObjective("tabHealth");
@@ -388,22 +390,30 @@ public class Main extends JavaPlugin {
 				}
 				
 				for (World world : Bukkit.getWorlds()) {
-					if (world.getName().equals("lobby") || world.getName().equals("arena")) {
+					if (world.getName().equals("lobby")) {
 						if (world.getDifficulty() != Difficulty.PEACEFUL) {
 							world.setDifficulty(Difficulty.PEACEFUL);
 						}
 						
-						if (world.getName().equals("lobby") && world.getTime() != 18000) {
+						if (world.getTime() != 18000) {
 							world.setTime(18000);
 						}
-						
-						if (world.getName().equals("arena") && world.getTime() != 6000) {
-							world.setTime(6000);
-						}
-					} else {
+						continue;
+					}
+					
+					if (world.getName().equals("arena")) {
 						if (world.getDifficulty() != Difficulty.HARD) {
 							world.setDifficulty(Difficulty.HARD);
 						}
+						
+						if (world.getTime() != 6000) {
+							world.setTime(6000);
+						}
+						continue;
+					}
+					
+					if (world.getDifficulty() != Difficulty.HARD) {
+						world.setDifficulty(Difficulty.HARD);
 					}
 				}
 			}
@@ -528,7 +538,7 @@ public class Main extends JavaPlugin {
 		
 		try {
 			for (String scen : settings.getData().getStringList("scenarios")) {
-				ScenarioManager.getInstance().getScenario(scen).enable();
+				ScenarioManager.getInstance().getScenario(scen).setEnabled(true);
 			}
 		} catch (Exception e) {
 			getLogger().warning("Could not recover scenario data.");
