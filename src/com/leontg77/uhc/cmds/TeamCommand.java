@@ -398,14 +398,14 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			} 
 		}
 		
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
-			return true;
-		}
-		
-		Player player = (Player) sender;
-		
 		if (args[0].equalsIgnoreCase("create")) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
+				return true;
+			}
+			
+			Player player = (Player) sender;
+			
 			if (!game.teamManagement()) {
 				sender.sendMessage(Main.PREFIX + "Team management is currently disabled.");
 				return true;
@@ -433,6 +433,13 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		if (args[0].equalsIgnoreCase("leave")) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
+				return true;
+			}
+			
+			Player player = (Player) sender;
+			
 			if (!game.teamManagement()) {
 				sender.sendMessage(Main.PREFIX + "Team management is currently disabled.");
 				return true;
@@ -456,6 +463,13 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		if (args[0].equalsIgnoreCase("info")) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
+				return true;
+			}
+			
+			Player player = (Player) sender;
+			
 			Team team = teams.getTeam(player);
 			
 			if (team == null || Spectator.getInstance().isSpectating(player)) {
