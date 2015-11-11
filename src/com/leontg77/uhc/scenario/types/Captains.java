@@ -13,8 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Teams;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -146,6 +147,10 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 						continue;
 					}
 					
+					if (Spectator.getInstance().isSpectating(online)) {
+						continue;
+					}
+					
 					list.add(online.getName());
 				}
 				
@@ -227,18 +232,19 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			Team team = Teams.getInstance().getTeam(player.getName());
+			Team team = target.getScoreboard().getEntryTeam(player.getName());
 			
 			if (team != null) {
 				team.addEntry(target.getName());
 			}
 			
 			current++;
+			
 			if (current >= captains.size()) {
 				current = 0;
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + player.getName() + ChatColor.GREEN + " §7has picked §a" + target.getName() + "§7, next captain to choose is §a" + captains.get(current));
+			PlayerUtils.broadcast(Main.PREFIX + ChatColor.GREEN + player.getName() + " §7has picked §a" + target.getName() + "§7, next captain to choose is §a" + captains.get(current));
 			chooser = captains.get(current);
 		}
 		return true;
