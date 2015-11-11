@@ -15,27 +15,26 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author LeonTG77
  */
 public class BloodLapis extends Scenario implements Listener {
-	private boolean enabled = false;
 	
 	public BloodLapis() {
 		super("BloodLapis", "Every time you mine lapis you take half a heart.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 
 	@EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
     	
-    	if (block.getType() == Material.LAPIS_ORE) {
-    		player.damage(1.0);
+    	if (block.getType() != Material.LAPIS_ORE) {
+    		return;
     	}
+    	
+		player.damage(1);
     }
 }
