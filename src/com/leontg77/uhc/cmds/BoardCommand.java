@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Scoreboards;
+import com.leontg77.uhc.scoreboard.Scoreboards;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -46,32 +46,34 @@ public class BoardCommand implements CommandExecutor {
 		game.setPregameBoard(true);
 
 		if (game.teamManagement()) {
-			score.setScore("§e ", 12);
-			score.setScore("§8» §cTeam:", 11);
-			score.setScore("§8» §7/team", 10);
+			score.setScore("§e ", 14);
+			score.setScore("§8» §cTeam:", 13);
+			score.setScore("§8» §7/team", 12);
 		}
 		
 		if (Arena.getInstance().isEnabled()) {
-			score.setScore("§a ", 9);
-			score.setScore("§8» §cArena:", 8);
-			score.setScore("§8» §7/a ", 7);
+			score.setScore("§a ", 11);
+			score.setScore("§8» §cArena:", 10);
+			score.setScore("§8» §7/a ", 9);
 		}
 		
 		if (!GameUtils.getTeamSize().isEmpty()) {
-			score.setScore("§b ", 6);
-			score.setScore("§8» §cTeamsize:", 5);
-			score.setScore("§8» §7" + GameUtils.getAdvancedTeamSize(), 4);
+			score.setScore("§b ", 8);
+			score.setScore("§8» §cTeamsize:", 7);
+			score.setScore("§8» §7" + GameUtils.getAdvancedTeamSize(), 6);
 		}
 		
-		score.setScore("§c ", 3);
-		score.setScore("§8» §cScenarios:", 2);
+		score.setScore("§c ", 5);
+		score.setScore("§8» §cScenarios:", 4);
 		
 		for (String scen : game.getScenarios().split(" ")) {
-			score.setScore("§8» §7" + scen, 1);
+			score.setScore("§8» §7" + scen, 3);
 		}
 		
-		score.setScore("§d ", 1);
-		score.setScore("§d ", 0);
+		score.setScore("§d ", 2);
+		score.setScore("§8§m------------", 1);
+		score.setScore("§a§o@ArcticUHC", 1);
+		score.setScore("§a§o@ArcticUHC", 0);
 		return true;
 	}
 }
