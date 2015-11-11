@@ -3,6 +3,7 @@ package com.leontg77.uhc.scenario.types;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -28,30 +29,30 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ChunkApocalypse extends Scenario implements Listener, CommandExecutor {
-	private boolean enabled = false;
-	
 	private ArrayList<Location> locations = new ArrayList<Location>();
 	private int totalChunks;
 	
+	public static final String PREFIX = "§b[§2ChunkApoc§b] §3";
 	public static BukkitRunnable task = null;
 	
 	public ChunkApocalypse() {
 		super("ChunkApocalypse", "Every chunk has a 30% chance of being replaced with air");
-		Main main = Main.plugin;
 		
-		main.getCommand("chunkapo").setExecutor(this);
+		Bukkit.getPluginCommand("chunkapo").setExecutor(this);
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onDisable() {}
+	
+	@Override
+	public void onEnable() {}
 
 	@EventHandler
     public void onFlow(BlockFromToEvent event) {
+		if (task == null) {
+			return;
+		}
+		
         event.setCancelled(true);
     }
 	
@@ -64,7 +65,7 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 		final Player player = (Player) sender;
 		
 		if (!isEnabled()) {
-			sender.sendMessage(Main.PREFIX + "\"ChunkApocalypse\" is not enabled.");
+			sender.sendMessage(PREFIX + "ChunkApocalypse is not enabled.");
 			return true;
 		}
 		
@@ -74,7 +75,7 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 		}
 		
 		if (args.length == 0) {
-			player.sendMessage(Main.PREFIX + "Usage: /chunkapo <radius>");
+			player.sendMessage(PREFIX + "Usage: /chunkapo <radius>");
 			return true;
 		}
 		
@@ -99,12 +100,12 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 		
 		totalChunks = locations.size();
 
-		PlayerUtils.broadcast(Main.PREFIX + "ChunkApocalypse generation started.");
+		PlayerUtils.broadcast(PREFIX + "ChunkApocalypse generation started.");
 		
 		task = new BukkitRunnable() {
 			public void run() {
 				if (locations.size() == 0) {
-					PlayerUtils.broadcast(Main.PREFIX + "ChunkApocalypse generation finished.");
+					PlayerUtils.broadcast(PREFIX + "ChunkApocalypse generation finished.");
 					cancel();
 					task = null;
 					return;
@@ -126,7 +127,7 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 				int percentCompleted = ((totalChunks - locations.size())*100 / totalChunks);
 				
 				for (Player online : PlayerUtils.getPlayers()) {
-					PacketUtils.sendAction(online, Main.PREFIX + "Removed chunk at x:" + chunk.getX() + " z:" + chunk.getZ() + ", §6" + percentCompleted + "% §7finished");
+					PacketUtils.sendAction(online, PREFIX + "Removed chunk at x:" + chunk.getX() + " z:" + chunk.getZ() + ", §6" + percentCompleted + "% §7finished");
 				}
 			}
 		};
