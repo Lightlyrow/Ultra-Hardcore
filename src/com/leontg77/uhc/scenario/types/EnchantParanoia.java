@@ -25,7 +25,7 @@ public class EnchantParanoia extends Scenario implements Listener {
 	private BukkitRunnable task;
 	
 	public EnchantParanoia() {
-		super("EnchantParanoia", "You cannot see what enchants you have");
+		super("EnchantParanoia", "You cannot see what enchants you have.");
 	}
 
 	public void setEnabled(boolean enable) {
@@ -122,5 +122,17 @@ public class EnchantParanoia extends Scenario implements Listener {
 		meta.setLore(lore);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(meta);
+	}
+
+	@Override
+	public void onEnable() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDisable() {
+		// TODO Auto-generated method stub
+		
 	}
 }
