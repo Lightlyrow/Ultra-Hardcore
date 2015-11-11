@@ -2,6 +2,8 @@ package com.leontg77.uhc.scenario.types;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -29,19 +31,16 @@ import com.leontg77.uhc.scenario.ScenarioManager;
  * @author LeonTG77
  */
 public class CutClean extends Scenario implements Listener {
-	private boolean enabled = false;
 	
 	public CutClean() {
-		super("CutClean", "No furnaces required, items requiring cooking drop their cooked variety.");
+		super("CutClean", "No furnaces required! Iron, gold and food drop their cooked variety.");
 	}
 	
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
-	
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onDisable() {}
+
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
@@ -68,6 +67,7 @@ public class CutClean extends Scenario implements Listener {
 		else if (entity instanceof Rabbit) {
 			event.getDrops().clear();
 			event.getDrops().add(new ItemStack(Material.COOKED_RABBIT, 1));
+			event.getDrops().add(new ItemStack(Material.RABBIT_HIDE));
 		}
 	}
 	
