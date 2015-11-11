@@ -184,7 +184,7 @@ public class Game {
 	 * @return The game world
 	 */
 	public World getWorld() {
-		return Bukkit.getWorld(settings.getConfig().getString("world", "leon"));
+		return Bukkit.getWorld(settings.getConfig().getString("world", "girhgqeruiogh"));
 	}
 
 	/**
