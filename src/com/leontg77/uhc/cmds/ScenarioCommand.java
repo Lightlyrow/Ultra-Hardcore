@@ -46,7 +46,7 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 					}
 
 					PlayerUtils.broadcast(Main.PREFIX + ChatColor.GOLD + scenario.getName() + " §7has been enabled.");
-					scenario.enable();
+					scenario.setEnabled(true);
 					return true;
 				}
 			} else if (args[0].equalsIgnoreCase("disable")) {
@@ -69,7 +69,7 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 					}
 
 					PlayerUtils.broadcast(Main.PREFIX + ChatColor.GOLD + scenario.getName() + " §7has been disabled.");
-					scenario.disable();
+					scenario.setEnabled(false);
 					return true;
 				}
 			} else if (args[0].equalsIgnoreCase("list")) {
