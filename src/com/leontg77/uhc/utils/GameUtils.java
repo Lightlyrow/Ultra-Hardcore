@@ -77,7 +77,7 @@ public class GameUtils {
 		switch (current) {
 		case SCATTER:
 		case INGAME:
-			if (GameUtils.getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonPrivate")) {
+			if (GameUtils.getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
 				return "No games running";
 			} 
 			else if (getTeamSize().startsWith("Open")) {
@@ -88,7 +88,7 @@ public class GameUtils {
 			}
 		case LOBBY:
 			if (Bukkit.getServer().hasWhitelist()) {
-				if (GameUtils.getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonPrivate")) {
+				if (GameUtils.getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
 					return "No games running";
 				} 
 				else if (getTeamSize().startsWith("Open")) {
@@ -187,7 +187,7 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("Itz_Isaac")) {
 			return "Isaac";
 		}
-		else if (host.equalsIgnoreCase("SpookySwift")) {
+		else if (host.equalsIgnoreCase("Badfan")) {
 			return "Badfan";
 		}
 		else if (host.equalsIgnoreCase("AxlurUSC")) {
@@ -227,7 +227,7 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("Limit") || host.equalsIgnoreCase("LimitDTW")) {
 			return "Limit";
 		}
-		else if (host.equalsIgnoreCase("Badfan") || host.equalsIgnoreCase("SpookySwift")) {
+		else if (host.equalsIgnoreCase("Badfan") || host.equalsIgnoreCase("BadfanMC")) {
 			return "Badfan";
 		}
 		else if (host.equalsIgnoreCase("BLA2K14")) {
@@ -256,7 +256,7 @@ public class GameUtils {
 			return "Itz_Isaac";
 		}
 		else if (host.equalsIgnoreCase("Badfan")) {
-			return "SpookySwift";
+			return "Badfan";
 		}
 		else if (host.equalsIgnoreCase("Axlur")) {
 			return "AxlurUSC";
