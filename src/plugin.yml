@@ -3,7 +3,7 @@ main: com.leontg77.uhc.Main
 version: 1.8
 author: LeonTG77
 description: UHC plugin made for Leons UHC
-softdepend: [ProtocolLib]
+softdepend: [ProtocolLib, WorldBorder]
 
 commands:
   arena:
@@ -41,6 +41,8 @@ commands:
     description: End the game and reset everything.
   feed:
     description: Feed someone.
+  fire:
+    description: Start the firework show.
   fly:
     description: Toggle fly mode.
   gamemode:
@@ -59,7 +61,6 @@ commands:
     description: If you need help from staff, use this command.
   hof:
     description: View the hall of fame.
-    aliases: [halloffame]
   hotbar:
     description: Save your arena hotbar.
   info:
@@ -85,6 +86,7 @@ commands:
     description: Check for nearby players.
   pm:
     description: Team chat command.
+    aliases: [tc]
   pregen:
     description: Pregen a world.
   pvp:
@@ -136,7 +138,7 @@ commands:
     description: Hotbar timer command.
   teamloc:
     description: Tell your location out to your teammates.
-    aliases: [tl]
+    aliases: [tl, pmcoords]
   tps:
     description: Check the server tps and usage.
     aliases: [lag]
@@ -157,7 +159,7 @@ commands:
     aliases: [wl]
   world:
     description: Create and manage worlds.
-    aliases: [w, mv]
+    aliases: [w]
 # Scenario Commands.
   target:
     description: View your assassins target.
