@@ -23,8 +23,9 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
-import com.leontg77.uhc.Teams;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -56,6 +57,12 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			for (Team team : Teams.getInstance().getTeams()) {
 				if (team.getSize() < 1) {
 					continue;
+				}
+				
+				if (ScenarioManager.getInstance().getScenario("PotentialMoles").isEnabled()) {
+					if (new Random().nextInt(99) < 50) {
+						continue;
+					}
 				}
 				
 				for (String t : team.getEntries()) {
