@@ -9,14 +9,19 @@ import org.bukkit.Chunk;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.TreeSpecies;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Snowball;
+import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,16 +36,15 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Tree;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.util.Vector;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.utils.EntityUtils;
 
 /**
  * Cryophobia scenario class
@@ -48,87 +52,66 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author Bergasms
  */
 public class Cryophobia extends Scenario implements Listener {
-	private boolean enabled = false;
-
-	private World theworld;
-	private int levelHeight;
+	private int heightCountdown = 150;
+	private int levelHeight = 0;
+	private int maxheight = 80;
+	
 	private int heightUpdateTimer;
-	private int maxheight;
 	private int processTimer;
-	private Material replaceMaterial;
-	private int[][] existingHeights;
-	private boolean[][] biomeLookup;
-	private int heightCountdown;
-	private HashMap<String, ChunkProcess> chunkQueue;
-	private LinkedList<String> priorityQueue;
+	
+	private boolean[][] biomeLookup = new boolean[500][500];
+	private int[][] existingHeights = new int[500][500];
+	private Material replaceMaterial = Material.ICE;
+	
+	private HashMap<String, ChunkProcess> chunkQueue = new HashMap<String, ChunkProcess>();
+	private LinkedList<String> priorityQueue = new LinkedList<String>();;
+	
+	private World world = Game.getInstance().getWorld();
 
 	public Cryophobia() {
 		super("Cryophobia", "A layer of ice will rise slowly from the bottom of the map, faster as the game goes on, filling caves and eventually reaching high up above the surface. Breaking ice causes damage and ill effects. Creepers explode into a ball of ice, while skeletons have geared up for the winter. The biome of the entire map has also been switched to a cold taiga, meaning snow falls and water freezes everywhere on the map.");
-		this.maxheight = 80;
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-
-		if (enable) {
-			startCryo();
-		} else {
-			stopCryo();
+	@Override
+	public void onDisable() {
+		if (heightUpdateTimer != -1) {
+			Bukkit.getServer().getScheduler().cancelTask(this.heightUpdateTimer);
+			heightUpdateTimer = -1;
+		}
+		
+		if (processTimer != -1) {
+			Bukkit.getServer().getScheduler().cancelTask(this.processTimer);
+			processTimer = -1;
 		}
 	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	private class ChunkProcess {
-		public int x;
-		public int z;
-		public int stopHeight;
-
-		public ChunkProcess(int x, int z, int stopHeight) {
-			this.x = x;
-			this.z = z;
-			this.stopHeight = stopHeight;
-		}
-
-		public String stringRep() {
-			return this.x + ":" + this.z;
-		}
-	}
-
-	public void startCryo() {
-		this.chunkQueue = new HashMap<String, ChunkProcess>();
-		this.priorityQueue = new LinkedList<String>();
-		this.theworld = Bukkit.getWorld(Settings.getInstance().getConfig().getString("game.world"));
-		this.replaceMaterial = Material.ICE;
-		this.heightCountdown = 150;
-		this.levelHeight = 0;
-		this.biomeLookup = new boolean[500][500];
-		this.existingHeights = new int[500][500];
+	@Override
+	public void onEnable() {
 		for (int i = 0; i < 500; i++) {
 			for (int j = 0; j < 500; j++) {
 				this.existingHeights[i][j] = this.levelHeight;
 				this.biomeLookup[i][j] = false;
 			}
 		}
-		Chunk[] arrayOfChunk;
-		int i = (arrayOfChunk = theworld.getLoadedChunks()).length;
-		for (int j = 0; j < i; j++) {
-			Chunk c = arrayOfChunk[j];
-			chunkLoaded(c);
+		
+		for (Chunk chunk : world.getLoadedChunks()) {
+			chunkLoaded(chunk);
 		}
-		this.processTimer = -1;
-		this.heightUpdateTimer = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+		
+		processTimer = -1;
+		heightUpdateTimer = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
 				heightCountdown -= 1;
+				
 				if (heightCountdown <= 0) {
 					if (levelHeight < maxheight) {
 						levelHeight += 1;
 					} else {
-						endRaiseTimer();
+						onDisable();
 					}
+					
 					didRaiseHeight();
+					
 					if (levelHeight <= 12) {
 						heightCountdown = 150;
 					} else if (levelHeight <= 20) {
@@ -143,6 +126,213 @@ public class Cryophobia extends Scenario implements Listener {
 		}, 20L, 20L);
 
 		didRaiseHeight();
+	}
+
+	@EventHandler
+	public void onChunkLoadEvent(ChunkLoadEvent event) {
+		chunkLoaded(event.getChunk());
+	}
+
+	@EventHandler
+	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
+		chunkUnloaded(event.getChunk());
+	}
+
+	@EventHandler
+	public void onEntityShootBowEvent(EntityShootBowEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		
+		LivingEntity entity = event.getEntity();
+		Entity proj = event.getProjectile();
+		
+		if (!(entity instanceof Skeleton)) {
+			return;
+		}
+		
+		if (!(proj instanceof Arrow)) {
+			return;
+		}
+		
+		event.setCancelled(true);
+		entity.launchProjectile(Snowball.class, proj.getVelocity());
+	}
+
+	@EventHandler
+	public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+
+		LivingEntity entity = event.getEntity();
+		Random rand = new Random();
+		
+		if (entity instanceof Animals) {
+			if (rand.nextInt(10) <= 1) {
+				entity.getWorld().spawn(event.getLocation(), Snowman.class);
+			}
+			
+			event.setCancelled(rand.nextBoolean());
+			return;
+		}
+
+		if (!(entity instanceof Skeleton)) {
+			return;
+		}
+		
+		ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+		ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
+		ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
+		ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
+
+		ItemStack[] items = { helmet, chestplate, leggings, boots };
+		String[] names = { "Beanie", "Parka", "Ski Pants", "Snowboard Boots" };
+		Color[] colours = { Color.BLACK, Color.BLUE, Color.BLUE, Color.RED };
+		
+		int ind = 0;
+		
+		for (ItemStack item : items) {
+			LeatherArmorMeta lma = (LeatherArmorMeta) item.getItemMeta();
+			lma.setColor(colours[ind]);
+			lma.setDisplayName(names[ind]);
+			item.setItemMeta(lma);
+			ind++;
+		}
+		
+		entity.getEquipment().setArmorContents(items);
+	}
+
+	@EventHandler
+	public void onExplodeDeath(EntityExplodeEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		
+		Entity entity = event.getEntity();
+		
+		if (!(entity instanceof Creeper)) {
+			return;
+		}
+		
+		final Location loc = event.getEntity().getLocation();
+		final World world = loc.getWorld();
+
+		if (world != this.world) {
+			return;
+		}
+		
+		new BukkitRunnable() {
+			public void run() {
+				Location l = loc;
+				
+				world.getBlockAt(l).setType(Material.PACKED_ICE);
+				world.getBlockAt(l.add(0.0D, 1.0D, 0.0D)).setType(Material.PACKED_ICE);
+				world.getBlockAt(l.add(0.0D, -2.0D, 0.0D)).setType(Material.PACKED_ICE);
+				world.getBlockAt(l.add(1.0D, 1.0D, 0.0D)).setType(Material.PACKED_ICE);
+				world.getBlockAt(l.add(-2.0D, 0.0D, 0.0D)).setType(Material.PACKED_ICE);
+				world.getBlockAt(l.add(1.0D, 0.0D, 1.0D)).setType(Material.PACKED_ICE);
+				world.getBlockAt(l.add(0.0D, 0.0D, -2.0D)).setType(Material.PACKED_ICE);
+				
+				l = loc;
+				
+				world.getBlockAt(l.add(1.0D, -1.0D, 1.0D)).setType(Material.ICE);
+				world.getBlockAt(l.add(-1.0D, 0.0D, 0.0D)).setType(Material.ICE);
+				world.getBlockAt(l.add(-1.0D, 0.0D, 0.0D)).setType(Material.ICE);
+				world.getBlockAt(l.add(0.0D, 0.0D, -1.0D)).setType(Material.ICE);
+				world.getBlockAt(l.add(0.0D, 0.0D, -1.0D)).setType(Material.ICE);
+				world.getBlockAt(l.add(1.0D, 0.0D, 0.0D)).setType(Material.ICE);
+				world.getBlockAt(l.add(1.0D, 0.0D, 0.0D)).setType(Material.ICE);
+				world.getBlockAt(l.add(0.0D, 0.0D, 1.0D)).setType(Material.ICE);
+				world.getBlockAt(l.add(0.0D, 0.0D, 1.0D)).setType(Material.ICE);
+				
+				Random rand = new Random();
+				int times = 3 + rand.nextInt(2);
+				
+				for (int i = 0; i < times; i++) {
+					l = loc;
+					world.getBlockAt(l.add(rand.nextInt(4) - 2, rand.nextInt(2), rand.nextInt(4) - 2)).setType(Material.ICE);
+				}
+			}
+		}.runTaskLater(Main.plugin, 1);
+	}
+
+	@EventHandler
+	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+		Entity damager = event.getDamager();
+		Entity entity = event.getEntity();
+
+		if (!(damager instanceof Snowball)) {
+			return;
+		}
+		
+		if (!(entity instanceof Player)) {
+			return;
+		}
+		
+		Snowball snowball = (Snowball) damager;
+		ProjectileSource shooter = snowball.getShooter();
+		
+		if (!(shooter instanceof Skeleton)) {
+			return;
+		}
+		
+		event.setDamage(1.0D + new Random().nextFloat());
+	}
+
+	@EventHandler
+	public void onLeavesDecayEvent(LeavesDecayEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		
+		Block block = event.getBlock();
+
+		if (block.getType() != Material.LEAVES) {
+			return;
+		}
+
+		short damage = block.getState().getData().toItemStack().getDurability();
+		
+		if (damage != 1 && damage != 5 && damage != 9 && damage != 13) {
+			return;
+		}
+		
+		Random rand = new Random();
+		
+		if (rand.nextInt(40) == 0) {
+			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+			item.setVelocity(EntityUtils.randomOffset());
+		}
+	}
+
+	@EventHandler
+	public void onBlockFromTo(BlockFromToEvent event) {
+		if (event.getBlock().getType() == Material.ICE && event.getToBlock().getType() == Material.WATER) {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	public void onBlockBreakEvent(BlockBreakEvent event) {
+		if (!isEnabled()) {
+			return;
+		}
+
+		if (event.isCancelled()) {
+			return;
+		}
+
+		if ((event.getBlock().getType() == Material.ICE) || (event.getBlock().getType() == Material.PACKED_ICE)) {
+			Random r = new Random();
+			if (r.nextInt(4) == 0) {
+				event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100, 1));
+				event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 100, 1));
+			}
+			if (r.nextInt(8) == 0) {
+				event.getPlayer().damage(1.0D);
+			}
+		}
 	}
 
 	protected void didRaiseHeight() {
@@ -174,7 +364,7 @@ public class Cryophobia extends Scenario implements Listener {
 
 			boolean addToMiddle = false;
 			if ((cp != null) && (cp.x >= 0) && (cp.x < 500) && (cp.z >= 0) && (cp.z < 500) && (this.existingHeights[cp.x][cp.z] < this.levelHeight)) {
-				World w = theworld;
+				World w = world;
 				if (w != null) {
 					Chunk c = w.getChunkAt(cp.x - 250, cp.z - 250);
 					if (c != null) {
@@ -214,21 +404,6 @@ public class Cryophobia extends Scenario implements Listener {
 		}
 	}
 
-	protected void endRaiseTimer() {
-		if (this.heightUpdateTimer != -1) {
-			Bukkit.getServer().getScheduler().cancelTask(this.heightUpdateTimer);
-			this.heightUpdateTimer = -1;
-		}
-		if (this.processTimer != -1) {
-			Bukkit.getServer().getScheduler().cancelTask(this.processTimer);
-			this.processTimer = -1;
-		}
-	}
-
-	public void stopCryo() {
-		endRaiseTimer();
-	}
-
 	public void chunkLoaded(Chunk chunk) {
 		if (this.priorityQueue == null) {
 			return;
@@ -236,7 +411,7 @@ public class Cryophobia extends Scenario implements Listener {
 		if (chunk.getWorld().getEnvironment() != World.Environment.NORMAL) {
 			return;
 		}
-		if (!chunk.getWorld().getName().equals(this.theworld.getName())) {
+		if (!chunk.getWorld().getName().equals(this.world.getName())) {
 			return;
 		}
 		int xp = chunk.getX() + 250;
@@ -275,211 +450,19 @@ public class Cryophobia extends Scenario implements Listener {
 		this.priorityQueue.remove(cp.stringRep());
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onChunkLoadEvent(ChunkLoadEvent event) {
-		if (!isEnabled()) {
-			return;
+	private class ChunkProcess {
+		public int x;
+		public int z;
+		public int stopHeight;
+
+		public ChunkProcess(int x, int z, int stopHeight) {
+			this.x = x;
+			this.z = z;
+			this.stopHeight = stopHeight;
 		}
 
-		chunkLoaded(event.getChunk());
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onChunkUnloadEvent(ChunkUnloadEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
-		chunkUnloaded(event.getChunk());
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onEntityShootBowEvent(EntityShootBowEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
-		if (event.isCancelled()) {
-			return;
-		}
-		if (event.getEntity().getType() != EntityType.SKELETON) {
-			return;
-		}
-		if (event.getProjectile().getType() == EntityType.ARROW) {
-			event.setCancelled(true);
-			event.getEntity().launchProjectile(Snowball.class, event.getProjectile().getVelocity());
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
-		if (event.isCancelled()) {
-			return;
-		}
-
-		EntityType type = event.getEntity().getType();
-		if ((type == EntityType.CHICKEN) || (type == EntityType.PIG) || (type == EntityType.COW) || (type == EntityType.SHEEP)) {
-			if (new Random().nextInt(10) <= 1) {
-				event.getEntity().getWorld().spawnEntity(event.getLocation(), EntityType.SNOWMAN);
-			}
-			event.setCancelled(new Random().nextBoolean());
-			return;
-		}
-
-		if (type != EntityType.SKELETON) {
-			return;
-		}
-		ItemStack entityhelm = new ItemStack(Material.LEATHER_HELMET);
-		ItemStack entitychest = new ItemStack(Material.LEATHER_CHESTPLATE);
-		ItemStack entityleg = new ItemStack(Material.LEATHER_LEGGINGS);
-		ItemStack entityboots = new ItemStack(Material.LEATHER_BOOTS);
-
-		ItemStack[] items = { entityhelm, entitychest, entityleg, entityboots };
-		String[] names = { "Beanie", "Parka", "Ski Pants", "Snowboard Boots" };
-		Color[] colours = { Color.BLACK, Color.BLUE, Color.BLUE, Color.RED };
-		int ind = 0;
-		ItemStack[] arrayOfItemStack1;
-		int j = (arrayOfItemStack1 = items).length;
-		for (int i = 0; i < j; i++) {
-			ItemStack i1 = arrayOfItemStack1[i];
-			LeatherArmorMeta lma = (LeatherArmorMeta) i1.getItemMeta();
-			lma.setColor(colours[ind]);
-			lma.setDisplayName(names[ind]);
-			i1.setItemMeta(lma);
-			ind++;
-		}
-		event.getEntity().getEquipment().setArmorContents(items);
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onExplodeDeath(EntityExplodeEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
-		if (event.isCancelled()) {
-			return;
-		}
-		if (event.getEntityType() != EntityType.CREEPER) {
-			return;
-		}
-		final Location lc = event.getEntity().getLocation();
-		final World w = lc.getWorld();
-
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-			public void run() {
-				Location l = lc;
-				w.getBlockAt(l).setType(Material.PACKED_ICE);
-				w.getBlockAt(l.add(0.0D, 1.0D, 0.0D)).setType(Material.PACKED_ICE);
-				w.getBlockAt(l.add(0.0D, -2.0D, 0.0D)).setType(Material.PACKED_ICE);
-				w.getBlockAt(l.add(1.0D, 1.0D, 0.0D)).setType(Material.PACKED_ICE);
-				w.getBlockAt(l.add(-2.0D, 0.0D, 0.0D)).setType(Material.PACKED_ICE);
-				w.getBlockAt(l.add(1.0D, 0.0D, 1.0D)).setType(Material.PACKED_ICE);
-				w.getBlockAt(l.add(0.0D, 0.0D, -2.0D)).setType(Material.PACKED_ICE);
-				
-				l = lc;
-				w.getBlockAt(l.add(1.0D, -1.0D, 1.0D)).setType(Material.ICE);
-				w.getBlockAt(l.add(-1.0D, 0.0D, 0.0D)).setType(Material.ICE);
-				w.getBlockAt(l.add(-1.0D, 0.0D, 0.0D)).setType(Material.ICE);
-				w.getBlockAt(l.add(0.0D, 0.0D, -1.0D)).setType(Material.ICE);
-				w.getBlockAt(l.add(0.0D, 0.0D, -1.0D)).setType(Material.ICE);
-				w.getBlockAt(l.add(1.0D, 0.0D, 0.0D)).setType(Material.ICE);
-				w.getBlockAt(l.add(1.0D, 0.0D, 0.0D)).setType(Material.ICE);
-				w.getBlockAt(l.add(0.0D, 0.0D, 1.0D)).setType(Material.ICE);
-				w.getBlockAt(l.add(0.0D, 0.0D, 1.0D)).setType(Material.ICE);
-				
-				Random r = new Random();
-				int times = 3 + r.nextInt(2);
-				for (int i = 0; i < times; i++) {
-					l = lc;
-					w.getBlockAt(l.add(r.nextInt(4) - 2, r.nextInt(2), r.nextInt(4) - 2)).setType(Material.ICE);
-				}
-			}
-		}, 1L);
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
-		Entity damageEntity = event.getDamager();
-
-		if (damageEntity.getType() != EntityType.SNOWBALL) {
-			return;
-		}
-
-		Entity damaged = event.getEntity();
-		if (damaged.getType() == EntityType.PLAYER) {
-			Snowball snowball = (Snowball) damageEntity;
-			ProjectileSource entityThrower = snowball.getShooter();
-			if ((entityThrower instanceof Skeleton)) {
-				event.setDamage(1.0D + new Random().nextFloat());
-			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onLeavesDecayEvent(LeavesDecayEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
-		if (event.isCancelled()) {
-			return;
-		}
-
-		if (event.getBlock().getType() == Material.LEAVES) {
-			MaterialData data = event.getBlock().getState().getData();
-			try {
-				Tree t = (Tree) data;
-				if (t.getSpecies() == TreeSpecies.REDWOOD) {
-					Random r = new Random();
-					if (r.nextInt(40) == 0) {
-						Item item = event.getBlock().getWorld().dropItem(event.getBlock().getLocation().add(0.5, 0.7, 0.5),new ItemStack(Material.APPLE, 1));
-						item.setVelocity(new Vector(0, 0.2, 0));
-					}
-				}
-			} catch (ClassCastException localClassCastException) {
-			}
-		}
-	}
-
-	@EventHandler
-	public void onBlockFromTo(BlockFromToEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
-		if (event.getBlock().getType() == Material.ICE && event.getToBlock().getType() == Material.WATER) {
-			event.setCancelled(true);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onBlockBreakEvent(BlockBreakEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
-		if (event.isCancelled()) {
-			return;
-		}
-
-		if ((event.getBlock().getType() == Material.ICE) || (event.getBlock().getType() == Material.PACKED_ICE)) {
-			Random r = new Random();
-			if (r.nextInt(4) == 0) {
-				event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100, 1));
-				event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 100, 1));
-			}
-			if (r.nextInt(8) == 0) {
-				event.getPlayer().damage(1.0D);
-			}
+		public String stringRep() {
+			return this.x + ":" + this.z;
 		}
 	}
 }
