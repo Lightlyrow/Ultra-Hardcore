@@ -36,7 +36,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.server.ServerListPingEvent;
@@ -526,34 +525,14 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerKick(PlayerKickEvent event) {
-		if (!event.getReason().equals("disconnect.spam")) {
-			return;
-		}
-		
-		event.setReason("§8» §7Kicked for spamming §8«");
-	}
-	
-	@EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {	
         Player player = event.getPlayer();
-        World world = player.getWorld();
         
         Action action = event.getAction();
         ItemStack item = event.getItem();
         
         Spectator spec = Spectator.getInstance();
         InvGUI inv = InvGUI.getInstance();
-        
-        if (world.getName().equals("lobby")) {
-        	if (action == Action.PHYSICAL) {
-            	event.setCancelled(true);
-        	} else {
-        		if (!player.hasPermission("uhc.build")) {
-        			event.setCancelled(true);
-        		}
-        	}
-        }
         
         if (action == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Timers.pvp > 0 && !game.isRecordedRound()) {
             if (item == null) {
