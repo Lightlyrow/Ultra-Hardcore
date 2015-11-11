@@ -54,6 +54,7 @@ public class InfoCommand implements CommandExecutor {
         }
 		
 		if (!found) {
+			sender.sendMessage(Main.PREFIX + args[0] + " has never joined this server.");
 			return true;
 		}
 		
