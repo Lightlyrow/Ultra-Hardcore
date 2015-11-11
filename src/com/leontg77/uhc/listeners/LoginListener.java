@@ -3,11 +3,12 @@ package com.leontg77.uhc.listeners;
 import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.TimeZone;
-import java.util.UUID;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -16,11 +17,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
@@ -32,7 +32,6 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
-import com.leontg77.uhc.UBL;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.cmds.SpreadCommand;
 import com.leontg77.uhc.utils.DateUtils;
@@ -83,7 +82,7 @@ public class LoginListener implements Listener {
 			
 			spec.enableSpecmode(player, true);
 		} else {
-			if (State.isState(State.INGAME) && !player.isWhitelisted() && !spec.isSpectating(player)) {
+			if (!State.isState(State.LOBBY) && !player.isWhitelisted() && !spec.isSpectating(player)) {
 				player.sendMessage(Main.PREFIX + "You joined a game without being whitelisted.");
 
 				user.resetInventory();
@@ -96,7 +95,7 @@ public class LoginListener implements Listener {
 				if (user.isNew()) {
 					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 					
-					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! §8[§a#" + f.listFiles().length + "§8]");
+					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! §8[§a#" + NumberFormat.getInstance(Locale.UK).format(f.listFiles().length) + "§8]");
 				}
 			}
 		}
@@ -138,7 +137,7 @@ public class LoginListener implements Listener {
 		}
 		
 		if (!game.isRecordedRound()) {
-			player.sendMessage("§8» ----------[ §4§lArctic UHC §8]---------- «");
+			player.sendMessage("§8» §m----------§8[ §4§lArctic UHC §8]§m----------§8 «");
 			
 			if (GameUtils.getTeamSize().startsWith("No")) {
 				player.sendMessage("§8» §c No games running");
@@ -151,7 +150,7 @@ public class LoginListener implements Listener {
 				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + game.getScenarios());
 			}
 			
-			player.sendMessage("§8» --------------------------------- «");
+			player.sendMessage("§8» §m---------------------------------§8 «");
 		}
 	}
 	
@@ -167,9 +166,14 @@ public class LoginListener implements Listener {
 		user.saveFile();
 		
 		Spectator spec = Spectator.getInstance();
+		Entity veh = player.getVehicle();
 		
 		PermsUtils.removePermissions(player);
 		event.setQuitMessage(null);
+		
+		if (veh != null) {
+			veh.eject();
+		}
 		
 		if (!spec.isSpectating(player)) {
 			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
@@ -292,7 +296,7 @@ public class LoginListener implements Listener {
 				if (moles && State.isState(State.LOBBY)) {
 					String kickMsg = event.getKickMessage();
 					
-					event.disallow(Result.KICK_WHITELIST, "§4§lVIP's are not pre-whitelisted for Mole games\n\n" + kickMsg);
+					event.disallow(Result.KICK_WHITELIST, "§4§lPre-whitelist is disabled for Mole games\n\n" + kickMsg);
 					return;
 				}
 				
@@ -323,18 +327,4 @@ public class LoginListener implements Listener {
 			event.allow();
 		}
 	}
-	
-	@EventHandler(priority = EventPriority.HIGHEST)
-    public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-		UBL ubl = UBL.getInstance();
-		
-		if (ubl.isBanned(event.getUniqueId())) {
-            UBL.BanEntry banEntry = ubl.banlistByUUID.get(event.getUniqueId());
-        	PlayerUtils.broadcast(Main.PREFIX + "§c" + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
-        	
-        	UUID uuid = event.getUniqueId();
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ubl.getBanMessage(uuid));
-            return;
-        }
-    }
 }
