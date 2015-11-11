@@ -405,7 +405,6 @@ public class AntiStripmine {
 
 		public boolean hasNoOres(ChunkOreRemover remover) {
 			if (this.noOresFound.contains(remover)) {
-				Main.plugin.getLogger().info("Confirmed that " + getWorld().getName() + " " + remover.toString() + " still has no ores on the second pass");
 				return true;
 			}
 			return false;
@@ -413,7 +412,6 @@ public class AntiStripmine {
 
 		public void notifyNoOres(final ChunkOreRemover remover) {
 			this.noOresFound.add(remover);
-			Main.plugin.getLogger().info("No ores were found in " + getWorld().getName() + " " + remover.toString() + ": Scheduling for a second check in 5 seconds");
 			
 			new BukkitRunnable() {
 				public void run() {
