@@ -24,9 +24,9 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Parkour;
-import com.leontg77.uhc.Scoreboards;
 import com.leontg77.uhc.State;
-import com.leontg77.uhc.Teams;
+import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -315,6 +315,7 @@ public class SpreadCommand implements CommandExecutor {
 							target.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1726272000, 2));
 						}
 						
+						target.setWhitelisted(true);
 						target.teleport(scatterLocs.get(target.getName()));
 						PlayerUtils.broadcast(Main.PREFIX + "- §a" + target.getName() + " §7has been scattered.");
 						scatterLocs.remove(target.getName());
