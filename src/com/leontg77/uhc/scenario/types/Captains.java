@@ -25,37 +25,36 @@ import com.leontg77.uhc.utils.PlayerUtils;
  */
 public class Captains extends Scenario implements Listener, CommandExecutor {
 	private ArrayList<String> captains = new ArrayList<String>();
-	private boolean enabled = false;
 	private String chooser = "none";
+	
 	private boolean cycle = false;
 	private int current = -1;
+	
+	public static final String PREFIX = "§8[§6Captains§8] §f";
 
 	public Captains() {
 		super("Captains", "Theres X amount of captains, there will be rounds where one captain will choose a player until it reaches the teamsize.");
-		Main main = Main.plugin;
 		
-		main.getCommand("addcaptain").setExecutor(this);
-		main.getCommand("removecaptain").setExecutor(this);
-		main.getCommand("randomcaptain").setExecutor(this);
-		main.getCommand("cycle").setExecutor(this);
-		main.getCommand("choose").setExecutor(this);
+		Bukkit.getPluginCommand("addcaptain").setExecutor(this);
+		Bukkit.getPluginCommand("removecaptain").setExecutor(this);
+		Bukkit.getPluginCommand("randomcaptain").setExecutor(this);
+		Bukkit.getPluginCommand("cycle").setExecutor(this);
+		Bukkit.getPluginCommand("choose").setExecutor(this);
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onDisable() {}
+	
+	@Override
+	public void onEnable() {}
 
 	public boolean onCommand(CommandSender player, Command cmd, String label, String[] args) {
+		if (!isEnabled()) {
+			player.sendMessage(PREFIX + "Captains is not enabled.");
+			return true;
+		}
+		
 		if (cmd.getName().equalsIgnoreCase("addcaptain")) {
-			if (!isEnabled()) {
-				player.sendMessage(Main.PREFIX + "\"Captains\" is not enabled.");
-				return true;
-			}
-			
 			if (!player.hasPermission("uhc.captains")) {
 				player.sendMessage(Main.NO_PERM_MSG);
 				return true;
@@ -66,8 +65,10 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			if (captains.contains(args[0])) {
-				player.sendMessage(ChatColor.RED + args[0] + " is already an captain.");
+			String target = args[0];
+			
+			if (captains.contains(target)) {
+				player.sendMessage(PREFIX + target + " is already an captain.");
 				return true;
 			}
 
@@ -78,10 +79,10 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			team.addEntry(args[0]);
+			team.addEntry(target);
 			
-			captains.add(args[0]);
-			PlayerUtils.broadcast(Main.PREFIX + ChatColor.GREEN + args[0] + " §7is now an captain.");
+			captains.add(target);
+			PlayerUtils.broadcast(Main.PREFIX + ChatColor.GREEN + target + " §7is now an captain.");
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("removecaptain")) {
