@@ -4,16 +4,14 @@ import java.util.HashSet;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.utils.EntityUtils;
+import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -21,36 +19,36 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-@SuppressWarnings("deprecation")
 public class BlockRush extends Scenario implements Listener {
 	private HashSet<String> mined = new HashSet<String>();
-	private boolean enabled = false;
 
 	public BlockRush() {
-		super("BlockRush", "Mining a specific block type for the first time gives you 1 gold ingot.");
+		super("BlockRush", "Mining a specific block type for the first time drops 1 gold ingot.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		
-		if (mined.contains(block.getType().name() + block.getState().getRawData())) {
+		short durability = block.getState().getData().toItemStack().getDurability();
+		String name = block.getType().name();
+		
+		String combined = name + durability;
+		
+		if (mined.contains(combined)) {
 			return;
 		}
 		
-		mined.add(block.getType().name() + block.getState().getRawData());
-		PlayerUtils.broadcast(Main.PREFIX.replaceFirst("UHC", "BlockRush") + "§a" + player.getName() + " §7broke §6" + block.getType().name().toLowerCase().replaceAll("_", " ") + (block.getState().getRawData() > 0 ? ":" + block.getState().getRawData() : "") + "§7 first.");
+		PlayerUtils.broadcast("§6" + player.getName() + " §7was the first player to break " + name.toLowerCase().replaceAll("_", " ") + (durability > 0 ? ":" + durability : ""));
+		mined.add(combined);
 		
-		Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_INGOT));
-		item.setVelocity(EntityUtils.randomOffset());
+		BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_INGOT));
 	}
 }
