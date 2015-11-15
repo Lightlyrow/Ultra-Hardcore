@@ -1,5 +1,6 @@
 package com.leontg77.uhc.scenario.types;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,9 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.ItemStack;
 
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 
 /**
@@ -22,22 +21,18 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author LeonTG77
  */
 public class Backpacks extends Scenario implements Listener, CommandExecutor {
-	private boolean enabled = false;
-
+	
 	public Backpacks() {
 		super("Backpacks", "Players can type /bp to open up a backpack inventory.");
-		Main main = Main.plugin;
 		
-		main.getCommand("bp").setExecutor(this);
+		Bukkit.getPluginCommand("bp").setExecutor(this);
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
@@ -48,14 +43,7 @@ public class Backpacks extends Scenario implements Listener, CommandExecutor {
 		block.getState().update();
 		
 		Chest chest = (Chest) block.getState();
-		
-		for (ItemStack item : player.getEnderChest().getContents()) {
-			if (item == null) {
-				continue;
-			}
-			
-			chest.getInventory().addItem(item);
-		}
+		chest.getInventory().setContents(player.getEnderChest().getContents());
 		
 		player.getEnderChest().clear();
 	}
@@ -70,7 +58,7 @@ public class Backpacks extends Scenario implements Listener, CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (!isEnabled()) {
-			player.sendMessage(Main.PREFIX + "\"Backbacks\" is not enabled.");
+			player.sendMessage(ChatColor.GOLD + "Backbacks is not enabled.");
 			return true;
 		}
 
