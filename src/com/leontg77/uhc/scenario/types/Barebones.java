@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.utils.BlockBreakUtils;
 
 /**
  * Barebones scenario class
@@ -24,19 +25,16 @@ import com.leontg77.uhc.scenario.ScenarioManager;
  * @author LeonTG77
  */
 public class Barebones extends Scenario implements Listener {
-	private boolean enabled = false;
 	
 	public Barebones() {
 		super("Barebones", "The Nether is disabled, and iron is the highest tier you can obtain through gearing up. When a player dies, they will drop 1 diamond, 1 golden apple, 32 arrows, and 2 string. You cannot craft an enchantment table, anvil, or golden apple. Mining any ore except coal or iron will drop an iron ingot.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 
 	@EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
@@ -51,11 +49,9 @@ public class Barebones extends Scenario implements Listener {
 		ItemStack replaced = new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE);
     	
 		if (block.getType() == Material.EMERALD_ORE) {
-			if (block.getDrops(player.getItemInHand()).isEmpty()) {
-				return;
-			}
-
-			Main.toReplace.put(Material.EMERALD, replaced);
+            BlockBreakUtils.blockBreak(player, block);
+            BlockBreakUtils.degradeDurabiliy(player);
+            BlockBreakUtils.dropItem(block.getLocation(), new ItemStack(rand.nextInt(99) < game.getFlintRates() ? Material.FLINT : Material.GRAVEL));
 			return;
     	}
 		
