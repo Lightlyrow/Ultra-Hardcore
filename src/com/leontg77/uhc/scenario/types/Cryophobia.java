@@ -16,7 +16,6 @@ import org.bukkit.entity.Animals;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
@@ -44,7 +43,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.utils.EntityUtils;
+import com.leontg77.uhc.utils.BlockUtils;
 
 /**
  * Cryophobia scenario class
@@ -89,8 +88,8 @@ public class Cryophobia extends Scenario implements Listener {
 	public void onEnable() {
 		for (int i = 0; i < 500; i++) {
 			for (int j = 0; j < 500; j++) {
-				this.existingHeights[i][j] = this.levelHeight;
-				this.biomeLookup[i][j] = false;
+				existingHeights[i][j] = levelHeight;
+				biomeLookup[i][j] = false;
 			}
 		}
 		
@@ -301,43 +300,50 @@ public class Cryophobia extends Scenario implements Listener {
 		Random rand = new Random();
 		
 		if (rand.nextInt(40) == 0) {
-			Item item = block.getWorld().dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
-			item.setVelocity(EntityUtils.randomOffset());
+			BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
 		}
 	}
 
 	@EventHandler
 	public void onBlockFromTo(BlockFromToEvent event) {
-		if (event.getBlock().getType() == Material.ICE && event.getToBlock().getType() == Material.WATER) {
-			event.setCancelled(true);
+		Block from = event.getBlock();
+		Block to = event.getToBlock();
+		
+		if (from.getType() != Material.ICE && to.getType() != Material.WATER) {
+			return;
 		}
+		
+		event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onBlockBreakEvent(BlockBreakEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-
 		if (event.isCancelled()) {
 			return;
 		}
+		
+		Block block = event.getBlock();
 
-		if ((event.getBlock().getType() == Material.ICE) || (event.getBlock().getType() == Material.PACKED_ICE)) {
-			Random r = new Random();
-			if (r.nextInt(4) == 0) {
-				event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100, 1));
-				event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 100, 1));
-			}
-			if (r.nextInt(8) == 0) {
-				event.getPlayer().damage(1.0D);
-			}
+		if (block.getType() != Material.ICE && block.getType() != Material.PACKED_ICE) {
+			return;
+		}
+		
+		Random rand = new Random();
+		
+		if (rand.nextInt(4) == 0) {
+			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100, 1));
+			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 100, 1));
+		}
+		
+		if (rand.nextInt(8) == 0) {
+			event.getPlayer().damage(1.0D);
 		}
 	}
 
 	protected void didRaiseHeight() {
 		priorityQueue.remove("sentinel");
 		priorityQueue.addLast("sentinel");
+		
 		if (processTimer == -1) {
 			processTimer = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 				public void run() {
@@ -349,105 +355,135 @@ public class Cryophobia extends Scenario implements Listener {
 
 	protected void processChunkIfRequired() {
 		int attempts = 10;
+		
 		for (int a = 0; a < attempts; a++) {
-			String pQueue = (String) this.priorityQueue.getFirst();
+			String pQueue = (String) priorityQueue.getFirst();
+			
 			if (pQueue.equalsIgnoreCase("sentinel")) {
-				this.priorityQueue.remove("sentinel");
+				priorityQueue.remove("sentinel");
 				a = 100;
-				if (this.processTimer != -1) {
-					Bukkit.getServer().getScheduler().cancelTask(this.processTimer);
-					this.processTimer = -1;
+				
+				if (processTimer != -1) {
+					Bukkit.getServer().getScheduler().cancelTask(processTimer);
+					processTimer = -1;
 				}
 				return;
 			}
-			ChunkProcess cp = (ChunkProcess) this.chunkQueue.get(pQueue);
+			
+			ChunkProcess cp = (ChunkProcess) chunkQueue.get(pQueue);
 
 			boolean addToMiddle = false;
+			
 			if ((cp != null) && (cp.x >= 0) && (cp.x < 500) && (cp.z >= 0) && (cp.z < 500) && (this.existingHeights[cp.x][cp.z] < this.levelHeight)) {
 				World w = world;
+				
 				if (w != null) {
 					Chunk c = w.getChunkAt(cp.x - 250, cp.z - 250);
+					
 					if (c != null) {
-						int upToHeight = this.existingHeights[cp.x][cp.z];
-						if ((cp.stopHeight < this.levelHeight) && (this.levelHeight - upToHeight < 8)) {
-							cp.stopHeight = this.levelHeight;
+						int upToHeight = existingHeights[cp.x][cp.z];
+						
+						if ((cp.stopHeight < levelHeight) && (levelHeight - upToHeight < 8)) {
+							cp.stopHeight = levelHeight;
 						}
+						
 						for (int y = upToHeight; y <= cp.stopHeight; y++) {
 							for (int i = 0; i < 16; i++) {
 								for (int j = 0; j < 16; j++) {
 									if (!c.getBlock(i, y, j).getType().isSolid()) {
-										c.getBlock(i, y, j).setType(this.replaceMaterial);
+										c.getBlock(i, y, j).setType(replaceMaterial);
 									}
 								}
 							}
 						}
+						
 						a = 100;
-						this.existingHeights[cp.x][cp.z] = cp.stopHeight;
+						
+						existingHeights[cp.x][cp.z] = cp.stopHeight;
 						int stopAt = cp.stopHeight + 8;
-						if (stopAt > this.levelHeight) {
-							stopAt = this.levelHeight;
+						
+						if (stopAt > levelHeight) {
+							stopAt = levelHeight;
 						}
+						
 						cp.stopHeight = stopAt;
-						if (cp.stopHeight < this.levelHeight) {
+						
+						if (cp.stopHeight < levelHeight) {
 							addToMiddle = true;
 						}
 					}
 				}
 			}
-			this.priorityQueue.removeFirst();
+			
+			priorityQueue.removeFirst();
+			
 			if (addToMiddle) {
-				int idx = this.priorityQueue.size() / 2;
-				this.priorityQueue.add(idx, pQueue);
+				int idx = priorityQueue.size() / 2;
+				
+				priorityQueue.add(idx, pQueue);
 			} else {
-				this.priorityQueue.addLast(pQueue);
+				priorityQueue.addLast(pQueue);
 			}
 		}
 	}
 
 	public void chunkLoaded(Chunk chunk) {
-		if (this.priorityQueue == null) {
+		if (priorityQueue == null) {
 			return;
 		}
+		
 		if (chunk.getWorld().getEnvironment() != World.Environment.NORMAL) {
 			return;
 		}
-		if (!chunk.getWorld().getName().equals(this.world.getName())) {
+		
+		if (!chunk.getWorld().getName().equals(world.getName())) {
 			return;
 		}
+		
 		int xp = chunk.getX() + 250;
 		int zp = chunk.getZ() + 250;
-		if (!this.biomeLookup[xp][zp]) {
-			this.biomeLookup[zp][zp] = true;
+		
+		if (!biomeLookup[xp][zp]) {
+			biomeLookup[zp][zp] = true;
+			
 			for (int i = 0; i < 16; i++) {
 				for (int j = 0; j < 16; j++) {
 					chunk.getBlock(i, 128, j).setBiome(Biome.COLD_TAIGA);
 				}
 			}
 		}
-		int stopAt = this.existingHeights[xp][zp] + 8;
-		if (stopAt > this.levelHeight) {
-			stopAt = this.levelHeight;
+		
+		int stopAt = existingHeights[xp][zp] + 8;
+		
+		if (stopAt > levelHeight) {
+			stopAt = levelHeight;
 		}
+		
 		ChunkProcess cp = new ChunkProcess(xp, zp, stopAt);
-		this.chunkQueue.put(cp.stringRep(), cp);
-		this.priorityQueue.add(cp.stringRep());
+		
+		chunkQueue.put(cp.stringRep(), cp);
+		priorityQueue.add(cp.stringRep());
 
-		this.priorityQueue.remove("sentinel");
-		this.priorityQueue.addLast("sentinel");
+		priorityQueue.remove("sentinel");
+		priorityQueue.addLast("sentinel");
 	}
 
 	public void chunkUnloaded(Chunk chunk) {
-		if (this.priorityQueue == null) {
+		if (priorityQueue == null) {
 			return;
 		}
+		
 		if (chunk.getWorld().getEnvironment() != World.Environment.NORMAL) {
 			return;
 		}
+		
 		int xp = chunk.getX() + 250;
 		int zp = chunk.getZ() + 250;
+		
 		ChunkProcess cp = new ChunkProcess(xp, zp, 0);
-		this.chunkQueue.remove(cp.stringRep());
-		this.priorityQueue.remove(cp.stringRep());
+		
+		chunkQueue.remove(cp.stringRep());
+		priorityQueue.remove(cp.stringRep());
 	}
 
 	private class ChunkProcess {
