@@ -79,7 +79,7 @@ public class LoginListener implements Listener {
 			user.resetInventory();
 			user.resetExp();
 			
-			spec.enableSpecmode(player, true);
+			spec.enableSpecmode(player);
 		} else {
 			if (!State.isState(State.LOBBY) && !player.isWhitelisted() && !spec.isSpectating(player)) {
 				player.sendMessage(Main.PREFIX + "You joined a game without being whitelisted.");
@@ -87,7 +87,7 @@ public class LoginListener implements Listener {
 				user.resetInventory();
 				user.resetExp();
 				
-				spec.enableSpecmode(player, true);
+				spec.enableSpecmode(player);
 			} else {
 				PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
 				
