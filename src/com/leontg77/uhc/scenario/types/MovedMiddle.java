@@ -13,11 +13,11 @@ import com.leontg77.uhc.scenario.Scenario;
  * 
  * @author LeonTG77
  */
-public class No00 extends Scenario implements Listener {
+public class MovedMiddle extends Scenario implements Listener {
 	private boolean enabled = false;
 	
-	public No00() {
-		super("No0,0", "There is no 0,0 on the map, meetup coords are announced after 80 minutes.");
+	public MovedMiddle() {
+		super("Moved0,0", "There is no 0,0 on the map, meetup coords are announced after 80 minutes.");
 	}
 
 	public void setEnabled(boolean enable) {
