@@ -28,7 +28,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
  */
 public class Kings extends Scenario implements Listener, CommandExecutor {
 	private static ArrayList<String> kings = new ArrayList<String>();
-	private boolean enabled = false;
 	
 	public Kings() {
 		super("Kings", "Theres a king on each team, the king has 20 max hearts and resistance, if the king dies the teammates will be poisoned.");
@@ -37,30 +36,26 @@ public class Kings extends Scenario implements Listener, CommandExecutor {
 		main.getCommand("addking").setExecutor(this);
 		main.getCommand("remking").setExecutor(this);
 	}
-	
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-		
-		if (!enable) {
-			for (String k : kings) {
-				Player teams = Bukkit.getServer().getPlayer(k);
-	        	
-	        	if (teams == null) {
-	        		continue;
-	        	}
-	        	
-	        	for (PotionEffect effect : teams.getActivePotionEffects()) {
-	        		teams.removePotionEffect(effect.getType());
-	        	}
-	        	teams.setMaxHealth(20);
-			}
-			kings.clear();
+
+	@Override
+	public void onDisable() {
+		for (String k : kings) {
+			Player teams = Bukkit.getServer().getPlayer(k);
+        	
+        	if (teams == null) {
+        		continue;
+        	}
+        	
+        	for (PotionEffect effect : teams.getActivePotionEffects()) {
+        		teams.removePotionEffect(effect.getType());
+        	}
+        	teams.setMaxHealth(20);
 		}
+		kings.clear();
 	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 	
 	public static List<String> getKings() {
 		return kings;
@@ -100,12 +95,12 @@ public class Kings extends Scenario implements Listener, CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!isEnabled()) {
+			sender.sendMessage(Main.PREFIX + "\"Kings\" is not enabled.");
+			return true;
+		}
+		
 		if (cmd.getName().equalsIgnoreCase("addking")) {
-			if (!isEnabled()) {
-				sender.sendMessage(Main.PREFIX + "\"Kings\" is not enabled.");
-				return true;
-			}
-			
 			if (args.length == 0) {
 				sender.sendMessage(Main.PREFIX + "Usage: /setking <player>");
 				return true;
@@ -132,11 +127,6 @@ public class Kings extends Scenario implements Listener, CommandExecutor {
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("remking")) {
-			if (!isEnabled()) {
-				sender.sendMessage(Main.PREFIX + "\"Kings\" is not enabled.");
-				return true;
-			}
-			
 			if (args.length == 0) {
 				sender.sendMessage(ChatColor.RED + "Usage: /remking <player>");
 				return true;
@@ -159,11 +149,6 @@ public class Kings extends Scenario implements Listener, CommandExecutor {
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("randomkings")) {
-			if (!isEnabled()) {
-				sender.sendMessage(Main.PREFIX + "\"Kings\" is not enabled.");
-				return true;
-			}
-			
 			for (Team team : Teams.getInstance().getTeamsWithPlayers()) {
 				Player target = Bukkit.getPlayer(team.getEntries().iterator().next());
 				
