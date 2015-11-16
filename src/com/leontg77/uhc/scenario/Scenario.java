@@ -79,12 +79,12 @@ public abstract class Scenario {
 	}
 	
 	/**
-	 * Called when the scenario is enabled.
-	 */
-	public abstract void onEnable();
-	
-	/**
 	 * Called when the scenario is disabled.
 	 */
 	public abstract void onDisable();
+	
+	/**
+	 * Called when the scenario is enabled.
+	 */
+	public abstract void onEnable();
 }
