@@ -1,9 +1,8 @@
 package com.leontg77.uhc.scenario.types;
 
+import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,9 +20,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.utils.BlockUtils;
 
 /**
  * CutClean scenario class
@@ -44,30 +43,39 @@ public class CutClean extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
+		List<ItemStack> drops = event.getDrops();
 		Entity entity = event.getEntity();
 		
 		if (entity instanceof Cow) {
-			event.getDrops().clear();
-			event.getDrops().add(new ItemStack(Material.COOKED_BEEF, 3));
-			event.getDrops().add(new ItemStack(Material.LEATHER));
+			drops.clear();
+			drops.add(new ItemStack(Material.COOKED_BEEF, 3));
+			drops.add(new ItemStack(Material.LEATHER));
+			return;
 		} 
-		else if (entity instanceof Chicken) {
-			event.getDrops().clear();
-			event.getDrops().add(new ItemStack(Material.COOKED_CHICKEN, 3));
-			event.getDrops().add(new ItemStack(Material.FEATHER, 2));
+			
+		if (entity instanceof Chicken) {
+			drops.clear();
+			drops.add(new ItemStack(Material.COOKED_CHICKEN, 3));
+			drops.add(new ItemStack(Material.FEATHER, 2));
+			return;
 		}
-		else if (entity instanceof Pig) {
-			event.getDrops().clear();
-			event.getDrops().add(new ItemStack(Material.GRILLED_PORK, 3));
+		
+		if (entity instanceof Pig) {
+			drops.clear();
+			drops.add(new ItemStack(Material.GRILLED_PORK, 3));
+			return;
 		}
-		else if (entity instanceof Sheep) {
-			event.getDrops().clear();
-			event.getDrops().add(new ItemStack(Material.COOKED_MUTTON, 2));
+		
+		if (entity instanceof Sheep) {
+			drops.clear();
+			drops.add(new ItemStack(Material.COOKED_MUTTON, 2));
+			return;
 		}
-		else if (entity instanceof Rabbit) {
-			event.getDrops().clear();
-			event.getDrops().add(new ItemStack(Material.COOKED_RABBIT, 1));
-			event.getDrops().add(new ItemStack(Material.RABBIT_HIDE));
+	
+		if (entity instanceof Rabbit) {
+			drops.clear();
+			drops.add(new ItemStack(Material.COOKED_RABBIT, 1));
+			drops.add(new ItemStack(Material.RABBIT_HIDE));
 		}
 	}
 	
@@ -82,32 +90,28 @@ public class CutClean extends Scenario implements Listener {
 			return;
 		}
 		
-		if (block.getType() == Material.IRON_ORE) {
-			if (block.getDrops(player.getItemInHand()).isEmpty()) {
-				return;
-			}
-
-			if (scen.getScenario("TripleOres").isEnabled()) {
-				return;
-			}
-			
-			Main.toReplace.put(Material.IRON_ORE, new ItemStack (Material.IRON_INGOT));
-			
-			ExperienceOrb exp = (ExperienceOrb) block.getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-			exp.setExperience(3);
+		if (block.getDrops(player.getItemInHand()).isEmpty()) {
 			return;
 		}
 		
-		if (block.getType() == Material.POTATO) {
-			Main.toReplace.put(Material.POTATO_ITEM, new ItemStack(Material.BAKED_POTATO, 1 + new Random().nextInt(2)));
+		if (block.getType() == Material.IRON_ORE) {
+			if (scen.getScenario("TripleOres").isEnabled()) {
+				return;
+			}
+
+			event.setCancelled(true);
+			block.setType(Material.AIR);
+			
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
+			BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.IRON_INGOT));
+			
+			ExperienceOrb exp = (ExperienceOrb) block.getWorld().spawn(block.getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
+			exp.setExperience(1);
 			return;
 		}
 		
 		if (block.getType() == Material.GOLD_ORE) {
-			if (block.getDrops(player.getItemInHand()).isEmpty()) {
-				return;
-			}
-
 			if (scen.getScenario("Barebones").isEnabled()) {
 				return;
 			}
@@ -119,11 +123,26 @@ public class CutClean extends Scenario implements Listener {
 			if (scen.getScenario("TripleOres").isEnabled()) {
 				return;
 			}
+
+			event.setCancelled(true);
+			block.setType(Material.AIR);
 			
-			Main.toReplace.put(Material.GOLD_ORE, new ItemStack (Material.GOLD_INGOT));
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
+			BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.GOLD_INGOT));
 			
-			ExperienceOrb exp = (ExperienceOrb) block.getWorld().spawn(event.getBlock().getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
-			exp.setExperience(7);
+			ExperienceOrb exp = (ExperienceOrb) block.getWorld().spawn(block.getLocation().add(0.5, 0.3, 0.5), ExperienceOrb.class);
+			exp.setExperience(2);
+			return;
+		}
+		
+		if (block.getType() == Material.POTATO) {
+			event.setCancelled(true);
+			block.setType(Material.AIR);
+			
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
+			BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.BAKED_POTATO, 1 + new Random().nextInt(2)));
 		}
 	}
 }
