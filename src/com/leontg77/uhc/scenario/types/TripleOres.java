@@ -30,14 +30,12 @@ public class TripleOres extends Scenario implements Listener {
 	public TripleOres() {
 		super("TripleOres", "When mining an ore it drops 3 of the dropped item.");
 	}
-	
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
-	
-	public boolean isEnabled() {
-		return enabled;
-	}
+
+	@Override
+	public void onDisable() {}
+
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
