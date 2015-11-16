@@ -311,11 +311,19 @@ public class Spectator {
 	 * @author LeonTG77
 	 */
 	public static class SpecInfo implements Listener {
-		private HashMap<String, Integer> totalDiamonds = new HashMap<String, Integer>();
-		private HashMap<String, Integer> totalGold = new HashMap<String, Integer>();
+		private static HashMap<String, Integer> totalDiamonds = new HashMap<String, Integer>();
+		private static HashMap<String, Integer> totalGold = new HashMap<String, Integer>();
 		
 		private HashSet<Location> locs = new HashSet<Location>();
 		private Spectator spec = Spectator.getInstance();
+
+		public static HashMap<String, Integer> getTotalDiamonds() {
+			return totalDiamonds;
+		}
+
+		public static HashMap<String, Integer> getTotalGold() {
+			return totalGold;
+		}
 		
 		/**
 		 * Broadcast the given message to all people with specinfo.
@@ -357,13 +365,13 @@ public class Spectator {
 					}
 				}
 				
-				if (totalGold.containsKey(player.getName())) {
-					totalGold.put(player.getName(), totalGold.get(player.getName()) + amount);
+				if (getTotalGold().containsKey(player.getName())) {
+					getTotalGold().put(player.getName(), getTotalGold().get(player.getName()) + amount);
 				} else {
-					totalGold.put(player.getName(), amount);
+					getTotalGold().put(player.getName(), amount);
 				}
 				
-				broadcast("§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + totalGold.get(player.getName()) + "§f]");
+				broadcast("§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + getTotalGold().get(player.getName()) + "§f]");
 				return;
 			}
 			
@@ -388,13 +396,13 @@ public class Spectator {
 					}
 				}
 				
-				if (totalDiamonds.containsKey(player.getName())) {
-					totalDiamonds.put(player.getName(), totalDiamonds.get(player.getName()) + amount);
+				if (getTotalDiamonds().containsKey(player.getName())) {
+					getTotalDiamonds().put(player.getName(), getTotalDiamonds().get(player.getName()) + amount);
 				} else {
-					totalDiamonds.put(player.getName(), amount);
+					getTotalDiamonds().put(player.getName(), amount);
 				}
 				
-				broadcast("§7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + totalDiamonds.get(player.getName()) + "§f]");
+				broadcast("§7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + getTotalDiamonds().get(player.getName()) + "§f]");
 			}
 		}
 
