@@ -14,61 +14,47 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author LeonTG77
  */
 public class GoldRush extends Scenario implements Listener {
-	private boolean enabled = false;
 
 	public GoldRush() {
 		super("GoldRush", "You cannot craft leather or iron armor.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
 		ItemStack item = event.getRecipe().getResult();
 		
-		if (item.getType() == Material.IRON_HELMET) {
-			event.getInventory().setResult(new ItemStack(Material.AIR));
+		if (!isLeatherOrIronArmor(item)) {
 			return;
 		}
 		
-		if (item.getType() == Material.IRON_CHESTPLATE) {
-			event.getInventory().setResult(new ItemStack(Material.AIR));
-			return;
-		}
-		
-		if (item.getType() == Material.IRON_LEGGINGS) {
-			event.getInventory().setResult(new ItemStack(Material.AIR));
-			return;
-		}
-		
-		if (item.getType() == Material.IRON_BOOTS) {
-			event.getInventory().setResult(new ItemStack(Material.AIR));
-			return;
-		}
-		
-		if (item.getType() == Material.LEATHER_HELMET) {
-			event.getInventory().setResult(new ItemStack(Material.AIR));
-			return;
-		}
-		
-		if (item.getType() == Material.LEATHER_CHESTPLATE) {
-			event.getInventory().setResult(new ItemStack(Material.AIR));
-			return;
-		}
-		
-		if (item.getType() == Material.LEATHER_LEGGINGS) {
-			event.getInventory().setResult(new ItemStack(Material.AIR));
-			return;
-		}
-		
-		if (item.getType() == Material.LEATHER_BOOTS) {
-			event.getInventory().setResult(new ItemStack(Material.AIR));
+		event.getInventory().setResult(new ItemStack(Material.AIR));
+	}
+	
+	/**
+	 * Check if the given item is leather armor or iron armor.
+	 * 
+	 * @param item The item checking.
+	 * @return True if it is, false if not.
+	 */
+	private boolean isLeatherOrIronArmor(ItemStack item) {
+		switch (item.getType()) {
+		case LEATHER_HELMET:
+		case LEATHER_CHESTPLATE:
+		case LEATHER_LEGGINGS:
+		case LEATHER_BOOTS:
+		case IRON_HELMET:
+		case IRON_CHESTPLATE:
+		case IRON_LEGGINGS:
+		case IRON_BOOTS:
+			return true;
+		default:
+			return false;
 		}
 	}
 }
