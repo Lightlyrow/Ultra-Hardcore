@@ -27,6 +27,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.google.common.collect.ImmutableList;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.listeners.ArenaListener;
 import com.leontg77.uhc.scoreboard.Scoreboards;
@@ -56,9 +57,10 @@ public class Arena {
 	public Objective arenaKills = board.getObjective("arenaKills");
 	
 	public HashMap<Player, Integer> killstreak = new HashMap<Player, Integer>();
+	private List<Player> players = new ArrayList<Player>();
 	
-	private ArrayList<Player> players = new ArrayList<Player>();
-	private ArrayList<Long> seeds = new ArrayList<Long>();
+	// make a list of found seeds that are good for the arena.
+	private List<Long> seeds = ImmutableList.of(-4978851967201209985l, -4967553104279076810l, -8429542510557232451l, -3176074841184868038l, -397143620226990283l, -6555102318239067639l, 6776651824076158879l);
 
 	/**
 	 * Gets the instance of the class.
@@ -76,15 +78,6 @@ public class Arena {
 		if (board.getObjective("arenaKills") == null) {
 			arenaKills = board.registerNewObjective("arenaKills", "dummy");
 		}
-
-		seeds.add(-281289493347827785l);
-		seeds.add(-3703739705758069691l);
-		seeds.add(-4092363856954762791l);
-		seeds.add(8563798513411452931l);
-		seeds.add(3543701468968612620l);
-		seeds.add(8171481896432811161l);
-		seeds.add(-2686161525319484628l);
-		seeds.add(6333008698316655937l);
 		
 		arenaKills.setDisplayName("§4Arena §8- §7Use /a to join");
 		
