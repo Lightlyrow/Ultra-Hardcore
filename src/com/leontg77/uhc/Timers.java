@@ -82,9 +82,7 @@ public class Timers {
 
 		new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
-					InvGUI.getInstance().openGameInfo(online);
-				}
+				InvGUI.getInstance().openGameInfo(PlayerUtils.getPlayers());
 			}
 		}.runTaskLater(Main.plugin, 100);
 
@@ -193,8 +191,8 @@ public class Timers {
 				timer();
 
 				Bukkit.getServer().setIdleTimeout(10);
-				SpecInfo.totalDiamonds.clear();
-				SpecInfo.totalGold.clear();
+				SpecInfo.getTotalDiamonds().clear();
+				SpecInfo.getTotalGold().clear();
 				
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
@@ -631,8 +629,8 @@ public class Timers {
 					online.setLevel(0);
 					online.setExp(0);
 
-					SpecInfo.totalDiamonds.clear();
-					SpecInfo.totalGold.clear();
+					SpecInfo.getTotalDiamonds().clear();
+					SpecInfo.getTotalGold().clear();
 					
 					PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
 				}
