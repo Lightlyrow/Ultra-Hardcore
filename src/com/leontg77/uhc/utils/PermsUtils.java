@@ -3,6 +3,7 @@ package com.leontg77.uhc.utils;
 import static com.leontg77.uhc.Main.plugin;
 
 import java.io.File;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ import com.leontg77.uhc.User.Rank;
  * @author LeonTG77
  */
 public class PermsUtils {
+	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	
 	/**
 	 * Handle the permissions for the given player.
@@ -39,11 +41,11 @@ public class PermsUtils {
     		}
         }
 		
-		if (Main.permissions.get(player.getName()) == null) {
-			Main.permissions.put(player.getName(), player.addAttachment(Main.plugin));
+		if (permissions.get(player.getName()) == null) {
+			permissions.put(player.getName(), player.addAttachment(Main.plugin));
 		}
 
-		PermissionAttachment perm = Main.permissions.get(player.getName());
+		PermissionAttachment perm = permissions.get(player.getName());
 		
 		if (!found) {
 			return;
@@ -143,16 +145,16 @@ public class PermsUtils {
 	 * @param player the player.
 	 */
 	public static void removePermissions(Player player) {
-		if (!Main.permissions.containsKey(player.getName())) {
+		if (!permissions.containsKey(player.getName())) {
 			return;
 		}
 		
 		try {
-			player.removeAttachment(Main.permissions.get(player.getName()));
+			player.removeAttachment(permissions.get(player.getName()));
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("Couldn't remove " + player.getName() + "'s permissions.");
 		}
 		
-		Main.permissions.remove(player.getName());
+		permissions.remove(player.getName());
 	}
 }
