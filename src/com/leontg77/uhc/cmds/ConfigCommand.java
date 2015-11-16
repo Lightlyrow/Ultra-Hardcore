@@ -90,6 +90,8 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		
+		InvGUI.getGameInfo().update();
+		
 		switch (type) {
 		case APPLERATES:
 			int appleRate;
