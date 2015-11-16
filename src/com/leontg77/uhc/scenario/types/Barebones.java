@@ -14,10 +14,9 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.utils.BlockBreakUtils;
+import com.leontg77.uhc.utils.BlockUtils;
 
 /**
  * Barebones scenario class
@@ -48,47 +47,13 @@ public class Barebones extends Scenario implements Listener {
 		boolean cutclean = ScenarioManager.getInstance().getScenario("CutClean").isEnabled();
 		ItemStack replaced = new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE);
     	
-		if (block.getType() == Material.EMERALD_ORE) {
-            BlockBreakUtils.blockBreak(player, block);
-            BlockBreakUtils.degradeDurabiliy(player);
-            BlockBreakUtils.dropItem(block.getLocation(), new ItemStack(rand.nextInt(99) < game.getFlintRates() ? Material.FLINT : Material.GRAVEL));
+		if (block.getType() != Material.EMERALD_ORE && block.getType() != Material.REDSTONE_ORE && block.getType() != Material.LAPIS_ORE && block.getType() != Material.GOLD_ORE && block.getType() != Material.DIAMOND_ORE) {
 			return;
     	}
 		
-		if (block.getType() == Material.REDSTONE_ORE) {
-			if (block.getDrops(player.getItemInHand()).isEmpty()) {
-				return;
-			}
-
-			Main.toReplace.put(Material.REDSTONE, replaced);
-			return;
-    	}
-    	
-		if (block.getType() == Material.LAPIS_ORE) {
-			if (block.getDrops(player.getItemInHand()).isEmpty()) {
-				return;
-			}
-
-			Main.toReplace.put(Material.INK_SACK, replaced);
-			return;
-    	}
-    	
-		if (block.getType() == Material.GOLD_ORE) {
-			if (block.getDrops(player.getItemInHand()).isEmpty()) {
-				return;
-			}
-
-			Main.toReplace.put(Material.GOLD_ORE, replaced);
-			return;
-    	}
-    	
-		if (block.getType() == Material.DIAMOND_ORE) {
-			if (block.getDrops(player.getItemInHand()).isEmpty()) {
-				return;
-			}
-
-			Main.toReplace.put(Material.DIAMOND, replaced);
-    	}
+        BlockUtils.blockBreak(player, block);
+        BlockUtils.degradeDurabiliy(player);
+        BlockUtils.dropItem(block.getLocation(), replaced);
     }
 	
 	@EventHandler
