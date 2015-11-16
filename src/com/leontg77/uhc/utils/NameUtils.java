@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
