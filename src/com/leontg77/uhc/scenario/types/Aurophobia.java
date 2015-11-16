@@ -10,11 +10,11 @@ import org.bukkit.entity.Silverfish;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.utils.BlockUtils;
 
 /**
  * Aurophobia scenario class
@@ -55,7 +55,10 @@ public class Aurophobia extends Scenario implements Listener {
 		
 		if (rand.nextDouble() <= 0.05) {
 			event.setCancelled(true);
-			block.breakNaturally(new ItemStack(Material.AIR));
+			block.setType(Material.AIR);
+			
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
 		}
 		
 		if (rand.nextDouble() <= 0.05) {
