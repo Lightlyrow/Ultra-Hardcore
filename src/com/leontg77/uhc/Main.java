@@ -19,20 +19,17 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.material.MaterialData;
-import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
@@ -109,6 +106,13 @@ import com.leontg77.uhc.cmds.UnbanIPCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.cmds.WhitelistCommand;
 import com.leontg77.uhc.cmds.WorldCommand;
+import com.leontg77.uhc.inventory.listener.ConfigListener;
+import com.leontg77.uhc.inventory.listener.HOFListener;
+import com.leontg77.uhc.inventory.listener.InfoListener;
+import com.leontg77.uhc.inventory.listener.InvseeListener;
+import com.leontg77.uhc.inventory.listener.SelectorListener;
+import com.leontg77.uhc.inventory.listener.SpectatorListener;
+import com.leontg77.uhc.inventory.listener.StatsListener;
 import com.leontg77.uhc.listeners.BlockListener;
 import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.InventoryListener;
@@ -116,19 +120,13 @@ import com.leontg77.uhc.listeners.LoginListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
-import com.leontg77.uhc.listeners.inventory.ConfigListener;
-import com.leontg77.uhc.listeners.inventory.HOFListener;
-import com.leontg77.uhc.listeners.inventory.InfoListener;
-import com.leontg77.uhc.listeners.inventory.InvseeListener;
-import com.leontg77.uhc.listeners.inventory.SelectorListener;
-import com.leontg77.uhc.listeners.inventory.SpectatorListener;
-import com.leontg77.uhc.listeners.inventory.StatsListener;
-import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scoreboard.Scoreboards;
 import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.ubl.UBL;
 import com.leontg77.uhc.ubl.UBLListener;
+import com.leontg77.uhc.utils.DateUtils;
+import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -149,16 +147,11 @@ public class Main extends JavaPlugin {
 	public static final String PREFIX = "§4§lUHC §8» §7";
 	public static final String NO_PERM_MSG = PREFIX + "§cYou can't use that command.";
 	
-	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
-	
-	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
-	public static HashMap<Inventory, BukkitRunnable> gameInfo = new HashMap<Inventory, BukkitRunnable>();
+	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
 	
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
-	
-	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
 	
 	public static Recipe headRecipe;
 	public static Recipe melonRecipe;
@@ -338,6 +331,8 @@ public class Main extends JavaPlugin {
 			PermsUtils.addPermissions(online);
 		}
 		
+		InvGUI.getGameInfo().update();
+		
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
@@ -416,6 +411,35 @@ public class Main extends JavaPlugin {
 						world.setDifficulty(Difficulty.HARD);
 					}
 				}
+				
+				ItemStack timer = new ItemStack (Material.WATCH);
+				ItemMeta timerMeta = timer.getItemMeta();
+				timerMeta.setDisplayName("§8» §6Timers §8«");
+				
+				List<String> lore = new ArrayList<String>();
+				lore.add(" ");
+				
+				if (Game.getInstance().isRecordedRound()) {
+					lore.add("§8» §7Current Episode: §a" + Timers.meetup);
+					lore.add("§8» §7Time to next episode: §a" + Timers.time + " mins");
+				}
+				else if (GameUtils.getTeamSize().startsWith("No") || GameUtils.getTeamSize().startsWith("Open")) {
+					lore.add("§8» §7There are no matches running.");
+				}
+				else if (!State.isState(State.INGAME)) {
+					lore.add("§8» §7The game has not started yet.");
+				}
+				else {
+					lore.add("§8» §7Time since start: §a" + DateUtils.ticksToString(Timers.timeSeconds));
+					lore.add(Timers.pvpSeconds <= 0 ? "§8» §aPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Timers.pvpSeconds));
+					lore.add(Timers.meetupSeconds <= 0 ? "§8» §6Meetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
+				}
+				
+				lore.add(" ");
+				timerMeta.setLore(lore);
+				timer.setItemMeta(timerMeta);
+				InvGUI.getGameInfo().get().setItem(25, timer);
+				lore.clear();
 			}
 		}, 1, 1);
 	}
@@ -451,7 +475,6 @@ public class Main extends JavaPlugin {
 	/**
 	 * Adds the golden head recipe.
 	 */
-	@SuppressWarnings("deprecation")
 	public void addRecipes() {
         ItemStack head = new ItemStack(Material.GOLDEN_APPLE);
         ItemMeta meta = head.getItemMeta();
@@ -459,11 +482,11 @@ public class Main extends JavaPlugin {
         meta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Some say consuming the head of a", ChatColor.DARK_PURPLE + "fallen foe strengthens the blood."));
         head.setItemMeta(meta); 
 
-        MaterialData data = new MaterialData(Material.SKULL_ITEM, (byte) 3);
+        ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
         
         ShapedRecipe goldenmelon = new ShapedRecipe(new ItemStack(Material.SPECKLED_MELON)).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);
-        ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', data);
-
+        ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', skull.getData());
+        
         getServer().addRecipe(goldenmelon);
         getServer().addRecipe(goldenhead);
 
@@ -472,6 +495,15 @@ public class Main extends JavaPlugin {
 
         getLogger().info("Golden Melon recipe added.");
         getLogger().info("Golden Head recipe added.");
+
+        ShapelessRecipe ironplate = new ShapelessRecipe(new ItemStack(Material.IRON_INGOT, 2)).addIngredient(Material.IRON_PLATE);
+        ShapelessRecipe goldplate = new ShapelessRecipe(new ItemStack(Material.GOLD_INGOT, 2)).addIngredient(Material.GOLD_PLATE);
+        
+        getServer().addRecipe(ironplate);
+        getServer().addRecipe(goldplate);
+        
+        getLogger().info("IronPlate craftback recipe added.");
+        getLogger().info("GoldPlate craftback recipe added.");
 	}
 	
 	/**
@@ -479,15 +511,9 @@ public class Main extends JavaPlugin {
 	 */
 	public void saveData() {
 		Settings settings = Settings.getInstance();
+		
 		settings.getData().set("state", State.getState().name());
-		
-		List<String> list = new ArrayList<String>();
-		
-		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
-			list.add(scen.getName());
-		}
-	
-		settings.getData().set("scenarios", list);
+		settings.getData().set("scenarios", ScenarioManager.getInstance().getEnabledScenarios());
 		
 		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
 			settings.getData().set("teamkills." + tkEntry.getKey(), tkEntry.getValue());
@@ -654,9 +680,11 @@ public class Main extends JavaPlugin {
 
 	    @Override
 	    public void onPacketSending(PacketEvent event) {
-	        if (event.getPacketType().equals(Play.Server.LOGIN)) {
-	            event.getPacket().getBooleans().write(0, true);
+	        if (!event.getPacketType().equals(Play.Server.LOGIN)) {
+	        	return;
 	        }
+	        
+            event.getPacket().getBooleans().write(0, true);
 	    }
 	    
 	    public static void enable() {
