@@ -1,4 +1,4 @@
-package com.leontg77.uhc.listeners.inventory;
+package com.leontg77.uhc.inventory.listener;
 
 import java.util.ArrayList;
 import java.util.Random;

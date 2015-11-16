@@ -1,4 +1,4 @@
-package com.leontg77.uhc.listeners.inventory;
+package com.leontg77.uhc.inventory.listener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -6,7 +6,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 
-import com.leontg77.uhc.Main;
+import com.leontg77.uhc.InvGUI;
 
 /**
  * Invsee inventory listener class.
@@ -21,12 +21,12 @@ public class InvseeListener implements Listener {
 	public void onInventoryClose(InventoryCloseEvent event) {
 		Inventory inv = event.getInventory();
 
-		if (!Main.invsee.containsKey(inv)) {
+		if (!InvGUI.invsee.containsKey(inv)) {
 			return;
 		}
 		
-		Main.invsee.get(inv).cancel();
-		Main.invsee.remove(inv);
+		InvGUI.invsee.get(inv).cancel();
+		InvGUI.invsee.remove(inv);
 	}
 	
 	@EventHandler
