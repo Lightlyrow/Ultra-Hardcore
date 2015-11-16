@@ -92,7 +92,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
-			spec.toggle(target, false);
+			spec.toggle(target);
 			return true;
 		}
 		
@@ -102,7 +102,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
-			spec.enableSpecmode(target, false);
+			spec.enableSpecmode(target);
 			return true;
 		}
 		
@@ -112,7 +112,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
-			spec.disableSpecmode(target, false);
+			spec.disableSpecmode(target);
 			return true;
 		}
 
