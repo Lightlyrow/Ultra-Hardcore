@@ -39,7 +39,7 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.utils.EntityUtils;
+import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -187,17 +187,17 @@ public class Astrophobia extends Scenario implements Listener {
 				float fr = r.nextFloat() * 100.0F;
 				
 				if (fr < chancePerDiamond) {
-					loc.getWorld().dropItem(loc, new ItemStack(Material.DIAMOND, 1)).setVelocity(EntityUtils.randomOffset());
+					BlockUtils.dropItem(loc, new ItemStack(Material.DIAMOND, 1));
 					return;
 				} 
 				
 				if (fr < chancePerDiamond + chancePerGold) {
-					loc.getWorld().dropItem(loc, new ItemStack(Material.GOLD_ORE, 2)).setVelocity(EntityUtils.randomOffset());
+					BlockUtils.dropItem(loc, new ItemStack(Material.GOLD_ORE, 2));
 					return;
 				} 
 				
 				if (fr < chancePerDiamond + chancePerGold + chancePerIron) {
-					loc.getWorld().dropItem(loc, new ItemStack(Material.IRON_ORE, 2)).setVelocity(EntityUtils.randomOffset());
+					BlockUtils.dropItem(loc, new ItemStack(Material.IRON_ORE, 2));
 				}
 			}
 		}.runTaskLater(Main.plugin, 2L);
