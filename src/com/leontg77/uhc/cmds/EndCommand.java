@@ -128,6 +128,10 @@ public class EndCommand implements CommandExecutor {
 			scen.setEnabled(false);
 		}
 
+		for (World world : Bukkit.getWorlds()) {
+			world.save();
+		}
+
 		for (Player online : PlayerUtils.getPlayers()) {
 			for (Player onlineTwo : PlayerUtils.getPlayers()) {
 				online.showPlayer(onlineTwo);
@@ -135,7 +139,7 @@ public class EndCommand implements CommandExecutor {
 			}
 			
 			if (spec.isSpectating(online)) {
-				spec.disableSpecmode(online, true);
+				spec.disableSpecmode(online);
 			}
 
 			online.setGameMode(GameMode.SURVIVAL);
@@ -145,6 +149,8 @@ public class EndCommand implements CommandExecutor {
 			
 			User user = User.get(online);
 			user.reset();
+			
+			online.saveData();
 		}
 		
 		HandlerList.unregisterAll(new SpecInfo());
@@ -156,8 +162,8 @@ public class EndCommand implements CommandExecutor {
 		spec.spectators.clear();
 		TeamCommand.savedTeams.clear();
 		
-		SpecInfo.totalDiamonds.clear();
-		SpecInfo.totalGold.clear();
+		SpecInfo.getTotalDiamonds().clear();
+		SpecInfo.getTotalGold().clear();
 		
 		Main.teamKills.clear();
 		Main.kills.clear();
