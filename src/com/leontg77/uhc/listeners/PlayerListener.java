@@ -298,7 +298,7 @@ public class PlayerListener implements Listener {
 					online.showPlayer(player);
 				}
 				
-				spec.enableSpecmode(player, true);
+				spec.enableSpecmode(player);
 			}
 		}.runTaskLater(Main.plugin, 200);
 	}
