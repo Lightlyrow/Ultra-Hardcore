@@ -36,57 +36,52 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Halloween extends Scenario implements Listener {
-	private boolean enabled = false;
 	private BukkitRunnable task;
 	
 	public Halloween() {
 		super("Halloween", "Random lightnining strikes around the player at random intervals causing bats to spawn around you and giving you nausea for 10 seconds if you get hit. Getting hit by a hostile mob causes 15 seconds of blindness. All spiders are replaced with cave spiders, witch rates are upped at last Zombies and Skellies spawn with jack o' lanterns.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-		
-		if (enable) {
-			this.task = new BukkitRunnable() {
-				public void run() {
-					Random ran = new Random();
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						Location loc = online.getLocation();
-						
-						if (!GameUtils.getGameWorlds().contains(loc.getWorld())) {
-							continue;
-						}
-						
-						int diffX = ran.nextInt(25 * 2) - 25;
-						int diffZ = ran.nextInt(25 * 2) - 25;
-
-						final Location hitLoc = loc.clone().add(diffX, 0, diffZ);
-						hitLoc.setY(LocationUtils.highestTeleportableYAtLocation(hitLoc) + 1);
-						
-						hitLoc.getWorld().strikeLightning(hitLoc);
-						
-						new BukkitRunnable() {
-							public void run() {
-								hitLoc.setY(LocationUtils.highestTeleportableYAtLocation(hitLoc) + 1);
-								
-								for (int i = 0; i < 15; i++) {
-									hitLoc.getWorld().spawn(hitLoc, Bat.class).addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0));
-								}
-							}
-						}.runTaskLater(Main.plugin, 15);
-					}
-				}
-			};
-			
-			task.runTaskTimer(Main.plugin, 600, 700);
-		} else {
-			task.cancel();
-		}
+	@Override
+	public void onDisable() {
+		task.cancel();
 	}
 
-	public boolean isEnabled() {
-		return enabled;
+	@Override
+	public void onEnable() {
+		task = new BukkitRunnable() {
+			public void run() {
+				Random ran = new Random();
+				
+				for (Player online : PlayerUtils.getPlayers()) {
+					Location loc = online.getLocation();
+					
+					if (!GameUtils.getGameWorlds().contains(loc.getWorld())) {
+						continue;
+					}
+					
+					int diffX = ran.nextInt(25 * 2) - 25;
+					int diffZ = ran.nextInt(25 * 2) - 25;
+
+					final Location hitLoc = loc.clone().add(diffX, 0, diffZ);
+					hitLoc.setY(LocationUtils.highestTeleportableYAtLocation(hitLoc) + 1);
+					
+					hitLoc.getWorld().strikeLightning(hitLoc);
+					
+					new BukkitRunnable() {
+						public void run() {
+							hitLoc.setY(LocationUtils.highestTeleportableYAtLocation(hitLoc) + 1);
+							
+							for (int i = 0; i < 15; i++) {
+								hitLoc.getWorld().spawn(hitLoc, Bat.class).addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0));
+							}
+						}
+					}.runTaskLater(Main.plugin, 15);
+				}
+			}
+		};
+		
+		task.runTaskTimer(Main.plugin, 600, 700);
 	}
 
 	@EventHandler
