@@ -89,6 +89,10 @@ public class BlockUtils {
 		
 		return new Vector(offsetX, 0.2, offsetZ);
 	}
+	
+	public static int getDurability(Block block) {
+		return block.getState().getData().toItemStack().getDurability();
+	}
 
 	/**
 	 * Get the sapling that should be dropped from the leaf.
