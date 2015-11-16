@@ -115,7 +115,6 @@ public class EntityListener implements Listener {
     		
     		if (entity instanceof Monster) {
     			user.increaseStat(Stat.HOSTILEMOBKILLS);
-    			return;
     		}
     		
     		if (entity instanceof Animals) {
