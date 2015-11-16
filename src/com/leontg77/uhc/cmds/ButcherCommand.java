@@ -15,7 +15,7 @@ import org.bukkit.entity.EntityType;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.EntityUtils;
-import com.leontg77.uhc.utils.NameUtils;
+import com.leontg77.uhc.utils.GameUtils;
 
 /**
  * Butcher command class.
@@ -34,7 +34,7 @@ public class ButcherCommand implements CommandExecutor, TabCompleter {
 		int amount = 0;
 		
 		if (args.length == 0) {
-			for (World world : Bukkit.getWorlds()) {
+			for (World world : GameUtils.getGameWorlds()) {
 	    		for (Entity mob : world.getEntities()) {
 					if (EntityUtils.isButcherable(mob.getType())) {
 						mob.remove();
@@ -65,7 +65,7 @@ public class ButcherCommand implements CommandExecutor, TabCompleter {
     		}
        	}
     	
-		sender.sendMessage(Main.PREFIX + "Killed §6" + amount + " §7" + NameUtils.getMobName(type).toLowerCase() + "s.");
+		sender.sendMessage(Main.PREFIX + "Killed §6" + amount + " §7" + EntityUtils.getMobName(type).toLowerCase() + "s.");
 		return true;
 	}
 
