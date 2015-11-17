@@ -52,7 +52,6 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Spectator;
@@ -62,6 +61,7 @@ import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.VoteCommand;
+import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scoreboard.Scoreboards;
 import com.leontg77.uhc.scoreboard.Teams;
