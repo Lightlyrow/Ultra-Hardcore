@@ -1,4 +1,4 @@
-package com.leontg77.uhc;
+package com.leontg77.uhc.inventory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +22,12 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.ImmutableList;
+import com.leontg77.uhc.Game;
+import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Settings;
+import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Stat;
-import com.leontg77.uhc.inventory.GameInfo;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NameUtils;
