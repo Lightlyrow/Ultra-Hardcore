@@ -106,9 +106,9 @@ import com.leontg77.uhc.cmds.UnbanIPCommand;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.cmds.WhitelistCommand;
 import com.leontg77.uhc.cmds.WorldCommand;
+import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.inventory.listener.ConfigListener;
 import com.leontg77.uhc.inventory.listener.HOFListener;
-import com.leontg77.uhc.inventory.listener.InfoListener;
 import com.leontg77.uhc.inventory.listener.InvseeListener;
 import com.leontg77.uhc.inventory.listener.SelectorListener;
 import com.leontg77.uhc.inventory.listener.SpectatorListener;
@@ -215,7 +215,7 @@ public class Main extends JavaPlugin {
 		// register all inventory listeners.
 		manager.registerEvents(new ConfigListener(), this);
 		manager.registerEvents(new HOFListener(), this);
-		manager.registerEvents(new InfoListener(), this);
+		manager.registerEvents(InvGUI.getGameInfo(), this);
 		manager.registerEvents(new InvseeListener(), this);
 		manager.registerEvents(new SelectorListener(), this);
 		manager.registerEvents(new SpectatorListener(), this);
@@ -331,6 +331,7 @@ public class Main extends JavaPlugin {
 			PermsUtils.addPermissions(online);
 		}
 		
+		InvGUI.getGameInfo().updateStaff();
 		InvGUI.getGameInfo().update();
 		
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
