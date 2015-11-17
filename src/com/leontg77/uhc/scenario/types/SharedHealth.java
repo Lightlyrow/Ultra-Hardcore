@@ -27,21 +27,18 @@ import com.leontg77.uhc.scenario.Scenario;
 public class SharedHealth extends Scenario implements Listener {
 	private Map<String, Double> damageBalance;
     private Map<String, Boolean> sharedDamage;
-	private boolean enabled = false;
 	
 	public SharedHealth() {
 		super("SharedHealth", "All teammates share their health, does not apply for lava, fire or poison damage");
 		damageBalance = new HashMap<String, Double>();
         sharedDamage = new HashMap<String, Boolean>();
 	}
-	
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onDisable() {}
+
+	@Override
+	public void onEnable() {}
 
 	@EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {

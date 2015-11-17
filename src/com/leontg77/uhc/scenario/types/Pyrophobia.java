@@ -39,7 +39,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
  */
 public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 	private ArrayList<Location> locations;
-	private boolean enabled = false;
 	private int generateTaskID;
 	private int totalChunks;
 
@@ -53,13 +52,11 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 	    main.getCommand("genpyro").setExecutor(this);
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 
 	@EventHandler
 	public void onPlayerBucketFill(PlayerBucketFillEvent event) {

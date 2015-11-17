@@ -29,7 +29,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
-	private boolean enabled = false;
 	
 	private boolean bidProgressing = false;
 	private int bidTime = 0, biggestBid = -1;
@@ -46,13 +45,11 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 		main.getCommand("bid").setExecutor(this);
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 	
 	public String prefix() {
 		return Main.PREFIX.replaceAll("UHC", "Slave");
