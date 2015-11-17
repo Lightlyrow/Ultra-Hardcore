@@ -193,6 +193,8 @@ commands:
     description: Choose a player.
   chunkapo:
     description: Generate chunk apoclaypse.
+  current:
+    description: View the current damage type.
   genie:
     description: Genie command, check usage.
   addking:
