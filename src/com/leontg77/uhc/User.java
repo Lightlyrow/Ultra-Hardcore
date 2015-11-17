@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
+import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.utils.PermsUtils;
 
 /**
@@ -185,6 +186,8 @@ public class User {
 	public void setRank(Rank rank) {
 		config.set("rank", rank.name());
 		saveFile();
+		
+		InvGUI.getGameInfo().updateStaff();
 		
 		if (player != null) {
 			PermsUtils.removePermissions(player);
