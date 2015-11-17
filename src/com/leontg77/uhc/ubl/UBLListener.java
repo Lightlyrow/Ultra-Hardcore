@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -21,15 +22,16 @@ public class UBLListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+    	UUID uuid = event.getUniqueId();
 		UBL ubl = UBL.getInstance();
 		
-		if (ubl.isBanned(event.getUniqueId())) {
-            UBL.BanEntry banEntry = ubl.banlistByUUID.get(event.getUniqueId());
-        	PlayerUtils.broadcast(Main.PREFIX + "§c" + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
-        	
-        	UUID uuid = event.getUniqueId();
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ubl.getBanMessage(uuid));
+		if (!ubl.isBanned(uuid)) {
             return;
         }
+		
+        BanEntry banEntry = ubl.banlistByUUID.get(uuid);
+    	
+    	PlayerUtils.broadcast(Main.PREFIX + "§c" + event.getName() + " §7tried to join while being UBL'ed for:§c " + banEntry.getData("Reason"), "uhc.staff");
+        event.disallow(Result.KICK_BANNED, ubl.getBanMessage(uuid));
     }
 }
