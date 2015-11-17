@@ -10,6 +10,9 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -17,16 +20,35 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NameUtils;
 
-public class GameInfo extends InvGUI {
+public class GameInfo extends InvGUI implements Listener {
 	private Inventory inv = Bukkit.getServer().createInventory(null, 45, "» §7Game Information");
 	
+	@EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {	
+        if (event.getCurrentItem() == null) {
+        	return;
+        }
+        
+		Inventory inv = event.getInventory();
+		
+		if (!inv.getTitle().equals(this.inv.getTitle())) {
+			return;
+		}
+		
+		event.setCancelled(true);
+	}
+	
+	/**
+	 * Get the GameInfo inventory.
+	 * 
+	 * @return The inventory.
+	 */
 	public Inventory get() {
 		return inv;
 	}
@@ -160,10 +182,6 @@ public class GameInfo extends InvGUI {
 		misc.setItemMeta(miscMeta);
 		inv.setItem(8, misc);
 		lore.clear();
-		
-		ItemStack staff = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta staffMeta = (SkullMeta) staff.getItemMeta();
-		staffMeta.setDisplayName("§8» §6Staff §8«");
 		
 		ItemStack commands = new ItemStack (Material.BANNER, 1, (short) 1);
 		ItemMeta commandsMeta = commands.getItemMeta();
@@ -303,7 +321,9 @@ public class GameInfo extends InvGUI {
 		miscI.setItemMeta(miscIMeta);
 		inv.setItem(44, miscI);
 		lore.clear();
-		
+	}
+	
+	public void updateStaff() {
 		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 		
 		StringBuilder staffs = new StringBuilder();
@@ -431,26 +451,40 @@ public class GameInfo extends InvGUI {
 			i++;
 		}
 		
+		ArrayList<String> lore = new ArrayList<String>();
+
+		ItemStack staff = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
+		SkullMeta staffMeta = (SkullMeta) staff.getItemMeta();
+		staffMeta.setDisplayName("§8» §6Staff §8«");
+		
 		lore.add(" ");
 		lore.add("§8» §4Owners:");
+		
 		for (String split : owners.toString().split("-")) {
 			lore.add("§8» §7" + split);
 		}
+		
 		lore.add(" ");
 		lore.add("§8» §4Hosts:");
+		
 		for (String split : hosts.toString().split("-")) {
 			lore.add("§8» §7" + split);
 		}
+		
 		lore.add(" ");
 		lore.add("§8» §cStaff:");
+		
 		for (String split : staffs.toString().split("-")) {
 			lore.add("§8» §7" + split);
 		}
+		
 		lore.add(" ");
 		lore.add("§8» §9Specs:");
+		
 		for (String split : specs.toString().split("-")) {
 			lore.add("§8» §7" + split);
 		}
+		
 		lore.add(" ");
 		staffMeta.setLore(lore);
 		staffMeta.setOwner("LeonTG77");
