@@ -13,10 +13,10 @@ import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.State;
+import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -89,8 +89,6 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			sender.sendMessage(Main.PREFIX + "Available config types: §a" + types.toString().trim() + "§7.");
 			return true;
 		}
-		
-		InvGUI.getGameInfo().update();
 		
 		switch (type) {
 		case APPLERATES:
@@ -267,6 +265,8 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 		default:
 			return true;
 		}
+		
+		InvGUI.getGameInfo().update();
 		return true;
 	}
 	
