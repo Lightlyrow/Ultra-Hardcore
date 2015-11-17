@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.leontg77.uhc.InvGUI;
+import com.leontg77.uhc.inventory.InvGUI;
 
 /**
  * HOF inventory listener class.

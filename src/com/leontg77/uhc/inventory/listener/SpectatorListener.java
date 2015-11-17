@@ -15,9 +15,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.utils.LocationUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 

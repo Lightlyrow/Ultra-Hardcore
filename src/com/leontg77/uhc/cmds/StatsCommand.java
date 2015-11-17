@@ -8,9 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.InvGUI;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User;
+import com.leontg77.uhc.inventory.InvGUI;
 
 /**
  * Stats command class.
