@@ -34,7 +34,6 @@ import com.leontg77.uhc.utils.PlayerUtils;
  */
 public class MysteryTeams extends Scenario implements Listener, CommandExecutor {
 	private static final String PREFIX = "§6[§cMysteryTeams§6] §f";
-	private boolean enabled = false;
 
 	private HashMap<MysteryTeam, ArrayList<String>> orgTeams = new HashMap<MysteryTeam, ArrayList<String>>();
 	private HashMap<MysteryTeam, ArrayList<String>> teams = new HashMap<MysteryTeam, ArrayList<String>>();
@@ -46,21 +45,22 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 		main.getCommand("mt").setExecutor(this);
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-
+	@Override
+	public void onDisable() {
 		orgTeams.clear();
 		teams.clear();
 	}
 
-	public boolean isEnabled() {
-		return enabled;
+	@Override
+	public void onEnable() {
+		orgTeams.clear();
+		teams.clear();
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!isEnabled()) {
-			sender.sendMessage(Main.PREFIX + "\"MysteryTeams\" is not enabled.");
+			sender.sendMessage(PREFIX + "\"MysteryTeams\" is not enabled.");
 			return true;
 		}
 		
