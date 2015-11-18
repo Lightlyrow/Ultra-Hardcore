@@ -2,13 +2,14 @@ package com.leontg77.uhc.scenario.types;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.utils.BlockUtils;
 
 /**
  * SkyClean scenario class
@@ -16,31 +17,39 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author LeonTG77
  */
 public class SkyClean extends Scenario implements Listener {
-	private boolean enabled = false;
 	
 	public SkyClean() {
 		super("SkyClean", "Sand drops glass and snow blocks drop snowblocks rather than snowballs.");
 	}
-	
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
-	
-	public boolean isEnabled() {
-		return enabled;
-	}
+
+	@Override
+	public void onDisable() {}
+
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
+		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		
 		if (block.getType() == Material.SAND) {
-			Main.toReplace.put(Material.SAND, new ItemStack(Material.GLASS));
+			event.setCancelled(true);
+			block.setType(Material.AIR);
+			
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
+			BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.GLASS));
 			return;
 		}
 		
 		if (block.getType() == Material.SNOW_BLOCK) {
-			Main.toReplace.put(Material.SNOW_BALL, new ItemStack(Material.SNOW_BLOCK));
+			event.setCancelled(true);
+			block.setType(Material.AIR);
+			
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
+			BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.SNOW_BLOCK));
 		}
 	}
 }
