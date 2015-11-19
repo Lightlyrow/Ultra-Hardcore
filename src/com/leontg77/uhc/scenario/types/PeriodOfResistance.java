@@ -30,9 +30,10 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class PeriodOfResistance extends Scenario implements Listener, CommandExecutor {
-	private boolean enabled = false;
-
+	private BukkitRunnable task;
 	private DamageType current;
+	
+	public static final String PREFIX = "§7[§6Resistance§7] §7";
 	
 	public PeriodOfResistance() {
 		super("PeriodOfResistance", "Every 10 minutes the resistance type changes, during the next 10 minutes you cannot take damage from what the type was.");
@@ -41,88 +42,51 @@ public class PeriodOfResistance extends Scenario implements Listener, CommandExe
 		main.getCommand("status").setExecutor(this);
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-		
-		if (enable) {
-			new BukkitRunnable() {
-				public void run() {
-					if (!isEnabled()) {
-						PlayerUtils.broadcast(prefix() + "You are no longer resistant to anything!");
-						cancel();
-						return;
-					}
-					
-					current = DamageType.values()[new Random().nextInt(DamageType.values().length)];
-					
-					PlayerUtils.broadcast(prefix() + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will no longer hurt you!");
-					
-					new BukkitRunnable() {
-						public void run() {
-							PlayerUtils.broadcast(prefix() + "Changing resistant period in 5 minutes!");
-							
-							new BukkitRunnable() {
-								public void run() {
-									PlayerUtils.broadcast(prefix() + "Changing resistant period in 1 minute!");
-									
-									new BukkitRunnable() {
-										public void run() {
-											PlayerUtils.broadcast(prefix() + "Changing resistant period in 30 seconds!");
-											
-											new BukkitRunnable() {
-												public void run() {
-													PlayerUtils.broadcast(prefix() + "Changing resistant period in 10 seconds!");
-													
-													new BukkitRunnable() {
-														public void run() {
-															PlayerUtils.broadcast(prefix() + "Changing resistant period in 5 seconds!");
-															
-															new BukkitRunnable() {
-																public void run() {
-																	PlayerUtils.broadcast(prefix() + "Changing resistant period in 4 seconds!");
-																	
-																	new BukkitRunnable() {
-																		public void run() {
-																			PlayerUtils.broadcast(prefix() + "Changing resistant period in 3 seconds!");
-																			
-																			new BukkitRunnable() {
-																				public void run() {
-																					PlayerUtils.broadcast(prefix() + "Changing resistant period in 2 seconds!");
-																					
-																					new BukkitRunnable() {
-																						public void run() {
-																							PlayerUtils.broadcast(prefix() + "Changing resistant period in 1 second!");
-																						}
-																					}.runTaskLater(Main.plugin, 20);
-																				}
-																			}.runTaskLater(Main.plugin, 20);
-																		}
-																	}.runTaskLater(Main.plugin, 20);
-																}
-															}.runTaskLater(Main.plugin, 20);
-														}
-													}.runTaskLater(Main.plugin, 100);
-												}
-											}.runTaskLater(Main.plugin, 400);
-										}
-									}.runTaskLater(Main.plugin, 600);
-								}
-							}.runTaskLater(Main.plugin, 4800);
-						}
-					}.runTaskLater(Main.plugin, 6000);
-				}
-			}.runTaskTimer(Main.plugin, 0, 12000);
-		} else {
-			current = null;
-		}
+	@Override
+	public void onDisable() {
+		task.cancel();
+		task = null;
 	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-	
-	private String prefix() {
-		return "§7[§6Resistance§7] §7";
+	@Override
+	public void onEnable() {
+        current = DamageType.values()[new Random().nextInt(DamageType.values().length)];
+        PlayerUtils.broadcast(PREFIX + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will no longer hurt you!");
+        
+		task = new BukkitRunnable() {
+			int seconds = 600;
+			
+			public void run() {
+				seconds--;
+				
+				switch (seconds) {
+	            case 300:
+	                PlayerUtils.broadcast(PREFIX + "Changing resistant period in 5 minutes!");
+	                break;
+	            case 60:
+	                PlayerUtils.broadcast(PREFIX + "Changing resistant period in 1 minute!");
+	                break;
+	            case 30:
+	            case 10:
+	            case 5:
+	            case 4:
+	            case 3:
+	            case 2:
+	                PlayerUtils.broadcast(PREFIX + "Changing resistant period in " + seconds + " seconds!");
+	                break;
+	            case 1:
+	                PlayerUtils.broadcast(PREFIX + "Changing resistant period in 1 second!");
+	                break;
+	            case 0:
+	                current = DamageType.values()[new Random().nextInt(DamageType.values().length)];
+	                PlayerUtils.broadcast(PREFIX + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will no longer hurt you!");
+
+	                seconds = 600;
+				}
+			}
+		};
+		
+		task.runTaskTimer(Main.plugin, 20, 20);
 	}
 	
 	@EventHandler
@@ -178,11 +142,11 @@ public class PeriodOfResistance extends Scenario implements Listener, CommandExe
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!isEnabled()) {
-			sender.sendMessage(Main.PREFIX + "\"PeriodOfResistance\" is not enabled.");
+			sender.sendMessage(PREFIX + "\"PeriodOfResistance\" is not enabled.");
 			return true;
 		}
 		
-		sender.sendMessage(prefix() + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will not hurt you!");
+		sender.sendMessage(PREFIX + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will not hurt you!");
 		return true;
 	}
 	
