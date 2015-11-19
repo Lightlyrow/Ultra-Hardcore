@@ -25,7 +25,7 @@ public class EnchantParanoia extends Scenario implements Listener {
 	private BukkitRunnable task;
 	
 	public EnchantParanoia() {
-		super("EnchantParanoia", "You cannot see what enchants you have.");
+		super("EnchantParanoia", "You cannot see what enchants you have. §4§lNOT FINISHED!");
 	}
 
 	public void setEnabled(boolean enable) {
