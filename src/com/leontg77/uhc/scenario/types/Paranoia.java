@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -22,23 +23,17 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Paranoia extends Scenario implements Listener {
-	private boolean enabled = false;
+	public static final String PREFIX = "§8[§cParanoia§8] §f";
 	
 	public Paranoia() {
 		super("Paranoia", "Your coordinates are broadcasted when you mine diamonds/gold, craft or eat an golden apple, you craft an anvil or enchantment table or you die");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-	
-	public String prefix() {
-		return "§8[§cParanoia§8] §f";
-	}
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
@@ -47,11 +42,11 @@ public class Paranoia extends Scenario implements Listener {
 		Block block = event.getBlock();
 		
 		if (block.getType() == Material.DIAMOND_ORE) {
-			PlayerUtils.broadcast(prefix() + ChatColor.GREEN + player.getName() + "§7 mined §bdiamond ore §7at " + location(loc));
+			PlayerUtils.broadcast(PREFIX + ChatColor.GREEN + player.getName() + "§7 mined §bdiamond ore §7at " + location(loc));
 		}
 		
 		if (block.getType() == Material.GOLD_ORE) {
-			PlayerUtils.broadcast(prefix() + ChatColor.GREEN + player.getName() + "§7 mined §6gold ore §7at " + location(loc));
+			PlayerUtils.broadcast(PREFIX + ChatColor.GREEN + player.getName() + "§7 mined §6gold ore §7at " + location(loc));
 		}
 	}
 	
@@ -61,34 +56,34 @@ public class Paranoia extends Scenario implements Listener {
 		Location loc = player.getLocation();
 		
 		if (event.getItem().getType() == Material.GOLDEN_APPLE) {
-			PlayerUtils.broadcast(prefix() + ChatColor.GREEN + player.getName() + "§7 ate a §eGolden Apple §7at " + location(loc));
+			PlayerUtils.broadcast(PREFIX + ChatColor.GREEN + player.getName() + "§7 ate a §eGolden Apple §7at " + location(loc));
 		}
 	}
 	
 	@EventHandler
-	public void onPrepareItemCraftEvent(CraftItemEvent event) {
+	public void onCraftItem(CraftItemEvent event) {
 		HumanEntity player = event.getWhoClicked();
 		Location loc = player.getLocation();
 		
 		if (event.getRecipe().getResult().getType() == Material.GOLDEN_APPLE) {
-			PlayerUtils.broadcast(prefix() + ChatColor.GREEN + player.getName() + "§7 crafted a §eGolden Apple §7at " + location(loc));
+			PlayerUtils.broadcast(PREFIX + ChatColor.GREEN + player.getName() + "§7 crafted a §eGolden Apple §7at " + location(loc));
 		}
 		
 		if (event.getRecipe().getResult().getType() == Material.ANVIL) {
-			PlayerUtils.broadcast(prefix() + ChatColor.GREEN + player.getName() + "§7 crafted an §dAnvil §7at " + location(loc));
+			PlayerUtils.broadcast(PREFIX + ChatColor.GREEN + player.getName() + "§7 crafted an §dAnvil §7at " + location(loc));
 		}
 		
 		if (event.getRecipe().getResult().getType() == Material.ENCHANTMENT_TABLE) {
-			PlayerUtils.broadcast(prefix() + ChatColor.GREEN + player.getName() + "§7 crafted an §5Enchantment Table §7at " + location(loc));
+			PlayerUtils.broadcast(PREFIX + ChatColor.GREEN + player.getName() + "§7 crafted an §5Enchantment Table §7at " + location(loc));
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		Location loc = player.getLocation();
 
-		PlayerUtils.broadcast(prefix() + ChatColor.GREEN + player.getName() + "§7 died at " + location(loc));
+		PlayerUtils.broadcast(PREFIX + ChatColor.GREEN + player.getName() + "§7 died at " + location(loc));
 	}
 
 	/**
