@@ -1,15 +1,18 @@
 package com.leontg77.uhc.scenario.types;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -18,19 +21,17 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class LAFS extends Scenario implements Listener {
-	private boolean enabled = false;
+	public static final String PREFIX = "§d§lLAFS §8» §7";
 
 	public LAFS() {
 		super("LAFS", "Stands for love at first sight, you team with the first player you see in the game, in order to get on a team with them right click the player.");
 	}
-	
-	public boolean isEnabled() {
-		return enabled;
-	}
 
-	public void setEnabled(boolean enable) {
-		this.enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
+
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
@@ -38,36 +39,37 @@ public class LAFS extends Scenario implements Listener {
 			return;
 		}
 		
-		Player player = event.getPlayer();
 		Player clicked = (Player) event.getRightClicked();
+		Player player = event.getPlayer();
 		
-		if (player.getWorld().getName().equals("lobby") || player.getWorld().getName().equals("arena")) {
+		List<World> worlds = GameUtils.getGameWorlds();
+		Teams teams = Teams.getInstance();
+		
+		if (!worlds.contains(player.getName()) || !worlds.contains(clicked.getName())) {
 			return;
 		}
 		
-		if (clicked.getWorld().getName().equals("lobby") || clicked.getWorld().getName().equals("arena")) {
-			return;
-		}
-		
-		if (player.getScoreboard().getEntryTeam(player.getName()) != null) {
+		if (teams.getTeam(player) != null) {
 			player.sendMessage(ChatColor.RED + "You are already on a team");
 			return;
 		}
 		
-		if (clicked.getScoreboard().getEntryTeam(clicked.getName()) != null) {
+		if (teams.getTeam(clicked) != null) {
 			player.sendMessage(ChatColor.RED + "That player is already on a team.");
 			return;
 		}
 		
-		Team t = Teams.getInstance().findAvailableTeam();
+		Team team = teams.findAvailableTeam();
 		
-		if (t == null) {
-			player.sendMessage(ChatColor.RED + "No more available teams.");
+		if (team == null) {
+			clicked.sendMessage(ChatColor.RED + "There are no more teams for you to join.");
+			player.sendMessage(ChatColor.RED + "There are no more teams for you to join.");
 			return;
 		}
+
+		teams.joinTeam(team, clicked);
+		teams.joinTeam(team, player);
 		
-		t.addEntry(player.getName());
-		t.addEntry(clicked.getName());
-		PlayerUtils.broadcast(Main.PREFIX.replaceFirst("UHC", "§d§lLAFS") + ChatColor.GREEN + player.getName() + " §7and§a " + clicked.getName() + " §7has found each other.");
+		PlayerUtils.broadcast(PREFIX + "§a" + player.getName() + " §7and§a " + clicked.getName() + " §7has found each other.");
 	}
 }
