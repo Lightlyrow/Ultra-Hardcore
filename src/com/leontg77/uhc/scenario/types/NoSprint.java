@@ -15,33 +15,32 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author LeonTG77
  */
 public class NoSprint extends Scenario implements Listener {
-	private boolean enabled = false;
 
 	public NoSprint() {
 		super("NoSprint", "Disables sprinting");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
 		final Player player = event.getPlayer();
 		
-		if (event.isSprinting()) {
-			final int foodlevel = player.getFoodLevel();
-			player.setFoodLevel(5);
-			
-			Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-				public void run() {
-					player.setFoodLevel(foodlevel);
-				}
-			}, 40);
+		if (!event.isSprinting()) {
+			return;
 		}
+		
+		final int foodlevel = player.getFoodLevel();
+		player.setFoodLevel(5);
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+			public void run() {
+				player.setFoodLevel(foodlevel);
+			}
+		}, 40);
 	}
 }

@@ -14,19 +14,16 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author LeonTG77
  */
 public class NoFall extends Scenario implements Listener {
-	private boolean enabled = false;
 	
 	public NoFall() {
 		super("NoFall", "You cannot take fall damage.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 
 	@EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
