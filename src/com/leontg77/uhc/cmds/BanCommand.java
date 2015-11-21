@@ -6,7 +6,6 @@ import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -60,8 +59,8 @@ public class BanCommand implements CommandExecutor {
             return true;
 		}
     	
-    	if (target.hasPermission("uhc.staff")) {
-    		sender.sendMessage(ChatColor.RED + "You cannot ban this player.");
+    	if (target.hasPermission("uhc.staff") && !sender.hasPermission("uhc.ban.bypass")) {
+    		sender.sendMessage(Main.PREFIX + "You cannot mute this player.");
     		return true;
     	}
 

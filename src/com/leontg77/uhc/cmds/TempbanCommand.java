@@ -7,7 +7,6 @@ import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -65,8 +64,8 @@ public class TempbanCommand implements CommandExecutor {
             return true;
 		}
     	
-    	if (target.hasPermission("uhc.staff")) {
-    		sender.sendMessage(ChatColor.RED + "You cannot tempban this player.");
+    	if (target.hasPermission("uhc.staff") && !sender.hasPermission("uhc.tempban.bypass")) {
+    		sender.sendMessage(Main.PREFIX + "You cannot tempban this player.");
     		return true;
     	}
 
@@ -78,7 +77,7 @@ public class TempbanCommand implements CommandExecutor {
     				long time = DateUtils.parseDateDiff(args[1], true);
     				Date date = new Date(time);
     				
-    				PlayerUtils.broadcast(Main.PREFIX + "§6" + args[0] + " §7has been temp-banned for §a" + msg);
+    				PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been temp-banned for §a" + msg + "§7. §8(§a" + DateUtils.formatDateDiff(time) + "§8)");
     				
     		    	for (Player online : PlayerUtils.getPlayers()) {
     		    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
