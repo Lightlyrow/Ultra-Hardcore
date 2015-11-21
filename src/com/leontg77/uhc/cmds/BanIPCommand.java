@@ -26,7 +26,7 @@ public class BanIPCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.ban")) {
+		if (!sender.hasPermission("uhc.banip")) {
 			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
