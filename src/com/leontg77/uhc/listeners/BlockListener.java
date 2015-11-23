@@ -2,6 +2,7 @@ package com.leontg77.uhc.listeners;
 
 import java.util.Random;
 
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -141,7 +143,7 @@ public class BlockListener implements Listener {
 			BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
 		}
     }
-	
+
 	@EventHandler
     public void onLeavesDecay(LeavesDecayEvent event) {
 		Block block = event.getBlock();
@@ -197,4 +199,29 @@ public class BlockListener implements Listener {
 			BlockUtils.dropItem(loc.clone().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
 		}
     }
+	
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent event) {
+		Block block = event.getBlockPlaced();
+		
+		if (!isADoor(block.getType())) {
+			return;
+		}
+		
+		block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
+	}
+	
+	private boolean isADoor(Material type) {
+		switch (type) {
+		case ACACIA_DOOR:
+		case BIRCH_DOOR:
+		case DARK_OAK_DOOR:
+		case JUNGLE_DOOR:
+		case SPRUCE_DOOR:
+		case WOOD_DOOR:
+			return true;
+		default:
+			return false;
+		}
+	}
 }
