@@ -31,6 +31,7 @@ public class BlockUtils {
 	 * @param player The player who mined the block.
 	 * @param block The block that was broken.
 	 */
+	@SuppressWarnings("deprecation")
 	public static void blockBreak(Player player, Block block) {
 		// Loop all players in the breaking players world.
 		for (Player worldPlayer : player.getWorld().getPlayers()) {
@@ -39,36 +40,53 @@ public class BlockUtils {
         		continue;
         	}
         	
-        	// play the effect STEP_SOUND with the given block type at the blocks location.
-        	worldPlayer.playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
+        	// play the effect STEP_SOUND with the given block id at the blocks location.
+        	worldPlayer.playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
         }
 	}
 	
+	/**
+	 * Drop the given item to drop on the given location as if a normal block break would drop it.
+	 * 
+	 * @param loc The location dropping at.
+	 * @param toDrop The item dropping.
+	 */
 	public static void dropItem(final Location loc, final ItemStack toDrop) {
+		// wait 2 ticks before dropping the item, because then the block won't push the item.
 		new BukkitRunnable() {
         	public void run() {
+        		// spawn item.
     			Item item = loc.getWorld().dropItem(loc, toDrop);
     			item.setVelocity(randomOffset());
         	}
         }.runTaskLater(Main.plugin, 2);
 	}
 
+	/**
+	 * Make the given players item in hand lose 1 durability 
+	 * point and break if out of durability.
+	 * 
+	 * @param player The item owner.
+	 */
 	public static void degradeDurabiliy(Player player) {
 		ItemStack newItem = player.getItemInHand();
         
-        if (newItem.getType() == Material.AIR || newItem.getType().getMaxDurability() == 0) {
+		// if the item is air, a bow or it's max durability is 0 (only weapons/tools doesn't have it as 0) return.
+        if (newItem.getType() == Material.AIR || newItem.getType() == Material.BOW || newItem.getType().getMaxDurability() == 0) {
             return;
         }
         
         short durability = newItem.getDurability();
         durability++;
         
+        // if theres no more durability left, play the break sound, remove the item and return.
         if (durability >= newItem.getType().getMaxDurability()) {
             player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 1, 1);
             player.setItemInHand(new ItemStack(Material.AIR));
             return;
         }
         
+        // set the new durability and update their item in hand.
         newItem.setDurability(durability);
         player.setItemInHand(newItem);
 	}
@@ -81,6 +99,7 @@ public class BlockUtils {
 	private static Vector randomOffset() {
 		Random rand = new Random();
 		
+		// don't ask me for why these numbers, I was just testing different onces and these seemed to work the best.
 		double offsetX = rand.nextDouble() / 20;
 		double offsetZ = rand.nextDouble() / 20;
 
@@ -90,6 +109,12 @@ public class BlockUtils {
 		return new Vector(offsetX, 0.2, offsetZ);
 	}
 	
+	/**
+	 * Get the durability of the given block.
+	 * 
+	 * @param block The block checking.
+	 * @return The durability of the block.
+	 */
 	public static int getDurability(Block block) {
 		return block.getState().getData().toItemStack().getDurability();
 	}
