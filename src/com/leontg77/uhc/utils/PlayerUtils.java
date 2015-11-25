@@ -100,7 +100,7 @@ public class PlayerUtils {
 	 * @param distance the distance.
 	 * @return A list of entites nearby.
 	 */
-	public static List<Entity> getNearby(Location loc, int distance) {
+	public static List<Entity> getNearby(Location loc, double distance) {
 		List<Entity> list = new ArrayList<Entity>();
 		
 		for (Entity e : loc.getWorld().getEntities()) {
