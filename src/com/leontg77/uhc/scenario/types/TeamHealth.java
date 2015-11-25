@@ -25,87 +25,83 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class TeamHealth extends Scenario implements Listener {
-	public BukkitRunnable run = null;
-	private boolean enabled = false;
+	public BukkitRunnable task = null;
 
 	private Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-	private Objective teamHealth = board.getObjective("teamHealth");
 	private Objective teamHealthName = board.getObjective("teamHealthName");
+	private Objective teamHealth = board.getObjective("teamHealth");
 	
 	public TeamHealth() {
 		super("TeamHealth", "The percent health shown in tab/bellow the name is all the teammates health combined.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
+	@Override
+	public void onDisable() {
+		if (teamHealthName != null) {
+			teamHealthName.unregister();
+		}
 		
-		if (enable) {
-			teamHealth = board.registerNewObjective("teamHealth", "dummy");
-			teamHealth.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-			
-			teamHealthName = board.registerNewObjective("teamHealthName", "dummy");
-			teamHealthName.setDisplaySlot(DisplaySlot.BELOW_NAME);
-			teamHealthName.setDisplayName("§4♥");
-			
-			run = new BukkitRunnable() {
-				public void run() {
-					for (Player online : PlayerUtils.getPlayers()) {	
-						Team team = Teams.getInstance().getTeam(online);
-						
-						if (team == null) {
-							int percent = Integer.parseInt(NumberUtils.makePercent(online.getHealth()).substring(2));
-							
-							if (teamHealth != null) {
-								Score score = teamHealth.getScore(online.getName());
-								score.setScore(percent);
-							}
-							
-							if (teamHealthName != null) {
-								Score score = teamHealthName.getScore(online.getName());
-								score.setScore(percent);
-							}
-						}
-						else {
-							double health = 0;
-							
-							for (String entry : team.getEntries()) {
-								Player target = Bukkit.getServer().getPlayer(entry);
-								
-								if (target != null) {
-									health = health + target.getHealth();
-								}
-							}
+		if (teamHealth != null) {
+			teamHealth.unregister();
+		}
+		
+		task.cancel();
+		task = null;
+		
+		// setup the original scoreboard.
+		Scoreboards.getInstance().setup();
+	}
 
-							int percent = Integer.parseInt(NumberUtils.makePercent(health).substring(2));
+	@Override
+	public void onEnable() {
+		if (teamHealthName == null) {
+			teamHealthName = board.registerNewObjective("teamHealthName", "dummy");
+		}
+		
+		if (teamHealth == null) {
+			teamHealth = board.registerNewObjective("teamHealth", "dummy");
+		}
+		
+		teamHealthName.setDisplaySlot(DisplaySlot.BELOW_NAME);
+		teamHealthName.setDisplayName("§4♥");
+		
+		teamHealth.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+		
+		task = new BukkitRunnable() {
+			public void run() {
+				for (Player online : PlayerUtils.getPlayers()) {	
+					Team team = Teams.getInstance().getTeam(online);
+					
+					double health = 0;
+
+					if (team == null) {
+						health = online.getHealth();
+					} else {
+						for (String entry : team.getEntries()) {
+							Player target = Bukkit.getServer().getPlayer(entry);
 							
-							if (teamHealth != null) {
-								Score score = teamHealth.getScore(online.getName());
-								score.setScore(percent);
-							}
-							
-							if (teamHealthName != null) {
-								Score score = teamHealthName.getScore(online.getName());
-								score.setScore(percent);
+							if (target != null) {
+								health = health + target.getHealth();
 							}
 						}
 					}
+					
+					int percent = Integer.parseInt(NumberUtils.makePercent(health).substring(2));
+					
+					if (teamHealth != null) {
+						Score score = teamHealth.getScore(online.getName());
+						score.setScore(percent);
+					}
+					
+					if (teamHealthName != null) {
+						Score score = teamHealthName.getScore(online.getName());
+						score.setScore(percent);
+					}
 				}
-			};
-			
-			run.runTaskTimer(Main.plugin, 1, 1);
-		} else {
-			teamHealthName.unregister();
-			teamHealth.unregister();
-			
-			run.cancel();
-			run = null;
-			
-			Scoreboards.getInstance().setup();
-		}
-	}
-
-	public boolean isEnabled() {
-		return enabled;
+			}
+		};
+		
+		task.runTaskTimer(Main.plugin, 1, 1);
 	}
 	
 	@EventHandler
@@ -113,8 +109,10 @@ public class TeamHealth extends Scenario implements Listener {
 		Player player = event.getEntity();
 		Team team = Teams.getInstance().getTeam(player);
 
-        if (team != null) {
-            team.removeEntry(player.getName());
+        if (team == null) {
+        	return;
         }
+        
+        team.removeEntry(player.getName());
     }
 }
