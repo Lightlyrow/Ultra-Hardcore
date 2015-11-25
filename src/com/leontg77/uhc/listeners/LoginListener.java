@@ -6,7 +6,6 @@ import java.io.File;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -16,14 +15,13 @@ import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -154,48 +152,6 @@ public class LoginListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		Player player = event.getPlayer();
-		User user = User.get(player);
-		
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		Date date = new Date();
-		
-		user.getFile().set("lastlogout", date.getTime());
-		user.saveFile();
-		
-		Spectator spec = Spectator.getInstance();
-		PacketUtils.removeTabList(player);
-		
-		PermsUtils.removePermissions(player);
-		event.setQuitMessage(null);
-		
-		if (player.isInsideVehicle()) {
-			player.leaveVehicle();
-		}
-		
-		if (!spec.isSpectating(player)) {
-			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
-		}
-		
-		if (Main.msg.containsKey(player)) {
-			Main.msg.remove(player);
-		}
-		
-		HashSet<CommandSender> temp = new HashSet<CommandSender>();
-		
-		for (CommandSender key : Main.msg.keySet()) {
-			temp.add(key);
-		}
-		
-		for (CommandSender key : temp) {
-			if (Main.msg.get(key).equals(player)) {
-				Main.msg.remove(key);
-			}
-		}
-	}
-	
-	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
 		PermsUtils.addPermissions(player);
@@ -225,7 +181,6 @@ public class LoginListener implements Listener {
 				"\n" +
 				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
 				);
-				PermsUtils.removePermissions(player);
 			}
 			else if (ip.getBanEntry(adress) != null) {
 				if (player.hasPermission("uhc.staff")) {
@@ -245,7 +200,6 @@ public class LoginListener implements Listener {
 				"\n" +
 				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
 				);
-				PermsUtils.removePermissions(player);
 			}
 			else {
 				event.allow();
@@ -271,7 +225,6 @@ public class LoginListener implements Listener {
 			} 
 
 			event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
-			PermsUtils.removePermissions(player);
 			return;
 		}
 		
@@ -285,21 +238,15 @@ public class LoginListener implements Listener {
 			
 			if (teamSize.startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
 				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
-				PermsUtils.removePermissions(player);
-			}
-			else if (teamSize.startsWith("Open")) {
+			} else if (teamSize.startsWith("Open")) {
 				Bukkit.setWhitelist(false);
 				event.allow();
 				return;
-			} 
-			else {
+			} else {
 				if (State.isState(State.LOBBY)) {
 					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has not opened yet,\n§ccheck the post for open time.\n\n§7Match post: §a" + game.getMatchPost());
-					PermsUtils.removePermissions(player);
-				}
-				else {
+				} else {
 					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has already started");
-					PermsUtils.removePermissions(player);
 				}
 			}
 			
@@ -324,6 +271,15 @@ public class LoginListener implements Listener {
 				
 				event.allow();
 			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onPlayerLoginLater(PlayerLoginEvent event) {
+		Player player = event.getPlayer();
+		
+		if (event.getResult() != Result.ALLOWED) {
+			PermsUtils.removePermissions(player);
 		}
 	}
 }
