@@ -37,39 +37,51 @@ public class iPvPListener implements Listener {
         
         Spectator spec = Spectator.getInstance();
         
-        if (action == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Timers.pvp > 0 && !game.isRecordedRound()) {
-            if (item == null) {
-            	return;
-            }
-            
-        	if (item.getType() != Material.LAVA_BUCKET && item.getType() != Material.FLINT_AND_STEEL && item.getType() != Material.CACTUS) {
-            	return;
-        	}
+        if (action != Action.RIGHT_CLICK_BLOCK) {
+        	return;
+        }
+        
+        if (!State.isState(State.INGAME) || game.isRecordedRound()) {
+        	return;
+        }
+        
+        if (Timers.pvp <= 0) {
+        	return;
+        }
+        
+        if (item == null) {
+        	return;
+        }
+        
+    	if (item.getType() != Material.LAVA_BUCKET && item.getType() != Material.FLINT_AND_STEEL && item.getType() != Material.CACTUS) {
+        	return;
+    	}
+		
+		Team pTeam = Teams.getInstance().getTeam(player);
+    	
+    	for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
+			if (!(nearby instanceof Player)) {
+				continue;
+			}
 			
-			Team pTeam = Teams.getInstance().getTeam(player);
-        	
-        	for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
-    			if (!(nearby instanceof Player)) {
-    				continue;
-    			}
-    			
-    			Player near = (Player) nearby;
-				
-				if (near == player) {
+			Player near = (Player) nearby;
+			
+			if (near == player) {
+				continue;
+			}
+			
+			if (spec.isSpectating(near)) {
+				continue;
+			}
+			
+			Team nearTeam = Teams.getInstance().getTeam(near);
+			
+			if (pTeam != null && nearTeam != null) {
+				if (pTeam == nearTeam) {
 					continue;
 				}
 				
-				if (spec.isSpectating(near)) {
-					continue;
-				}
-				
-				Team nearTeam = Teams.getInstance().getTeam(near);
-				
-				if (pTeam != null && nearTeam != null) {
-					if (pTeam != nearTeam) {
-						PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7attempted to iPvP §c" + near.getName(), "uhc.staff");
-					}
-				}
+				PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7attempted to iPvP §c" + near.getName(), "uhc.staff");
 				
 				player.sendMessage(Main.PREFIX + "iPvP is not allowed before PvP.");
 				player.sendMessage(Main.PREFIX + "Stop iPvPing now or staff will take action.");
@@ -77,7 +89,7 @@ public class iPvPListener implements Listener {
 				item.setType(Material.AIR);
 				event.setCancelled(true);
 				break;
-    		}
-        }
+			}
+		}
 	}
 }
