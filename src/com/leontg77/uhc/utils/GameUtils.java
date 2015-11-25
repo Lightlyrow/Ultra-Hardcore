@@ -55,7 +55,7 @@ public class GameUtils {
     	Spectator spec = Spectator.getInstance();
 		
 		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-			if (spec.isSpectating(online) || !GameUtils.getGameWorlds().contains(online.getWorld())) {
+			if (spec.isSpectating(online) || !getGameWorlds().contains(online.getWorld())) {
 				continue;
 			}
 			
@@ -199,8 +199,14 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("BLA2K14")) {
 			return "BLA2K14";
 		}
-		else if (host.equalsIgnoreCase("MajorWoof")) {
+		else if (host.equalsIgnoreCase("KaWoof")) {
 			return "MajorWoof";
+		}
+		else if (host.equalsIgnoreCase("GetUnicycled")) {
+			return "Pyro";
+		}
+		else if (host.equalsIgnoreCase("FazedMC")) {
+			return "Fazed";
 		}
 		return host;
 	}
@@ -233,8 +239,14 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("BLA2K14")) {
 			return "BLA2K14";
 		}
-		else if (host.equalsIgnoreCase("MajorWoof") || host.equalsIgnoreCase("Major")) {
+		else if (host.equalsIgnoreCase("MajorWoof") || host.equalsIgnoreCase("Major") || host.equalsIgnoreCase("KaWoof")) {
 			return "MajorWoof";
+		}
+		else if (host.equalsIgnoreCase("FazedMC") || host.equalsIgnoreCase("Fazed")) {
+			return "Fazed";
+		}
+		else if (host.equalsIgnoreCase("GetUnicycled") || host.equalsIgnoreCase("Pyro")) {
+			return "Pyro";
 		}
 		return host;
 	}
@@ -268,7 +280,13 @@ public class GameUtils {
 			return "LimitDTW";
 		}
 		else if (host.equalsIgnoreCase("MajorWoof")) {
-			return "MajorWoof";
+			return "KaWoof";
+		}
+		else if (host.equalsIgnoreCase("Fazed")) {
+			return "FazedMC";
+		}
+		else if (host.equalsIgnoreCase("Pyro")) {
+			return "GetUnicycled";
 		}
 		return host;
 	}
