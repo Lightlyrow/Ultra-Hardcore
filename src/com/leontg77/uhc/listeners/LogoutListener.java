@@ -71,6 +71,11 @@ public class LogoutListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
+		Player player = event.getPlayer();
+		
+		PacketUtils.removeTabList(player);
+		PermsUtils.removePermissions(player);
+		
 		if (!event.getReason().equals("disconnect.spam")) {
 			return;
 		}
