@@ -40,6 +40,11 @@ public class MuteCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "That player is not online.");
 			return true;
 		}
+    	
+    	if (target.hasPermission("uhc.staff") && !sender.hasPermission("uhc.mute.bypass")) {
+    		sender.sendMessage(Main.PREFIX + "You cannot mute this player.");
+    		return true;
+    	}
 		
 		User user = User.get(target);
 
@@ -63,12 +68,13 @@ public class MuteCommand implements CommandExecutor {
     	}
     	
     	String reason = message.toString().trim();
+    	
+		long time = DateUtils.parseDateDiff(args[1], true);
 		
-		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been " + (args[1].equals("-") ? "muted" : "temp-muted") + " for §a" + reason);
+		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been " + (time == 0 ? "muted" : "temp-muted") + " for §a" + reason + (time == 0 ? "§7." : "§7. §8(§a" + DateUtils.formatDateDiff(time) + "§8)"));
 		target.sendMessage(Main.PREFIX + "You have been muted for §a" + reason + "§7.");
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		long time = DateUtils.parseDateDiff(args[1], true);
 		
 		user.mute(reason, (time <= 0 ? null : new Date(time)));
 		return true;
