@@ -450,7 +450,7 @@ public class PlayerListener implements Listener {
 				continue;
 			}
 			
-			if (!spec.hasCommandSpy(online)) {
+			if (!spec.hasCommandSpy(online) && State.isState(State.INGAME)) {
 				continue;
 			}
 			
