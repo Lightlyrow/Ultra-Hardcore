@@ -11,8 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.utils.DateUtils;
@@ -27,7 +26,7 @@ public class Parkour implements Listener {
 	private static Parkour manager = new Parkour();
 	public BukkitRunnable task;
 
-	private Location spawn = new Location(Bukkit.getWorld("lobby"), 29.5, 34, 0.5, -90, 0);
+	private Location spawn = new Location(Bukkit.getWorld("lobby"), -34.5, 32, 0.5, 90, 0);
 	private Location point1 = new Location(Bukkit.getWorld("lobby"), 90.5, 36, 2.5, -90, 0);
 	private Location point2 = new Location(Bukkit.getWorld("lobby"), 134.5, 41, 12.5, 0, 0);
 	private Location point3 = new Location(Bukkit.getWorld("lobby"), 102.5, 54, 17.5, -180, 0);
@@ -99,13 +98,19 @@ public class Parkour implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getAction() != Action.PHYSICAL) {
+	public void onPlayerMove(PlayerMoveEvent event) {
+		if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
 			return;
 		}
 		
 		Player player = event.getPlayer();
-		Entity point = PlayerUtils.getNearby(player.getLocation(), 2).get(0);
+		Entity point;
+		
+		try {
+			point = PlayerUtils.getNearby(event.getTo(), 0.5).get(0);
+		} catch (Exception e) {
+			return;
+		}
 		
 		if (point instanceof ArmorStand) {
 			if (((ArmorStand) point).getCustomName() == null) {
