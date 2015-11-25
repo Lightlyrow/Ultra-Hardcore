@@ -114,12 +114,15 @@ import com.leontg77.uhc.inventory.listener.SelectorListener;
 import com.leontg77.uhc.inventory.listener.SpectatorListener;
 import com.leontg77.uhc.inventory.listener.StatsListener;
 import com.leontg77.uhc.listeners.BlockListener;
+import com.leontg77.uhc.listeners.BuildProtectListener;
 import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.LoginListener;
+import com.leontg77.uhc.listeners.LogoutListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
+import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scoreboard.Scoreboards;
 import com.leontg77.uhc.scoreboard.Teams;
@@ -204,9 +207,11 @@ public class Main extends JavaPlugin {
 
 		// register all listeners.
 		manager.registerEvents(new BlockListener(), this);
+		manager.registerEvents(new BuildProtectListener(), this);
 		manager.registerEvents(new EntityListener(), this);
 		manager.registerEvents(new InventoryListener(), this);
 		manager.registerEvents(new LoginListener(), this);
+		manager.registerEvents(new LogoutListener(), this);
 		manager.registerEvents(new PlayerListener(), this);
 		manager.registerEvents(new PortalListener(), this);
 		manager.registerEvents(new WorldListener(), this);
@@ -512,9 +517,15 @@ public class Main extends JavaPlugin {
 	 */
 	public void saveData() {
 		Settings settings = Settings.getInstance();
-		
 		settings.getData().set("state", State.getState().name());
-		settings.getData().set("scenarios", ScenarioManager.getInstance().getEnabledScenarios());
+		
+		List<String> list = new ArrayList<String>();
+		
+		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
+			list.add(scen.getName());
+		}
+		
+		settings.getData().set("scenarios", list);
 		
 		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
 			settings.getData().set("teamkills." + tkEntry.getKey(), tkEntry.getValue());
