@@ -61,27 +61,47 @@ public class InfoCommand implements CommandExecutor {
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		User user = User.get(target);
 		
-		long lastlogout = user.getFile().getLong("lastlogout", -1l);
 		BanList list = Bukkit.getBanList(Type.NAME);
 		BanEntry entry = list.getBanEntry(target.getName());
 		
+		long lastlogout = user.getFile().getLong("lastlogout", -1l);
+		
+		String muteMessage;
+		String banMessage;
+		
+		if (user.isMuted()) {
+			if (user.getUnmuteTime() == -1) {
+				muteMessage = "§aTrue§7, Reason: §6" + user.getMutedReason() + " §8(§apermanent§8)";
+			} else {
+				muteMessage = "§aTrue§7, Reason: §6" + user.getMutedReason() + " §8(§a" + DateUtils.formatDateDiff(user.getUnmuteTime()) + "§8)";
+			}
+		} else {
+			muteMessage = "§cFalse";
+		}
+		
+		if (list.isBanned(target.getName())) {
+			if (entry.getExpiration() == null) {
+				banMessage = "§aTrue§7, Reason: §6" + entry.getReason() + " §8(§apermanent§8)";
+			} else {
+				banMessage = "§aTrue§7, Reason: §6" + entry.getReason() + " §8(§a" + DateUtils.formatDateDiff(entry.getExpiration().getTime()) + "§8)";
+			}
+		} else {
+			banMessage = "§cFalse";
+		}
+
 		sender.sendMessage(Main.PREFIX + "Info about §6" + target.getName() + "§8:");
+		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		sender.sendMessage("§8» §7Status: §6" + (target.getPlayer() == null ? "§cNot online" : "§aOnline"));
 		sender.sendMessage("§8» §7UUID: §6" + user.getFile().getString("uuid"));
-		if (sender.hasPermission("uhc.info.ip")) {
-			sender.sendMessage("§8» §7IP: §6" + user.getFile().getString("ip"));
-		} else {
-			sender.sendMessage("§8» §7IP: §6§m###.##.##.###");
-		}
-		sender.sendMessage("§8»----------------------------«");
+		sender.sendMessage("§8» §7IP: §6" + (sender.hasPermission("uhc.info.ip") ? user.getFile().getString("ip") : "§m###.##.##.###"));
+		sender.sendMessage("§8» §m--------------------------------------§8 «");
+		sender.sendMessage("§8» §7Banned: §6" + banMessage);
+		sender.sendMessage("§8» §7Muted: §6" + muteMessage);
+		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		sender.sendMessage("§8» §7First Joined: §6" + new Date(user.getFile().getLong("firstjoined")));
 		sender.sendMessage("§8» §7Last login: §6" + DateUtils.formatDateDiff(user.getFile().getLong("lastlogin")));
 		sender.sendMessage("§8» §7Last logout: §6" + (lastlogout == -1l ? "§cHasn't logged out" : DateUtils.formatDateDiff(lastlogout)));
-		sender.sendMessage("§8»----------------------------«");
-		
-		sender.sendMessage("§8» §7Banned: §6" + (list.isBanned(target.getName()) ? "§aTrue§7, Reason: §6" + entry.getReason() : "§cFalse"));
-		sender.sendMessage("§8» §7Muted: §6" + (user.isMuted() ? "§aTrue§7, Reason: §6" + user.getMutedReason() : "§cFalse"));
-		sender.sendMessage("§8»----------------------------«");
+		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		return true;
 	}
 }
