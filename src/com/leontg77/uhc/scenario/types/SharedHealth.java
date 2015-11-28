@@ -42,10 +42,6 @@ public class SharedHealth extends Scenario implements Listener {
 
 	@EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        if (!isEnabled()) {
-            return;
-        }
-
         Player player = event.getPlayer();
 
         double balance = getPlayersDamageBalance(player.getName());
@@ -64,11 +60,8 @@ public class SharedHealth extends Scenario implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDamage(final EntityDamageEvent event) {
-        if (!isEnabled()) {
-            return;
-        }
-
-        if (!(event.getEntity() instanceof Player)) {
+		
+		if (!(event.getEntity() instanceof Player)) {
             return;
         }
 
@@ -122,11 +115,9 @@ public class SharedHealth extends Scenario implements Listener {
 
         if (finalHealth > 0) {
             final double finalHealthAsynch = finalHealth;
-
             event.setDamage(0.0D);
 
             new BukkitRunnable() {
-                @Override
                 public void run() {
                     player.setHealth(finalHealthAsynch);
                 }
