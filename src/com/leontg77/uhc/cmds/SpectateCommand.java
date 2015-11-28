@@ -91,6 +91,11 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				sender.sendMessage(Main.PREFIX + "You cannot toggle spec mode while in the game world.");
 				return true;
 			}
+
+			if (target != sender) {
+				sender.sendMessage(Main.PREFIX + "You toggled " + target.getName() + "'s spectator mode.");
+			}
+			target.sendMessage(Main.PREFIX + "Your spectator mode was toggled.");
 			
 			spec.toggle(target);
 			return true;
@@ -102,6 +107,11 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
+			if (target != sender) {
+				sender.sendMessage(Main.PREFIX + "You enabled " + target.getName() + "'s spectator mode.");
+			}
+			target.sendMessage(Main.PREFIX + "Your spectator mode was enabled.");
+			
 			spec.enableSpecmode(target);
 			return true;
 		}
@@ -111,6 +121,11 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				sender.sendMessage(Main.PREFIX + "You cannot go out of spec mode while in the game world.");
 				return true;
 			}
+
+			if (target != sender) {
+				sender.sendMessage(Main.PREFIX + "You disabled " + target.getName() + "'s spectator mode.");
+			}
+			target.sendMessage(Main.PREFIX + "Your spectator mode was disabled.");
 			
 			spec.disableSpecmode(target);
 			return true;
@@ -119,10 +134,18 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 		if (args[0].equalsIgnoreCase("info")) {
 			if (spec.specinfo.contains(target.getName())) {
 				spec.specinfo.remove(target.getName());
-				target.sendMessage(Main.PREFIX + "Your specinfo has been enabled.");
+				
+				if (target != sender) {
+					sender.sendMessage(Main.PREFIX + "You disabled " + target.getName() + "'s specinfo.");
+				}
+				target.sendMessage(Main.PREFIX + "Your specinfo has been disabled.");
 			} else {
 				spec.specinfo.add(target.getName());
-				target.sendMessage(Main.PREFIX + "Your specinfo has been disabled.");
+				
+				if (target != sender) {
+					sender.sendMessage(Main.PREFIX + "You enabled " + target.getName() + "'s specinfo.");
+				}
+				target.sendMessage(Main.PREFIX + "Your specinfo has been enabled.");
 			}
 			return true;
 		}
@@ -135,10 +158,18 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 			
 			if (spec.cmdspy.contains(target.getName())) {
 				spec.cmdspy.remove(target.getName());
-				target.sendMessage(Main.PREFIX + "Your commandspy has been enabled.");
+				
+				if (target != sender) {
+					sender.sendMessage(Main.PREFIX + "You disabled " + target.getName() + "'s commandspy.");
+				}
+				target.sendMessage(Main.PREFIX + "Your commandspy has been disabled.");
 			} else {
 				spec.cmdspy.add(target.getName());
-				target.sendMessage(Main.PREFIX + "Your commandspy has been disabled.");
+				
+				if (target != sender) {
+					sender.sendMessage(Main.PREFIX + "You enabled " + target.getName() + "'s commandspy.");
+				}
+				target.sendMessage(Main.PREFIX + "Your commandspy has been enabled.");
 			}
 			return true;
 		}
