@@ -15,19 +15,16 @@ import com.leontg77.uhc.scenario.Scenario;
  * @author LeonTG77
  */
 public class Timber extends Scenario implements Listener {
-	private boolean enabled = false;
 	
 	public Timber() {
 		super("Timber", "When chopping down a tree the entire tree will chop.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
