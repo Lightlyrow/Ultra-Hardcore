@@ -25,7 +25,6 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.uhc.Fireworks;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Spectator.SpecInfo;
@@ -107,7 +106,6 @@ public class EndCommand implements CommandExecutor {
 		Date date = new Date();
 
 		Fireworks firework = Fireworks.getInstance();
-		Parkour parkour = Parkour.getInstance();
 		
 		int matchcount = 1;
 		
@@ -156,11 +154,12 @@ public class EndCommand implements CommandExecutor {
 		HandlerList.unregisterAll(new SpecInfo());
 		State.setState(State.NOT_RUNNING);
 
-		firework.startFireworkShow();
-		parkour.setup();
-		
 		spec.spectators.clear();
+		spec.specinfo.clear();
+		spec.cmdspy.clear();
+		
 		TeamCommand.savedTeams.clear();
+		firework.startFireworkShow();
 		
 		SpecInfo.getTotalDiamonds().clear();
 		SpecInfo.getTotalGold().clear();
