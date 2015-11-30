@@ -184,7 +184,7 @@ public class ScenarioManager {
 	 */
 	public Scenario getScenario(String name) {
 		for (Scenario s : scenarios) {
-			if (s.getName().equals(name)) {
+			if (s.getName().equalsIgnoreCase(name)) {
 				return s;
 			}
 		}
