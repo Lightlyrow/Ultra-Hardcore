@@ -73,37 +73,25 @@ public class GameUtils {
 	public static String getMOTDMessage() {
 		State current = State.getState();
 		Game game = Game.getInstance();
+
+		if (game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
+			return "No games running";
+		}
 		
 		switch (current) {
 		case SCATTER:
 		case INGAME:
-			if (GameUtils.getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
-				return "No games running";
+			return "Match in progress";
+		case NOT_RUNNING:
+			return "No games running";
+		case CLOSED:
+			return "Whitelist is on";
+		case OPEN:
+			if (getTeamSize().startsWith("Open")) {
+				return "Open " + Game.getInstance().getScenarios();
 			} 
-			else if (getTeamSize().startsWith("Open")) {
-				return "Open " + game.getScenarios();
-			} 
-			else {
-				return "Match in progress";
-			}
-		case LOBBY:
-			if (Bukkit.getServer().hasWhitelist()) {
-				if (GameUtils.getTeamSize().startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
-					return "No games running";
-				} 
-				else if (getTeamSize().startsWith("Open")) {
-					return "Open " + Game.getInstance().getScenarios();
-				} 
-				else {
-					return "Whitelist is on";
-				}
-			} else {
-				if (getTeamSize().startsWith("Open")) {
-					return "Open " + Game.getInstance().getScenarios();
-				} 
-				
-				return "Whitelist is off";
-			}
+			
+			return "Whitelist is off";
 		default:
 			return "No games running";
 		}
@@ -178,7 +166,7 @@ public class GameUtils {
 		Game game = Game.getInstance();
 		String host = game.getHost();
 		
-		if (host.equalsIgnoreCase("LeonTG77")) {
+		if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("LeonTG")) {
 			return "Leon";
 		} 
 		else if (host.equalsIgnoreCase("PolarBlunk")) {
@@ -218,7 +206,7 @@ public class GameUtils {
 	 * @return The hof name.
 	 */
 	public static String getHost(String host) {
-		if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("Leon")) {
+		if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("Leon") || host.equalsIgnoreCase("LeonTG")) {
 			return "Leon";
 		} 
 		else if (host.equalsIgnoreCase("Polar") || host.equalsIgnoreCase("PolarBlunk")) {
@@ -271,7 +259,7 @@ public class GameUtils {
 			return "Badfan";
 		}
 		else if (host.equalsIgnoreCase("Axlur")) {
-			return "AxlurUSC";
+			return "Haxlur";
 		}
 		else if (host.equalsIgnoreCase("BLA2K14")) {
 			return "BLA2K14";
