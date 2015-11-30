@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.User;
+import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.managers.PermissionsManager;
 import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -52,6 +53,23 @@ public class LogoutListener implements Listener {
 			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
 		}
 		
+		InvGUI inv = InvGUI.getInstance();
+
+		// clear ALL data from the player, incase of a memory leak.
+		
+		if (InvGUI.invsee.containsKey(inv)) {
+			InvGUI.invsee.get(inv).cancel();
+			InvGUI.invsee.remove(inv);
+		}
+		
+		if (inv.pagesForPlayer.containsKey(player)) {
+			inv.pagesForPlayer.remove(player);
+		}
+		
+		if (inv.currentPage.containsKey(player)) {
+			inv.currentPage.remove(player);
+		}
+		
 		if (Main.rainbow.containsKey(player)) {
 			Main.rainbow.remove(player);
 		}
@@ -75,11 +93,6 @@ public class LogoutListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
-		Player player = event.getPlayer();
-		
-		PacketUtils.removeTabList(player);
-		PermissionsManager.removePermissions(player);
-		
 		if (!event.getReason().equals("disconnect.spam")) {
 			return;
 		}
