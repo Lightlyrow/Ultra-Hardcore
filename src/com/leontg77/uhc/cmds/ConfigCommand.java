@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -191,6 +192,16 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
+			if (maxplayers > Bukkit.getMaxPlayers()) {
+				sender.sendMessage(ChatColor.RED + "You cannot set the slots higher than the servers max.");
+				return true;
+			}
+			
+			if (maxplayers < 1) {
+				sender.sendMessage(ChatColor.RED + "You cannot set the slots lower than 1.");
+				return true;
+			}
+			
 			PlayerUtils.broadcast(Main.PREFIX + "The max player limit is now §a" + maxplayers + "§7.");
 			game.setMaxPlayers(maxplayers);
 			break;
@@ -265,8 +276,6 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 		default:
 			return true;
 		}
-		
-		InvGUI.getGameInfo().update();
 		return true;
 	}
 	
