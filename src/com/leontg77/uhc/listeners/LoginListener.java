@@ -31,10 +31,10 @@ import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.cmds.SpreadCommand;
+import com.leontg77.uhc.managers.PermissionsManager;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PacketUtils;
-import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -79,7 +79,7 @@ public class LoginListener implements Listener {
 			
 			spec.enableSpecmode(player);
 		} else {
-			if (!State.isState(State.LOBBY) && !player.isWhitelisted() && !spec.isSpectating(player)) {
+			if ((State.isState(State.INGAME) || State.isState(State.CLOSED) || State.isState(State.SCATTER)) && !player.isWhitelisted() && !spec.isSpectating(player)) {
 				player.sendMessage(Main.PREFIX + "You joined a game without being whitelisted.");
 
 				user.resetInventory();
@@ -129,7 +129,7 @@ public class LoginListener implements Listener {
 			player.removePotionEffect(PotionEffectType.INVISIBILITY);	
 		}
 		
-		if (State.isState(State.LOBBY)) {
+		if (!State.isState(State.INGAME) && !State.isState(State.SCATTER)) {
 			player.teleport(Main.getSpawn());
 		}
 		
@@ -154,7 +154,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
-		PermsUtils.addPermissions(player);
+		PermissionsManager.addPermissions(player);
 		
 		if (event.getResult() == Result.KICK_BANNED) {
 			BanList name = Bukkit.getBanList(Type.NAME);
@@ -243,10 +243,24 @@ public class LoginListener implements Listener {
 				event.allow();
 				return;
 			} else {
-				if (State.isState(State.LOBBY)) {
-					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has not opened yet,\n§ccheck the post for open time.\n\n§7Match post: §a" + game.getMatchPost());
-				} else {
+				switch (State.getState()) {
+				case CLOSED:
+					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has closed, you were too late.");
+					break;
+				case INGAME:
+				case SCATTER:
 					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has already started");
+					break;
+				case NOT_RUNNING:
+					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has not opened yet,\n§ccheck the post for open time.\n\n§7Match post: §a" + game.getMatchPost());
+					break;
+				case OPEN:
+					Bukkit.setWhitelist(false);
+					event.allow();
+					break;
+				default:
+					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
+					break;
 				}
 			}
 			
@@ -261,11 +275,10 @@ public class LoginListener implements Listener {
 					}
 				}
 				
-				if (moles && State.isState(State.LOBBY)) {
+				if (moles && !State.isState(State.INGAME)) {
 					String kickMsg = event.getKickMessage();
 					
 					event.disallow(Result.KICK_WHITELIST, "§4§lPre-whitelist is disabled for Mole games\n\n" + kickMsg);
-					PermsUtils.removePermissions(player);
 					return;
 				}
 				
@@ -279,7 +292,7 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		
 		if (event.getResult() != Result.ALLOWED) {
-			PermsUtils.removePermissions(player);
+			PermissionsManager.removePermissions(player);
 		}
 	}
 }

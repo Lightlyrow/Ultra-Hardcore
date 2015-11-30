@@ -9,7 +9,6 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Timers;
-import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
  * Start command class.
@@ -27,12 +26,13 @@ public class StartCommand implements CommandExecutor {
 		
 		Timers timers = Timers.getInstance();
 		
-		if (State.isState(State.LOBBY)) {
+		if (State.isState(State.NOT_RUNNING) || State.isState(State.CLOSED)) {
 			sender.sendMessage(ChatColor.RED + "You cannot start the game without scattering first.");
 		}
+		else if (State.isState(State.OPEN)) {
+			sender.sendMessage(ChatColor.RED + "You cannot start the game when whitelist is off.");
+		}
 		else if (State.isState(State.SCATTER)) {
-			PlayerUtils.broadcast(Main.PREFIX + "The game is starting.");
-			
 			if (Game.getInstance().isRecordedRound()) {
 				timers.startRR();
 			} else {

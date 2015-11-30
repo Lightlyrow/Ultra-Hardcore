@@ -14,7 +14,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -36,7 +36,7 @@ public class BanIPCommand implements CommandExecutor {
 			return true;
 		}
 		
-		Scoreboards board = Scoreboards.getInstance();
+		BoardManager board = BoardManager.getInstance();
     	BanList list = Bukkit.getBanList(Type.IP);
     	
 		StringBuilder reason = new StringBuilder("");

@@ -122,16 +122,16 @@ import com.leontg77.uhc.listeners.LogoutListener;
 import com.leontg77.uhc.listeners.PlayerListener;
 import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
+import com.leontg77.uhc.managers.BoardManager;
+import com.leontg77.uhc.managers.PermissionsManager;
+import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.scoreboard.Scoreboards;
-import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.ubl.UBL;
 import com.leontg77.uhc.ubl.UBLListener;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NumberUtils;
-import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.AntiStripmine;
 import com.leontg77.uhc.worlds.BiomeSwap;
@@ -155,9 +155,9 @@ public class Main extends JavaPlugin {
 	
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
 	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
-	
-	public static Recipe headRecipe;
+
 	public static Recipe melonRecipe;
+	public static Recipe headRecipe;
 	
 	
 	@Override
@@ -189,11 +189,11 @@ public class Main extends JavaPlugin {
 		BiomeSwap.getInstance().setup();
 		Parkour.getInstance().setup();
 		
-		Teams.getInstance().setup();
+		TeamManager.getInstance().setup();
 		UBL.getInstance().reload();
 		
 		ScenarioManager.getInstance().setup();
-		Scoreboards.getInstance().setup();
+		BoardManager.getInstance().setup();
 		Game game = Game.getInstance();
 		
 		recoverData();
@@ -293,7 +293,7 @@ public class Main extends JavaPlugin {
 		getCommand("whitelist").setExecutor(new WhitelistCommand());
 		getCommand("world").setExecutor(new WorldCommand());
 		
-		if (State.isState(State.LOBBY)) {
+		if (State.isState(State.NOT_RUNNING)) {
 			File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
 			File stats = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
 			
@@ -333,7 +333,7 @@ public class Main extends JavaPlugin {
 		}
 		
 		for (Player online : PlayerUtils.getPlayers()) {	
-			PermsUtils.addPermissions(online);
+			PermissionsManager.addPermissions(online);
 		}
 		
 		InvGUI.getGameInfo().updateStaff();
@@ -373,7 +373,7 @@ public class Main extends JavaPlugin {
 					    online.setPlayerListName(percentColor + online.getName());
 					}
 
-					Scoreboard sb = Scoreboards.getInstance().board;
+					Scoreboard sb = BoardManager.getInstance().board;
 					int percent = Integer.parseInt(NumberUtils.makePercent(online.getHealth()).substring(2));
 					
 					Objective tabList = sb.getObjective("tabHealth");
@@ -528,7 +528,7 @@ public class Main extends JavaPlugin {
 		settings.getData().set("scenarios", list);
 		
 		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
-			settings.getData().set("teamkills." + tkEntry.getKey(), tkEntry.getValue());
+			settings.getData().set("teams.kills." + tkEntry.getKey(), tkEntry.getValue());
 		}
 		
 		for (Entry<String, Integer> kEntry : kills.entrySet()) {
@@ -546,19 +546,19 @@ public class Main extends JavaPlugin {
 	 */
 	public void recoverData() {
 		Settings settings = Settings.getInstance();
-		State.setState(State.valueOf(settings.getData().getString("state", State.LOBBY.name())));
+		State.setState(State.valueOf(settings.getData().getString("state", State.NOT_RUNNING.name())));
 		
 		try {
 			for (String name : settings.getData().getConfigurationSection("kills").getKeys(false)) {
-				kills.put("kills." + name, settings.getData().getInt("kills." + name));
+				kills.put(name, settings.getData().getInt("kills." + name));
 			}
 		} catch (Exception e) {
 			getLogger().warning("Could not recover kills data.");
 		}
 		
 		try {
-			for (String name : settings.getData().getConfigurationSection("teamkills").getKeys(false)) {
-				teamKills.put("teamkills." + name, settings.getData().getInt("teamkills." + name));
+			for (String name : settings.getData().getConfigurationSection("teams.kills").getKeys(false)) {
+				teamKills.put(name, settings.getData().getInt("teams.kills" + name));
 			}
 		} catch (Exception e) {
 			getLogger().warning("Could not recover team kills data.");
@@ -642,7 +642,9 @@ public class Main extends JavaPlugin {
 	}
 	
 	/**
-	 * Border types enum class.
+	 * Border Shrink enum module.
+	 * <p>
+	 * Contains all the possible events when the border should shrink.
 	 * 
 	 * @author LeonTG77
 	 */
@@ -696,7 +698,7 @@ public class Main extends JavaPlugin {
 	        	return;
 	        }
 	        
-            event.getPacket().getBooleans().write(0, true);
+	        event.getPacket().getBooleans().write(0, true);
 	    }
 	    
 	    public static void enable() {

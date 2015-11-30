@@ -14,8 +14,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.User;
+import com.leontg77.uhc.managers.PermissionsManager;
 import com.leontg77.uhc.utils.PacketUtils;
-import com.leontg77.uhc.utils.PermsUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -41,7 +41,7 @@ public class LogoutListener implements Listener {
 		Spectator spec = Spectator.getInstance();
 		PacketUtils.removeTabList(player);
 		
-		PermsUtils.removePermissions(player);
+		PermissionsManager.removePermissions(player);
 		event.setQuitMessage(null);
 		
 		if (player.isInsideVehicle()) {
@@ -74,7 +74,7 @@ public class LogoutListener implements Listener {
 		Player player = event.getPlayer();
 		
 		PacketUtils.removeTabList(player);
-		PermsUtils.removePermissions(player);
+		PermissionsManager.removePermissions(player);
 		
 		if (!event.getReason().equals("disconnect.spam")) {
 			return;

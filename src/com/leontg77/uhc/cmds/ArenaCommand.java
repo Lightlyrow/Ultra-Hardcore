@@ -9,7 +9,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -62,7 +62,7 @@ public class ArenaCommand implements CommandExecutor {
 						PlayerUtils.broadcast(Arena.PREFIX + "The arena board has been disabled.");
 						game.setArenaBoard(false);
 						
-						Scoreboards board = Scoreboards.getInstance();
+						BoardManager board = BoardManager.getInstance();
 						board.kills.setDisplaySlot(DisplaySlot.SIDEBAR);
 					} else {
 						PlayerUtils.broadcast(Arena.PREFIX + "The arena board has been enabled.");

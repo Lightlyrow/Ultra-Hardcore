@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.scenario.scenarios.Paranoia;
+import com.leontg77.uhc.scenario.scenarios.TeamHealth;
 import com.leontg77.uhc.utils.NumberUtils;
 
 /**
@@ -22,7 +24,7 @@ public class HealthCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		ScenarioManager scen = ScenarioManager.getInstance();
 		
-		if (scen.getScenario("Paranoia").isEnabled() || scen.getScenario("TeamHealth").isEnabled()) {
+		if (scen.getScenario(Paranoia.class).isEnabled() || scen.getScenario(TeamHealth.class).isEnabled()) {
 			sender.sendMessage(ChatColor.RED + "Oops, /h is disabled in this scenario.");
 			return true;
 		}

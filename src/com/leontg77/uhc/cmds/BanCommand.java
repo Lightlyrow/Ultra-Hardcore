@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -40,7 +40,7 @@ public class BanCommand implements CommandExecutor {
     	
     	final Player target = Bukkit.getServer().getPlayer(args[0]);
     	
-    	final Scoreboards board = Scoreboards.getInstance();
+    	final BoardManager board = BoardManager.getInstance();
     	final BanList list = Bukkit.getBanList(Type.NAME);
     	
 		StringBuilder reason = new StringBuilder("");
@@ -60,7 +60,7 @@ public class BanCommand implements CommandExecutor {
 		}
     	
     	if (target.hasPermission("uhc.staff") && !sender.hasPermission("uhc.ban.bypass")) {
-    		sender.sendMessage(Main.PREFIX + "You cannot mute this player.");
+    		sender.sendMessage(Main.PREFIX + "You cannot ban this player.");
     		return true;
     	}
 

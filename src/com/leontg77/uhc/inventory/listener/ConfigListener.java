@@ -10,7 +10,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -28,7 +28,7 @@ public class ConfigListener implements Listener {
         	return;
         }
         
-        Scoreboards board = Scoreboards.getInstance();
+        BoardManager board = BoardManager.getInstance();
 		Game game = Game.getInstance();
 		
 		Inventory inv = event.getInventory();

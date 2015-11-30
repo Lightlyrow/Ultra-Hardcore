@@ -2,6 +2,7 @@ package com.leontg77.uhc.cmds;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -16,8 +17,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.base.Joiner;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -42,19 +44,13 @@ public class TempbanCommand implements CommandExecutor {
     	
     	final Player target = Bukkit.getServer().getPlayer(args[0]);
     	
-    	final Scoreboards board = Scoreboards.getInstance();
+    	final BoardManager board = BoardManager.getInstance();
     	final BanList list = Bukkit.getBanList(Type.NAME);
     	
     	long time = DateUtils.parseDateDiff(args[1], true);
 		Date date = new Date(time);
     	
-		StringBuilder reason = new StringBuilder("");
-			
-		for (int i = 1; i < args.length; i++) {
-			reason.append(args[i]).append(" ");
-		}
-				
-		final String msg = reason.toString().trim();
+		final String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 2, args.length));
 
     	if (target == null) {
 			PlayerUtils.broadcast(Main.PREFIX + "§6" + args[0] + " §7has been temp-banned for §a" + msg);

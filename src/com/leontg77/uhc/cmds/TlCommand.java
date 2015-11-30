@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Spectator;
-import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.managers.TeamManager;
 
 /**
  * TeamLoc command class.
@@ -27,7 +27,7 @@ public class TlCommand implements CommandExecutor {
 		Player player = (Player) sender;
 		
 		Spectator spec = Spectator.getInstance();
-		Teams teams = Teams.getInstance();
+		TeamManager teams = TeamManager.getInstance();
 		
 		Team team = teams.getTeam(player);
 		

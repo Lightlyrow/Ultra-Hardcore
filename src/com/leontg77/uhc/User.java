@@ -21,7 +21,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
 import com.leontg77.uhc.inventory.InvGUI;
-import com.leontg77.uhc.utils.PermsUtils;
+import com.leontg77.uhc.managers.PermissionsManager;
 
 /**
  * User class.
@@ -190,8 +190,8 @@ public class User {
 		InvGUI.getGameInfo().updateStaff();
 		
 		if (player != null) {
-			PermsUtils.removePermissions(player);
-			PermsUtils.addPermissions(player);
+			PermissionsManager.removePermissions(player);
+			PermissionsManager.addPermissions(player);
 		}
 	}
 

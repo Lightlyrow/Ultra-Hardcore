@@ -25,8 +25,8 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.State;
-import com.leontg77.uhc.scoreboard.Scoreboards;
-import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.managers.BoardManager;
+import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -83,6 +83,11 @@ public class SpreadCommand implements CommandExecutor {
 		}
 		
 		if (args[2].equalsIgnoreCase("*")) {
+			if (!State.isState(State.CLOSED)) {
+				sender.sendMessage(Main.PREFIX + "You cannot scatter when whitelist is off, no games are running or the game has started.");
+				return true;
+			}
+			
 			State.setState(State.SCATTER);
 			Parkour.getInstance().reset();
 			isReady = false;
@@ -92,8 +97,8 @@ public class SpreadCommand implements CommandExecutor {
 			
 			if (!game.isFFA() && game.getTeamSize() > 1) {
 				for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
-					if (Scoreboards.getInstance().board.getEntryTeam(whitelisted.getName()) == null) {
-						Team team = Teams.getInstance().findAvailableTeam();
+					if (BoardManager.getInstance().board.getEntryTeam(whitelisted.getName()) == null) {
+						Team team = TeamManager.getInstance().findAvailableTeam();
 						
 						if (team != null) {
 							team.addEntry(whitelisted.getName());
@@ -102,7 +107,7 @@ public class SpreadCommand implements CommandExecutor {
 				}
 			}
 			
-			for (Team te : Teams.getInstance().getTeams()) {
+			for (Team te : TeamManager.getInstance().getTeams()) {
 				if (te.getSize() > 0) {
 					if (te.getSize() > 1) {
 						t++;
@@ -155,7 +160,7 @@ public class SpreadCommand implements CommandExecutor {
 						
 						int index = 0;
 						
-						for (Team tem : Teams.getInstance().getTeamsWithPlayers()) {
+						for (Team tem : TeamManager.getInstance().getTeamsWithPlayers()) {
 							for (String player : tem.getEntries()) {
 								scatterLocs.put(player, loc.get(index));
 								
@@ -165,7 +170,7 @@ public class SpreadCommand implements CommandExecutor {
 						}
 						
 						for (OfflinePlayer online : Bukkit.getServer().getWhitelistedPlayers()) {
-							if (Scoreboards.getInstance().board.getEntryTeam(online.getName()) == null) {
+							if (BoardManager.getInstance().board.getEntryTeam(online.getName()) == null) {
 								scatterLocs.put(online.getName(), loc.get(index));
 								index++;
 							}

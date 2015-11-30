@@ -9,7 +9,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
-import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.managers.TeamManager;
 
 /**
  * Pm command class.
@@ -33,7 +33,7 @@ public class PmCommand implements CommandExecutor {
 		}
 		
 		Spectator spec = Spectator.getInstance();
-		Teams teams = Teams.getInstance();
+		TeamManager teams = TeamManager.getInstance();
 		
 		Team team = teams.getTeam(player);
 		

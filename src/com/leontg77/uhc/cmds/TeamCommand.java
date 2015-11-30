@@ -23,8 +23,8 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
-import com.leontg77.uhc.scoreboard.Scoreboards;
-import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.managers.BoardManager;
+import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -38,7 +38,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		Teams teams = Teams.getInstance();
+		TeamManager teams = TeamManager.getInstance();
 		Game game = Game.getInstance();
 		
 		if (args.length == 0) {
@@ -363,7 +363,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 				
-				for (Team team : Scoreboards.getInstance().board.getTeams()) {
+				for (Team team : BoardManager.getInstance().board.getTeams()) {
 					team.setAllowFriendlyFire(enable);
 				}
 				
@@ -516,7 +516,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			}
 			
 			if (sender.hasPermission("uhc.team")) {
-				for (Team team : Scoreboards.getInstance().board.getTeams()) {
+				for (Team team : BoardManager.getInstance().board.getTeams()) {
 					for (String p : team.getEntries()) {
 						team.removeEntry(p);
 					}
@@ -574,7 +574,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		
-		Scoreboards board = Scoreboards.getInstance();
+		BoardManager board = BoardManager.getInstance();
 		
 		if (args[0].equalsIgnoreCase("enable")) {
 			if (!sender.hasPermission("uhc.team")) {
@@ -662,11 +662,11 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 		if (args.length == 2) {
         	if (args[0].equalsIgnoreCase("add")) {
 	        	if (args[1].equals("")) {
-	        		for (Team teams : Teams.getInstance().getTeams()) {
+	        		for (Team teams : TeamManager.getInstance().getTeams()) {
 	        			toReturn.add(teams.getName());
 	        		}
 	        	} else {
-	        		for (Team teams : Teams.getInstance().getTeams()) {
+	        		for (Team teams : TeamManager.getInstance().getTeams()) {
 	        			if (teams.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 	        				toReturn.add(teams.getName());
 	        			}
@@ -675,11 +675,11 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
         	}
         	else if (args[0].equalsIgnoreCase("delete")) {
 	        	if (args[1].equals("")) {
-	        		for (Team teams : Teams.getInstance().getTeams()) {
+	        		for (Team teams : TeamManager.getInstance().getTeams()) {
 	        			toReturn.add(teams.getName());
 	        		}
 	        	} else {
-	        		for (Team teams : Teams.getInstance().getTeams()) {
+	        		for (Team teams : TeamManager.getInstance().getTeams()) {
 	        			if (teams.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 	        				toReturn.add(teams.getName());
 	        			}

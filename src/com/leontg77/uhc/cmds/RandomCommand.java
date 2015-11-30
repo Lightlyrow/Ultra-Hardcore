@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -65,7 +65,7 @@ public class RandomCommand implements CommandExecutor {
 			}
 		}
 
-		Teams teams = Teams.getInstance();
+		TeamManager teams = TeamManager.getInstance();
 		Team team = teams.findAvailableTeam();
 		
 		if (team == null) {

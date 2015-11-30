@@ -32,10 +32,10 @@ import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.User;
+import com.leontg77.uhc.managers.BoardManager;
+import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.scoreboard.Scoreboards;
-import com.leontg77.uhc.scoreboard.Teams;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.WorldManager;
@@ -154,7 +154,7 @@ public class EndCommand implements CommandExecutor {
 		}
 		
 		HandlerList.unregisterAll(new SpecInfo());
-		State.setState(State.LOBBY);
+		State.setState(State.NOT_RUNNING);
 
 		firework.startFireworkShow();
 		parkour.setup();
@@ -172,12 +172,13 @@ public class EndCommand implements CommandExecutor {
 		Main.plugin.saveData();
 
 		game.setScenarios("games running");
+		game.setAntiStripmine(true);
 		game.setMatchPost("none");
 		game.setMaxPlayers(150);
 		game.setTeamSize(0);
 		game.setFFA(true);
 		
-		Teams teams = Teams.getInstance();
+		TeamManager teams = TeamManager.getInstance();
 		Team team = teams.getTeam("spec");
 		
 		for (String member : team.getEntries()) {
@@ -190,13 +191,13 @@ public class EndCommand implements CommandExecutor {
 
 		new BukkitRunnable() {
 			public void run() {
-				Scoreboards board = Scoreboards.getInstance();
+				BoardManager board = BoardManager.getInstance();
 				
 				for (String entry : board.board.getEntries()) {
 					board.resetScore(entry);
 				}
 				
-				Teams teams = Teams.getInstance();
+				TeamManager teams = TeamManager.getInstance();
 				
 				for (Team team : teams.getTeams()) {
 					for (String member : team.getEntries()) {

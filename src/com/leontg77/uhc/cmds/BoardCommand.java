@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import com.leontg77.uhc.Arena;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -25,7 +25,7 @@ public class BoardCommand implements CommandExecutor {
 			return true;
 		}
 		
-		Scoreboards score = Scoreboards.getInstance();
+		BoardManager score = BoardManager.getInstance();
 		Game game = Game.getInstance();
 		
 		if (game.pregameBoard()) {

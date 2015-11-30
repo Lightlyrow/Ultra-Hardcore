@@ -30,7 +30,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import com.google.common.collect.ImmutableList;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.listeners.ArenaListener;
-import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
 import com.leontg77.uhc.worlds.WorldManager;
@@ -40,7 +40,7 @@ import com.leontg77.uhc.worlds.WorldManager;
  * <p>
  * This class contains methods for enabling/disabling the arena, removing and adding players, giving the kit, scores and getting the players in the arena.
  * 
- * @see {@link Scoreboards}
+ * @see {@link BoardManager}
  * @author LeonTG77
  */
 public class Arena {
@@ -98,7 +98,7 @@ public class Arena {
 		this.enabled = true;
 		
 		if (game.pregameBoard()) {
-			Scoreboards boards = Scoreboards.getInstance();
+			BoardManager boards = BoardManager.getInstance();
 			
 			boards.setScore("§a ", 11);
 			boards.setScore("§8» §cArena:", 10);
@@ -161,7 +161,7 @@ public class Arena {
 		}
 		
 		if (game.pregameBoard()) {
-			Scoreboards boards = Scoreboards.getInstance();
+			BoardManager boards = BoardManager.getInstance();
 			
 			boards.resetScore("§a ");
 			boards.resetScore("§8» §cArena:");
@@ -174,7 +174,7 @@ public class Arena {
 			}
 			
 			PlayerUtils.broadcast(PREFIX + "The arena board has been disabled.");
-			Scoreboards.getInstance().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+			BoardManager.getInstance().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
 			game.setArenaBoard(false);
 		}
 		
@@ -334,15 +334,15 @@ public class Arena {
 		ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS);
 		ItemStack boots = new ItemStack(Material.IRON_BOOTS);
 		
-		player.getInventory().setItem(user.getFile().getInt("hotbar.sword", 0), sword);
-		player.getInventory().setItem(user.getFile().getInt("hotbar.bow", 1), bow);
-		player.getInventory().setItem(user.getFile().getInt("hotbar.bucket", 2), bucket);
-		player.getInventory().setItem(user.getFile().getInt("hotbar.pickaxe", 3), pickaxe);
-		player.getInventory().setItem(user.getFile().getInt("hotbar.cobble", 4), cobble);
-		player.getInventory().setItem(user.getFile().getInt("hotbar.gapple", 5), gapple);
-		player.getInventory().setItem(user.getFile().getInt("hotbar.shovel", 6), shovel);
-		player.getInventory().setItem(user.getFile().getInt("hotbar.axe", 7), axe);
-		player.getInventory().setItem(user.getFile().getInt("hotbar.food", 8), food);
+		player.getInventory().setItem(user.getFile().getInt("hotar.sword", 0), sword);
+		player.getInventory().setItem(user.getFile().getInt("hotar.bow", 1), bow);
+		player.getInventory().setItem(user.getFile().getInt("hotar.bucket", 2), bucket);
+		player.getInventory().setItem(user.getFile().getInt("hotar.pickaxe", 3), pickaxe);
+		player.getInventory().setItem(user.getFile().getInt("hotar.cobble", 4), cobble);
+		player.getInventory().setItem(user.getFile().getInt("hotar.gapple", 5), gapple);
+		player.getInventory().setItem(user.getFile().getInt("hotar.shovel", 6), shovel);
+		player.getInventory().setItem(user.getFile().getInt("hotar.axe", 7), axe);
+		player.getInventory().setItem(user.getFile().getInt("hotar.food", 8), food);
 		
 		player.getInventory().setItem(27, new ItemStack (Material.ARROW, 64));
 		player.getInventory().addItem(new ItemStack (Material.WORKBENCH, 16));

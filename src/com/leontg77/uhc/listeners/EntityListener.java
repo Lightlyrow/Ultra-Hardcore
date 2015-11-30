@@ -48,6 +48,10 @@ import com.leontg77.uhc.State;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.scenario.scenarios.Paranoia;
+import com.leontg77.uhc.scenario.scenarios.RewardingLongshots;
+import com.leontg77.uhc.scenario.scenarios.RewardingLongshotsPlus;
+import com.leontg77.uhc.scenario.scenarios.TeamHealth;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -70,6 +74,8 @@ public class EntityListener implements Listener {
 		Location loc = event.getLocation();
 		World world = loc.getWorld();
 		
+		Biome biome = loc.getBlock().getBiome();
+		
 		if (reason == SpawnReason.NETHER_PORTAL || (State.isState(State.INGAME) && reason == SpawnReason.SPAWNER_EGG)) {
 			event.setCancelled(true);
 			return;
@@ -82,9 +88,13 @@ public class EntityListener implements Listener {
 			return;
 		}
 		
-		if (world.getGameRuleValue("doMobSpawning").equals("false")) {
+		if (world.getGameRuleValue("doMobSpawning").equals("false") && reason == SpawnReason.NATURAL) {
 			event.setCancelled(true);
 			return;
+		}
+		
+		if (biome.equals(Biome.JUNGLE_EDGE)) {
+			event.setCancelled(new Random().nextBoolean());
 		}
 		
 		if (entity instanceof Wolf) {
@@ -93,8 +103,6 @@ public class EntityListener implements Listener {
 		}
 		
 		if (entity instanceof Rabbit || entity instanceof Sheep) {
-			Biome biome = loc.getBlock().getBiome();
-			
 			if (biome.equals(Biome.FOREST) || biome.equals(Biome.FOREST_HILLS)) {
 				Wolf wolf = loc.getWorld().spawn(loc, Wolf.class);
 				wolf.setCustomName("Wolf");
@@ -279,7 +287,7 @@ public class EntityListener implements Listener {
 		
 		ScenarioManager scen = ScenarioManager.getInstance();
 		
-    	if (game.isRecordedRound() || scen.getScenario("TeamHealth").isEnabled() || scen.getScenario("Paranoia").isEnabled()) {
+    	if (game.isRecordedRound() || scen.getScenario(TeamHealth.class).isEnabled() || scen.getScenario(Paranoia.class).isEnabled()) {
 			return;
 		}
     	
@@ -311,7 +319,7 @@ public class EntityListener implements Listener {
 		
 		ScenarioManager scen = ScenarioManager.getInstance();
 		
-    	if (game.isRecordedRound() || scen.getScenario("RewardingLongshots").isEnabled() || scen.getScenario("RewardingLongshots+").isEnabled()) {
+    	if (game.isRecordedRound() || scen.getScenario(RewardingLongshots.class).isEnabled() || scen.getScenario(RewardingLongshotsPlus.class).isEnabled()) {
 			return;
 		}
     	

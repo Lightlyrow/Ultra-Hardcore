@@ -15,7 +15,7 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Timers;
-import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -57,7 +57,7 @@ public class iPvPListener implements Listener {
         	return;
     	}
 		
-		Team pTeam = Teams.getInstance().getTeam(player);
+		Team pTeam = TeamManager.getInstance().getTeam(player);
     	
     	for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
 			if (!(nearby instanceof Player)) {
@@ -74,7 +74,7 @@ public class iPvPListener implements Listener {
 				continue;
 			}
 			
-			Team nearTeam = Teams.getInstance().getTeam(near);
+			Team nearTeam = TeamManager.getInstance().getTeam(near);
 			
 			if (pTeam != null && nearTeam != null) {
 				if (pTeam == nearTeam) {

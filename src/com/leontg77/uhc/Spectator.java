@@ -42,7 +42,7 @@ import org.bukkit.potion.PotionType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
@@ -149,7 +149,7 @@ public class Spectator {
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
 
-		Teams teams = Teams.getInstance();
+		TeamManager teams = TeamManager.getInstance();
 		Game game = Game.getInstance();
 		
 		// if the game isn't an recorded round, join the spec team.
@@ -196,7 +196,7 @@ public class Spectator {
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
 		
-		Teams teams = Teams.getInstance();
+		TeamManager teams = TeamManager.getInstance();
 		Game game = Game.getInstance();
 		
 		// if the game isn't an recorded round, leave their team.
