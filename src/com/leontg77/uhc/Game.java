@@ -6,7 +6,8 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.Main.HardcoreHearts;
-import com.leontg77.uhc.scoreboard.Scoreboards;
+import com.leontg77.uhc.inventory.InvGUI;
+import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -46,6 +47,8 @@ public class Game {
 		for (Player online : PlayerUtils.getPlayers()) {
 			PacketUtils.setTabList(online);
 		}
+		
+		InvGUI.getGameInfo().update();
 	}
 	
 	/**
@@ -69,6 +72,8 @@ public class Game {
 		for (Player online : PlayerUtils.getPlayers()) {
 			PacketUtils.setTabList(online);
 		}
+		
+		InvGUI.getGameInfo().update();
 	}
 	
 	/**
@@ -92,6 +97,8 @@ public class Game {
 		for (Player online : PlayerUtils.getPlayers()) {
 			PacketUtils.setTabList(online);
 		}
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public String getScenarios() {
@@ -108,7 +115,7 @@ public class Game {
 		settings.saveConfig();
 		
 		if (!isRecordedRound()) {
-			Scoreboards board = Scoreboards.getInstance();
+			BoardManager board = BoardManager.getInstance();
 			
 			board.kills.setDisplayName("§4§lUHC §r§8- §7§o" + host + "§r");
 		}
@@ -116,6 +123,8 @@ public class Game {
 		for (Player online : PlayerUtils.getPlayers()) {
 			PacketUtils.setTabList(online);
 		}
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	/**
@@ -135,6 +144,8 @@ public class Game {
 	public void setMaxPlayers(int maxplayers) {
 		settings.getConfig().set("maxplayers", maxplayers);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 	
 	/**
@@ -154,6 +165,8 @@ public class Game {
 	public void setMatchPost(String matchpost) {
 		settings.getConfig().set("matchpost", matchpost);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	/**
@@ -195,6 +208,8 @@ public class Game {
 	public void setPvP(int pvp) {
 		settings.getConfig().set("time.pvp", pvp);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	/**
@@ -214,6 +229,8 @@ public class Game {
 	public void setMeetup(int meetup) {
 		settings.getConfig().set("time.meetup", meetup);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	/**
@@ -358,6 +375,8 @@ public class Game {
 	public void setAppleRates(int appleRate) {
 		settings.getConfig().set("rates.apple.rate", appleRate);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 	
 	/**
@@ -377,6 +396,8 @@ public class Game {
 	public void setFlintRates(int flintRate) {
 		settings.getConfig().set("rates.flint.rate", flintRate);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	/**
@@ -449,6 +470,8 @@ public class Game {
 	public void setAntiStripmine(boolean enable) {
 		settings.getConfig().set("feature.antiStripmine.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	/**
@@ -463,6 +486,8 @@ public class Game {
 	public void setBorderShrink(BorderShrink border) {
 		settings.getConfig().set("feature.border.shrinkAt", border.name().toLowerCase());
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 	
 	public BorderShrink getBorderShrink() {
@@ -476,6 +501,8 @@ public class Game {
 	public void setAbsorption(boolean enable) {
 		settings.getConfig().set("feature.absorption.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean goldenHeads() {
@@ -485,6 +512,8 @@ public class Game {
 	public void setGoldenHeads(boolean enable) {
 		settings.getConfig().set("feature.goldenheads.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 	
 	public int goldenHeadsHeal() {
@@ -494,6 +523,8 @@ public class Game {
 	public void setGoldenHeadsHeal(int heal) {
 		settings.getConfig().set("feature.goldenheads.heal", heal);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean pearlDamage() {
@@ -503,6 +534,8 @@ public class Game {
 	public void setPearlDamage(boolean enable) {
 		settings.getConfig().set("feature.pearldamage.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean notchApples() {
@@ -512,6 +545,8 @@ public class Game {
 	public void setNotchApples(boolean enable) {
 		settings.getConfig().set("feature.notchapples.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean deathLightning() {
@@ -521,6 +556,8 @@ public class Game {
 	public void setDeathLightning(boolean enable) {
 		settings.getConfig().set("feature.deathlightning.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean nether() {
@@ -530,6 +567,8 @@ public class Game {
 	public void setNether(boolean enable) {
 		settings.getConfig().set("feature.nether.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean theEnd() {
@@ -539,6 +578,8 @@ public class Game {
 	public void setTheEnd(boolean enable) {
 		settings.getConfig().set("feature.theend.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean ghastDropGold() {
@@ -548,6 +589,8 @@ public class Game {
 	public void setGhastDropGold(boolean enable) {
 		settings.getConfig().set("feature.ghastdrops.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean strength() {
@@ -557,6 +600,8 @@ public class Game {
 	public void setStrength(boolean enable) {
 		settings.getConfig().set("feature.strength.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean nerfedStrength() {
@@ -566,6 +611,8 @@ public class Game {
 	public void setNerfedStrength(boolean enable) {
 		settings.getConfig().set("feature.strength.nerfed", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean tabShowsHealthColor() {
@@ -575,6 +622,8 @@ public class Game {
 	public void setTabShowsHealthColor(boolean enable) {
 		settings.getConfig().set("feature.tabShowsHealthColor.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 		
 		for (Player online : PlayerUtils.getPlayers()) {
 			online.setPlayerListName(null);
@@ -588,11 +637,15 @@ public class Game {
 	public void setGoldenMelonNeedsIngots(boolean enable) {
 		settings.getConfig().set("feature.goldenMelonNeedsIngots.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 	
 	public void setTier2(boolean enable) {
 		settings.getConfig().set("feature.tier2.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean tier2() {
@@ -602,6 +655,8 @@ public class Game {
 	public void setSplash(boolean enable) {
 		settings.getConfig().set("feature.splash.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean splash() {
@@ -611,6 +666,8 @@ public class Game {
 	public void setHorses(boolean enable) {
 		settings.getConfig().set("feature.horse.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean horses() {
@@ -620,6 +677,8 @@ public class Game {
 	public void setHorseHealing(boolean enable) {
 		settings.getConfig().set("feature.horse.healing", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean horseHealing() {
@@ -629,6 +688,8 @@ public class Game {
 	public void setHorseArmor(boolean enable) {
 		settings.getConfig().set("feature.horse.armor", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean horseArmor() {
@@ -638,6 +699,8 @@ public class Game {
 	public void setHeartsOnTab(boolean enable) {
 		settings.getConfig().set("feature.heartsOnTab.enabled", enable);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	public boolean heartsOnTab() {
