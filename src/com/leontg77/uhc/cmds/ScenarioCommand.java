@@ -92,7 +92,7 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 					i++;
 				}
 				
-				sender.sendMessage(Main.PREFIX + "List of all scenarios:");
+				sender.sendMessage(Main.PREFIX + "List of all scenarios: §8(§6" + manager.getScenarios().size() + "§8)");
 				sender.sendMessage("§8» §7" + list.toString().trim());
 				return true;
 			}
@@ -121,7 +121,7 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
        	sender.sendMessage(Main.PREFIX + "Currently enabled scenarios: §8(§6" + (size == 0 ? 1 : size) + "§8)");
 		
 		if (size == 0) {
-       		sender.sendMessage("§8» §bVanilla+§8: §7§oA normal UHC with a few changes.");
+       		sender.sendMessage("§8» §7Vanilla+ §8- §f§oA normal UHC with a few changes.");
 			return true;
 		}
        	
