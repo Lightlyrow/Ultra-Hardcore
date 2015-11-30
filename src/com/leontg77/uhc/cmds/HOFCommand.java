@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.utils.GameUtils;
@@ -35,6 +36,19 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 		InvGUI inv = InvGUI.getInstance();
 		
 		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("global")) {
+				int i = 0;
+				
+				for (String path : settings.getHOF().getKeys(false)) {
+					for (@SuppressWarnings("unused") String type : settings.getHOF().getConfigurationSection(path).getKeys(false)) {
+						i++;
+					}
+				}
+				
+				sender.sendMessage(Main.PREFIX + "There's been a total of §a" + i + " §7games hosted here.");
+				return true;
+			}
+			
 			host = GameUtils.getHost(args[0]);
 		}
 		
@@ -61,12 +75,18 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
         		for (String type : settings.getHOF().getKeys(false)) {
     				toReturn.add(type);
         		}
+        		
+				toReturn.add("global");
         	} else {
         		for (String type : settings.getHOF().getKeys(false)) {
         			if (type.toLowerCase().startsWith(args[0].toLowerCase())) {
         				toReturn.add(type);
         			}
         		}
+        		
+    			if ("global".toLowerCase().startsWith(args[0].toLowerCase())) {
+    				toReturn.add("global");
+    			}
         	}
         }
 		
