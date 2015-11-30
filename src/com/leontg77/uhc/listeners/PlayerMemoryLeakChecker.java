@@ -42,7 +42,7 @@ public class PlayerMemoryLeakChecker implements Listener {
             private int secondsLeftUntilError = 30;
 
             public void run() {
-                if (reference.isEnqueued()) {
+                if (reference.get() == null) {
                     // Player object was garbage collected
                     this.cancel();
                     return;
