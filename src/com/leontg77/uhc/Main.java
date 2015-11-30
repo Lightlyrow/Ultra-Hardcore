@@ -120,6 +120,7 @@ import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.LoginListener;
 import com.leontg77.uhc.listeners.LogoutListener;
 import com.leontg77.uhc.listeners.PlayerListener;
+import com.leontg77.uhc.listeners.PlayerMemoryLeakTester;
 import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
 import com.leontg77.uhc.managers.BoardManager;
@@ -213,6 +214,7 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new LoginListener(), this);
 		manager.registerEvents(new LogoutListener(), this);
 		manager.registerEvents(new PlayerListener(), this);
+		manager.registerEvents(new PlayerMemoryLeakTester(), this);
 		manager.registerEvents(new PortalListener(), this);
 		manager.registerEvents(new WorldListener(), this);
 		manager.registerEvents(new UBLListener(), this);
