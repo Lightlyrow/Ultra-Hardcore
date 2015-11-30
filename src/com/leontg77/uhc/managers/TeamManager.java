@@ -1,4 +1,4 @@
-package com.leontg77.uhc.scoreboard;
+package com.leontg77.uhc.managers;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,9 +8,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+
+import com.leontg77.pregenner.Main;
 
 /**
  * Team management class.
@@ -19,18 +22,19 @@ import org.bukkit.scoreboard.Team;
  * 
  * @author LeonTG77
  */
-public class Teams {
+@SuppressWarnings("deprecation")
+public class TeamManager {
 	private Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
 	private List<Team> teams = new ArrayList<Team>();
 	
-	private static Teams manager = new Teams();
+	private static TeamManager manager = new TeamManager();
 	
 	/**
 	 * Gets the instance of the class.
 	 * 
 	 * @return The instance.
 	 */
-	public static Teams getInstance() {
+	public static TeamManager getInstance() {
 		return manager;
 	}
 	
@@ -133,7 +137,7 @@ public class Teams {
 	 */
 	public void joinTeam(Team team, OfflinePlayer player) {	
 		if (team != null) {
-			team.addEntry(player.getName());
+			team.addPlayer(player);
 		}
 	}
 
@@ -149,7 +153,7 @@ public class Teams {
 		Team team = sb.getTeam(name);
 		
 		if (team != null) {
-			team.addEntry(player.getName());
+			team.addPlayer(player);
 		}
 	}
 	
@@ -160,12 +164,17 @@ public class Teams {
 	 * 
 	 * @param player the player thats leaving the team.
 	 */
-	public void leaveTeam(OfflinePlayer player) {
-		Team team = getTeam(player);
-		
-		if (team != null) {
-			team.removeEntry(player.getName());
-		}
+	public void leaveTeam(final OfflinePlayer player) {
+		// wait a tick, incase they got removed after death but other events with higher priority wants to use the team.
+		new BukkitRunnable() {
+			public void run() {
+				Team team = getTeam(player);
+				
+				if (team != null) {
+					team.removePlayer(player);
+				}
+			}
+		}.runTaskLater(Main.plugin, 1);
 	}
 	
 	/**
