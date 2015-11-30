@@ -15,6 +15,7 @@ import org.bukkit.Color;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -40,6 +41,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.google.common.base.Function;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.ArenaCommand;
 import com.leontg77.uhc.cmds.BanCommand;
@@ -120,7 +122,7 @@ import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.LoginListener;
 import com.leontg77.uhc.listeners.LogoutListener;
 import com.leontg77.uhc.listeners.PlayerListener;
-import com.leontg77.uhc.listeners.PlayerMemoryLeakTester;
+import com.leontg77.uhc.listeners.PlayerMemoryLeakChecker;
 import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
 import com.leontg77.uhc.managers.BoardManager;
@@ -206,6 +208,25 @@ public class Main extends JavaPlugin {
 
 		PluginManager manager = Bukkit.getServer().getPluginManager();
 
+		// register the leak checker.
+		manager.registerEvents(new PlayerMemoryLeakChecker(this, new Function<String, Void>() {
+            public Void apply(String name) {
+            	String message = Main.PREFIX + "§4MEMORY LEAK: §7" + name + " was not garbage collected! §c(Logged out 30 seconds ago)";
+            	
+            	PlayerUtils.broadcast(message, "uhc.staff");
+                
+                Player player = Bukkit.getPlayer(name);
+                
+                if (player != null) {
+                	player.sendMessage(Main.PREFIX + "Due to a rare and unexpected bug with you relogging earlier, your earlier player connection was not properly disconnected. " +
+                	"You may be experiencing increased ping, lag spikes and unexpected glitches. You are advised to relog and wait at least 30 seconds to rejoin. Online staff has been informed.");
+                	
+                	player.playSound(player.getLocation(), Sound.ANVIL_LAND, 1, 1);
+                }
+                return null;
+            }
+        }), this);
+		
 		// register all listeners.
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new BuildProtectListener(), this);
@@ -214,7 +235,6 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new LoginListener(), this);
 		manager.registerEvents(new LogoutListener(), this);
 		manager.registerEvents(new PlayerListener(), this);
-		manager.registerEvents(new PlayerMemoryLeakTester(), this);
 		manager.registerEvents(new PortalListener(), this);
 		manager.registerEvents(new WorldListener(), this);
 		manager.registerEvents(new UBLListener(), this);
