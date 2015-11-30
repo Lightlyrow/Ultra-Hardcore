@@ -25,6 +25,11 @@ public class HotbarCommand implements CommandExecutor {
 			return true;
 		}
 		
+		if (sender instanceof Player) {
+			sender.sendMessage(ChatColor.RED + "Feature currently broken.");
+			return true;
+		}
+		
 		Player player = (Player) sender;
 		Arena arena = Arena.getInstance();
 		
