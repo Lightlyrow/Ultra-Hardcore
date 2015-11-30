@@ -123,7 +123,7 @@ public class Arena {
 				time--;
 				
 				if (time == 15 || time == 10 || time == 5 || time == 1) {
-					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a" + time + " §7minutes.");
+					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a" + time + " §7minute" + (time == 1 ? "" : "s") + ".");
 					return;
 				}
 			
@@ -288,7 +288,7 @@ public class Arena {
 			PlayerUtils.broadcast(PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + killstreak.get(player) + " §7was shut down from leaving!");
 		}
 
-		killstreak.put(player, 0); 
+		killstreak.remove(player);
 		
 		User user = User.get(player);
 		
