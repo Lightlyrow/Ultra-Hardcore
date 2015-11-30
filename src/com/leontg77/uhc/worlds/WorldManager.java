@@ -111,11 +111,11 @@ public class WorldManager {
 			player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
 		}
 		
-		Bukkit.getServer().unloadWorld(world, false);
+		Bukkit.getServer().unloadWorld(world, true);
 		settings.getWorlds().set("worlds." + world.getName(), null);
 		settings.saveWorlds();
 		
-		return FileUtils.deleteWorld(world.getWorldFolder());
+		return FileUtils.deleteFile(world.getWorldFolder());
 	}
 	
 	/**
