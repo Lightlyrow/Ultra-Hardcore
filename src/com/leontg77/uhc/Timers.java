@@ -27,10 +27,12 @@ import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.inventory.InvGUI;
+import com.leontg77.uhc.managers.BoardManager;
+import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.scenario.types.Kings;
-import com.leontg77.uhc.scoreboard.Scoreboards;
-import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.scenario.scenarios.Astrophobia;
+import com.leontg77.uhc.scenario.scenarios.Kings;
+import com.leontg77.uhc.scenario.scenarios.SlaveMarket;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
@@ -171,8 +173,8 @@ public class Timers {
 				ScenarioManager scen = ScenarioManager.getInstance();
 				Spectator spec = Spectator.getInstance();
 
-				Scoreboards sb = Scoreboards.getInstance();
-				Teams teams = Teams.getInstance();
+				BoardManager sb = BoardManager.getInstance();
+				TeamManager teams = TeamManager.getInstance();
 
 				PluginManager manager = Bukkit.getPluginManager();
 				manager.registerEvents(new SpecInfo(), Main.plugin);
@@ -262,43 +264,29 @@ public class Timers {
 						}
 					}
 
+					user.resetEffects();
 					user.resetHealth();
 					user.resetFood();
 					user.resetExp();
 
-					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100));
 					Main.kills.put(online.getName(), 0);
 					
-					if (scen.getScenario("Kings").isEnabled()) {
-						if (!Kings.getKings().contains(online.getName())) {
-							user.resetEffects();
-							continue;
-						}
-						
-						for (PotionEffect effect : online.getActivePotionEffects()) {
-							if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
-								continue;
-							}
-							
-							if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
-								continue;
-							}
-							
-							if (effect.getType().equals(PotionEffectType.SPEED)) {
-								continue;
-							}
-							
-							online.removePotionEffect(effect.getType());	
-						}
+					Kings kings = scen.getScenario(Kings.class);
+
+					if (kings.isEnabled() && kings.getKings().contains(online.getName())) {
+		        		online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1726272000, 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 1726272000, 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1726272000, 0));
 					} else {
-						user.resetEffects();
+						online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100));
 					}
 					
 					if (spec.isSpectating(online)) {
 						continue;
 					}
 					
-					if (scen.getScenario("SlaveMarket").isEnabled()) {
+					if (scen.getScenario(SlaveMarket.class).isEnabled()) {
 						PlayerInventory inv = online.getInventory();
 
 						for (ItemStack item : inv.getContents()) {
@@ -344,7 +332,7 @@ public class Timers {
 		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
 				ScenarioManager scen = ScenarioManager.getInstance();
-				Scoreboards sb = Scoreboards.getInstance();
+				BoardManager sb = BoardManager.getInstance();
 				
 				time++;
 				pvp--;
@@ -412,7 +400,7 @@ public class Timers {
 						world.setThundering(false);
 						world.setStorm(false);
 
-						if (!scen.getScenario("Astrophobia").isEnabled()) {
+						if (!scen.getScenario(Astrophobia.class).isEnabled()) {
 							world.setGameRuleValue("doDaylightCycle", "false");
 							world.setTime(6000);
 						}
@@ -535,54 +523,71 @@ public class Timers {
 			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 		}
 		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+		new BukkitRunnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
 					PacketUtils.sendTitle(online, "§e2", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
-		}, 20);
+		}.runTaskLater(Main.plugin, 20);
 		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+		new BukkitRunnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
 					PacketUtils.sendTitle(online, "§a1", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
-		}, 40);
+		}.runTaskLater(Main.plugin, 40);
 		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+		new BukkitRunnable() {
 			public void run() {
+				ScenarioManager scen = ScenarioManager.getInstance();
+				Spectator spec = Spectator.getInstance();
+
+				PluginManager manager = Bukkit.getPluginManager();
+				manager.registerEvents(new SpecInfo(), Main.plugin);
+				
+				State.setState(State.INGAME);
+				game.setArenaBoard(false);
+				
+				time = 20;
+				pvp = 0;
+				meetup = 1;
+				
+				timerRR();
+
+				Bukkit.getServer().setIdleTimeout(10);
+				SpecInfo.getTotalDiamonds().clear();
+				SpecInfo.getTotalGold().clear();
+				
+				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
+				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
+				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
+				
+				for (World world : GameUtils.getGameWorlds()) {
+					world.setDifficulty(Difficulty.HARD);
+					world.setPVP(false);
+					world.setTime(0);
+					
+					world.setGameRuleValue("doDaylightCycle", "true");
+					world.setThundering(false);
+					world.setStorm(false);
+					
+					if (game.getBorderShrink() == BorderShrink.START) {
+						world.getWorldBorder().setSize(300, meetupSeconds);
+					}
+					
+					for (Entity mob : world.getEntities()) {
+						if (EntityUtils.isButcherable(mob.getType())) {
+							mob.remove();
+						}
+					}
+				}
+				
 				for (Player online : PlayerUtils.getPlayers()) {
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-					
-					if (Spectator.getInstance().isSpectating(online)) {
-						for (Achievement a : Achievement.values()) {
-							if (online.hasAchievement(a)) {
-								online.removeAchievement(a);
-							}
-						}
-						
-						for (PotionEffect effect : online.getActivePotionEffects()) {
-							if (effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
-								continue;
-							}
-							
-							online.removePotionEffect(effect.getType());	
-						}
-						
-						online.awardAchievement(Achievement.OPEN_INVENTORY);
-						online.setHealth(online.getMaxHealth());
-						online.setSaturation(20);
-						online.setFoodLevel(20);
-						online.setFireTicks(0);
-						online.setLevel(0);
-						online.setExp(0);
-						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
-						continue;
-					}
 					
 					for (Achievement a : Achievement.values()) {
 						if (online.hasAchievement(a)) {
@@ -590,89 +595,67 @@ public class Timers {
 						}
 					}
 					
-					if (online.getGameMode() != GameMode.SURVIVAL) {
-						online.setGameMode(GameMode.SURVIVAL);
-					}
-					
-					if (ScenarioManager.getInstance().getScenario("Kings").isEnabled()) {
-						for (PotionEffect effect : online.getActivePotionEffects()) {
-							if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
-								continue;
-							}
-							
-							if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
-								continue;
-							}
-							
-							if (effect.getType().equals(PotionEffectType.SPEED)) {
-								continue;
-							}
-							
-							online.removePotionEffect(effect.getType());	
-						}
+					if (spec.isSpectating(online)) {
+						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
 					} else {
-						for (PotionEffect effect : online.getActivePotionEffects()) {
-							online.removePotionEffect(effect.getType());	
+						PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
+						
+						if (online.getGameMode() != GameMode.SURVIVAL) {
+							online.setGameMode(GameMode.SURVIVAL);
 						}
 					}
 					
-					online.getInventory().clear();
-					online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 250, 100));
-					online.setItemOnCursor(new ItemStack (Material.AIR));
-					online.awardAchievement(Achievement.OPEN_INVENTORY);
-					online.getInventory().setArmorContents(null);
-					online.setHealth(online.getMaxHealth());
-					online.setAllowFlight(false);
-					online.setSaturation(20);
-					online.setFoodLevel(20);
-					online.setFlying(false);
-					online.setFireTicks(0);
-					online.setLevel(0);
-					online.setExp(0);
+					User user = User.get(online);
 
-					SpecInfo.getTotalDiamonds().clear();
-					SpecInfo.getTotalGold().clear();
+					user.resetEffects();
+					user.resetHealth();
+					user.resetFood();
+					user.resetExp();
 					
-					PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
-				}
-				
-				for (String e : Scoreboards.getInstance().kills.getScoreboard().getEntries()) {
-					Scoreboards.getInstance().resetScore(e);
-				}
+					Kings kings = scen.getScenario(Kings.class);
 
-				game.setPregameBoard(false);
-				game.setArenaBoard(false);
-				
-				timerRR();
-				Bukkit.getServer().getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
-				PlayerUtils.broadcast(Main.PREFIX + "Start of episode §a1 §8| §7glhf!");
-				State.setState(State.INGAME);
-				Scoreboards.getInstance().kills.setDisplayName("§6" + game.getRRName());
+					if (kings.isEnabled() && kings.getKings().contains(online.getName())) {
+		        		online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1726272000, 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 1726272000, 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1726272000, 0));
+					} else {
+						online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100));
+					}
+					
+					if (spec.isSpectating(online)) {
+						continue;
+					}
+					
+					if (scen.getScenario(SlaveMarket.class).isEnabled()) {
+						PlayerInventory inv = online.getInventory();
 
-				time = 20;
-				pvp = 0;
-				meetup = 1;
-				
-				for (World world : GameUtils.getGameWorlds()) {
-					world.setTime(0);
-					world.setDifficulty(Difficulty.HARD);
-					world.setPVP(false);
-					
-					world.setGameRuleValue("doMobSpawning", "true");
-					world.setSpawnFlags(true, true);
-					world.setGameRuleValue("doDaylightCycle", "true");
-					
-					world.setThundering(false);
-					world.setStorm(false);
-					
-					for (Entity mobs : world.getEntities()) {
-						if (EntityUtils.isButcherable(mobs.getType())) {
-							mobs.remove();
+						for (ItemStack item : inv.getContents()) {
+							if (item == null) {
+								continue;
+							}
+							
+							if (item.getType() == Material.DIAMOND) {
+								continue;
+							}
+							
+							inv.removeItem(item);	
 						}
+						
+				        inv.setArmorContents(null);
+				        online.setItemOnCursor(new ItemStack(Material.AIR));
+
+				        InventoryView openInventory = online.getOpenInventory();
+				        
+				        if (openInventory.getType() == InventoryType.CRAFTING) {
+				            openInventory.getTopInventory().clear();
+				        }
+					} else {
+						user.resetInventory();
 					}
 				}
 			}
-		}, 60);
+		}.runTaskLater(Main.plugin, 60);
 	}
 	
 	/**
@@ -741,11 +724,7 @@ public class Timers {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
 					
-					for (World world : Bukkit.getWorlds()) {
-						if (world.getName().equals("lobby") || world.getName().equals("arena")) {
-							continue;
-						}
-
+					for (World world : GameUtils.getGameWorlds()) {
 						world.setGameRuleValue("doDaylightCycle", "false");
 						world.setTime(6000);
 					}
