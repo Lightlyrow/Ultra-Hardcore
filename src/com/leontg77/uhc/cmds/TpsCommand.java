@@ -42,11 +42,6 @@ public class TpsCommand implements CommandExecutor {
 		
 		sender.sendMessage(Main.PREFIX + "Server performance:");
 		sender.sendMessage("§8§l» §7Current TPS: " + color + NumberUtils.convertDouble(tps));
-		
-		if (!sender.hasPermission("uhc.tps")) {
-			return true;
-		}
-		
 		sender.sendMessage("§8§l» §7Uptime: §a" + DateUtils.formatDateDiff(startTime));
 		sender.sendMessage("§8§l» §7RAM Usage: §a" + ramUsage + " MB");
 		sender.sendMessage("§8§l» §7Max Memory: §a4096 MB");
