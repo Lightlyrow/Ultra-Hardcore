@@ -52,6 +52,10 @@ public class LogoutListener implements Listener {
 			PlayerUtils.broadcast("§8[§c-§8] §7" + player.getName() + " has left.");
 		}
 		
+		if (Main.rainbow.containsKey(player)) {
+			Main.rainbow.remove(player);
+		}
+		
 		if (Main.msg.containsKey(player)) {
 			Main.msg.remove(player);
 		}
