@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.User;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -22,26 +22,24 @@ import com.leontg77.uhc.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Timebomb extends Scenario implements Listener {
-	private boolean enabled = false;
 
 	public Timebomb() {
 		super("Timebomb", "After killing a player all of their items will appear in a double chest rather than dropping on the ground. You then have 30 seconds to loot what you want and get the hell away from it. This is because the chest explodes after the time is up.");
 	}
 
-	public void setEnabled(boolean enable) {
-		enabled = enable;
-	}
+	@Override
+	public void onDisable() {}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	@Override
+	public void onEnable() {}
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		final Player player = event.getEntity().getPlayer();
+		final Player player = event.getEntity();
+		User user = User.get(player);
 		
-		event.setKeepInventory(true);
 		final Location loc = player.getLocation().add(0, -1, 0);
+		event.setKeepInventory(true);
 		
 		loc.getBlock().setType(Material.CHEST);
 		loc.getBlock().getState().update(true);
@@ -52,17 +50,22 @@ public class Timebomb extends Scenario implements Listener {
 		lo.getBlock().getState().update(true);
 		
 		for (ItemStack item : player.getInventory().getContents()) {
-			if (item == null) {
+			if (item == null || item.getType() == Material.AIR) {
 				continue;
 			}
+			
 			chest.getInventory().addItem(item);
 		}
+		
 		for (ItemStack item : player.getInventory().getArmorContents()) {
-			if (item == null) {
+			if (item == null || item.getType() == Material.AIR) {
 				continue;
 			}
+			
 			chest.getInventory().addItem(item);
 		}
+		
+		user.resetInventory();
 		
 		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
 			public void run() {
@@ -78,13 +81,5 @@ public class Timebomb extends Scenario implements Listener {
 				loc.getWorld().strikeLightning(loc);
 			}
 		}, 620);
-	}	
-	
-	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		Player player = event.getPlayer();
-		
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(null);
 	}
 }
