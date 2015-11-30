@@ -18,8 +18,8 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Timers;
-import com.leontg77.uhc.scenario.types.ChunkApocalypse;
-import com.leontg77.uhc.scenario.types.Voidscape;
+import com.leontg77.uhc.scenario.scenarios.ChunkApocalypse;
+import com.leontg77.uhc.scenario.scenarios.Voidscape;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.AntiStripmine;
@@ -109,20 +109,6 @@ public class WorldListener implements Listener {
 	}
 
 	@EventHandler
-	public void onWorldInit(WorldInitEvent event) {
-		Game game = Game.getInstance();
-		
-		if (!game.antiStripmine()) {
-			return;
-		}
-		
-		AntiStripmine strip = AntiStripmine.getInstance();
-		World world = event.getWorld();
-		
-		strip.registerWorld(world);
-	}
-
-	@EventHandler
 	public void onWorldBorderFillFinished(WorldBorderFillFinishedEvent event) {
 		Arena arena = Arena.getInstance();
 		World world = event.getWorld();
@@ -130,7 +116,7 @@ public class WorldListener implements Listener {
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " clear");
 		
 		if (arena.reset) {
-			PlayerUtils.broadcast(Arena.PREFIX + "Arena reset complete");
+			PlayerUtils.broadcast(Arena.PREFIX + "Arena reset complete.");
 			
 			if (arena.wasEnabled) {
 				arena.enable();
@@ -142,5 +128,19 @@ public class WorldListener implements Listener {
 		}
 
 		PlayerUtils.broadcast(Main.PREFIX + "Pregen of world '§a" + world.getName() + "§7' finished.");
+	}
+
+	@EventHandler
+	public void onWorldInit(WorldInitEvent event) {
+		final World world = event.getWorld();
+		Game game = Game.getInstance();
+		
+		if (!game.antiStripmine()) {
+			return;
+		}
+		
+		AntiStripmine strip = AntiStripmine.getInstance();
+		
+		strip.registerWorld(world);
 	}
 }
