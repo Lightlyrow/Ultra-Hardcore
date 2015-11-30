@@ -21,8 +21,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.User.Rank;
-import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.scenario.scenarios.Moles;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NameUtils;
 
@@ -110,7 +110,7 @@ public class GameInfo extends InvGUI implements Listener {
 		pvpMeta.setDisplayName("§8» §6PvP Rules §8«");
 		lore.add(" ");
 		lore.add("§8» §7iPvP: §cNot Allowed before pvp.");
-		lore.add("§8» §7Team Killing: " + ((GameUtils.getTeamSize().startsWith("r") || GameUtils.getTeamSize().isEmpty()) && !ScenarioManager.getInstance().getScenario("Moles").isEnabled() ? "§cNot Allowed." : "§aAllowed."));
+		lore.add("§8» §7Team Killing: " + ((GameUtils.getTeamSize().startsWith("r") || GameUtils.getTeamSize().isEmpty()) && !ScenarioManager.getInstance().getScenario(Moles.class).isEnabled() ? "§cNot Allowed." : "§aAllowed."));
 		lore.add("§8» §7Stalking: §aAllowed. §c(Not excessive)");
 		lore.add("§8» §7Stealing: §aAllowed.");
 		lore.add("§8» §7Crossteaming: §cNot Allowed.");
@@ -189,15 +189,20 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add(" ");
 		lore.add("§a/uhc §8» §7§oView this menu :o");
 		lore.add("§a/helpop §8» §7§oAsk for help by the staff.");
+		lore.add("§a/list §8» §7§oView online players.");
+		lore.add(" ");
 		lore.add("§a/post §8» §7§oGet a link to the matchpost.");
-		lore.add("§a/team §8» §7§oView the team help menu.");
 		lore.add("§a/scen §8» §7§oView the enabled scenarios.");
+		lore.add(" ");
 		lore.add("§a/timeleft §8» §7§oView the timer.");
 		lore.add("§a/border §8» §7§oView the current border size.");
+		lore.add(" ");
+		lore.add("§a/team §8» §7§oView the team help menu.");
 		lore.add("§a/hof §8» §7§oView the hall of fame.");
+		lore.add(" ");
 		lore.add("§a/lag §8» §7§oView the server performance.");
 		lore.add("§a/ms §8» §7§oView your or someones ping.");
-		lore.add("§a/list §8» §7§oView online players.");
+		lore.add(" ");
 		lore.add("§a/pm §8» §7§oTalk in team chat.");
 		lore.add("§a/tl §8» §7§oTell your team your coords.");
 		lore.add(" ");
@@ -208,21 +213,32 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack scenario = new ItemStack (Material.BANNER, 1, (short) 14);
 		ItemMeta scenarioMeta = scenario.getItemMeta();
-		scenarioMeta.setDisplayName("§8» §6Enabled Scenarios §8«");
-		lore.add(" ");
-		lore.add("§8» §cScenarios:");
-		
-		if (ScenarioManager.getInstance().getEnabledScenarios().isEmpty()) {
-			lore.add("§8» §7Vanilla");
+		scenarioMeta.setDisplayName("§8» §6Game Information §8«");
+		if (GameUtils.getTeamSize().startsWith("No")) {
+			lore.add(" ");
+			lore.add("§8» §7There are no games running.");
+			lore.add(" ");
+		} else if (GameUtils.getTeamSize().startsWith("Open")) {
+			lore.add(" ");
+			lore.add("§8» §7Currently having Open " + game.getScenarios());
+			lore.add(" ");
+		} else {
+			lore.add(" ");
+			lore.add("§8» §7Match post: §a" + game.getMatchPost());
+			lore.add("§8» §7Max player slots: §a" + game.getMaxPlayers());
+			lore.add(" ");
+			lore.add("§8» §7PvP enabled after: §a" + game.getPvP() + " minutes.");
+			lore.add("§8» §7Meetup is after: §a" + game.getMeetup() + " minutes.");
+			lore.add(" ");
+			lore.add("§8» §cTeamsize:");
+			lore.add("§8» §7" + GameUtils.getAdvancedTeamSize());
+			lore.add(" ");
+			lore.add("§8» §cScenarios:");
+			for (String scen : game.getScenarios().split(" ")) {
+				lore.add("§8» §7" + scen);
+			}
+			lore.add(" ");
 		}
-		
-		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
-			lore.add("§8» §7" + scen.getName());
-		}
-		
-		lore.add(" ");
-		lore.add("§8» §7Use §a/scen §7to view info about the scenarios.");
-		lore.add(" ");
 		scenarioMeta.setLore(lore);
 		scenario.setItemMeta(scenarioMeta);
 		inv.setItem(23, scenario);
@@ -245,6 +261,7 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add(" ");
 			lore.add("§8» §7Golden Melon: §6" + (game.goldenMelonNeedsIngots() ? "Gold Ingots." : "Golden Nuggets."));
 			lore.add("§8» §7Ghast Drop: §6" + (game.ghastDropGold() ? "Gold Ingot." : "Ghast Tear."));
+			lore.add("§8» §7Quartz XP: §c50% reduced.");
 			lore.add(" ");
 		}
 		netherMeta.setLore(lore);
@@ -308,7 +325,6 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add("§8» §7Saturation Fix: §aEnabled.");
 		lore.add(" ");
 		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled, deals 1 heart." : "§cDisabled."));
-		lore.add("§8» §7Quartz XP: §c50% reduced.");
 		lore.add(" ");
 		lore.add("§8» §7Border shrinks: §6" + NameUtils.fixString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
 		lore.add("§8» §7The border will kill you if you go outside!");
