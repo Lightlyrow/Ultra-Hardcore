@@ -60,25 +60,25 @@ public class BlockListener implements Listener {
 			if (game.tier2()) {
 				return;
 			}
-			
-			event.setCancelled(true);
-            block.setType(Material.AIR);
             
             BlockUtils.blockBreak(player, block);
             BlockUtils.degradeDurabiliy(player);
             BlockUtils.dropItem(block.getLocation(), new ItemStack(Material.GLOWSTONE));
+			
+			event.setCancelled(true);
+            block.setType(Material.AIR);
 			return;
 		}
     	
 		final Random rand = new Random();
 		
 		if (block.getType() == Material.GRAVEL) {
-			event.setCancelled(true);
-            block.setType(Material.AIR);
-            
-            BlockUtils.blockBreak(player, block);
+			BlockUtils.blockBreak(player, block);
             BlockUtils.degradeDurabiliy(player);
             BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(rand.nextInt(99) < game.getFlintRates() ? Material.FLINT : Material.GRAVEL));
+			
+			event.setCancelled(true);
+            block.setType(Material.AIR);
 			return;
 		}
 		
