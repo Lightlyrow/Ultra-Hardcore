@@ -13,6 +13,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.State;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
@@ -72,11 +73,14 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
    			PlayerUtils.broadcast(Main.PREFIX + "The whitelist is now on");
    			
    			Bukkit.getServer().setWhitelist(true);
+   			State.setState(State.CLOSED);
    		} 
    		else if (args[0].equalsIgnoreCase("off")) {
    			PlayerUtils.broadcast(Main.PREFIX + "The whitelist is now off");
    			
    			Bukkit.getServer().setWhitelist(false);
+   			
+   			State.setState(State.OPEN);
    		} 
    		else if (args[0].equalsIgnoreCase("all")) {
    			for (Player online : PlayerUtils.getPlayers()) {
