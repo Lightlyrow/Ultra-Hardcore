@@ -33,8 +33,8 @@ public class BlockUtils {
 	 */
 	@SuppressWarnings("deprecation")
 	public static void blockBreak(Player player, Block block) {
-		// Loop all players in the breaking players world.
-		for (Player worldPlayer : player.getWorld().getPlayers()) {
+		// Loop all players that are in the world.
+		for (Player worldPlayer : block.getWorld().getPlayers()) {
 			// we do not want to display it to the breaker himself, that is done automaticly.
         	if (worldPlayer == player) {
         		continue;
