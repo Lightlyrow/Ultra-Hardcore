@@ -197,10 +197,8 @@ commands:
     description: View the current damage type.
   genie:
     description: Genie command, check usage.
-  addking:
-    description: Add a king.
-  remking:
-    description: Remove a king.
+  kings:
+    description: Manage kings.
   molehelp:
     description: View mole commands.
   mcl:
