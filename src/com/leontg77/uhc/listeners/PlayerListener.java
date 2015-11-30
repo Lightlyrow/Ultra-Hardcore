@@ -1,6 +1,5 @@
 package com.leontg77.uhc.listeners;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +16,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
@@ -25,6 +25,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -56,15 +57,15 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
-import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.inventory.InvGUI;
+import com.leontg77.uhc.managers.BoardManager;
+import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.scenario.ScenarioManager;
-import com.leontg77.uhc.scoreboard.Scoreboards;
-import com.leontg77.uhc.scoreboard.Teams;
+import com.leontg77.uhc.scenario.scenarios.VengefulSpirits;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.GameUtils;
@@ -82,7 +83,7 @@ import com.leontg77.uhc.utils.RecipeUtils;
 public class PlayerListener implements Listener {
 	private Game game = Game.getInstance();
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDeath(final PlayerDeathEvent event) {
 		final Player player = event.getEntity();
 		Arena arena = Arena.getInstance();
@@ -99,15 +100,25 @@ public class PlayerListener implements Listener {
 			return;
 		} 
 
-		Scoreboards board = Scoreboards.getInstance();
+		BoardManager board = BoardManager.getInstance();
 		User user = User.get(player);
 		
-		user.increaseStat(Stat.DEATHS);
 		user.setStat(Stat.CKS, 0);
 		player.setWhitelisted(false);
 		
 		if (game.deathLightning()) {
 		    player.getWorld().strikeLightningEffect(player.getLocation());
+		    
+		    for (Player online : PlayerUtils.getPlayers()) {
+		    	if (online.getWorld() == player.getWorld()) {
+		    		continue;
+		    	}
+		    	
+		    	Location loc = player.getLocation().clone();
+		    	loc.setWorld(online.getWorld());
+		    	
+		    	online.playSound(loc, Sound.AMBIENCE_THUNDER, 1, 1);
+		    }
 		}
 		
 		List<World> worlds = GameUtils.getGameWorlds();
@@ -147,25 +158,23 @@ public class PlayerListener implements Listener {
 				board.setScore("§8» §a§lPvE", board.getScore("§8» §a§lPvE") + 1);
 		        board.resetScore(player.getName());
 			}
+
+			user.increaseStat(Stat.DEATHS);
 			
 			if (deathMessage == null) {
 				return;
 			}
-			
-			new BukkitRunnable() {
-				public void run() {
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.sendMessage("§8» §f" + deathMessage);
-					}
-				}
-			}.runTaskLater(Main.plugin, 1);
+
+			for (Player online : PlayerUtils.getPlayers()) {
+				online.sendMessage("§8» §f" + deathMessage);
+			}
 			
 			Bukkit.getLogger().info("§8» §f" + deathMessage);
 			event.setDeathMessage(null);
 			return;
 		}
 		
-		if (deathMessage != null) {
+		if (deathMessage != null && !deathMessage.isEmpty()) {
 			ItemStack item = killer.getItemInHand();
 			
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
@@ -190,62 +199,55 @@ public class PlayerListener implements Listener {
 				
 				builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] {new TextComponent(NameUtils.convertToJson(item))}));
 				final BaseComponent[] result = builder.create();
-				
-				new BukkitRunnable() {
-					public void run() {
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.spigot().sendMessage(result);
-						}
-					}
-				}.runTaskLater(Main.plugin, 1);
+
+				for (Player online : PlayerUtils.getPlayers()) {
+					online.spigot().sendMessage(result);
+				}
 				
 				Bukkit.getLogger().info("§8» §f" + event.getDeathMessage());
 				
 				event.setDeathMessage(null);
 			} else {
-				new BukkitRunnable() {
-					public void run() {
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.sendMessage("§8» §f" + deathMessage);
-						}
-					}
-				}.runTaskLater(Main.plugin, 1);
+				for (Player online : PlayerUtils.getPlayers()) {
+					online.sendMessage("§8» §f" + deathMessage);
+				}
 				
 				Bukkit.getLogger().info("§8» §f" + deathMessage);
 				event.setDeathMessage(null);
 			}
 		}
 		
-		if (State.isState(State.INGAME)) {
+		Team pteam = TeamManager.getInstance().getTeam(player);
+		Team team = TeamManager.getInstance().getTeam(killer);
+		
+		if (pteam == null || !pteam.equals(team)) {
 			if (worlds.contains(player.getWorld())) {
 				board.setScore(killer.getName(), board.getScore(killer.getName()) + 1);
 				
-				if (!game.isRecordedRound() && State.isState(State.INGAME)) {
+				if (game.isRecordedRound()) {
+					return;
+				}
+				
+				if (State.isState(State.INGAME)) {
 					board.resetScore(player.getName());
 				}
-			}
-			
-			if (game.isRecordedRound()) {
-				return;
-			}
-			
-			User killUser = User.get(killer);
-			killUser.increaseStat(Stat.KILLS);
-			killUser.increaseStat(Stat.CKS);
-			
-			if (killUser.getStat(Stat.KS) < killUser.getStat(Stat.CKS)) {
-				killUser.increaseStat(Stat.KS);
-			}
-			
-			if (Main.kills.containsKey(killer.getName())) {
-				Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);
-			} else {
-				Main.kills.put(killer.getName(), 1);
-			}
-			
-			Team team = Teams.getInstance().getTeam(killer);
-			
-			if (team != null) {
+
+				user.increaseStat(Stat.DEATHS);
+				
+				User killUser = User.get(killer);
+				killUser.increaseStat(Stat.KILLS);
+				killUser.increaseStat(Stat.CKS);
+				
+				if (killUser.getStat(Stat.KS) < killUser.getStat(Stat.CKS)) {
+					killUser.increaseStat(Stat.KS);
+				}
+				
+				if (Main.kills.containsKey(killer.getName())) {
+					Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);
+				} else {
+					Main.kills.put(killer.getName(), 1);
+				}
+
 				if (Main.teamKills.containsKey(team.getName())) {
 					Main.teamKills.put(team.getName(), Main.teamKills.get(team.getName()) + 1);
 				} else {
@@ -259,14 +261,14 @@ public class PlayerListener implements Listener {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
 
-		Scoreboards board = Scoreboards.getInstance();
+		BoardManager board = BoardManager.getInstance();
 		Arena arena = Arena.getInstance();
 		
 		event.setRespawnLocation(Main.getSpawn());
 		board.resetScore(player.getName());
 		player.setMaxHealth(20);
 		
-		if (arena.isEnabled() || State.isState(State.LOBBY) || game.isRecordedRound()) {
+		if (arena.isEnabled() || !State.isState(State.INGAME) || game.isRecordedRound()) {
 			return;
 		}
 		
@@ -290,7 +292,7 @@ public class PlayerListener implements Listener {
 			public void run() {
 				Spectator spec = Spectator.getInstance();
 				
-				if (State.isState(State.LOBBY) || !player.isOnline() || spec.isSpectating(player)) {
+				if (!State.isState(State.INGAME) || !player.isOnline() || spec.isSpectating(player)) {
 					return;
 				}
 				
@@ -308,7 +310,7 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		User user = User.get(player);
 
-		Teams teams = Teams.getInstance();
+		TeamManager teams = TeamManager.getInstance();
 		Team team = teams.getTeam(player);
 		
 		String message = event.getMessage();
@@ -324,7 +326,7 @@ public class PlayerListener implements Listener {
 		if (VoteCommand.running && (message.equalsIgnoreCase("y") || message.equalsIgnoreCase("n"))) {
 			World world = player.getWorld();
 			
-			if (!State.isState(State.LOBBY) && world.getName().equals("lobby")) {
+			if (State.isState(State.INGAME) && world.getName().equals("lobby")) {
 				player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
 				return;
 			}
@@ -527,55 +529,10 @@ public class PlayerListener implements Listener {
 	@EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {	
         Player player = event.getPlayer();
-        
         Action action = event.getAction();
-        ItemStack item = event.getItem();
         
         Spectator spec = Spectator.getInstance();
         InvGUI inv = InvGUI.getInstance();
-        
-        if (action == Action.RIGHT_CLICK_BLOCK && State.isState(State.INGAME) && Timers.pvp > 0 && !game.isRecordedRound()) {
-            if (item == null) {
-            	return;
-            }
-            
-        	if (item.getType() != Material.LAVA_BUCKET && item.getType() != Material.FLINT_AND_STEEL && item.getType() != Material.CACTUS) {
-            	return;
-        	}
-			
-			Team pTeam = Teams.getInstance().getTeam(player);
-        	
-        	for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
-    			if (!(nearby instanceof Player)) {
-    				continue;
-    			}
-    			
-    			Player near = (Player) nearby;
-				
-				if (near == player) {
-					continue;
-				}
-				
-				if (spec.isSpectating(near)) {
-					continue;
-				}
-				
-				Team nearTeam = Teams.getInstance().getTeam(near);
-				
-				if (pTeam != null && nearTeam != null) {
-					if (pTeam != nearTeam) {
-						PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7attempted to iPvP §c" + near.getName(), "uhc.staff");
-					}
-				}
-				
-				player.sendMessage(Main.PREFIX + "iPvP is not allowed before PvP.");
-				player.sendMessage(Main.PREFIX + "Stop iPvPing now or staff will take action.");
-				
-				item.setType(Material.AIR);
-				event.setCancelled(true);
-				break;
-    		}
-        }
         
 		if (!spec.isSpectating(player)) {
 			return;
@@ -583,27 +540,21 @@ public class PlayerListener implements Listener {
 		
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
 			inv.openSelector(player);
+			return;
 		} 
-		else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
-			ArrayList<Player> players = new ArrayList<Player>();
+		
+		if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+			List<Player> list = GameUtils.getGamePlayers();
 			
-			for (Player online : PlayerUtils.getPlayers()) {
-				World oWorld = online.getWorld();
-				
-				if (!spec.isSpectating(online) && GameUtils.getGameWorlds().contains(oWorld)) {
-					players.add(online);
-				}
-			}
-			
-			if (players.size() <= 0) {
-				player.sendMessage(Main.PREFIX + "No players to teleport to.");
+			if (list.isEmpty()) {
+				player.sendMessage(Main.PREFIX + "Couldn't find any players.");
 				return;
 			}
 			
 			Random rand = new Random();
-			Player target = players.get(rand.nextInt(players.size()));
+			Player target = list.get(rand.nextInt(list.size()));
 			
-			player.sendMessage(Main.PREFIX + "You teleported to §a" + target.getName() + "§7.");
+			player.sendMessage(Main.PREFIX + "Teleported to §a" + target.getName() + "§7.");
 			player.teleport(target.getLocation());
 		}
 	}
@@ -706,7 +657,7 @@ public class PlayerListener implements Listener {
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
 				ScenarioManager scen = ScenarioManager.getInstance();
 				
-				if (scen.getScenario("VengefulSpirits").isEnabled()) {
+				if (scen.getScenario(VengefulSpirits.class).isEnabled()) {
 					return;
 				}
 				
