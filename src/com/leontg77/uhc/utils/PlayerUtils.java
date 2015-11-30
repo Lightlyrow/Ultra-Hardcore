@@ -31,13 +31,7 @@ public class PlayerUtils {
 	 * @return A list of online players.
 	 */
 	public static List<Player> getPlayers() {
-		List<Player> list = new ArrayList<Player>();
-		
-		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-			list.add(online);
-		}
-		
-		return list;
+		return new ArrayList<Player>(Bukkit.getOnlinePlayers());
 	}
 	
 	/**
@@ -61,7 +55,7 @@ public class PlayerUtils {
 	 */
 	@SuppressWarnings("deprecation")
 	public static OfflinePlayer getOfflinePlayer(String name) {
-		return Bukkit.getServer().getOfflinePlayer(name);
+		return Bukkit.getOfflinePlayer(name);
 	}
 	
 	/**
@@ -74,7 +68,7 @@ public class PlayerUtils {
 			online.sendMessage(message);
 		}
 		
-		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "").replaceAll("§m", "").replaceAll("§n", ""));
+		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "§f").replaceAll("§m", "").replaceAll("§n", ""));
 	}
 	
 	/**
@@ -90,7 +84,7 @@ public class PlayerUtils {
 			}
 		}
 		
-		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "").replaceAll("§m", "").replaceAll("§n", ""));
+		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "§f").replaceAll("§m", "").replaceAll("§n", ""));
 	}
 	
 	/**
