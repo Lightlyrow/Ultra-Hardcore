@@ -6,12 +6,13 @@ package com.leontg77.uhc;
  * @author LeonTG77
  */
 public enum State {
-	LOBBY, SCATTER, INGAME;
+	NOT_RUNNING, OPEN, CLOSED, SCATTER, INGAME;
 
 	private static State currentState;
 	
 	/**
 	 * Sets the current state to be #.
+	 * 
 	 * @param state the state setting it to.
 	 */
 	public static void setState(State state) {
@@ -24,6 +25,7 @@ public enum State {
 	
 	/**
 	 * Checks if the state is #.
+	 * 
 	 * @param state The state checking.
 	 * @return True if it's the given state.
 	 */
@@ -33,6 +35,7 @@ public enum State {
 	
 	/**
 	 * Gets the current state.
+	 * 
 	 * @return The state
 	 */
 	public static State getState() {
