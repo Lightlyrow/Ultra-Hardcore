@@ -1,4 +1,4 @@
-package com.leontg77.uhc.utils;
+package com.leontg77.uhc.managers;
 
 import static com.leontg77.uhc.Main.plugin;
 
@@ -14,13 +14,13 @@ import com.leontg77.uhc.User;
 import com.leontg77.uhc.User.Rank;
 
 /**
- * Permissions utilities class.
+ * Permissions manager class.
  * <p>
- * Contains perms related methods.
+ * Basic manager for managing permissions.
  * 
  * @author LeonTG77
  */
-public class PermsUtils {
+public class PermissionsManager {
 	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	
 	/**
@@ -41,7 +41,7 @@ public class PermsUtils {
     		}
         }
 		
-		if (permissions.get(player.getName()) == null) {
+		if (!permissions.containsKey(player.getName())) {
 			permissions.put(player.getName(), player.addAttachment(Main.plugin));
 		}
 
@@ -119,7 +119,7 @@ public class PermsUtils {
 				perm.setPermission("uhc.bestpve", true);
 				perm.setPermission("uhc.bigcrack", true);
 				perm.setPermission("uhc.slimycrack", true);
-				perm.setPermission("mysteryteams.admin", true);
+				perm.setPermission("uhc.kings", true);
 				perm.setPermission("mysteryteams.admin", true);
 				perm.setPermission("mysteryteams.admin", true);
 				perm.setPermission("mysteryteams.admin", true);
