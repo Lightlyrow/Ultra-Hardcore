@@ -1,4 +1,4 @@
-package com.leontg77.uhc.scoreboard;
+package com.leontg77.uhc.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -16,8 +16,8 @@ import com.leontg77.uhc.Main;
  * 
  * @author LeonTG77
  */
-public class Scoreboards {
-	private static Scoreboards manager = new Scoreboards();
+public class BoardManager {
+	private static BoardManager manager = new BoardManager();
 
 	public Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 	public Objective nameHealth = board.getObjective("nameHealth");
@@ -30,7 +30,7 @@ public class Scoreboards {
 	 * 
 	 * @return the instance.
 	 */
-	public static Scoreboards getInstance() {
+	public static BoardManager getInstance() {
 		return manager;
 	}
 	
