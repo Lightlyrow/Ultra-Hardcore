@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.utils.DateUtils;
@@ -95,6 +96,23 @@ public class Parkour implements Listener {
 	
 	public Integer getTime(Player player) {
 		return time.get(player);
+	}
+	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+		
+		if (players.contains(player)) {
+			players.remove(player);
+		}
+		
+		if (checkpoint.containsKey(player)) {
+			checkpoint.remove(player);
+		}
+		
+		if (time.containsKey(player)) {
+			time.remove(player);
+		}
 	}
 	
 	@EventHandler
