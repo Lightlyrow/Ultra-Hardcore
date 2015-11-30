@@ -44,6 +44,17 @@ public class KickCommand implements CommandExecutor {
 				}
 			}
 			
+	    	PlayerUtils.broadcast(Main.PREFIX + "§7All normal players has been kicked for §6" + msg);
+			return true;
+		}
+
+		if (args[0].equals("**")) {
+			for (Player online : PlayerUtils.getPlayers()) {
+				if (!online.isOp()) {
+			    	online.kickPlayer("§8» §7" + msg + " §8«");
+				}
+			}
+			
 	    	PlayerUtils.broadcast(Main.PREFIX + "§7All players has been kicked for §6" + msg);
 			return true;
 		}
@@ -55,7 +66,7 @@ public class KickCommand implements CommandExecutor {
             return true;
 		}
     	
-    	PlayerUtils.broadcast(Main.PREFIX + "§6" + args[0] + " §7has been kicked for §a" + msg);
+    	PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been kicked for §a" + msg);
     	target.kickPlayer("§8» §7" + msg + " §8«");
 		return true;
 	}
