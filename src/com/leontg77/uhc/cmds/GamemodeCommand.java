@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 
 /**
  * Gamemode command class.
@@ -54,8 +55,14 @@ public class GamemodeCommand implements CommandExecutor {
 				sender.sendMessage(ChatColor.RED + "Only players can change their own gamemode."); 
 				return true;
 			}
-			
+
+			Spectator spec = Spectator.getInstance();
 			Player player = (Player) sender;
+			
+			if (spec.isSpectating(sender.getName())) {
+				sender.sendMessage(ChatColor.RED + "You cannot change your gamemode while spectating.");
+				return true;
+			}
 			
 			player.sendMessage(Main.PREFIX + "You are now in §6" + mode.name().toLowerCase() + " §7mode.");
 			player.setGameMode(mode);
