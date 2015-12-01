@@ -18,6 +18,8 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -100,6 +102,7 @@ import com.leontg77.uhc.cmds.TextCommand;
 import com.leontg77.uhc.cmds.TimeLeftCommand;
 import com.leontg77.uhc.cmds.TimerCommand;
 import com.leontg77.uhc.cmds.TlCommand;
+import com.leontg77.uhc.cmds.TopCommand;
 import com.leontg77.uhc.cmds.TpCommand;
 import com.leontg77.uhc.cmds.TpsCommand;
 import com.leontg77.uhc.cmds.UHCCommand;
@@ -306,6 +309,7 @@ public class Main extends JavaPlugin {
 		getCommand("timeleft").setExecutor(new TimeLeftCommand());
 		getCommand("timer").setExecutor(new TimerCommand());
 		getCommand("teamloc").setExecutor(new TlCommand());
+		getCommand("top").setExecutor(new TopCommand());
 		getCommand("tp").setExecutor(new TpCommand());
 		getCommand("tps").setExecutor(new TpsCommand());
 		getCommand("uhc").setExecutor(new UHCCommand());
@@ -316,6 +320,7 @@ public class Main extends JavaPlugin {
 		getCommand("world").setExecutor(new WorldCommand());
 		
 		if (State.isState(State.NOT_RUNNING)) {
+			File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 			File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
 			File stats = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
 			
@@ -348,6 +353,17 @@ public class Main extends JavaPlugin {
 
 			plugin.getLogger().info("Deleted " + totalDatafiles + " player data files.");
 			plugin.getLogger().info("Deleted " + totalStatsfiles + " player stats files.");
+			
+			for (File userFile : folder.listFiles()) {
+				FileConfiguration config = YamlConfiguration.loadConfiguration(userFile);
+
+				config.set("stats.cks", 0);
+				config.set("stats.arenacks", 0);
+				
+				try {
+					config.save(userFile);
+				} catch (Exception e) {}
+			}
 		}
 		
 		if (State.isState(State.INGAME)) {
