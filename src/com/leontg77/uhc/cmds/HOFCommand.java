@@ -40,9 +40,7 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 				int i = 0;
 				
 				for (String path : settings.getHOF().getKeys(false)) {
-					for (@SuppressWarnings("unused") String type : settings.getHOF().getConfigurationSection(path).getKeys(false)) {
-						i++;
-					}
+					i = i + settings.getHOF().getConfigurationSection(path).getKeys(false).size();
 				}
 				
 				sender.sendMessage(Main.PREFIX + "There's been a total of §a" + i + " §7games hosted here.");
