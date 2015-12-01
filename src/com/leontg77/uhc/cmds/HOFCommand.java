@@ -82,7 +82,7 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
         			}
         		}
         		
-    			if ("global".toLowerCase().startsWith(args[0].toLowerCase())) {
+    			if ("global".startsWith(args[0].toLowerCase())) {
     				toReturn.add("global");
     			}
         	}
