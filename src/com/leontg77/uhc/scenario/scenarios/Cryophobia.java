@@ -291,7 +291,7 @@ public class Cryophobia extends Scenario implements Listener {
 			return;
 		}
 
-		short damage = block.getState().getData().toItemStack().getDurability();
+		int damage = BlockUtils.getDurability(block);
 		
 		if (damage != 1 && damage != 5 && damage != 9 && damage != 13) {
 			return;
@@ -300,7 +300,7 @@ public class Cryophobia extends Scenario implements Listener {
 		Random rand = new Random();
 		
 		if (rand.nextInt(40) == 0) {
-			BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE, 1));
+			BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.APPLE));
 		}
 	}
 
