@@ -109,7 +109,7 @@ public class User {
         	
         	config.set("firstjoined", new Date().getTime());
         	config.set("lastlogin", new Date().getTime());
-        	config.set("lastlogoff", -1l);
+        	config.set("lastlogout", -1l);
         	config.set("rank", Rank.USER.name());
         	
 			config.set("muted.status", false);
