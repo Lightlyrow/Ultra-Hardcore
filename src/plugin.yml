@@ -139,6 +139,8 @@ commands:
   teamloc:
     description: Tell your location out to your teammates.
     aliases: [tl, pmcoords]
+  top:
+    description: View the top scores for a specific stat.
   tps:
     description: Check the server tps and usage.
     aliases: [lag]
