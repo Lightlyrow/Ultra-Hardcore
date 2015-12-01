@@ -190,7 +190,7 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("KaWoof")) {
 			return "MajorWoof";
 		}
-		else if (host.equalsIgnoreCase("GetUnicycled")) {
+		else if (host.equalsIgnoreCase("GetNicked")) {
 			return "Pyro";
 		}
 		else if (host.equalsIgnoreCase("FazedMC")) {
@@ -233,7 +233,7 @@ public class GameUtils {
 		else if (host.equalsIgnoreCase("FazedMC") || host.equalsIgnoreCase("Fazed")) {
 			return "Fazed";
 		}
-		else if (host.equalsIgnoreCase("GetUnicycled") || host.equalsIgnoreCase("Pyro")) {
+		else if (host.equalsIgnoreCase("GetNicked") || host.equalsIgnoreCase("Pyro")) {
 			return "Pyro";
 		}
 		return host;
@@ -274,7 +274,7 @@ public class GameUtils {
 			return "FazedMC";
 		}
 		else if (host.equalsIgnoreCase("Pyro")) {
-			return "GetUnicycled";
+			return "GetNicked";
 		}
 		return host;
 	}
