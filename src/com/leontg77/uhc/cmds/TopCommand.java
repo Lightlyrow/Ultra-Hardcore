@@ -24,6 +24,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User.Stat;
+import com.leontg77.uhc.utils.NameUtils;
 
 /**
  * Top command class.
@@ -45,6 +46,56 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 			player.sendMessage(Main.PREFIX + "Usage: /top <stat>");
 			return true;
 		}
+
+		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+		ArrayList<FileConfiguration> configStorage = new ArrayList<FileConfiguration>();
+		
+		for (File file : folder.listFiles()) {
+			configStorage.add(YamlConfiguration.loadConfiguration(file));
+		}
+		
+		if (args[0].equalsIgnoreCase("global")) {
+			List<String> data = new ArrayList<String>();
+
+			Inventory inv = Bukkit.createInventory(null, 27, "Top 10: §7Global");
+			
+			for (Stat stat : Stat.values()) {
+				if (stat == Stat.ARENACKS || stat == Stat.CKS) {
+					continue;
+				}
+				
+				for (FileConfiguration config : configStorage) {
+					String name = config.getString("username");
+					int number = config.getInt("stats." + stat.name().toLowerCase());
+					
+					data.add(number + " " + name);
+				}
+				
+				Collections.sort(data, new Comparator<String>() {
+				    public int compare(String a, String b) {
+				       	int aVal = Integer.parseInt(a.split(" ")[0]);
+				       	int bVal = Integer.parseInt(b.split(" ")[0]);
+				       	
+				       	return Integer.compare(aVal, bVal);
+				    }
+				});
+				
+				String line = data.get(data.size() - 1);
+				String name = line.split(" ")[1], value = line.split(" ")[0];
+				
+				ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+				SkullMeta meta = (SkullMeta) item.getItemMeta();
+				meta.setDisplayName("§6" + NameUtils.fixString(stat.name(), true) + " §8| §7" + name + " §8» §a" + value);
+				meta.setOwner(name);
+				item.setItemMeta(meta);
+				inv.addItem(item);
+				
+				data.clear();
+			}
+
+			player.openInventory(inv);
+			return true;
+		}
 		
 		Stat stat;
 		
@@ -60,12 +111,9 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		
-		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 		List<String> data = new ArrayList<String>();
 		
-		for (File file : folder.listFiles()) {
-			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-
+		for (FileConfiguration config : configStorage) {
 			String name = config.getString("username");
 			int number = config.getInt("stats." + stat.name().toLowerCase());
 			
@@ -81,7 +129,7 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 		    }
 		});
 		
-		Inventory inv = Bukkit.createInventory(null, 18, "Top 10: §7" + stat.name().toLowerCase());
+		Inventory inv = Bukkit.createInventory(null, 18, "Top 10: §7" + NameUtils.fixString(stat.name(), true));
 		
 		int current = 4;
 		int hash = 1;
@@ -122,12 +170,18 @@ public class TopCommand implements CommandExecutor, TabCompleter {
         		for (Stat stat : Stat.values()) {
         			toReturn.add(stat.name().toLowerCase());
         		}
+        		
+        		toReturn.add("global");
         	} else {
         		for (Stat stat : Stat.values()) {
         			if (stat.name().toLowerCase().startsWith(args[0].toLowerCase())) {
         				toReturn.add(stat.name().toLowerCase());
         			}
         		}
+        		
+        		if ("global".startsWith(args[0].toLowerCase())) {
+            		toReturn.add("global");
+    			}
         	}
         }
     	
