@@ -99,6 +99,11 @@ public class InventoryListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
     	InventoryView view = event.getView();
     	
+    	if (view.getTopInventory().getTitle().startsWith("Top 10")) {
+    		event.setCancelled(true);
+    		return;
+    	}
+    	
         if (view.getTopInventory() instanceof HorseInventory) {
         	if (game.horseArmor()) {
         		return;
