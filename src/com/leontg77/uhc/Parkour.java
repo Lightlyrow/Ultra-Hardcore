@@ -28,9 +28,9 @@ public class Parkour implements Listener {
 	public BukkitRunnable task;
 
 	private Location spawn = new Location(Bukkit.getWorld("lobby"), -34.5, 32, 0.5, 90, 0);
-	private Location point1 = new Location(Bukkit.getWorld("lobby"), 90.5, 36, 2.5, -90, 0);
-	private Location point2 = new Location(Bukkit.getWorld("lobby"), 134.5, 41, 12.5, 0, 0);
-	private Location point3 = new Location(Bukkit.getWorld("lobby"), 102.5, 54, 17.5, -180, 0);
+	private Location point1 = new Location(Bukkit.getWorld("lobby"), -80.5, 38.5, -1.5, 90, 0);
+	private Location point2 = new Location(Bukkit.getWorld("lobby"), -135.5, 36.5, -12.5, 90, 0);
+	private Location point3 = new Location(Bukkit.getWorld("lobby"), -159.5, 29.5, 8.5, 0, 0);
 	
 	private HashSet<Player> players = new HashSet<Player>();
 	private HashMap<Player, Integer> checkpoint = new HashMap<Player, Integer>();
