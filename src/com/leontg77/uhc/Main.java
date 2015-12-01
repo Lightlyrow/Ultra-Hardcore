@@ -15,7 +15,7 @@ import org.bukkit.Color;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -43,7 +43,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.base.Function;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.cmds.ArenaCommand;
 import com.leontg77.uhc.cmds.BanCommand;
@@ -125,7 +124,6 @@ import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.LoginListener;
 import com.leontg77.uhc.listeners.LogoutListener;
 import com.leontg77.uhc.listeners.PlayerListener;
-import com.leontg77.uhc.listeners.PlayerMemoryLeakChecker;
 import com.leontg77.uhc.listeners.PortalListener;
 import com.leontg77.uhc.listeners.WorldListener;
 import com.leontg77.uhc.managers.BoardManager;
@@ -212,7 +210,7 @@ public class Main extends JavaPlugin {
 		PluginManager manager = Bukkit.getServer().getPluginManager();
 
 		// register the leak checker.
-		manager.registerEvents(new PlayerMemoryLeakChecker(this, new Function<String, Void>() {
+		/*manager.registerEvents(new PlayerMemoryLeakChecker(this, new Function<String, Void>() {
             public Void apply(String name) {
             	String message = Main.PREFIX + "§4MEMORY LEAK: §7" + name + " was not garbage collected! §c(Logged out 30 seconds ago)";
             	
@@ -228,7 +226,7 @@ public class Main extends JavaPlugin {
                 }
                 return null;
             }
-        }), this);
+        }), this);*/
 		
 		// register all listeners.
 		manager.registerEvents(new BlockListener(), this);
@@ -425,6 +423,10 @@ public class Main extends JavaPlugin {
 					if (bellowName != null) {
 						Score score = bellowName.getScore(online.getName());
 						score.setScore(percent);
+					}
+					
+					if (online.getWorld().getName().equals("lobby")) {
+						online.setPlayerWeather(WeatherType.DOWNFALL);
 					}
 				}
 				
