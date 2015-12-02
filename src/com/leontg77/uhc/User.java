@@ -22,6 +22,7 @@ import org.bukkit.potion.PotionEffect;
 
 import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.managers.PermissionsManager;
+import com.leontg77.uhc.utils.FileUtils;
 
 /**
  * User class.
@@ -88,6 +89,8 @@ public class User {
         	try {
         		file.createNewFile();
         		creating = true;
+        		
+        		FileUtils.updateFiles();
         	} catch (Exception e) {
         		plugin.getLogger().severe(ChatColor.RED + "Could not create " + uuid + ".yml!");
         	}
