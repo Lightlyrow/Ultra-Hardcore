@@ -1,15 +1,11 @@
 package com.leontg77.uhc.inventory;
 
-import static com.leontg77.uhc.Main.plugin;
-
-import java.io.File;
 import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -23,6 +19,7 @@ import com.leontg77.uhc.Game;
 import com.leontg77.uhc.User.Rank;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scenario.scenarios.Moles;
+import com.leontg77.uhc.utils.FileUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NameUtils;
 
@@ -340,8 +337,6 @@ public class GameInfo extends InvGUI implements Listener {
 	}
 	
 	public void updateStaff() {
-		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-		
 		StringBuilder staffs = new StringBuilder();
 		StringBuilder owners = new StringBuilder();
 		StringBuilder hosts = new StringBuilder();
@@ -354,9 +349,7 @@ public class GameInfo extends InvGUI implements Listener {
 		int i = 1;
 		int j = -1;
 		
-		for (File file : folder.listFiles()) {
-			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-
+		for (FileConfiguration config : FileUtils.files) {
 			if (config.getString("rank").equals(Rank.ADMIN.name())) {
 				hostL.add(config.getString("username"));
 			}

@@ -1,8 +1,5 @@
 package com.leontg77.uhc.cmds;
 
-import static com.leontg77.uhc.Main.plugin;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,7 +13,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -24,6 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.User.Stat;
+import com.leontg77.uhc.utils.FileUtils;
 import com.leontg77.uhc.utils.NameUtils;
 
 /**
@@ -46,13 +43,6 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 			player.sendMessage(Main.PREFIX + "Usage: /top <stat>");
 			return true;
 		}
-
-		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-		ArrayList<FileConfiguration> configStorage = new ArrayList<FileConfiguration>();
-		
-		for (File file : folder.listFiles()) {
-			configStorage.add(YamlConfiguration.loadConfiguration(file));
-		}
 		
 		if (args[0].equalsIgnoreCase("global")) {
 			List<String> data = new ArrayList<String>();
@@ -64,7 +54,7 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 					continue;
 				}
 				
-				for (FileConfiguration config : configStorage) {
+				for (FileConfiguration config : FileUtils.files) {
 					String name = config.getString("username");
 					int number = config.getInt("stats." + stat.name().toLowerCase());
 					
@@ -113,7 +103,7 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 		
 		List<String> data = new ArrayList<String>();
 		
-		for (FileConfiguration config : configStorage) {
+		for (FileConfiguration config : FileUtils.files) {
 			String name = config.getString("username");
 			int number = config.getInt("stats." + stat.name().toLowerCase());
 			
