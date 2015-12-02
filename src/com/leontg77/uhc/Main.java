@@ -19,7 +19,6 @@ import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -134,6 +133,7 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.ubl.UBL;
 import com.leontg77.uhc.ubl.UBLListener;
 import com.leontg77.uhc.utils.DateUtils;
+import com.leontg77.uhc.utils.FileUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
@@ -198,7 +198,9 @@ public class Main extends JavaPlugin {
 		
 		ScenarioManager.getInstance().setup();
 		BoardManager.getInstance().setup();
+		
 		Game game = Game.getInstance();
+		FileUtils.updateFiles();
 		
 		recoverData();
 		addRecipes();
@@ -352,14 +354,12 @@ public class Main extends JavaPlugin {
 			plugin.getLogger().info("Deleted " + totalDatafiles + " player data files.");
 			plugin.getLogger().info("Deleted " + totalStatsfiles + " player stats files.");
 			
-			for (File userFile : folder.listFiles()) {
-				FileConfiguration config = YamlConfiguration.loadConfiguration(userFile);
-
+			for (FileConfiguration config : FileUtils.files) {
 				config.set("stats.cks", 0);
 				config.set("stats.arenacks", 0);
 				
 				try {
-					config.save(userFile);
+					config.save(new File(folder, config.getString("uuid", "none") + ".yml"));
 				} catch (Exception e) {}
 			}
 		}
