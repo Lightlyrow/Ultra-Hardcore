@@ -45,7 +45,7 @@ public class LAFS extends Scenario implements Listener {
 		List<World> worlds = GameUtils.getGameWorlds();
 		TeamManager teams = TeamManager.getInstance();
 		
-		if (!worlds.contains(player.getName()) || !worlds.contains(clicked.getName())) {
+		if (!worlds.contains(player.getWorld()) && !worlds.contains(clicked.getWorld())) {
 			return;
 		}
 		
