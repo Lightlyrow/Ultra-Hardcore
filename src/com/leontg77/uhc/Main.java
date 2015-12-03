@@ -426,7 +426,11 @@ public class Main extends JavaPlugin {
 					}
 					
 					if (online.getWorld().getName().equals("lobby")) {
-						online.setPlayerWeather(WeatherType.DOWNFALL);
+						if (online.getPlayerWeather() != WeatherType.DOWNFALL) {
+							online.setPlayerWeather(WeatherType.DOWNFALL);
+						}
+					} else {
+						online.resetPlayerWeather();
 					}
 				}
 				
