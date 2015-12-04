@@ -37,7 +37,7 @@ public class Announcer {
 					return;
 				}
 				
-				PlayerUtils.broadcast("§8§l[§6§l!§8§l]§7 " + randomAnnouncement());
+				PlayerUtils.broadcast("§6§lInfo §8» §7" + getRandomMessage());
 			}
 		}.runTaskTimer(Main.plugin, 10000, 10000);
 		
@@ -63,7 +63,7 @@ public class Announcer {
 	 * 
 	 * @return A random announcement.
 	 */
-	private String randomAnnouncement() {
+	private String getRandomMessage() {
 		Random rand = new Random();
 		int size = messages.size();
 		
