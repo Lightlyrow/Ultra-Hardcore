@@ -30,11 +30,11 @@ import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.Spectator.SpecInfo;
 import com.leontg77.uhc.State;
 import com.leontg77.uhc.Timers;
-import com.leontg77.uhc.User;
 import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
+import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.WorldManager;
@@ -131,13 +131,13 @@ public class EndCommand implements CommandExecutor {
 		}
 
 		for (Player online : PlayerUtils.getPlayers()) {
+			if (spec.isSpectating(online)) {
+				spec.disableSpecmode(online);
+			}
+			
 			for (Player onlineTwo : PlayerUtils.getPlayers()) {
 				online.showPlayer(onlineTwo);
 				onlineTwo.showPlayer(online);
-			}
-			
-			if (spec.isSpectating(online)) {
-				spec.disableSpecmode(online);
 			}
 
 			online.setGameMode(GameMode.SURVIVAL);
