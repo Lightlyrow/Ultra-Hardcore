@@ -81,6 +81,8 @@ public class LocationUtils {
      * then it will be returned the without modification
      *
      * @param loc the location to check
+     * @param buffer The amount of blocks inside the border to return.
+     * @param travel If finding a location for a portal the travel agent is given, for a normal tp this is null.
      * @return a location within the border
      * 
 	 * @author ghowden
@@ -114,10 +116,12 @@ public class LocationUtils {
 
         pos.setY(highestTeleportableYAtLocation(pos.add(centre)));
         
-        Location to = travel.findOrCreate(pos);
-        
-        if (!isOutsideOfBorder(to)) {
-        	pos = to;
+        if (travel != null) {
+            Location to = travel.findOrCreate(pos);
+            
+            if (!isOutsideOfBorder(to)) {
+            	pos = to;
+            }
         }
         
         return pos;
@@ -140,7 +144,6 @@ public class LocationUtils {
         Block currentBlock = startingLocation.getBlock();
 
         while (currentBlock.getY() >= 0) {
-
             if (currentBlock.getType() != Material.AIR) {
                 if (above2WasAir && aboveWasAir) {
                     return currentBlock.getY();
