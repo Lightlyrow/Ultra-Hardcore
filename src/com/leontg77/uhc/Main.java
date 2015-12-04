@@ -15,7 +15,6 @@ import org.bukkit.Color;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -118,6 +117,7 @@ import com.leontg77.uhc.inventory.listener.SpectatorListener;
 import com.leontg77.uhc.inventory.listener.StatsListener;
 import com.leontg77.uhc.listeners.BlockListener;
 import com.leontg77.uhc.listeners.BuildProtectListener;
+import com.leontg77.uhc.listeners.ChristmasListener;
 import com.leontg77.uhc.listeners.EntityListener;
 import com.leontg77.uhc.listeners.InventoryListener;
 import com.leontg77.uhc.listeners.LoginListener;
@@ -132,9 +132,7 @@ import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.ubl.UBL;
 import com.leontg77.uhc.ubl.UBLListener;
-import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.FileUtils;
-import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.AntiStripmine;
@@ -233,6 +231,7 @@ public class Main extends JavaPlugin {
 		// register all listeners.
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new BuildProtectListener(), this);
+		manager.registerEvents(new ChristmasListener(), this);
 		manager.registerEvents(new EntityListener(), this);
 		manager.registerEvents(new InventoryListener(), this);
 		manager.registerEvents(new LoginListener(), this);
@@ -424,14 +423,6 @@ public class Main extends JavaPlugin {
 						Score score = bellowName.getScore(online.getName());
 						score.setScore(percent);
 					}
-					
-					if (online.getWorld().getName().equals("lobby")) {
-						if (online.getPlayerWeather() != WeatherType.DOWNFALL) {
-							online.setPlayerWeather(WeatherType.DOWNFALL);
-						}
-					} else {
-						online.resetPlayerWeather();
-					}
 				}
 				
 				for (World world : Bukkit.getWorlds()) {
@@ -462,34 +453,7 @@ public class Main extends JavaPlugin {
 					}
 				}
 				
-				ItemStack timer = new ItemStack (Material.WATCH);
-				ItemMeta timerMeta = timer.getItemMeta();
-				timerMeta.setDisplayName("§8» §6Timers §8«");
-				
-				List<String> lore = new ArrayList<String>();
-				lore.add(" ");
-				
-				if (Game.getInstance().isRecordedRound()) {
-					lore.add("§8» §7Current Episode: §a" + Timers.meetup);
-					lore.add("§8» §7Time to next episode: §a" + Timers.time + " mins");
-				}
-				else if (GameUtils.getTeamSize().startsWith("No") || GameUtils.getTeamSize().startsWith("Open")) {
-					lore.add("§8» §7There are no matches running.");
-				}
-				else if (!State.isState(State.INGAME)) {
-					lore.add("§8» §7The game has not started yet.");
-				}
-				else {
-					lore.add("§8» §7Time since start: §a" + DateUtils.ticksToString(Timers.timeSeconds));
-					lore.add(Timers.pvpSeconds <= 0 ? "§8» §aPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Timers.pvpSeconds));
-					lore.add(Timers.meetupSeconds <= 0 ? "§8» §6Meetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
-				}
-				
-				lore.add(" ");
-				timerMeta.setLore(lore);
-				timer.setItemMeta(timerMeta);
-				InvGUI.getGameInfo().get().setItem(25, timer);
-				lore.clear();
+				InvGUI.getGameInfo().updateTimer();
 			}
 		}, 1, 1);
 	}
@@ -590,7 +554,16 @@ public class Main extends JavaPlugin {
 	 */
 	public void recoverData() {
 		Settings settings = Settings.getInstance();
-		State.setState(State.valueOf(settings.getData().getString("state", State.NOT_RUNNING.name())));
+		
+		State state;
+		
+		try {
+			state = State.valueOf(settings.getData().getString("state"));
+		} catch (Exception e) {
+			state = State.NOT_RUNNING;
+		}
+		
+		State.setState(state);
 		
 		try {
 			for (String name : settings.getData().getConfigurationSection("kills").getKeys(false)) {
