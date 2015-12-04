@@ -1,6 +1,7 @@
 package com.leontg77.uhc.inventory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,9 +17,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.User.Rank;
+import com.leontg77.uhc.State;
+import com.leontg77.uhc.Timers;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scenario.scenarios.Moles;
+import com.leontg77.uhc.user.Rank;
+import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.FileUtils;
 import com.leontg77.uhc.utils.GameUtils;
 import com.leontg77.uhc.utils.NameUtils;
@@ -231,7 +235,7 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add("§8» §7" + GameUtils.getAdvancedTeamSize());
 			lore.add(" ");
 			lore.add("§8» §cScenarios:");
-			for (String scen : game.getScenarios().split(" ")) {
+			for (String scen : game.getScenarios().split(", ")) {
 				lore.add("§8» §7" + scen);
 			}
 			lore.add(" ");
@@ -336,21 +340,49 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.clear();
 	}
 	
+	public void updateTimer() {
+		ItemStack timer = new ItemStack (Material.WATCH);
+		ItemMeta timerMeta = timer.getItemMeta();
+		timerMeta.setDisplayName("§8» §6Timers §8«");
+		
+		List<String> lore = new ArrayList<String>();
+		lore.add(" ");
+		
+		if (Game.getInstance().isRecordedRound()) {
+			lore.add("§8» §7Current Episode: §a" + Timers.meetup);
+			lore.add("§8» §7Time to next episode: §a" + Timers.time + " mins");
+		} else if (GameUtils.getTeamSize().startsWith("No") || GameUtils.getTeamSize().startsWith("Open")) {
+			lore.add("§8» §7There are no matches running.");
+		} else if (!State.isState(State.INGAME)) {
+			lore.add("§8» §7The game has not started yet.");
+		} else {
+			lore.add("§8» §7Time since start: §a" + DateUtils.ticksToString(Timers.timeSeconds));
+			lore.add(Timers.pvpSeconds <= 0 ? "§8» §cPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Timers.pvpSeconds));
+			lore.add(Timers.meetupSeconds <= 0 ? "§8» §cMeetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
+		}
+		
+		lore.add(" ");
+		timerMeta.setLore(lore);
+		timer.setItemMeta(timerMeta);
+		inv.setItem(25, timer);
+		lore.clear();
+	}
+	
 	public void updateStaff() {
 		StringBuilder staffs = new StringBuilder();
 		StringBuilder owners = new StringBuilder();
 		StringBuilder hosts = new StringBuilder();
 		StringBuilder specs = new StringBuilder();
 		
-		ArrayList<String> hostL = new ArrayList<String>();
-		ArrayList<String> staffL = new ArrayList<String>();
-		ArrayList<String> specL = new ArrayList<String>();
+		List<String> staffL = new ArrayList<String>();
+		List<String> hostL = new ArrayList<String>();
+		List<String> specL = new ArrayList<String>();
 		
 		int i = 1;
 		int j = -1;
 		
 		for (FileConfiguration config : FileUtils.files) {
-			if (config.getString("rank").equals(Rank.ADMIN.name())) {
+			if (config.getString("rank").equals(Rank.OWNER.name())) {
 				hostL.add(config.getString("username"));
 			}
 
