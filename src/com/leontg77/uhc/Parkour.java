@@ -125,17 +125,19 @@ public class Parkour implements Listener {
 		Entity point;
 		
 		try {
-			point = PlayerUtils.getNearby(event.getTo(), 0.5).get(0);
+			point = PlayerUtils.getNearby(event.getTo(), 1).get(0);
 		} catch (Exception e) {
 			return;
 		}
 		
 		if (point instanceof ArmorStand) {
-			if (((ArmorStand) point).getCustomName() == null) {
+			ArmorStand stand = (ArmorStand) point;
+			
+			if (stand.getCustomName() == null) {
 				return;
 			}
 			
-			if (((ArmorStand) point).getCustomName().contains("Start")) {
+			if (stand.getCustomName().contains("Start")) {
 				if (players.contains(player)) {
 					player.sendMessage(Main.PREFIX + "The timer has been reset to §a0s§7.");
 					player.playSound(player.getLocation(), "random.pop", 1, 1);
@@ -154,7 +156,7 @@ public class Parkour implements Listener {
 				return;
 			}
 			
-			if (((ArmorStand) point).getCustomName().contains("#1")) {
+			if (stand.getCustomName().contains("#1")) {
 				if (checkpoint.containsKey(player) && checkpoint.get(player) == 1) {
 					return;
 				}
@@ -165,7 +167,7 @@ public class Parkour implements Listener {
 				checkpoint.put(player, 1);
 			}
 			
-			if (((ArmorStand) point).getCustomName().contains("#2")) {
+			if (stand.getCustomName().contains("#2")) {
 				if (checkpoint.containsKey(player) && checkpoint.get(player) == 2) {
 					return;
 				}
@@ -176,7 +178,7 @@ public class Parkour implements Listener {
 				checkpoint.put(player, 2);
 			}
 			
-			if (((ArmorStand) point).getCustomName().contains("#3")) {
+			if (stand.getCustomName().contains("#3")) {
 				if (checkpoint.containsKey(player) && checkpoint.get(player) == 3) {
 					return;
 				}
@@ -187,7 +189,7 @@ public class Parkour implements Listener {
 				checkpoint.put(player, 3);
 			}
 			
-			if (((ArmorStand) point).getCustomName().contains("finish")) {
+			if (stand.getCustomName().contains("finish")) {
 				player.sendMessage(Main.PREFIX + "You finished the parkour, time used: §a" + DateUtils.ticksToString(time.get(player)));
 				player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
 				
