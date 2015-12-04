@@ -3,7 +3,6 @@ package com.leontg77.uhc;
 import static com.leontg77.uhc.Main.plugin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -26,9 +25,9 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
-import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.listeners.ArenaListener;
 import com.leontg77.uhc.managers.BoardManager;
+import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
 import com.leontg77.uhc.worlds.WorldManager;
@@ -54,7 +53,6 @@ public class Arena {
 	public Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 	public Objective arenaKills = board.getObjective("arenaKills");
 	
-	public HashMap<Player, Integer> killstreak = new HashMap<Player, Integer>();
 	private List<Player> players = new ArrayList<Player>();
 	
 	// make a list of found seeds that are good for the arena.
@@ -154,8 +152,6 @@ public class Arena {
 			
 			board.resetScores(player.getName());
 			player.teleport(Main.getSpawn());
-			
-			user.setStat(Stat.ARENACKS, 0);
 		}
 		
 		if (game.pregameBoard()) {
@@ -176,7 +172,6 @@ public class Arena {
 			game.setArenaBoard(false);
 		}
 		
-		killstreak.clear();
 		players.clear();
 
 		regen.cancel();
@@ -256,7 +251,6 @@ public class Arena {
 
 		player.sendMessage(PREFIX + "You joined the arena.");
 		
-		killstreak.put(player, 0);
 		players.add(player);
 		giveKit(player);
 		
@@ -282,15 +276,11 @@ public class Arena {
 
 		player.sendMessage(PREFIX + "You left the arena.");
 
-		if (killstreak.containsKey(player) && killstreak.get(player) > 4) {
-			PlayerUtils.broadcast(PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + killstreak.get(player) + " §7was shut down from leaving!");
+		if (getScore(player.getName()) > 4) {
+			PlayerUtils.broadcast(PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + getScore(player.getName()) + " §7was shut down from leaving!");
 		}
-
-		killstreak.remove(player);
 		
 		User user = User.get(player);
-		
-		user.setStat(Stat.ARENACKS, 0);
 		user.reset();
 		
 		board.resetScores(player.getName());
