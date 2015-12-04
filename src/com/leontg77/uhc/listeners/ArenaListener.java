@@ -20,8 +20,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.leontg77.uhc.Arena;
-import com.leontg77.uhc.User;
-import com.leontg77.uhc.User.Stat;
+import com.leontg77.uhc.user.Stat;
+import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -63,7 +63,6 @@ public class ArenaListener implements Listener {
 		event.setDroppedExp(0);
 
 		user.increaseStat(Stat.ARENADEATHS);
-		user.setStat(Stat.ARENACKS, 0);
 		
 		ItemStack head = new ItemStack(Material.GOLDEN_APPLE);
 		ItemMeta headMeta = head.getItemMeta();
@@ -79,25 +78,23 @@ public class ArenaListener implements Listener {
 		Player killer = player.getKiller();
 		
 		if (killer == null) {
-			if (arena.killstreak.containsKey(player) && arena.killstreak.get(player) > 4) {
-				PlayerUtils.broadcast(Arena.PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + arena.killstreak.get(player) + " §7was shut down by PvE!");
+			if (arena.getScore(player.getName()) > 4) {
+				PlayerUtils.broadcast(Arena.PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + arena.getScore(player.getName()) + " §7was shut down by PvE!");
 			}
 
 			player.sendMessage(Arena.PREFIX + "You got killed by PvE!");
-			arena.killstreak.put(player, 0);
 			
 			arena.setScore("§8» §a§lPvE", arena.getScore("§8» §a§lPvE") + 1);
 			arena.resetScore(player.getName());
 			return;
 		}
 		
-		if (arena.killstreak.containsKey(player) && arena.killstreak.get(player) > 4) {
-			PlayerUtils.broadcast(Arena.PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + arena.killstreak.get(player) + " §7was shut down by §6" + killer.getName() + "§7!");
+		if (arena.getScore(player.getName()) > 4) {
+			PlayerUtils.broadcast(Arena.PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + arena.getScore(player.getName()) + " §7was shut down by §6" + killer.getName() + "§7!");
 		}
 		
 		player.sendMessage(Arena.PREFIX + "You got killed by §6" + killer.getName() + "§7! (" + NumberUtils.makePercent(killer.getHealth()) + "%§7)");
 		killer.sendMessage(Arena.PREFIX + "You killed §a" + player.getName() + "§7!");
-		arena.killstreak.put(player, 0);
 
 		arena.setScore(killer.getName(), arena.getScore(killer.getName()) + 1);
 		arena.resetScore(player.getName());
@@ -106,24 +103,15 @@ public class ArenaListener implements Listener {
 		User kUser = User.get(killer);
 		
 		kUser.increaseStat(Stat.ARENAKILLS);
-		kUser.increaseStat(Stat.ARENACKS);
 		
-		if (kUser.getStat(Stat.ARENAKS) < kUser.getStat(Stat.ARENACKS)) {
-			kUser.setStat(Stat.ARENAKS, kUser.getStat(Stat.ARENACKS));
+		if (kUser.getStat(Stat.ARENAKILLSTREAK) < arena.getScore(killer.getName())) {
+			kUser.setStat(Stat.ARENAKILLSTREAK, arena.getScore(killer.getName()));
 		} 
+
+		String killstreak = String.valueOf(arena.getScore(player.getName()));
 		
-		if (arena.killstreak.containsKey(killer)) {
-			arena.killstreak.put(killer, arena.killstreak.get(killer) + 1);
-		} else {
-			arena.killstreak.put(killer, 1);
-		}
-		
-		if (arena.killstreak.containsKey(killer)) {
-			String killstreak = String.valueOf(arena.killstreak.get(killer));
-			
-			if (killstreak.endsWith("0") || killstreak.endsWith("5")) {
-				PlayerUtils.broadcast(Arena.PREFIX + "§6" + killer.getName() + " §7is now on a §a" + killstreak + " §7killstreak!");
-			}
+		if (killstreak.endsWith("0") || killstreak.endsWith("5")) {
+			PlayerUtils.broadcast(Arena.PREFIX + "§6" + killer.getName() + " §7is now on a §a" + killstreak + " §7killstreak!");
 		}
 	}
 	

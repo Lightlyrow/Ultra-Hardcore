@@ -1,4 +1,4 @@
-package com.leontg77.uhc;
+package com.leontg77.uhc.user;
  
 import static com.leontg77.uhc.Main.plugin;
 
@@ -20,6 +20,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
+import com.leontg77.uhc.Game;
+import com.leontg77.uhc.State;
 import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.managers.PermissionsManager;
 import com.leontg77.uhc.utils.FileUtils;
@@ -204,7 +206,15 @@ public class User {
 	 * @return the rank.
 	 */
 	public Rank getRank() {
-		return Rank.valueOf(config.getString("rank", "USER"));
+		Rank rank;
+		
+		try {
+			rank = Rank.valueOf(config.getString("rank", "USER"));
+		} catch (Exception e) {
+			rank = Rank.USER;
+		}
+		
+		return rank;
 	}
 	
 	/**
@@ -277,7 +287,7 @@ public class User {
 	 * @param stat The stat setting.
 	 * @param value The new value.
 	 */
-	public void setStat(Stat stat, int value) {
+	public void setStat(Stat stat, double value) {
 		Game game = Game.getInstance();
 		
 		if (game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
@@ -286,7 +296,7 @@ public class User {
 		
 		String statName = stat.name().toLowerCase();
 		
-		if (stat == Stat.ARENADEATHS || stat == Stat.ARENAKS  || stat == Stat.ARENACKS || stat == Stat.ARENAKILLS) {
+		if (stat == Stat.ARENADEATHS || stat == Stat.ARENAKILLSTREAK || stat == Stat.ARENAKILLS) {
 			if (!Bukkit.hasWhitelist()) {
 				config.set("stats." + statName, value);
 				saveFile();
@@ -312,9 +322,9 @@ public class User {
 		}
 		
 		String statName = stat.name().toLowerCase();
-		int current = config.getInt("stats." + statName, 0);
+		double current = config.getDouble("stats." + statName, 0);
 		
-		if (stat == Stat.ARENADEATHS || stat == Stat.ARENAKS  || stat == Stat.ARENACKS || stat == Stat.ARENAKILLS) {
+		if (stat == Stat.ARENADEATHS || stat == Stat.ARENAKILLSTREAK || stat == Stat.ARENAKILLS) {
 			if (!Bukkit.hasWhitelist()) {
 				config.set("stats." + statName, current + 1);
 				saveFile();
@@ -333,8 +343,8 @@ public class User {
 	 * @param stat the stat getting.
 	 * @return The amount in a int form.
 	 */
-	public int getStat(Stat stat) {
-		return config.getInt("stats." + stat.name().toLowerCase(), 0);
+	public double getStat(Stat stat) {
+		return config.getDouble("stats." + stat.name().toLowerCase(), 0);
 	}
 	
 	/**
@@ -401,21 +411,5 @@ public class User {
         }
     }
 	
-	/**
-	 * The ranking enum class.
-	 * 
-	 * @author LeonTG77
-	 */
-	public enum Rank {
-		USER, DONATOR, SPEC, STAFF, TRIAL, HOST, ADMIN;
-	}
 	
-	/**
-	 * The stats enum class.
-	 * 
-	 * @author LeonTG77
-	 */
-	public enum Stat {
-		DEATHS, KILLS, WINS, GAMESPLAYED, ARENAKILLS, ARENADEATHS, ARENAKS, ARENACKS, GOLDENAPPLESEATEN, GOLDENHEADSEATEN, HORSESTAMED, WOLVESTAMED, NETHER, END, DIAMONDS, GOLD, HOSTILEMOBKILLS, ANIMALKILLS, KS, CKS, DAMAGETAKEN, POTIONS;
-	}
 }
