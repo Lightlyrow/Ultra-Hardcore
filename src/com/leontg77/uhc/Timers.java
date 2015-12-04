@@ -24,7 +24,6 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.Spectator.SpecInfo;
-import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.managers.BoardManager;
@@ -33,6 +32,8 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scenario.scenarios.Astrophobia;
 import com.leontg77.uhc.scenario.scenarios.Kings;
 import com.leontg77.uhc.scenario.scenarios.SlaveMarket;
+import com.leontg77.uhc.user.Stat;
+import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
@@ -170,14 +171,19 @@ public class Timers {
 		
 		new BukkitRunnable() {
 			public void run() {
+				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
+				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
+				PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in: §a" + pvp + " minutes.");
+				PlayerUtils.broadcast(Main.PREFIX + "Meetup is in: §a" + meetup + " minutes.");
+				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
+				
 				ScenarioManager scen = ScenarioManager.getInstance();
 				Spectator spec = Spectator.getInstance();
 
-				BoardManager sb = BoardManager.getInstance();
 				TeamManager teams = TeamManager.getInstance();
+				BoardManager sb = BoardManager.getInstance();
 
-				PluginManager manager = Bukkit.getPluginManager();
-				manager.registerEvents(new SpecInfo(), Main.plugin);
+				Bukkit.getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
 				
 				State.setState(State.INGAME);
 				game.setArenaBoard(false);
@@ -196,12 +202,6 @@ public class Timers {
 				Bukkit.getServer().setIdleTimeout(10);
 				SpecInfo.getTotalDiamonds().clear();
 				SpecInfo.getTotalGold().clear();
-				
-				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
-				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
-				PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in: §a" + pvp + " minutes.");
-				PlayerUtils.broadcast(Main.PREFIX + "Meetup is in: §a" + meetup + " minutes.");
-				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 
 				for (Player online : PlayerUtils.getPlayers()) {
 					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
@@ -251,7 +251,6 @@ public class Timers {
 					}
 					
 					User user = User.get(online);
-					user.setStat(Stat.CKS, 0);
 					
 					if (spec.isSpectating(online)) {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);

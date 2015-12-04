@@ -15,8 +15,8 @@ import org.bukkit.event.player.PlayerPortalEvent;
 
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.User;
-import com.leontg77.uhc.User.Stat;
+import com.leontg77.uhc.user.Stat;
+import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.LocationUtils;
 
 /**

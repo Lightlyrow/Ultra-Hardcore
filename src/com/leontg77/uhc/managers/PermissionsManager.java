@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.User;
-import com.leontg77.uhc.User.Rank;
+import com.leontg77.uhc.user.Rank;
+import com.leontg77.uhc.user.User;
 
 /**
  * Permissions manager class.
@@ -58,7 +58,7 @@ public class PermissionsManager {
 			return;
 		}
 		
-		if (rank == Rank.ADMIN) {
+		if (rank == Rank.OWNER) {
 			player.setOp(true);
 			return;
 		}

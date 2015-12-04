@@ -58,8 +58,7 @@ public class PacketUtils {
 			Field field = headerPacket.getClass().getDeclaredField("b");
 			field.setAccessible(true);
 			field.set(headerPacket, footerJSON);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			Bukkit.getServer().getLogger().severe("§cCould not send tab list packets to " + player.getName());
 			return;
 		}
@@ -73,12 +72,6 @@ public class PacketUtils {
 	 * @param player the player.
 	 */
 	public static void removeTabList(Player player) {
-		Game game = Game.getInstance();
-
-		if (game.isRecordedRound()) {
-	        return;
-		} 
-		
 		CraftPlayer craft = (CraftPlayer) player;
 		
 		IChatBaseComponent headerJSON = ChatSerializer.a("");
@@ -90,8 +83,7 @@ public class PacketUtils {
 			Field field = headerPacket.getClass().getDeclaredField("b");
 			field.setAccessible(true);
 			field.set(headerPacket, footerJSON);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			Bukkit.getServer().getLogger().severe("§cCould not send tab list packets to " + player.getName());
 			return;
 		}

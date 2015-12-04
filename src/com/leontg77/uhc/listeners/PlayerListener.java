@@ -20,7 +20,6 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
@@ -57,15 +56,15 @@ import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Parkour;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
-import com.leontg77.uhc.User;
-import com.leontg77.uhc.User.Rank;
-import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.VoteCommand;
 import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.managers.BoardManager;
 import com.leontg77.uhc.managers.TeamManager;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scenario.scenarios.VengefulSpirits;
+import com.leontg77.uhc.user.Rank;
+import com.leontg77.uhc.user.Stat;
+import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.BlockUtils;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.GameUtils;
@@ -103,7 +102,6 @@ public class PlayerListener implements Listener {
 		BoardManager board = BoardManager.getInstance();
 		User user = User.get(player);
 		
-		user.setStat(Stat.CKS, 0);
 		player.setWhitelisted(false);
 		
 		if (game.deathLightning()) {
@@ -236,10 +234,9 @@ public class PlayerListener implements Listener {
 				
 				User killUser = User.get(killer);
 				killUser.increaseStat(Stat.KILLS);
-				killUser.increaseStat(Stat.CKS);
 				
-				if (killUser.getStat(Stat.KS) < killUser.getStat(Stat.CKS)) {
-					killUser.increaseStat(Stat.KS);
+				if (killUser.getStat(Stat.KILLSTREAK) < board.getScore(killer.getName())) {
+					killUser.setStat(Stat.ARENAKILLSTREAK, board.getScore(killer.getName()));
 				}
 				
 				if (Main.kills.containsKey(killer.getName())) {
@@ -248,10 +245,12 @@ public class PlayerListener implements Listener {
 					Main.kills.put(killer.getName(), 1);
 				}
 
-				if (Main.teamKills.containsKey(team.getName())) {
-					Main.teamKills.put(team.getName(), Main.teamKills.get(team.getName()) + 1);
-				} else {
-					Main.teamKills.put(team.getName(), 1);
+				if (team != null) {
+					if (Main.teamKills.containsKey(team.getName())) {
+						Main.teamKills.put(team.getName(), Main.teamKills.get(team.getName()) + 1);
+					} else {
+						Main.teamKills.put(team.getName(), 1);
+					}
 				}
 			}
 		}
@@ -272,7 +271,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		player.sendMessage(Main.PREFIX + "Thanks for playing our game, it really means a lot :)");
+		player.sendMessage(Main.PREFIX + "Thanks for playing this game, it really means a lot :)");
 		player.sendMessage(Main.PREFIX + "Follow us on twtter to know when our next games are: §a@ArcticUHC");
 		
 		for (Player online : PlayerUtils.getPlayers()) {
@@ -285,7 +284,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		player.sendMessage(Main.PREFIX + "You will be put into spectator mode in 10 seconds.");
+		player.sendMessage(Main.PREFIX + "You will be put into spectator mode in 5 seconds.");
 		player.sendMessage(Main.PREFIX + "Please do not spam, rage, spoil or be a bad sportsman.");
 		
 		new BukkitRunnable() {
@@ -302,7 +301,7 @@ public class PlayerListener implements Listener {
 				
 				spec.enableSpecmode(player);
 			}
-		}.runTaskLater(Main.plugin, 200);
+		}.runTaskLater(Main.plugin, 100);
 	}
 	
 	@EventHandler
@@ -379,14 +378,14 @@ public class PlayerListener implements Listener {
 
 		Spectator spec = Spectator.getInstance();
 
-		if (user.getRank() == Rank.ADMIN) {
+		if (user.getRank() == Rank.OWNER) {
 			String uuid = player.getUniqueId().toString();
 			String prefix;
 			
 			if (uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
-				prefix = "§3Admin";
+				prefix = "§3Owner";
 			} else {
-				prefix = "§4Admin";
+				prefix = "§4Owner";
 			}
 			
 			PlayerUtils.broadcast("§8[" + prefix + "§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
@@ -564,14 +563,6 @@ public class PlayerListener implements Listener {
 		Entity clicked = event.getRightClicked();
 		Player player = event.getPlayer();
 		
-		List<World> worlds = GameUtils.getGameWorlds();
-		World world = clicked.getWorld();
-		
-		if (clicked instanceof ArmorStand && !worlds.contains(world)) {
-			event.setCancelled(true);
-			return;
-		}
-		
 		if (clicked instanceof Horse) {
 			if (!game.horses()) {
 				player.sendMessage(Main.PREFIX + "Horses are disabled.");
@@ -603,7 +594,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 	    	
-		Player interacted = (Player) event.getRightClicked();
+		Player interacted = (Player) clicked;
 				
 		Spectator spec = Spectator.getInstance();
 		InvGUI inv = InvGUI.getInstance();

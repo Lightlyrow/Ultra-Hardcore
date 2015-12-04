@@ -15,8 +15,8 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.User;
-import com.leontg77.uhc.User.Rank;
+import com.leontg77.uhc.user.Rank;
+import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.NameUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -27,7 +27,7 @@ import com.leontg77.uhc.utils.PlayerUtils;
  */
 public class RankCommand implements CommandExecutor, TabCompleter {	
 
-	@Override
+	@Override	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.hasPermission("uhc.rank")) {
 			sender.sendMessage(Main.NO_PERM_MSG);
