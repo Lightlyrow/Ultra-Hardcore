@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.Arena;
-import com.leontg77.uhc.User;
+import com.leontg77.uhc.user.User;
 
 /**
  * Hotbar command class.
