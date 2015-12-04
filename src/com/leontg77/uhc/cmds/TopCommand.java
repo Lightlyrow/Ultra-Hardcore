@@ -18,8 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.leontg77.uhc.Main;
-import com.leontg77.uhc.User.Stat;
+import com.leontg77.uhc.user.Stat;
 import com.leontg77.uhc.utils.FileUtils;
 import com.leontg77.uhc.utils.NameUtils;
 
@@ -40,20 +39,11 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 		Player player = (Player) sender;
 		
 		if (args.length == 0) {
-			player.sendMessage(Main.PREFIX + "Usage: /top <stat>");
-			return true;
-		}
-		
-		if (args[0].equalsIgnoreCase("global")) {
 			List<String> data = new ArrayList<String>();
 
-			Inventory inv = Bukkit.createInventory(null, 27, "Top 10: §7Global");
+			Inventory inv = Bukkit.createInventory(null, 27, "Top players");
 			
 			for (Stat stat : Stat.values()) {
-				if (stat == Stat.ARENACKS || stat == Stat.CKS) {
-					continue;
-				}
-				
 				for (FileConfiguration config : FileUtils.files) {
 					String name = config.getString("username");
 					int number = config.getInt("stats." + stat.name().toLowerCase());
@@ -91,11 +81,6 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 		
 		try {
 			stat = Stat.valueOf(args[0].toUpperCase());
-			
-			if (stat == Stat.ARENACKS || stat == Stat.CKS) {
-				player.sendMessage(ChatColor.RED + args[0] + " is not an vaild stat.");
-				return true;
-			}
 		} catch (Exception e) {
 			player.sendMessage(ChatColor.RED + args[0] + " is not an vaild stat.");
 			return true;
@@ -174,9 +159,6 @@ public class TopCommand implements CommandExecutor, TabCompleter {
     			}
         	}
         }
-    	
-		toReturn.remove("arenacks");
-		toReturn.remove("cks");
 		
     	return toReturn;
 	}
