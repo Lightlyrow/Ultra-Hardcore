@@ -16,7 +16,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.User;
+import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 
