@@ -19,7 +19,7 @@ import com.leontg77.uhc.Settings;
 public class BiomeSwap {
 	private static BiomeSwap manager = new BiomeSwap();
 	private BiomeBase[] origBiomes;
-	private Random random;
+	private Random rand;
 
 	/**
 	 * Gets the instance of this class
@@ -32,7 +32,7 @@ public class BiomeSwap {
 
 	public void setup() {
 		this.origBiomes = getMcBiomesCopy();
-		this.random = new Random();
+		this.rand = new Random();
 
 		update();
 	}
@@ -45,9 +45,11 @@ public class BiomeSwap {
 	private void doSwap(List<String> swaps) {
 		for (String s : swaps) {
 			String[] biomes = s.split(";");
+			
 			if (biomes.length == 2) {
 				if (biomes[0].equalsIgnoreCase("all")) {
 					SwappableBiome newBiome = fromString(biomes[1]);
+					
 					if (newBiome != null) {
 						plugin.getLogger().info("Swapping all biomes with " + newBiome.toString().toLowerCase().replaceAll("_", ""));
 						swapBiome(newBiome);
@@ -105,7 +107,7 @@ public class BiomeSwap {
 	}
 
 	public SwappableBiome getRandomBiome() {
-		return SwappableBiome.values()[random.nextInt(SwappableBiome.values().length)];
+		return SwappableBiome.values()[rand.nextInt(SwappableBiome.values().length)];
 	}
 
 	public SwappableBiome fromString(String biome) {
@@ -119,6 +121,7 @@ public class BiomeSwap {
 
 	public void resetBiomes() {
 		BiomeBase[] biomes = getMcBiomes();
+		
 		for (SwappableBiome b : SwappableBiome.values()) {
 			biomes[b.getId()] = getOrigBiome(b.getId());
 		}
