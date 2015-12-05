@@ -1,7 +1,6 @@
 package com.leontg77.uhc.scenario;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import com.leontg77.uhc.Main;
@@ -31,8 +30,10 @@ import com.leontg77.uhc.scenario.scenarios.Depths;
 import com.leontg77.uhc.scenario.scenarios.Diamondless;
 import com.leontg77.uhc.scenario.scenarios.DragonRush;
 import com.leontg77.uhc.scenario.scenarios.Eggs;
+import com.leontg77.uhc.scenario.scenarios.EightLeggedFreaks;
 import com.leontg77.uhc.scenario.scenarios.EnchantParanoia;
 import com.leontg77.uhc.scenario.scenarios.EnchantedDeath;
+import com.leontg77.uhc.scenario.scenarios.Entropy;
 import com.leontg77.uhc.scenario.scenarios.Fallout;
 import com.leontg77.uhc.scenario.scenarios.FlowerPower;
 import com.leontg77.uhc.scenario.scenarios.Genie;
@@ -85,7 +86,7 @@ import com.leontg77.uhc.scenario.scenarios.Voidscape;
  * @author LeonTG77
  */
 public class ScenarioManager {
-	private HashSet<Scenario> scenarios = new HashSet<Scenario>();
+	private List<Scenario> scenarios = new ArrayList<Scenario>();
 	private static ScenarioManager manager = new ScenarioManager();
 	
 	/**
@@ -127,8 +128,10 @@ public class ScenarioManager {
 		scenarios.add(new Diamondless());
 		scenarios.add(new DragonRush());
 		scenarios.add(new Eggs());
+		scenarios.add(new EightLeggedFreaks());
 		scenarios.add(new EnchantedDeath());
 		/* TODO: Enchanted Books and Enchant preview */ scenarios.add(new EnchantParanoia());
+		scenarios.add(new Entropy());
 		scenarios.add(new Fallout());
 		scenarios.add(new FlowerPower());
 		scenarios.add(new Genie());
