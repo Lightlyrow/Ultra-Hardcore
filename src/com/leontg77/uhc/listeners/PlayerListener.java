@@ -485,10 +485,10 @@ public class PlayerListener implements Listener {
 				return;
 			}
 			
-			String done = command.replace("rl", "reload");
+			String finalCommand = command.replace("rl", "reload");
 			
-			player.sendMessage(ChatColor.RED + "You may not want to " + done + " when a game is running.");
-			player.sendMessage(ChatColor.RED + "If you still want to " + done + ", do it in the console.");
+			player.sendMessage(ChatColor.RED + "You may not want to " + finalCommand + " when a game is running.");
+			player.sendMessage(ChatColor.RED + "If you still want to " + finalCommand + ", do it in the console.");
 			event.setCancelled(true);
 			return;
 		}
@@ -496,10 +496,8 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
-		event.setMotd("§4§lArctic UHC §8» §6" + GameUtils.getMOTDMessage() + " §8« [§71.8§8]\n§8» §7§oFollow us on twitter, §a§o@ArcticUHC§7§o!");
-
-		int max = game.getMaxPlayers();
-		event.setMaxPlayers(max);
+		event.setMotd("§4§lArctic UHC §8» §6" + GameUtils.getMOTDMessage() + " §8« [§71.8§8] [§7EU§8]\n§8» §7§oFollow us on twitter, §a§o@ArcticUHC§7§o!");
+		event.setMaxPlayers(game.getMaxPlayers());
 	}
 	
 	@EventHandler
