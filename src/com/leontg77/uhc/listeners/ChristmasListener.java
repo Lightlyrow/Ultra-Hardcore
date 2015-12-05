@@ -11,6 +11,13 @@ import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+/**
+ * Christmas Listener.
+ * <p>
+ * Class used for christmas releated events like disabling ice/snow melt and having snow in the lobby.
+ * 
+ * @author LeonTG77
+ */
 public class ChristmasListener implements Listener {
 	
 	@EventHandler
@@ -52,5 +59,4 @@ public class ChristmasListener implements Listener {
 			player.resetPlayerWeather();
 		}
 	}
-
 }
