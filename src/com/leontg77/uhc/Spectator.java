@@ -249,7 +249,7 @@ public class Spectator {
 	 * @return <code>true</code> if the player is speccing, <code>false</code> otherwise.
 	 */
 	public boolean isSpectating(Player player) {
-		return spectators.contains(player.getName());
+		return isSpectating(player.getName());
 	}
 	
 	/**
