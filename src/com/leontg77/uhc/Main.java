@@ -350,17 +350,8 @@ public class Main extends JavaPlugin {
 				}
 			}
 
-			plugin.getLogger().info("Deleted " + totalDatafiles + " player data files.");
-			plugin.getLogger().info("Deleted " + totalStatsfiles + " player stats files.");
-			
-			for (FileConfiguration config : FileUtils.files) {
-				config.set("stats.cks", 0);
-				config.set("stats.arenacks", 0);
-				
-				try {
-					config.save(new File(folder, config.getString("uuid", "none") + ".yml"));
-				} catch (Exception e) {}
-			}
+			getLogger().info("Deleted " + totalDatafiles + " player data files.");
+			getLogger().info("Deleted " + totalStatsfiles + " player stats files."); 
 		}
 		
 		if (State.isState(State.INGAME)) {
@@ -475,14 +466,14 @@ public class Main extends JavaPlugin {
 	public static Location getSpawn() {
 		Settings settings = Settings.getInstance();
 		
-		World w = Bukkit.getServer().getWorld(settings.getData().getString("spawn.world", "lobby"));
+		World world = Bukkit.getWorld(settings.getData().getString("spawn.world", "lobby"));
 		double x = settings.getData().getDouble("spawn.x", 0.5);
 		double y = settings.getData().getDouble("spawn.y", 33.0);
 		double z = settings.getData().getDouble("spawn.z", 0.5);
 		float yaw = (float) settings.getData().getDouble("spawn.yaw", 0);
 		float pitch = (float) settings.getData().getDouble("spawn.pitch", 0);
 		
-		Location loc = new Location(w, x, y, z, yaw, pitch);
+		Location loc = new Location(world, x, y, z, yaw, pitch);
 		return loc;
 	}
 	
@@ -501,39 +492,30 @@ public class Main extends JavaPlugin {
         ShapedRecipe goldenmelon = new ShapedRecipe(new ItemStack(Material.SPECKLED_MELON)).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', Material.MELON);
         ShapedRecipe goldenhead = new ShapedRecipe(head).shape("@@@", "@*@", "@@@").setIngredient('@', Material.GOLD_INGOT).setIngredient('*', skull.getData());
         
+        ShapelessRecipe ironplate = new ShapelessRecipe(new ItemStack(Material.IRON_INGOT, 2)).addIngredient(Material.IRON_PLATE);
+        ShapelessRecipe goldplate = new ShapelessRecipe(new ItemStack(Material.GOLD_INGOT, 2)).addIngredient(Material.GOLD_PLATE);
+
         getServer().addRecipe(goldenmelon);
         getServer().addRecipe(goldenhead);
+        getServer().addRecipe(ironplate);
+        getServer().addRecipe(goldplate);
 
         melonRecipe = goldenmelon;
         headRecipe = goldenhead;
-
-        getLogger().info("Golden Melon recipe added.");
-        getLogger().info("Golden Head recipe added.");
-
-        ShapelessRecipe ironplate = new ShapelessRecipe(new ItemStack(Material.IRON_INGOT, 2)).addIngredient(Material.IRON_PLATE);
-        ShapelessRecipe goldplate = new ShapelessRecipe(new ItemStack(Material.GOLD_INGOT, 2)).addIngredient(Material.GOLD_PLATE);
-        
-        getServer().addRecipe(ironplate);
-        getServer().addRecipe(goldplate);
-        
-        getLogger().info("IronPlate craftback recipe added.");
-        getLogger().info("GoldPlate craftback recipe added.");
 	}
 	
 	/**
 	 * Save all the data to the data file.
 	 */
 	public void saveData() {
+		List<String> scenarios = new ArrayList<String>();
 		Settings settings = Settings.getInstance();
-		settings.getData().set("state", State.getState().name());
-		
-		List<String> list = new ArrayList<String>();
 		
 		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
-			list.add(scen.getName());
+			scenarios.add(scen.getName());
 		}
 		
-		settings.getData().set("scenarios", list);
+		settings.getData().set("scenarios", scenarios);
 		
 		for (Entry<String, Integer> tkEntry : teamKills.entrySet()) {
 			settings.getData().set("teams.kills." + tkEntry.getKey(), tkEntry.getValue());
@@ -546,6 +528,7 @@ public class Main extends JavaPlugin {
 		for (Entry<String, List<String>> entry : TeamCommand.savedTeams.entrySet()) {
 			settings.getData().set("teams.data." + entry.getKey(), entry.getValue());
 		}
+		
 		settings.saveData();
 	}
 	
