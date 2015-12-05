@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.entity.Firework;
@@ -41,12 +42,18 @@ public class Fireworks {
 		Firework item = loc.getWorld().spawn(loc, Firework.class);
 		FireworkMeta meta = item.getFireworkMeta();
 
+		Builder builder = FireworkEffect.builder();
+
+		builder.flicker(ran.nextBoolean());
+		builder.trail(ran.nextBoolean());
+		builder.withColor(randomColor());
+		builder.with(randomType());
+		
 		if (ran.nextBoolean()) {
-			meta.addEffect(FireworkEffect.builder().flicker(ran.nextBoolean()).trail(ran.nextBoolean()).with(randomType()).withColor(randomColor()).withFade(randomColor()).build());
-		} else {
-			meta.addEffect(FireworkEffect.builder().flicker(ran.nextBoolean()).trail(ran.nextBoolean()).with(randomType()).withColor(randomColor()).build());
+			builder.withFade(randomColor());
 		}
 
+		meta.addEffect(builder.build());
 		meta.setPower(1);
 		item.setFireworkMeta(meta);
 	}
