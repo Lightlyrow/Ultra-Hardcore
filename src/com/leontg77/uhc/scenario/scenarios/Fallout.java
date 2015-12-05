@@ -31,11 +31,11 @@ public class Fallout extends Scenario {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
 					if (!GameUtils.getGameWorlds().contains(online.getWorld())) {
-						return;
+						continue;
 					}
 					
 					if (online.getLocation().getBlockY() <= 60) {
-						return;
+						continue;
 					}
 					
 					online.damage(1.0);
