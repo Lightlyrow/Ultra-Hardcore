@@ -24,6 +24,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.uhc.Main.BorderShrink;
 import com.leontg77.uhc.Spectator.SpecInfo;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.cmds.TeamCommand;
 import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.managers.BoardManager;
@@ -32,8 +33,6 @@ import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.scenario.scenarios.Astrophobia;
 import com.leontg77.uhc.scenario.scenarios.Kings;
 import com.leontg77.uhc.scenario.scenarios.SlaveMarket;
-import com.leontg77.uhc.user.Stat;
-import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.DateUtils;
 import com.leontg77.uhc.utils.EntityUtils;
 import com.leontg77.uhc.utils.GameUtils;
@@ -173,8 +172,8 @@ public class Timers {
 			public void run() {
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
-				PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in: §a" + pvp + " minutes.");
-				PlayerUtils.broadcast(Main.PREFIX + "Meetup is in: §a" + meetup + " minutes.");
+				PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in: §a" + game.getPvP() + " minutes.");
+				PlayerUtils.broadcast(Main.PREFIX + "Meetup is in: §a" + game.getMeetup() + " minutes.");
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				
 				ScenarioManager scen = ScenarioManager.getInstance();

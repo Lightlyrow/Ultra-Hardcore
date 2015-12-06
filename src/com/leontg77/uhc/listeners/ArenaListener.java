@@ -20,8 +20,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.leontg77.uhc.Arena;
-import com.leontg77.uhc.user.Stat;
-import com.leontg77.uhc.user.User;
+import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 

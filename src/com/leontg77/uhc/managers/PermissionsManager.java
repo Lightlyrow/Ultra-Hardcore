@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.user.Rank;
-import com.leontg77.uhc.user.User;
+import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Rank;
 
 /**
  * Permissions manager class.

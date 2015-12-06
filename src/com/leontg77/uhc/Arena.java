@@ -27,7 +27,6 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import com.leontg77.uhc.listeners.ArenaListener;
 import com.leontg77.uhc.managers.BoardManager;
-import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.utils.ScatterUtils;
 import com.leontg77.uhc.worlds.WorldManager;

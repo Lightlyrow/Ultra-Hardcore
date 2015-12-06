@@ -13,9 +13,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Spectator;
+import com.leontg77.uhc.User;
 import com.leontg77.uhc.inventory.InvGUI;
 import com.leontg77.uhc.managers.PermissionsManager;
-import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.PacketUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 

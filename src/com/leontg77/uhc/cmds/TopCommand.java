@@ -18,7 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.leontg77.uhc.user.Stat;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.utils.FileUtils;
 import com.leontg77.uhc.utils.NameUtils;
 

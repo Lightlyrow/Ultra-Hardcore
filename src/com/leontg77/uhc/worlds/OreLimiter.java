@@ -1,12 +1,9 @@
 package com.leontg77.uhc.worlds;
 
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import com.google.common.collect.Maps;
 import com.leontg77.uhc.Main;

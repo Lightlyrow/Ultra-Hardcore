@@ -16,8 +16,8 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.Game;
-import com.leontg77.uhc.user.Stat;
-import com.leontg77.uhc.user.User;
+import com.leontg77.uhc.User;
+import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.utils.BlockUtils;
 
 /**
@@ -218,7 +218,7 @@ public class BlockListener implements Listener {
 		case DARK_OAK_DOOR:
 		case JUNGLE_DOOR:
 		case SPRUCE_DOOR:
-		case WOOD_DOOR:
+		case WOODEN_DOOR:
 			return true;
 		default:
 			return false;

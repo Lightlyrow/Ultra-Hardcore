@@ -12,8 +12,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.User;
 import com.leontg77.uhc.scenario.Scenario;
-import com.leontg77.uhc.user.User;
 import com.leontg77.uhc.utils.PlayerUtils;
 
 /**
