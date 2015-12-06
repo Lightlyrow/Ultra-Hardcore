@@ -17,7 +17,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -319,7 +318,6 @@ public class Main extends JavaPlugin {
 		getCommand("world").setExecutor(new WorldCommand());
 		
 		if (State.isState(State.NOT_RUNNING)) {
-			File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 			File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
 			File stats = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
 			
