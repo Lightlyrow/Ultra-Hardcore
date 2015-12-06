@@ -62,7 +62,7 @@ public class PregenCommand implements CommandExecutor {
 		PlayerUtils.broadcast(Main.PREFIX + "Starting pregen of world §a" + world.getName() + "§7.");
 		
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " set " + radius + " 0 0");
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420 208 true");
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload fill confirm");
 		return true;
 	}
