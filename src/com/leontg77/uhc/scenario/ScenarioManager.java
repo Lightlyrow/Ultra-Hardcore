@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.scenario.scenarios.AchievementParanoia;
+import com.leontg77.uhc.scenario.scenarios.Armageddon;
+import com.leontg77.uhc.scenario.scenarios.MonstersInc;
+import com.leontg77.uhc.scenario.scenarios.AppleFamine;
 import com.leontg77.uhc.scenario.scenarios.Assassins;
 import com.leontg77.uhc.scenario.scenarios.AssaultAndBattery;
 import com.leontg77.uhc.scenario.scenarios.Astrophobia;
@@ -103,6 +106,8 @@ public class ScenarioManager {
 	 */
 	public void setup() {
 		scenarios.add(new AchievementParanoia());
+		scenarios.add(new AppleFamine());
+		scenarios.add(new Armageddon());
 		scenarios.add(new Assassins());
 		scenarios.add(new AssaultAndBattery());
 		scenarios.add(new Astrophobia());
@@ -149,6 +154,7 @@ public class ScenarioManager {
 		scenarios.add(new Lootcrates());
 		scenarios.add(new MeleeFun());
 		scenarios.add(new Moles());
+		scenarios.add(new MonstersInc());
 		scenarios.add(new MysteryTeams());
 		scenarios.add(new NightmareMode());
 		scenarios.add(new NoFall());
