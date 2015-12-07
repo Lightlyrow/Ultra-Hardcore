@@ -37,7 +37,7 @@ public class Announcer {
 					return;
 				}
 				
-				PlayerUtils.broadcast("§6§lInfo §8» §7" + getRandomMessage());
+				PlayerUtils.broadcast("§c§lInfo §8» §7" + getRandomMessage());
 			}
 		}.runTaskTimer(Main.plugin, 10000, 10000);
 		
@@ -52,7 +52,7 @@ public class Announcer {
 		messages.add("You can view your stats by using §a/stats§7.");
 		messages.add("You can view the top stats with §a/top [stat]§7.");
 		messages.add("View the border size with §a/border§7.");
-		messages.add("How long til #? Use §a/timeleft§7.");
+		messages.add("How long til pvp/meetup? Use §a/timeleft§7.");
 		messages.add("View the enabled scenario with info by doing §a/scen§7.");
 		
 		Main.plugin.getLogger().info("The announcer has been setup.");
