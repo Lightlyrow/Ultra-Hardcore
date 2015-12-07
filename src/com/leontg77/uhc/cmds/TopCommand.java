@@ -20,7 +20,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.leontg77.uhc.User.Stat;
 import com.leontg77.uhc.utils.FileUtils;
-import com.leontg77.uhc.utils.NameUtils;
 
 /**
  * Top command class.
@@ -65,7 +64,7 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 				
 				ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 				SkullMeta meta = (SkullMeta) item.getItemMeta();
-				meta.setDisplayName("§6" + NameUtils.fixString(stat.name(), true) + " §8| §7" + name + " §8» §a" + value);
+				meta.setDisplayName("§6" + stat.getName() + " §8| §7" + name + " §8» §a" + value);
 				meta.setOwner(name);
 				item.setItemMeta(meta);
 				inv.addItem(item);
@@ -104,7 +103,7 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 		    }
 		});
 		
-		Inventory inv = Bukkit.createInventory(null, 18, "Top 10: §7" + NameUtils.fixString(stat.name(), true));
+		Inventory inv = Bukkit.createInventory(null, 18, "Top 10: §7" + stat.getName());
 		
 		int current = 4;
 		int hash = 1;
