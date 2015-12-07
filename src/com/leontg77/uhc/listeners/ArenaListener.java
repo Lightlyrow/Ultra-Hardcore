@@ -108,7 +108,7 @@ public class ArenaListener implements Listener {
 			kUser.setStat(Stat.ARENAKILLSTREAK, arena.getScore(killer.getName()));
 		} 
 
-		String killstreak = String.valueOf(arena.getScore(player.getName()));
+		String killstreak = String.valueOf(arena.getScore(killer.getName()));
 		
 		if (killstreak.endsWith("0") || killstreak.endsWith("5")) {
 			PlayerUtils.broadcast(Arena.PREFIX + "§6" + killer.getName() + " §7is now on a §a" + killstreak + " §7killstreak!");
