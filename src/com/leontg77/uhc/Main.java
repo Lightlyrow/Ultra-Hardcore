@@ -136,6 +136,7 @@ import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.AntiStripmine;
 import com.leontg77.uhc.worlds.BiomeSwap;
+import com.leontg77.uhc.worlds.OreLimiter;
 import com.leontg77.uhc.worlds.WorldManager;
 
 /**
@@ -182,19 +183,21 @@ public class Main extends JavaPlugin {
 		Settings.getInstance().setup();
 	    
 		WorldManager.getInstance().loadWorlds();
-
+		OreLimiter.getInstance().setup();
+		
 		AntiStripmine.getInstance().setup();
+		BiomeSwap.getInstance().setup();
+
 		Announcer.getInstance().setup();
 		Arena.getInstance().setup();
 		
-		BiomeSwap.getInstance().setup();
 		Parkour.getInstance().setup();
-		
-		TeamManager.getInstance().setup();
+
+		ScenarioManager.getInstance().setup();
 		UBL.getInstance().reload();
 		
-		ScenarioManager.getInstance().setup();
 		BoardManager.getInstance().setup();
+		TeamManager.getInstance().setup();
 		
 		Game game = Game.getInstance();
 		FileUtils.updateFiles();
