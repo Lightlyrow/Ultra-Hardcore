@@ -440,7 +440,7 @@ public class User {
     	GAMESPLAYED("Games played"), 
     	ARENAKILLS("Arena Kills"), 
     	ARENADEATHS("Arena Deaths"), 
-    	ARENAKILLSTREAK("Highest Arena Killstreaks"), 
+    	ARENAKILLSTREAK("Highest Arena Killstreak"), 
     	GOLDENAPPLESEATEN("Golden Apples Eaten"),
     	GOLDENHEADSEATEN("Golden Heads Eaten"), 
     	HORSESTAMED("Horses Tamed"), 
@@ -451,7 +451,7 @@ public class User {
     	GOLD("Mined gold"),
     	HOSTILEMOBKILLS("Killed a monster"),
     	ANIMALKILLS("Killed an animal"), 
-    	KILLSTREAK("Highest Killstreaks"), 
+    	KILLSTREAK("Highest Killstreak"), 
     	DAMAGETAKEN("Damage taken"), 
     	POTIONS("Potions Drunk");
     	
