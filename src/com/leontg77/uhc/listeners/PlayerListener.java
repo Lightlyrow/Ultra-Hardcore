@@ -1,9 +1,5 @@
 package com.leontg77.uhc.listeners;
 
-import static com.leontg77.uhc.Main.plugin;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -24,8 +20,6 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
@@ -467,33 +461,6 @@ public class PlayerListener implements Listener {
 		
 		String command = message.split(" ")[0].substring(1);
 		
-		if (command.equalsIgnoreCase("fixdata")) {
-			File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-			
-			for (File file : folder.listFiles()) {
-				FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-				
-				config.set("stats.arenakillstreak", config.get("stats.arenaks"));
-				config.set("stats.killstreak", config.get("stats.ks"));
-				config.set("stats.cks", null);
-				config.set("stats.ks", null);
-				config.set("stats.arenacks", null);
-				config.set("stats.arenaks", null);
-				config.set("lastlogoff", null);
-				
-				try {
-					config.save(file);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			
-			player.sendMessage(Main.PREFIX + "Fixed.");
-			event.setCancelled(true);
-			return;
-		}
-		
 		if (command.equalsIgnoreCase("me") || command.equalsIgnoreCase("kill")) {
 			player.sendMessage(Main.NO_PERM_MSG);
 			event.setCancelled(true);
@@ -526,7 +493,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
-		event.setMotd("§4§lArctic UHC §8» §6" + GameUtils.getMOTDMessage() + " §8« [§71.8§8] [§7EU§8]\n§8» §f§oFollow us on twitter, §a§o@ArcticUHC§7§o!");
+		event.setMotd("§4§lArctic UHC §8» §6" + GameUtils.getMOTDMessage() + " §8« [§71.8§8] [§7EU§8]\n§8» §7§oFollow us on twitter, §a§o@ArcticUHC§7§o!");
 		event.setMaxPlayers(game.getMaxPlayers());
 	}
 	
