@@ -78,7 +78,7 @@ public class InvGUI {
 		lore.add(" ");
 		lore.add("§8» §7Hostile kills: §a" + user.getStat(Stat.HOSTILEMOBKILLS));
 		lore.add("§8» §7Animal kills: §a" + user.getStat(Stat.ANIMALKILLS));
-		lore.add("§8» §7Damage taken: §a" + NumberUtils.convertDouble(user.getFile().getDouble("stats." + Stat.DAMAGETAKEN.name().toLowerCase(), 0.0) / 2));
+		lore.add("§8» §7Damage taken: §a" + NumberUtils.convertDouble(user.getStatDouble(Stat.DAMAGETAKEN) / 2));
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
