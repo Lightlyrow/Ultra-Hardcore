@@ -288,7 +288,7 @@ public class User {
 	public void setStat(Stat stat, double value) {
 		Game game = Game.getInstance();
 		
-		if (game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
+		if (game.isRecordedRound() || Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
 			return;
 		}
 		
@@ -315,7 +315,7 @@ public class User {
 	public void increaseStat(Stat stat) {
 		Game game = Game.getInstance();
 		
-		if (game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
+		if (game.isRecordedRound() || Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
 			return;
 		}
 		
