@@ -368,7 +368,7 @@ public class Timers {
 					game.setPregameBoard(false);
 					
 					for (String entry : sb.board.getEntries()) {
-						if (!entry.equals("§8» §a§lPvE")) {
+						if (sb.getScore(entry) != 0 && !entry.equals("§8» §a§lPvE")) {
 							sb.resetScore(entry);
 						}
 					}
