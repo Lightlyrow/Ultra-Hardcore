@@ -82,12 +82,10 @@ public class EndCommand implements CommandExecutor {
 			
 			User user = User.get(winner);
 
-			if (!game.isRecordedRound() && !game.getHost().equalsIgnoreCase("LeonsPrivate")) {
+			if (!game.isRecordedRound() && !Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
 				user.getFile().set("stats.wins", user.getFile().getInt("stats.wins") + 1);
+				user.saveFile();
 			}
-			
-			user.getFile().set("stats.cks", 0);
-			user.saveFile();
 			
 			PlayerUtils.broadcast("§8» §7" + args[i]);
 			winners.add(args[i]);
@@ -100,7 +98,7 @@ public class EndCommand implements CommandExecutor {
 		PlayerUtils.broadcast(Main.PREFIX + "Congrats on the win and thanks for playing!");
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		String host = GameUtils.getCurrentHost();
+		String host = GameUtils.getHost(Bukkit.getOfflinePlayer(game.getHost()).getName());
 		
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		Date date = new Date();
