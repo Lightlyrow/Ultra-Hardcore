@@ -13,6 +13,7 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.generator.BlockPopulator;
 
@@ -49,8 +50,29 @@ public class OldTerrain extends BlockPopulator implements Listener {
         Bukkit.getLogger().log(Level.INFO, "World init detected! OreLimiter");
         event.getWorld().getPopulators().add(this);
     }
+    
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void on(final ChunkPopulateEvent event) {
+    	if (!Game.getInstance().oldTerrain()) {
+    		return;
+    	}
+    	
+    	Chunk chunk = event.getChunk();
+    	
+    	for (int x = 0; x < BLOCKS_PER_CHUNK; x++) {
+            for (int z = 0; z < BLOCKS_PER_CHUNK; z++) {
+                for (int y = CHUNK_HEIGHT_LIMIT - 1; y > 0; y--) {
+                    Block block = chunk.getBlock(x, y, z);
+                    
+                    if (block.getType() == Material.STONE && BlockUtils.getDurability(block) != 0) {
+                    	block.setType(Material.AIR);
+                    }
+                }
+            }
+        }
+    }
 
-    @Override
+	@Override
     public void populate(World world, Random rand, Chunk chunk) {
     	if (!Game.getInstance().oldTerrain()) {
     		return;
@@ -59,14 +81,8 @@ public class OldTerrain extends BlockPopulator implements Listener {
         for (int x = 0; x < BLOCKS_PER_CHUNK; x++) {
             for (int z = 0; z < BLOCKS_PER_CHUNK; z++) {
                 for (int y = CHUNK_HEIGHT_LIMIT - 1; y > 0; y--) {
-                    Block block = world.getBlockAt(chunk.getX() * 16 + x, y, chunk.getZ() * 16 + z);
-                    
+                    Block block = chunk.getBlock(x, y, z);
                     OreLocation oreLocation = new OreLocation(block.getX(), block.getY(), block.getZ());
-                    
-                    if (block.getType() == Material.STONE && BlockUtils.getDurability(block) != 0) {
-	                    block.setType(Material.AIR);
-	                    block.setType(Material.STONE);
-                    }
                     
                     if (block.getType() == Material.DIAMOND_ORE || block.getType() == Material.GOLD_ORE) {
                         boolean replace;
