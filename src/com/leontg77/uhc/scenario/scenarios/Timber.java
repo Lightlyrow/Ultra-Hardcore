@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import com.leontg77.uhc.scenario.Scenario;
+import com.leontg77.uhc.utils.BlockUtils;
 
 /**
  * Timber scenario class
@@ -37,7 +38,9 @@ public class Timber extends Scenario implements Listener {
 		block = block.getRelative(BlockFace.UP);
 		
 		while (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
+			BlockUtils.blockBreak(null, block);
 			block.breakNaturally();
+			
 			block = block.getRelative(BlockFace.UP);
 		}
 	}
