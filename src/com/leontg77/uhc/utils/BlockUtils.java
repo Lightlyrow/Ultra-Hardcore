@@ -36,12 +36,12 @@ public class BlockUtils {
 		// Loop all players that are in the world.
 		for (Player worldPlayer : block.getWorld().getPlayers()) {
 			// we do not want to display it to the breaker himself, that is done automaticly.
-        	if (worldPlayer == player) {
+        	if (player != null && worldPlayer == player) {
         		continue;
         	}
         	
         	// play the effect STEP_SOUND with the given block id at the blocks location.
-        	worldPlayer.playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
+        	worldPlayer.spigot().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId(), getDurability(block), 1.5f, 1.5f, 1.5f, 1, 10, 50);
         }
 	}
 	
