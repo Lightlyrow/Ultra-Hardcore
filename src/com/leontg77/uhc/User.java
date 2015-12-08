@@ -336,12 +336,22 @@ public class User {
 	}
 	
 	/**
-	 * Get the amount from the given stat.
+	 * Get the amount from the given stat as a int.
 	 * 
 	 * @param stat the stat getting.
 	 * @return The amount in a int form.
 	 */
-	public double getStat(Stat stat) {
+	public int getStat(Stat stat) {
+		return config.getInt("stats." + stat.name().toLowerCase(), 0);
+	}
+	
+	/**
+	 * Get the amount from the given stat as a double.
+	 * 
+	 * @param stat the stat getting.
+	 * @return The amount in a double form.
+	 */
+	public double getStatDouble(Stat stat) {
 		return config.getDouble("stats." + stat.name().toLowerCase(), 0);
 	}
 	
