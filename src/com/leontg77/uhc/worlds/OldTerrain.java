@@ -17,10 +17,12 @@ import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.generator.BlockPopulator;
 
 import com.google.common.collect.Lists;
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.utils.BlockUtils;
 
-public class OreLimiter extends BlockPopulator implements Listener {
-	private static OreLimiter instance = new OreLimiter();
+public class OldTerrain extends BlockPopulator implements Listener {
+	private static OldTerrain instance = new OldTerrain();
 	
     private static final int CHUNK_HEIGHT_LIMIT = 128;
     private static final int BLOCKS_PER_CHUNK = 16;
@@ -31,7 +33,7 @@ public class OreLimiter extends BlockPopulator implements Listener {
      * 
      * @return The instance.
      */
-	public static OreLimiter getInstance() {
+	public static OldTerrain getInstance() {
 		return instance;
 	}
     
@@ -50,6 +52,10 @@ public class OreLimiter extends BlockPopulator implements Listener {
 
     @Override
     public void populate(World world, Random rand, Chunk chunk) {
+    	if (!Game.getInstance().oldTerrain()) {
+    		return;
+    	}
+    	
         for (int x = 0; x < BLOCKS_PER_CHUNK; x++) {
             for (int z = 0; z < BLOCKS_PER_CHUNK; z++) {
                 for (int y = CHUNK_HEIGHT_LIMIT - 1; y > 0; y--) {
@@ -57,16 +63,18 @@ public class OreLimiter extends BlockPopulator implements Listener {
                     
                     OreLocation oreLocation = new OreLocation(block.getX(), block.getY(), block.getZ());
                     
+                    if (block.getType() == Material.STONE && BlockUtils.getDurability(block) != 0) {
+	                    block.setType(Material.AIR);
+	                    block.setType(Material.STONE);
+                    }
+                    
                     if (block.getType() == Material.DIAMOND_ORE || block.getType() == Material.GOLD_ORE) {
                         boolean replace;
                         
                         if (block.getType() == Material.GOLD_ORE) {
-                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 65;
-                        } else if (block.getType() == Material.DIAMOND_ORE) {
-                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 75;
+                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 80;
                         } else {
-                        	// return so it doesn't think it's not being set.
-                        	return;
+                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 75;
                         }
                         
                         OreTraverser oreTraverser = new OreTraverser();
