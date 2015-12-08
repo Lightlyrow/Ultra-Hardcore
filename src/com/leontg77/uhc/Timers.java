@@ -109,7 +109,7 @@ public class Timers {
 
 		new BukkitRunnable() {
 			public void run() {
-				PlayerUtils.broadcast(Main.PREFIX + "This is a §a" + GameUtils.getTeamSize() + game.getScenarios());
+				PlayerUtils.broadcast(Main.PREFIX + "This is a §a" + GameUtils.getTeamSize() + "- " + game.getScenarios());
 			}
 		}.runTaskLater(Main.plugin, 400);
 
