@@ -99,7 +99,7 @@ public class InventoryListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
     	InventoryView view = event.getView();
     	
-    	if (view.getTopInventory().getTitle().startsWith("Top 10")) {
+    	if (view.getTopInventory().getTitle().startsWith("Top")) {
     		event.setCancelled(true);
     		return;
     	}
