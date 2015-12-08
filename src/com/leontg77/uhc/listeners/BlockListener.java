@@ -88,6 +88,12 @@ public class BlockListener implements Listener {
 		
 		short damage = block.getState().getData().toItemStack().getDurability();
 		
+		BlockUtils.blockBreak(player, block);
+		BlockUtils.degradeDurabiliy(player);
+		
+		event.setCancelled(true);
+		block.setType(Material.AIR);
+		
 		if (block.getType() == Material.LEAVES) {
 			if (rand.nextInt(99) < 5) {
 				BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), BlockUtils.getSaplingFor(Material.LEAVES, damage));
