@@ -139,11 +139,11 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			if (args[1].equalsIgnoreCase("true")) {
 				game.setFFA(true);
 
-				PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + game.getScenarios() + "§7.");
+				PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + "- " + game.getScenarios() + "§7.");
 			} else if (args[1].equalsIgnoreCase("false")) {
 				game.setFFA(false);
 
-				PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + game.getScenarios() + "§7.");
+				PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + "- " + game.getScenarios() + "§7.");
 			} else {
 				sender.sendMessage(ChatColor.RED + "FFA can only be true or false, not " + args[1] + ".");
 			}
@@ -176,7 +176,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			break;
 		case HOST:
 			PlayerUtils.broadcast(Main.PREFIX + "The host has been changed to §a" + args[1] + "§7.");
-			game.setHost(args[1]);
+			game.setHost(PlayerUtils.getOfflinePlayer(args[1]).getUniqueId());
 			break;
 		case MATCHPOST:
 			PlayerUtils.broadcast(Main.PREFIX + "The matchpost has been changed to §a" + args[1] + "§7.");
@@ -241,7 +241,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			String scens = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
 			
 			game.setScenarios(scens);
-			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + game.getScenarios() + "§7.");
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + "- " + game.getScenarios() + "§7.");
 			break;
 		case SHEARRATES:
 			int shearRate;
@@ -267,7 +267,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			}
 			
 			game.setTeamSize(teamSize);
-			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + game.getScenarios() + "§7.");
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + "- " + game.getScenarios() + "§7.");
 			break;
 		case WORLD:
 			PlayerUtils.broadcast(Main.PREFIX + "The game will now be played in '§a" + args[1] + "§7'.");
