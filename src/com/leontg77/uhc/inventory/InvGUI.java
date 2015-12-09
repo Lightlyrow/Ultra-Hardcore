@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -355,7 +356,7 @@ public class InvGUI {
 				lore.add(" ");
 				lore.add("§8» §cScenario:");
 				
-				for (String scenario : settings.getHOF().getString(host + "." + target + ".scenarios", "Vanilla+").split(" ")) {
+				for (String scenario : settings.getHOF().getString(host + "." + target + ".scenarios", "Vanilla+").split(", ")) {
 					lore.add("§8» §7" + scenario);
 				}
 				
@@ -377,7 +378,7 @@ public class InvGUI {
 			prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
 			prevpage.setItemMeta(prevmeta);
 			
-			String name = GameUtils.getHostName(host);
+			String name = Bukkit.getOfflinePlayer(UUID.fromString(GameUtils.getHostUUID(host))).getName();
 			
 			ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
@@ -421,7 +422,7 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openConfigOptions(Player player) {
-		Inventory inv = Bukkit.getServer().createInventory(null, 45, "» §7Game config");
+		Inventory inv = Bukkit.getServer().createInventory(null, 54, "» §7Game config");
 		Game game = Game.getInstance();
 		
 		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
@@ -515,47 +516,59 @@ public class InvGUI {
 		healing.setItemMeta(healingMeta);
 		inv.setItem(26, healing);
 		
-		ItemStack shears = new ItemStack (Material.SHEARS);
-		ItemMeta shearsMeta = shears.getItemMeta();
-		shearsMeta.setDisplayName((game.shears() ? "§a" : "§c") + "Shears");
-		shears.setItemMeta(shearsMeta);
-		inv.setItem(36, shears);
-		
 		ItemStack ghast = new ItemStack (Material.GHAST_TEAR);
 		ItemMeta ghastMeta = ghast.getItemMeta();
 		ghastMeta.setDisplayName((game.ghastDropGold() ? "§a" : "§c") + "Ghast drop gold");
 		ghast.setItemMeta(ghastMeta);
-		inv.setItem(37, ghast);
+		inv.setItem(43, ghast);
 		
 		ItemStack melon = new ItemStack (Material.SPECKLED_MELON);
 		ItemMeta melonMeta = melon.getItemMeta();
 		melonMeta.setDisplayName((game.goldenMelonNeedsIngots() ? "§a" : "§c") + "Golden Melon needs ingots");
 		melon.setItemMeta(melonMeta);
-		inv.setItem(38, melon);
+		inv.setItem(44, melon);
+		
+		ItemStack shears = new ItemStack (Material.SHEARS);
+		ItemMeta shearsMeta = shears.getItemMeta();
+		shearsMeta.setDisplayName((game.shears() ? "§a" : "§c") + "Shears");
+		shears.setItemMeta(shearsMeta);
+		inv.setItem(45, shears);
+		
+		ItemStack terrain = new ItemStack (Material.GRASS);
+		ItemMeta terrainMeta = terrain.getItemMeta();
+		terrainMeta.setDisplayName((game.oldTerrain() ? "§a" : "§c") + "Old Terrain");
+		terrain.setItemMeta(terrainMeta);
+		inv.setItem(46, terrain);
+		
+		ItemStack bookshelves = new ItemStack (Material.BOOKSHELF);
+		ItemMeta bookMeta = bookshelves.getItemMeta();
+		bookMeta.setDisplayName((game.bookshelves() ? "§a" : "§c") + "Bookshelves");
+		bookshelves.setItemMeta(bookMeta);
+		inv.setItem(47, bookshelves);
 		
 		ItemStack tier2 = new ItemStack (Material.GLOWSTONE_DUST);
 		ItemMeta tier2Meta = tier2.getItemMeta();
 		tier2Meta.setDisplayName((game.tier2() ? "§a" : "§c") + "Tier 2");
 		tier2.setItemMeta(tier2Meta);
-		inv.setItem(41, tier2);
+		inv.setItem(50, tier2);
 		
 		ItemStack splash = new ItemStack (Material.POTION, 1, (short) 16424);
 		ItemMeta splashMeta = splash.getItemMeta();
 		splashMeta.setDisplayName((game.splash() ? "§a" : "§c") + "Splash");
 		splash.setItemMeta(splashMeta);
-		inv.setItem(42, splash);
+		inv.setItem(51, splash);
 		
 		ItemStack str = new ItemStack (Material.BLAZE_POWDER);
 		ItemMeta strMeta = str.getItemMeta();
 		strMeta.setDisplayName((game.strength() ? "§a" : "§c") + "Strength");
 		str.setItemMeta(strMeta);
-		inv.setItem(43, str);
+		inv.setItem(52, str);
 		
 		ItemStack nerf = new ItemStack (Material.POTION, 1, (short) 8233);
 		ItemMeta nerfMeta = nerf.getItemMeta();
 		nerfMeta.setDisplayName((game.nerfedStrength() ? "§a" : "§c") + "Nerfed Strength");
 		nerf.setItemMeta(nerfMeta);
-		inv.setItem(44, nerf);
+		inv.setItem(53, nerf);
 		
 		player.openInventory(inv);
 		
