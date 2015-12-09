@@ -3,6 +3,7 @@ package com.leontg77.uhc.cmds;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.inventory.InvGUI;
@@ -30,7 +32,7 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		Player player = (Player) sender;
-		String host = GameUtils.getCurrentHost();
+		String host = GameUtils.getHost(Bukkit.getOfflinePlayer(Game.getInstance().getHost()).getName());
 		
 		Settings settings = Settings.getInstance();
 		InvGUI inv = InvGUI.getInstance();
