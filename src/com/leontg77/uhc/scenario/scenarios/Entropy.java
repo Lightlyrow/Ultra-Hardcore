@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.uhc.Main;
+import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.utils.PlayerUtils;
 
@@ -29,6 +30,10 @@ public class Entropy extends Scenario {
 		task = new BukkitRunnable() {
 			public void run() {
 				for (Player online : PlayerUtils.getPlayers()) {
+					if (Spectator.getInstance().isSpectating(online)) {
+						continue;
+					}
+					
 					if (online.getLevel() == 0) {
 						PlayerUtils.broadcast("§c" + online.getName() + " ran out of energy!");
 						
