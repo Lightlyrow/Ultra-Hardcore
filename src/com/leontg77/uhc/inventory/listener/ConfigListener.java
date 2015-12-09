@@ -354,6 +354,44 @@ public class ConfigListener implements Listener {
 			return;
 		}
 		
+		if (name.equalsIgnoreCase("Bookshelves")) {
+			if (game.bookshelves()) {
+				PlayerUtils.broadcast(Main.PREFIX + "Bookshelves has been disabled.");
+				game.setBookshelves(false);
+				
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName("§c" + name);
+				item.setItemMeta(meta);
+			} else {
+				PlayerUtils.broadcast(Main.PREFIX + "Bookshelves has been enabled.");
+				game.setBookshelves(true);
+				
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName("§a" + name);
+				item.setItemMeta(meta);
+			}
+			return;
+		}
+		
+		if (name.equalsIgnoreCase("Old Terrain")) {
+			if (game.oldTerrain()) {
+				PlayerUtils.broadcast(Main.PREFIX + "The terrain will now generate like in 1.8");
+				game.setOldTerrain(false);
+				
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName("§c" + name);
+				item.setItemMeta(meta);
+			} else {
+				PlayerUtils.broadcast(Main.PREFIX + "The terrain will now generate like in 1.7");
+				game.setOldTerrain(true);
+				
+				ItemMeta meta = item.getItemMeta();
+				meta.setDisplayName("§a" + name);
+				item.setItemMeta(meta);
+			}
+			return;
+		}
+		
 		if (name.equalsIgnoreCase("Ghast drop gold")) {
 			if (game.ghastDropGold()) {
 				PlayerUtils.broadcast(Main.PREFIX + "Ghasts will now drop ghast tears.");
