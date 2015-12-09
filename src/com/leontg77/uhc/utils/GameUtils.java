@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import com.leontg77.uhc.Game;
+import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.Spectator;
 import com.leontg77.uhc.State;
 
@@ -54,7 +55,7 @@ public class GameUtils {
 		List<Player> list = new ArrayList<Player>();
     	Spectator spec = Spectator.getInstance();
 		
-		for (Player online : Bukkit.getServer().getOnlinePlayers()) {
+		for (Player online : PlayerUtils.getPlayers()) {
 			if (spec.isSpectating(online) || !getGameWorlds().contains(online.getWorld())) {
 				continue;
 			}
@@ -74,7 +75,7 @@ public class GameUtils {
 		State current = State.getState();
 		Game game = Game.getInstance();
 
-		if (game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
+		if (game.isRecordedRound() || Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
 			return "No games running";
 		}
 		
@@ -156,47 +157,73 @@ public class GameUtils {
 			return "Chosen To" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
 		}
 	}
-	
+
 	/**
-	 * Get the current host hof name.
+	 * Get the hof name for the given host.
 	 * 
+	 * @param host The host.
 	 * @return The hof name.
 	 */
-	public static String getCurrentHost() {
-		Game game = Game.getInstance();
-		String host = game.getHost();
+	public static String getHost(String name) {
+		Settings settings = Settings.getInstance();
 		
-		if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("LeonTG")) {
+		String host = PlayerUtils.getOfflinePlayer(name).getUniqueId().toString();
+		
+		for (String path : settings.getHOF().getKeys(false)) {
+			if (path.equalsIgnoreCase(name)) {
+				return name;
+			}
+		}
+		
+		if (host.equals("8b2b2e07-b694-4bd0-8f1b-ba99a267be41")) {
 			return "Leon";
 		} 
-		else if (host.equalsIgnoreCase("PolarBlunk")) {
+		
+		if (host.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
 			return "Polar";
 		} 
-		else if (host.equalsIgnoreCase("Itz_Isaac")) {
+		
+		if (host.equals("eb4ac2dc-1459-4025-9741-37834dd514e2")) {
 			return "Isaac";
 		}
-		else if (host.equalsIgnoreCase("Badfan")) {
-			return "Badfan";
-		}
-		else if (host.equalsIgnoreCase("AxlurUSC")) {
+		
+		if (host.equals("3be33527-be7e-4eb2-8b66-5b76d3d7ecdc")) {
 			return "Axlur";
 		}
-		else if (host.equalsIgnoreCase("LimitDTW")) {
+		
+		if (host.equals("37d49a6e-d4f9-4f89-84f6-fef07e55847f")) {
 			return "Limit";
 		}
-		else if (host.equalsIgnoreCase("BLA2K14")) {
+		
+		if (host.equals("dad4224c-287b-4475-b4b2-68d3509e9e42")) {
+			return "Badfan";
+		}
+		
+		if (host.equals("9c1feada-07b9-4880-81c3-196248ce6a73")) {
 			return "BLA2K14";
 		}
-		else if (host.equalsIgnoreCase("KaWoof")) {
+		
+		if (host.equals("395b6cdd-6500-4a6d-a133-61d89b506512")) {
 			return "MajorWoof";
 		}
-		else if (host.equalsIgnoreCase("GetNicked")) {
-			return "Pyro";
-		}
-		else if (host.equalsIgnoreCase("FazedMC")) {
+		
+		if (host.equals("01f4fabc-beeb-46ea-8858-c593711a5688")) {
 			return "Fazed";
 		}
-		return host;
+		
+		if (host.equals("afd0f4b1-9102-46bd-b6b4-030528dab5a8")) {
+			return "Pyro";
+		}
+		
+		if (host.equals("3ed75695-83e1-48cc-9c1c-70a97b710843")) {
+			return "Cubehh";
+		}
+		
+		if (host.equals("573dd0a7-5303-4cd9-9e04-d31ae79403b6")) {
+			return "FSP";
+		}
+		
+		return name;
 	}
 
 	/**
@@ -205,77 +232,55 @@ public class GameUtils {
 	 * @param host The host.
 	 * @return The hof name.
 	 */
-	public static String getHost(String host) {
-		if (host.equalsIgnoreCase("LeonTG77") || host.equalsIgnoreCase("Leon") || host.equalsIgnoreCase("LeonTG")) {
-			return "Leon";
+	public static String getHostUUID(String name) {
+		if (name.equalsIgnoreCase("Leon")) {
+			return "8b2b2e07-b694-4bd0-8f1b-ba99a267be41";
 		} 
-		else if (host.equalsIgnoreCase("Polar") || host.equalsIgnoreCase("PolarBlunk")) {
-			return "Polar";
+		
+		if (name.equalsIgnoreCase("Polar")) {
+			return "02dc5178-f7ec-4254-8401-1a57a7442a2f";
 		} 
-		else if (host.equalsIgnoreCase("Itz_Isaac") || host.equalsIgnoreCase("Isaac")) {
-			return "Isaac";
+		
+		if (name.equalsIgnoreCase("Isaac")) {
+			return "eb4ac2dc-1459-4025-9741-37834dd514e2";
 		}
-		else if (host.equalsIgnoreCase("axlur") || host.equalsIgnoreCase("AxlurUHC") || host.equalsIgnoreCase("AxlurUSC")) {
-			return "Axlur";
+		
+		if (name.equalsIgnoreCase("Axlur")) {
+			return "3be33527-be7e-4eb2-8b66-5b76d3d7ecdc";
 		}
-		else if (host.equalsIgnoreCase("Limit") || host.equalsIgnoreCase("LimitDTW")) {
-			return "Limit";
+		
+		if (name.equalsIgnoreCase("Limit")) {
+			return "37d49a6e-d4f9-4f89-84f6-fef07e55847f";
 		}
-		else if (host.equalsIgnoreCase("Badfan") || host.equalsIgnoreCase("BadfanMC")) {
-			return "Badfan";
+		
+		if (name.equalsIgnoreCase("Badfan")) {
+			return "dad4224c-287b-4475-b4b2-68d3509e9e42";
 		}
-		else if (host.equalsIgnoreCase("BLA2K14")) {
-			return "BLA2K14";
+		
+		if (name.equalsIgnoreCase("BLA2K14")) {
+			return "9c1feada-07b9-4880-81c3-196248ce6a73";
 		}
-		else if (host.equalsIgnoreCase("MajorWoof") || host.equalsIgnoreCase("Major") || host.equalsIgnoreCase("KaWoof")) {
-			return "MajorWoof";
+		
+		if (name.equalsIgnoreCase("MajorWoof")) {
+			return "395b6cdd-6500-4a6d-a133-61d89b506512";
 		}
-		else if (host.equalsIgnoreCase("FazedMC") || host.equalsIgnoreCase("Fazed")) {
-			return "Fazed";
+		
+		if (name.equalsIgnoreCase("Fazed")) {
+			return "01f4fabc-beeb-46ea-8858-c593711a5688";
 		}
-		else if (host.equalsIgnoreCase("GetNicked") || host.equalsIgnoreCase("Pyro")) {
-			return "Pyro";
+		
+		if (name.equalsIgnoreCase("Pyro")) {
+			return "afd0f4b1-9102-46bd-b6b4-030528dab5a8";
 		}
-		return host;
-	}
-
-	/**
-	 * Get the host name for the given alt name.
-	 * 
-	 * @param host The host.
-	 * @return The hof name.
-	 */
-	public static String getHostName(String host) {
-		if (host.equalsIgnoreCase("Leon")) {
-			return "LeonTG77";
-		} 
-		else if (host.equalsIgnoreCase("Polar")) {
-			return "PolarBlunk";
-		} 
-		else if (host.equalsIgnoreCase("Isaac")) {
-			return "Itz_Isaac";
+		
+		if (name.equalsIgnoreCase("Cubehh")) {
+			return "3ed75695-83e1-48cc-9c1c-70a97b710843";
 		}
-		else if (host.equalsIgnoreCase("Badfan")) {
-			return "Badfan";
+		
+		if (name.equalsIgnoreCase("FSP")) {
+			return "573dd0a7-5303-4cd9-9e04-d31ae79403b6";
 		}
-		else if (host.equalsIgnoreCase("Axlur")) {
-			return "Haxlur";
-		}
-		else if (host.equalsIgnoreCase("BLA2K14")) {
-			return "BLA2K14";
-		}
-		else if (host.equalsIgnoreCase("Limit")) {
-			return "LimitDTW";
-		}
-		else if (host.equalsIgnoreCase("MajorWoof")) {
-			return "KaWoof";
-		}
-		else if (host.equalsIgnoreCase("Fazed")) {
-			return "FazedMC";
-		}
-		else if (host.equalsIgnoreCase("Pyro")) {
-			return "GetNicked";
-		}
-		return host;
+		
+		return name;
 	}
 }
