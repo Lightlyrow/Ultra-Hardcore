@@ -41,7 +41,7 @@ public class BlockUtils {
         	}
         	
         	// play the effect STEP_SOUND with the given block id at the blocks location.
-        	worldPlayer.spigot().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId(), getDurability(block), 1.5f, 1.5f, 1.5f, 1, 10, 50);
+        	worldPlayer.playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
         }
 	}
 	
@@ -164,7 +164,8 @@ public class BlockUtils {
 				return new ItemStack(Material.SAPLING, 1, (short) 3);
 			}
 		}
-		return null;
+		
+		return new ItemStack(Material.SAPLING);
 	}
 	
 	/**
