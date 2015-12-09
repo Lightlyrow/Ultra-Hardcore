@@ -136,7 +136,7 @@ import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.AntiStripmine;
 import com.leontg77.uhc.worlds.BiomeSwap;
-import com.leontg77.uhc.worlds.OreLimiter;
+import com.leontg77.uhc.worlds.OldTerrain;
 import com.leontg77.uhc.worlds.WorldManager;
 
 /**
@@ -183,7 +183,7 @@ public class Main extends JavaPlugin {
 		Settings.getInstance().setup();
 	    
 		WorldManager.getInstance().loadWorlds();
-		OreLimiter.getInstance().setup();
+		OldTerrain.getInstance().setup();
 		
 		AntiStripmine.getInstance().setup();
 		BiomeSwap.getInstance().setup();
