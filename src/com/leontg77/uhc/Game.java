@@ -1,5 +1,7 @@
 package com.leontg77.uhc;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -108,16 +110,16 @@ public class Game {
 	/**
 	 * Set the host of the game.
 	 * 
-	 * @param host The new host.
+	 * @param uuid The new host.
 	 */
-	public void setHost(String host) {
-		settings.getConfig().set("host", host);
+	public void setHost(UUID uuid) {
+		settings.getConfig().set("host", uuid.toString());
 		settings.saveConfig();
 		
 		if (!isRecordedRound()) {
 			BoardManager board = BoardManager.getInstance();
 			
-			board.kills.setDisplayName("§4§lUHC §r§8- §7§o" + host + "§r");
+			board.kills.setDisplayName("§4§lUHC §r§8- §7§o" + Bukkit.getOfflinePlayer(uuid).getName() + "§r");
 		}
 		
 		for (Player online : PlayerUtils.getPlayers()) {
@@ -132,8 +134,8 @@ public class Game {
 	 * 
 	 * @return The host.
 	 */
-	public String getHost() {
-		return settings.getConfig().getString("host", "None");
+	public UUID getHost() {
+		return UUID.fromString(settings.getConfig().getString("host", "None"));
 	}
 
 	/**
@@ -720,5 +722,23 @@ public class Game {
 
 	public boolean hardcoreHearts() {
 		return settings.getConfig().getBoolean("feature.hardcoreHearts.enabled", true);
+	}
+
+	public void setOldTerrain(boolean enable) {
+		settings.getConfig().set("feature.oldTerrain.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean oldTerrain() {
+		return settings.getConfig().getBoolean("feature.oldTerrain.enabled", true);
+	}
+
+	public void setBookshelves(boolean enable) {
+		settings.getConfig().set("feature.bookshelves.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean bookshelves() {
+		return settings.getConfig().getBoolean("feature.bookshelves.enabled", true);
 	}
 }
