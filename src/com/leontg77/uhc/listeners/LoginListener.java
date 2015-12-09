@@ -143,7 +143,7 @@ public class LoginListener implements Listener {
 				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
 			} 
 			else {
-				player.sendMessage("§8» §7 Host: §a" + game.getHost());
+				player.sendMessage("§8» §7 Host: §a" + Bukkit.getOfflinePlayer(game.getHost()).getName());
 				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + game.getScenarios());
 			}
 			
@@ -236,7 +236,7 @@ public class LoginListener implements Listener {
 			
 			String teamSize = GameUtils.getTeamSize();
 			
-			if (teamSize.startsWith("No") || game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
+			if (teamSize.startsWith("No") || game.isRecordedRound() || Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
 				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
 			} else if (teamSize.startsWith("Open")) {
 				Bukkit.setWhitelist(false);
