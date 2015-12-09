@@ -3,6 +3,7 @@ package com.leontg77.uhc.listeners;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -215,7 +216,7 @@ public class EntityListener implements Listener {
 						User user = User.get(player);
 						Game game = Game.getInstance();
 						
-						if (game.isRecordedRound() || game.getHost().equalsIgnoreCase("LeonsPrivate")) {
+						if (game.isRecordedRound() || Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
 							return;
 						}
 						
