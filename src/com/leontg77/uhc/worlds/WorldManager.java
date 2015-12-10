@@ -72,7 +72,7 @@ public class WorldManager {
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		creator.environment(environment);
-		creator.type(Game.getInstance().oldTerrain() ? WorldType.CUSTOMIZED : type);
+		creator.type(type);
 		creator.seed(seed);
 		
 		if (Game.getInstance().oldTerrain()) {
