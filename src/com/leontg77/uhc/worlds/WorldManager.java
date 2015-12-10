@@ -72,8 +72,12 @@ public class WorldManager {
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		creator.environment(environment);
-		creator.type(type);
+		creator.type(Game.getInstance().oldTerrain() ? WorldType.CUSTOMIZED : type);
 		creator.seed(seed);
+		
+		if (Game.getInstance().oldTerrain()) {
+			creator.generatorSettings("{\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
+		}
 		
 		World world = creator.createWorld();
 		world.setDifficulty(Difficulty.HARD);
