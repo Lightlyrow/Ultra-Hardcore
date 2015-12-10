@@ -11,6 +11,7 @@ import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 
+import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Settings;
 import com.leontg77.uhc.utils.FileUtils;
 import com.leontg77.uhc.utils.LocationUtils;
@@ -141,6 +142,10 @@ public class WorldManager {
 		
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
+		
+		if (Game.getInstance().oldTerrain()) {
+			creator.generatorSettings("{\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
+		}
 		
 		long seed = settings.getWorlds().getLong("worlds." + name + ".seed", 2347862349786234l);
 		Environment environment = Environment.valueOf(settings.getWorlds().getString("worlds." + name + ".environment", Environment.NORMAL.name()));
