@@ -55,7 +55,7 @@ public class Arena {
 	private List<Player> players = new ArrayList<Player>();
 	
 	// make a list of found seeds that are good for the arena.
-	/* CHRISMAS SEED!!!! private List<Long> seeds = ImmutableList.of(-4978851967201209985l, -4967553104279076810l, -8429542510557232451l, -3176074841184868038l, -397143620226990283l, -6555102318239067639l, 6776651824076158879l);*/
+	/* CHRISTMAS SEED!!!! private List<Long> seeds = ImmutableList.of(-4978851967201209985l, -4967553104279076810l, -8429542510557232451l, -3176074841184868038l, -397143620226990283l, -6555102318239067639l, 6776651824076158879l);*/
 
 	/**
 	 * Gets the instance of the class.
