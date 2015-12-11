@@ -34,7 +34,7 @@ public class WorldCommand implements CommandExecutor {
 			
 			if (args[0].equalsIgnoreCase("create")) {
 				if (args.length < 5) {
-					sender.sendMessage(Main.PREFIX + "Usage: /world create <host> <mapradius> <nether> <end> <worldtype> <seed>");
+					sender.sendMessage(Main.PREFIX + "Usage: /world create <host> <mapradius> <nether> <end> [worldtype] [seed]");
 					return true;
 				}
 				
