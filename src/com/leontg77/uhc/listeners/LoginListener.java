@@ -236,7 +236,7 @@ public class LoginListener implements Listener {
 			
 			String teamSize = GameUtils.getTeamSize();
 			
-			if (teamSize.startsWith("No") || game.isRecordedRound() || Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
+			if (teamSize.startsWith("No") || game.isRecordedRound() || GameUtils.getHostName(game.getHost()).equalsIgnoreCase("LeonsPrivate")) {
 				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
 			} else if (teamSize.startsWith("Open")) {
 				Bukkit.setWhitelist(false);
