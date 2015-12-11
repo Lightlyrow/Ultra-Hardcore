@@ -9,6 +9,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
@@ -156,6 +157,8 @@ public class Cryophobia extends Scenario implements Listener {
 		
 		event.setCancelled(true);
 		entity.launchProjectile(Snowball.class, proj.getVelocity());
+		
+		entity.getWorld().playSound(entity.getLocation(), Sound.SHOOT_ARROW, 1, 1);
 	}
 
 	@EventHandler
