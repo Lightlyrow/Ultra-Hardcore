@@ -54,7 +54,7 @@ public class Fireworks {
 		}
 
 		meta.addEffect(builder.build());
-		meta.setPower(1);
+		meta.setPower(ran.nextInt(2) + 1);
 		item.setFireworkMeta(meta);
 	}
 	
