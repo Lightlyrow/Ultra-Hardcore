@@ -7,13 +7,9 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Chicken;
 import org.bukkit.entity.ThrownPotion;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
@@ -27,7 +23,7 @@ import com.leontg77.uhc.utils.BlockUtils;
 /**
  * Armageddon scenario class.
  * 
- * @author LeonTG77
+ * @author Bergasms, modified by LeonTG77.
  */
 public class Armageddon extends Scenario implements Listener {
 	private World world = Game.getInstance().getWorld();
@@ -83,20 +79,28 @@ public class Armageddon extends Scenario implements Listener {
 			switch (itemChoice) {
 			case 0:
 				BlockUtils.dropItem(dropFrom, new ItemStack(Material.GOLD_INGOT, 1));
+				break;
 			case 1:
 				BlockUtils.dropItem(dropFrom, new ItemStack(Material.DIAMOND, 1));
+				break;
 			case 2:
-				BlockUtils.dropItem(dropFrom, new ItemStack(Material.NETHER_WARTS, 1));
+				BlockUtils.dropItem(dropFrom, new ItemStack(Material.NETHER_STALK, 1));
+				break;
 			case 3:
 				BlockUtils.dropItem(dropFrom, new ItemStack(Material.BLAZE_ROD, 1));
+				break;
 			case 4:
 				BlockUtils.dropItem(dropFrom, new ItemStack(Material.STRING, 3));
+				break;
 			case 5:
 				dropChunk.getWorld().spawnFallingBlock(dropFrom, Material.MELON_BLOCK, (byte) 0);
+				break;
 			case 6:
 				dropChunk.getWorld().spawnFallingBlock(dropFrom, Material.IRON_BLOCK, (byte) 0);
+				break;
 			case 7:
 				dropChunk.getWorld().spawnFallingBlock(dropFrom, Material.MOB_SPAWNER, (byte) 0);
+				break;
 			case 8:
 				BlockUtils.dropItem(dropFrom, new ItemStack(Material.BLAZE_POWDER, 1));
 			case 9:
@@ -116,29 +120,16 @@ public class Armageddon extends Scenario implements Listener {
 		int itemChoice = rand.nextInt(30);
 		
 		if (itemChoice > 20) {
-			dropPotion(dropChunk, dropFrom, PotionType.INSTANT_DAMAGE, rand.nextInt(2));
+			dropPotion(dropChunk, dropFrom, PotionType.INSTANT_DAMAGE, rand.nextInt(1));
 		} else if (itemChoice > 15) {
-			dropPotion(dropChunk, dropFrom, PotionType.POISON, rand.nextInt(2));
+			dropPotion(dropChunk, dropFrom, PotionType.POISON, rand.nextInt(1));
 		} else if (itemChoice > 10) {
-			dropPotion(dropChunk, dropFrom, PotionType.WEAKNESS, rand.nextInt(2));
+			dropPotion(dropChunk, dropFrom, PotionType.WEAKNESS, rand.nextInt(1));
 		} else if (itemChoice > 5) {
-			dropPotion(dropChunk, dropFrom, PotionType.SLOWNESS, rand.nextInt(2));
+			dropPotion(dropChunk, dropFrom, PotionType.SLOWNESS, rand.nextInt(1));
 		} else {
 			PotionType[] types = PotionType.values();
-			dropPotion(dropChunk, dropFrom, types[rand.nextInt(types.length)], rand.nextInt(2));
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void PotionSplashEvent(PotionSplashEvent event) {
-		if (task == -1) {
-			return;
-		}
-		
-		LivingEntity source = (LivingEntity) event.getPotion().getShooter();
-		
-		if (source != null && source.toString() != null && source.toString().equalsIgnoreCase("CraftChicken")) {
-			source.setHealth(0);
+			dropPotion(dropChunk, dropFrom, types[rand.nextInt(types.length)], rand.nextInt(1));
 		}
 	}
 
@@ -155,15 +146,17 @@ public class Armageddon extends Scenario implements Listener {
 		}
 		
 		ItemStack itemStack = potion.toItemStack(1);
-
-		LivingEntity entity = (LivingEntity) dropChunk.getWorld().spawnEntity(dropFrom, EntityType.CHICKEN);
-		ThrownPotion pot = (ThrownPotion) entity.launchProjectile(ThrownPotion.class, new Vector(0, -1, 0));
 		
-		pot.setItem(itemStack);
-		pot.setVelocity(new Vector(0, -1, 0));
-		
-		if (pot.getItem().getType() == Material.AIR) {
-			pot.remove();
+		if (itemStack.getType() == Material.AIR) {
+			return;
 		}
+
+		Chicken entity = dropChunk.getWorld().spawn(dropFrom, Chicken.class);
+		ThrownPotion pot = entity.launchProjectile(ThrownPotion.class, new Vector(0, -1, 0));
+		
+		pot.setVelocity(new Vector(0, -1, 0));
+		pot.setItem(itemStack);
+		
+		entity.setHealth(0);
 	}
 }
