@@ -70,12 +70,22 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
        	}
 		
        	if (args[0].equalsIgnoreCase("on")) {
+       		if (Bukkit.hasWhitelist()) {
+       			sender.sendMessage(Main.PREFIX + "The whitelist is already on.");
+       			return true;
+       		}
+       		
    			PlayerUtils.broadcast(Main.PREFIX + "The whitelist is now on");
    			
    			Bukkit.getServer().setWhitelist(true);
    			State.setState(State.CLOSED);
    		} 
    		else if (args[0].equalsIgnoreCase("off")) {
+       		if (!Bukkit.hasWhitelist()) {
+       			sender.sendMessage(Main.PREFIX + "The whitelist is not on.");
+       			return true;
+       		}
+       		
    			PlayerUtils.broadcast(Main.PREFIX + "The whitelist is now off");
    			
    			Bukkit.getServer().setWhitelist(false);
@@ -90,6 +100,11 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
    			PlayerUtils.broadcast(Main.PREFIX + "All players has been whitelisted.");
    		} 
    		else if (args[0].equalsIgnoreCase("clear")) {
+   			if (Bukkit.getWhitelistedPlayers().size() <= 0) {
+		    	sender.sendMessage(Main.PREFIX + "There are no whitelisted players.");
+				return true;
+			}
+   			
    			for (OfflinePlayer whitelisted : Bukkit.getWhitelistedPlayers()) {
    				whitelisted.setWhitelisted(false);
    			}
