@@ -98,7 +98,7 @@ public class EndCommand implements CommandExecutor {
 		PlayerUtils.broadcast(Main.PREFIX + "Congrats on the win and thanks for playing!");
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		String host = GameUtils.getHost(Bukkit.getOfflinePlayer(game.getHost()).getName());
+		String host = GameUtils.getHostConfigName(GameUtils.getHostName(game.getHost()));
 		
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		Date date = new Date();

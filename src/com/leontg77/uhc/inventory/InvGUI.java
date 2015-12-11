@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -378,21 +377,22 @@ public class InvGUI {
 			prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
 			prevpage.setItemMeta(prevmeta);
 			
-			String name = Bukkit.getOfflinePlayer(UUID.fromString(GameUtils.getHostUUID(host))).getName();
+			String name = GameUtils.getHostName(GameUtils.getHostConfigUUID(host));
 			
 			ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
 			headMeta.setDisplayName("§8» §6Host Info §8«");
 			headMeta.setOwner(name);
-			ArrayList<String> hlore = new ArrayList<String>();
-			hlore.add(" ");
-			hlore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host).getKeys(false).size());
-			hlore.add("§8» §7Rank: §6" + NameUtils.fixString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
-			hlore.add(" ");
-			hlore.add("§8» §7Host name: §6" + host);
-			hlore.add("§8» §7IGN: §6" + name);
-			hlore.add(" ");
-			headMeta.setLore(hlore);
+			
+			ArrayList<String> headLore = new ArrayList<String>();
+			headLore.add(" ");
+			headLore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host).getKeys(false).size());
+			headLore.add("§8» §7Rank: §6" + NameUtils.fixString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+			headLore.add(" ");
+			headLore.add("§8» §7Host name: §6" + host);
+			headLore.add("§8» §7IGN: §6" + name);
+			headLore.add(" ");
+			headMeta.setLore(headLore);
 			head.setItemMeta(headMeta);
 			
 			inv.setItem(49, head);

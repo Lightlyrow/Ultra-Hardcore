@@ -381,7 +381,7 @@ public class GameInfo extends InvGUI implements Listener {
 		int i = 1;
 		int j = -1;
 		
-		for (FileConfiguration config : FileUtils.files) {
+		for (FileConfiguration config : FileUtils.getUserFiles()) {
 			if (config.getString("rank").equals(Rank.OWNER.name())) {
 				hostL.add(config.getString("username"));
 			}

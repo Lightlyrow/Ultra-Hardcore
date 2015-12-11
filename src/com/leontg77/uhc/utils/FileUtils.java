@@ -17,19 +17,22 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author LeonTG77
  */
 public class FileUtils {
-	public static List<FileConfiguration> files = new ArrayList<FileConfiguration>();
 	
 	/**
-	 * Update the files list if any new ones came.
+	 * Get a list of all the user file configurations.
+	 * 
+	 * @return The list of file configurations.
 	 */
-	public static void updateFiles() {
+	public static List<FileConfiguration> getUserFiles() {
 		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 		
-		files.clear();
+		List<FileConfiguration> files = new ArrayList<FileConfiguration>();
 		
 		for (File file : folder.listFiles()) {
 			files.add(YamlConfiguration.loadConfiguration(file));
 		}
+		
+		return files;
 	}
 	
 	/**
