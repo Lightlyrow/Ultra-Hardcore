@@ -43,7 +43,7 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 			Inventory inv = Bukkit.createInventory(null, 27, "Top players");
 			
 			for (Stat stat : Stat.values()) {
-				for (FileConfiguration config : FileUtils.files) {
+				for (FileConfiguration config : FileUtils.getUserFiles()) {
 					String name = config.getString("username");
 					int number = config.getInt("stats." + stat.name().toLowerCase());
 					
@@ -87,7 +87,7 @@ public class TopCommand implements CommandExecutor, TabCompleter {
 		
 		List<String> data = new ArrayList<String>();
 		
-		for (FileConfiguration config : FileUtils.files) {
+		for (FileConfiguration config : FileUtils.getUserFiles()) {
 			String name = config.getString("username");
 			int number = config.getInt("stats." + stat.name().toLowerCase());
 			
