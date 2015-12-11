@@ -45,7 +45,7 @@ public class Announcer {
 		messages.add("You can view the hall of fame with §a/hof§7.");
 		messages.add("If you have an questions, use §a/helpop§7.");
 		messages.add("You can find the match post by doing §a/post§7.");
-		messages.add("The server runs off a custom uhc plugin by §6LeonTG77§7.");
+		messages.add("The server runs off a custom UHC plugin by §6LeonTG77§7.");
 		messages.add("Wonder if you are lagging? Use §a/ms §7or §a/tps§7.");
 		messages.add("Follow our twitter for games and updates, §a@ArcticUHC§7!");
 		messages.add("You can apply for a rank at §6http://goo.gl/forms/O6tklNcrEu");
