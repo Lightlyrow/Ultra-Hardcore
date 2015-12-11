@@ -13,14 +13,12 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.generator.BlockPopulator;
 
 import com.google.common.collect.Lists;
 import com.leontg77.uhc.Game;
 import com.leontg77.uhc.Main;
-import com.leontg77.uhc.utils.BlockUtils;
 
 public class OldTerrain extends BlockPopulator implements Listener {
 	private static OldTerrain instance = new OldTerrain();
@@ -50,27 +48,6 @@ public class OldTerrain extends BlockPopulator implements Listener {
         Bukkit.getLogger().log(Level.INFO, "World init detected! OreLimiter");
         event.getWorld().getPopulators().add(this);
     }
-    
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void on(final ChunkPopulateEvent event) {
-    	if (!Game.getInstance().oldTerrain()) {
-    		return;
-    	}
-    	
-    	Chunk chunk = event.getChunk();
-    	
-    	for (int x = 0; x < BLOCKS_PER_CHUNK; x++) {
-            for (int z = 0; z < BLOCKS_PER_CHUNK; z++) {
-                for (int y = CHUNK_HEIGHT_LIMIT - 1; y > 0; y--) {
-                    Block block = chunk.getBlock(x, y, z);
-                    
-                    if (block.getType() == Material.STONE && BlockUtils.getDurability(block) != 0) {
-                    	block.setType(Material.AIR);
-                    }
-                }
-            }
-        }
-    }
 
 	@Override
     public void populate(World world, Random rand, Chunk chunk) {
@@ -88,7 +65,7 @@ public class OldTerrain extends BlockPopulator implements Listener {
                         boolean replace;
                         
                         if (block.getType() == Material.GOLD_ORE) {
-                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 80;
+                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 75;
                         } else {
                         	replace = rand.nextInt(RANDOM_BOUNDS) >= 75;
                         }
