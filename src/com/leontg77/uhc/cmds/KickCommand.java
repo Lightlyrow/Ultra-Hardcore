@@ -66,7 +66,7 @@ public class KickCommand implements CommandExecutor {
             return true;
 		}
     	
-    	PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been kicked for §a" + msg);
+    	PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been kicked for §a" + msg, "uhc.kick");
     	target.kickPlayer("§8» §7" + msg + " §8«");
 		return true;
 	}
