@@ -125,7 +125,7 @@ public class Parkour implements Listener {
 		Entity point;
 		
 		try {
-			point = PlayerUtils.getNearby(event.getTo(), 1).get(0);
+			point = PlayerUtils.getNearby(event.getTo(), 0.5).get(0);
 		} catch (Exception e) {
 			return;
 		}
