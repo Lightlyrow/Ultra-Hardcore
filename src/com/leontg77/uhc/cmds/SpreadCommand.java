@@ -180,8 +180,8 @@ public class SpreadCommand implements CommandExecutor {
 					
 						int index = 0;
 						
-						for (OfflinePlayer online : Bukkit.getServer().getWhitelistedPlayers()) {
-							scatterLocs.put(online.getName(), loc.get(index));
+						for (OfflinePlayer wld : Bukkit.getServer().getWhitelistedPlayers()) {
+							scatterLocs.put(wld.getName(), loc.get(index));
 							index++;
 						}
 					}
@@ -225,6 +225,12 @@ public class SpreadCommand implements CommandExecutor {
 									
 									public void run() {
 										if (i < names.size()) {
+											if (names.get(i) == null) {
+												PlayerUtils.broadcast(Main.PREFIX + "- §4An error occured while scattering a player.");
+												i++;
+												return;
+											}
+											
 											Player scatter = Bukkit.getServer().getPlayer(names.get(i));
 											
 											if (scatter == null) {
