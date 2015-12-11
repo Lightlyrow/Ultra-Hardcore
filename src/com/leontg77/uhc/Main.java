@@ -131,7 +131,6 @@ import com.leontg77.uhc.scenario.Scenario;
 import com.leontg77.uhc.scenario.ScenarioManager;
 import com.leontg77.uhc.ubl.UBL;
 import com.leontg77.uhc.ubl.UBLListener;
-import com.leontg77.uhc.utils.FileUtils;
 import com.leontg77.uhc.utils.NumberUtils;
 import com.leontg77.uhc.utils.PlayerUtils;
 import com.leontg77.uhc.worlds.AntiStripmine;
@@ -200,7 +199,6 @@ public class Main extends JavaPlugin {
 		TeamManager.getInstance().setup();
 		
 		Game game = Game.getInstance();
-		FileUtils.updateFiles();
 		
 		recoverData();
 		addRecipes();
