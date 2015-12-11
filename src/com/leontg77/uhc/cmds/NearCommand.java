@@ -28,14 +28,25 @@ public class NearCommand implements CommandExecutor {
 		Spectator spec = Spectator.getInstance();
 		Player player = (Player) sender;
 		
-		if (!sender.hasPermission("uhc.invsee") && !spec.isSpectating(player)) {
+		if (!sender.hasPermission("uhc.near") && !spec.isSpectating(player)) {
 			player.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
 		StringBuilder nearList = new StringBuilder("");
 		
-		for (Entity near : PlayerUtils.getNearby(player.getLocation(), 200)) {
+		int radius = 200;
+		
+		if (args.length > 0) {
+			try {
+				radius = Integer.parseInt(args[0]);
+			} catch (Exception e) {
+				sender.sendMessage(ChatColor.RED + "'" + args[0] + "' is not a vaild radius.");
+				return true;
+			}
+		}
+		
+		for (Entity near : PlayerUtils.getNearby(player.getLocation(), radius)) {
 			if (near instanceof Player) {
 				Player nearby = (Player) near;
 				
