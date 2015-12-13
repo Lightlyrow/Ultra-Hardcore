@@ -113,7 +113,7 @@ public class Timers {
 
 		new BukkitRunnable() {
 			public void run() {
-				PlayerUtils.broadcast(Main.PREFIX + "This is a §a" + GameUtils.getTeamSize() + "- " + game.getScenarios());
+				PlayerUtils.broadcast(Main.PREFIX + "This is a §a" + GameUtils.getTeamSize() + " " + game.getScenarios());
 			}
 		}.runTaskLater(Main.plugin, 400);
 
@@ -187,7 +187,6 @@ public class Timers {
 				BoardManager sb = BoardManager.getInstance();
 
 				Bukkit.getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
-				Bukkit.getPluginManager().callEvent(new GameStartEvent());
 				
 				State.setState(State.INGAME);
 				game.setArenaBoard(false);
@@ -244,6 +243,8 @@ public class Timers {
 						}
 					}
 				}
+				
+				Bukkit.getPluginManager().callEvent(new GameStartEvent());
 				
 				for (Player online : PlayerUtils.getPlayers()) {
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
@@ -512,10 +513,17 @@ public class Timers {
 					
 					timeToBorder--;
 					
-					if (timeToBorder == 60 || timeToBorder == 30 || timeToBorder == 10 || timeToBorder == 5 || 
-						timeToBorder == 4 || timeToBorder == 3 || timeToBorder == 2 || timeToBorder == 1) {
-						
+					switch (timeToBorder) {
+					case 60:
+					case 30:
+					case 10:
+					case 5:
+					case 4:
+					case 3:
+					case 2:
+					case 1:
 						PlayerUtils.broadcast(Main.PREFIX + "The border starts shrinking in §a" + DateUtils.advancedTicksToString(timeToBorder) + "§7.");
+						break;
 					}
 				}
 			}
@@ -573,6 +581,8 @@ public class Timers {
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
+				
+				Bukkit.getPluginManager().callEvent(new GameStartEvent());
 				
 				for (World world : GameUtils.getGameWorlds()) {
 					world.setDifficulty(Difficulty.HARD);
@@ -664,6 +674,22 @@ public class Timers {
 				}
 			}
 		}.runTaskLater(Main.plugin, 60);
+		
+		new BukkitRunnable() {
+			public void run() {
+				PlayerUtils.broadcast(Main.PREFIX + "Final heal has been given.");
+				Bukkit.getPluginManager().callEvent(new FinalHealEvent());
+				
+				for (Player online : PlayerUtils.getPlayers()) {
+					PacketUtils.sendTitle(online, "§6Final heal!", "", 5, 10, 5);
+					online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
+					
+					User user = User.get(online);
+					user.resetHealth();
+					user.resetFood();
+				}
+			}
+		}.runTaskLater(Main.plugin, 260);
 	}
 	
 	/**
@@ -676,109 +702,44 @@ public class Timers {
 		
 		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
+				// pvp is used as time passed.
 				pvp++;
 				time--;
 				
-				if (pvp == 20) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a1 §8| §7Start of episode §a2");
-					PlayerUtils.broadcast(Main.PREFIX + "PvP has been enabled!");
+				if (time == 0) {
+					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a" + meetup + " §8| §7Start of episode §a" + (meetup + 1));		
 					
 					for (Player online : PlayerUtils.getPlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
+					
+					// time is used for time until next ep.
+					time = 20;
+					// meetup is used current episode.
+					meetup++;
+				}
+				
+				if (pvp == 20) {
+					PlayerUtils.broadcast(Main.PREFIX + "PvP has been enabled!");
+					Bukkit.getPluginManager().callEvent(new PvPEnableEvent());
 					
 					for (World world : GameUtils.getGameWorlds()) {
 						world.setPVP(true);
 					}
-					time = 20;
-					meetup++;
-				}
-				
-				if (pvp == 40) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a2 §8| §7Start of episode §a3");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
-					}
-					time = 20;
-					meetup++;
-				}
-				
-				if (pvp == 60) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a3 §8| §7Start of episode §a4");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
-					}
-					time = 20;
-					meetup++;
-				}
-				
-				if (pvp == 80) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a4 §8| §7Start of episode §a5");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
-					}
-					time = 20;
-					meetup++;
 				}
 				
 				if (pvp == 100) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a5 §8| §7Start of episode §a6");
 					PlayerUtils.broadcast(Main.PREFIX + "Perma day activated!");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
-					}
 					
 					for (World world : GameUtils.getGameWorlds()) {
 						world.setGameRuleValue("doDaylightCycle", "false");
 						world.setTime(6000);
 					}
-					time = 20;
-					meetup++;
 				}
 				
 				if (pvp == 120) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a6 §8| §7Start of episode §a7");
 					PlayerUtils.broadcast(Main.PREFIX + "Meetup is now!");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
-					}
-					time = 20;
-					meetup++;
-				}
-				
-				if (pvp == 140) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a7 §8| §7Start of episode §a8");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
-					}
-					time = 20;
-					meetup++;
-				}
-				
-				if (pvp == 160) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a8 §8| §7Start of episode §a9");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
-					}
-					time = 20;
-					meetup++;
-				}
-				
-				if (pvp == 180) {
-					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a9 §8| §7Start of episode §a10");
-					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
-					}
-					time = 20;
-					meetup++;
+					Bukkit.getPluginManager().callEvent(new MeetupEvent());
 				}
 			}
 		}, 1200, 1200);
