@@ -37,7 +37,9 @@ import org.bukkit.util.Vector;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -76,7 +78,10 @@ public class Astrophobia extends Scenario implements Listener {
 	}
 	
 	@Override
-	public void onEnable() {
+	public void onEnable() {}
+	
+	@EventHandler
+	public void on(GameStartEvent event) {
 		Game game = Game.getInstance();
 		
 		game.getWorld().setGameRuleValue("doDaylightCycle", "false");
@@ -88,11 +93,15 @@ public class Astrophobia extends Scenario implements Listener {
 					dropAstroItem();
 				}
 			}
-		}, 12000, tickInterval);
+		}, 6000, tickInterval);
 	}
 
 	@EventHandler
 	public void onBlockIgnite(BlockIgniteEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		IgniteCause cause = event.getCause();
 
 		if (cause == IgniteCause.SPREAD) {
@@ -102,6 +111,10 @@ public class Astrophobia extends Scenario implements Listener {
 
 	@EventHandler
 	public void onEntityShootBowEvent(EntityShootBowEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		Entity proj = event.getProjectile();
 		Entity entity = event.getEntity();
 		
@@ -138,6 +151,10 @@ public class Astrophobia extends Scenario implements Listener {
 
 	@EventHandler
 	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		Entity damager = event.getDamager();
 		
 		if (!(damager instanceof Arrow)) {
@@ -161,6 +178,10 @@ public class Astrophobia extends Scenario implements Listener {
 
 	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		Entity entity = event.getEntity();
 		
 		if (!entity.hasMetadata("meteor")) {
@@ -179,8 +200,19 @@ public class Astrophobia extends Scenario implements Listener {
 					Item item = (Item) near;
 					Material type = item.getItemStack().getType();
 					
-					if (type == Material.COBBLESTONE || type == Material.SAND || type == Material.SANDSTONE || type == Material.DIRT || type == Material.GRAVEL || type == Material.SAPLING || type == Material.LOG || type == Material.LOG_2 || type == Material.SEEDS) {
+					switch (type) {
+					case COBBLESTONE:
+					case SAND:
+					case DIRT:
+					case SANDSTONE:
+					case GRAVEL:
+					case SAPLING:
+					case LOG:
+					case LOG_2:
+					case SEEDS:
 						near.remove();
+					default:
+						break;
 					}
 				}
 				
@@ -211,6 +243,10 @@ public class Astrophobia extends Scenario implements Listener {
 
 	@EventHandler
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		Entity entity = event.getEntity();
 		
 		if (entity instanceof Monster && Timers.time < 10 && entity.getLocation().getY() > 60) {
