@@ -54,6 +54,9 @@ public class PermissionsManager {
 		User user = User.get(player);
 		Rank rank = user.getRank();
 		
+		perm.setPermission("uhc.border", true);
+		perm.setPermission("uhc.top", true);
+		
 		if (rank == Rank.USER) {
 			return;
 		}
@@ -95,7 +98,6 @@ public class PermissionsManager {
 				perm.setPermission("uhc.clearxp.other", true);
 				perm.setPermission("uhc.config", true);
 				perm.setPermission("uhc.end", true);
-				perm.setPermission("uhc.pvp", true);
 				perm.setPermission("uhc.feed", true);
 				perm.setPermission("uhc.feed.other", true);
 				perm.setPermission("uhc.giveall", true);
@@ -113,7 +115,6 @@ public class PermissionsManager {
 				perm.setPermission("uhc.timer", true);
 				perm.setPermission("uhc.border", true);
 				perm.setPermission("uhc.vote", true);
-				perm.setPermission("uhc.world", true);
 				perm.setPermission("mysteryteams.admin", true);
 				perm.setPermission("uhc.bestbtc", true);
 				perm.setPermission("uhc.bestpve", true);
@@ -126,6 +127,9 @@ public class PermissionsManager {
 				perm.setPermission("mysteryteams.admin", true);
 				perm.setPermission("mysteryteams.admin", true);
 				perm.setPermission("mysteryteams.admin", true);
+				
+				perm.setPermission("uhc.pvp", true);
+				perm.setPermission("uhc.world", true);
 				
 				if (rank == Rank.HOST) {
 					perm.setPermission("uhc.give", true);
