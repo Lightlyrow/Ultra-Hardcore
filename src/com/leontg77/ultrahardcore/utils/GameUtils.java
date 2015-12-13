@@ -40,7 +40,7 @@ public class GameUtils {
             .put(UUID.fromString("573dd0a7-5303-4cd9-9e04-d31ae79403b6"), "FSP")
             .build();
 
-    private static final BiMap<String, UUID> HOSTS_BY_NAME = HOSTS_BY_UUID.inverse();
+	public static final BiMap<String, UUID> HOSTS_BY_NAME = HOSTS_BY_UUID.inverse();
 
     /**
      * Get the hof name for the given host.
