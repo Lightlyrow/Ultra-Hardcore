@@ -69,7 +69,7 @@ public class BanCommand implements CommandExecutor {
         	
     		public void run() {
     			if (left == 0) {
-    				PlayerUtils.broadcast(Main.PREFIX + "§6" + args[0] + " §7has been banned for §a" + msg);
+    				PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been banned for §a" + msg);
     				
     		    	for (Player online : PlayerUtils.getPlayers()) {
     		    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
