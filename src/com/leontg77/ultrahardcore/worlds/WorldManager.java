@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Settings;
+import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
 
@@ -131,13 +132,13 @@ public class WorldManager {
 	 * @param seed The seed of the world.
 	 * @param environment The world's environment.
 	 * @param type The world type.
-	 * @throws Exception if world doesn't exist.
+	 * @throws CommandException if world doesn't exist.
 	 */
-	public void loadWorld(String name) throws Exception {
+	public void loadWorld(String name) throws CommandException {
 		Set<String> worlds = settings.getWorlds().getConfigurationSection("worlds").getKeys(false);
 		
 		if (!worlds.contains(name)) {
-			throw new Exception("This world doesn't exist.");
+			throw new CommandException("The world '" + name + "' does not exist.");
 		}
 		
 		WorldCreator creator = new WorldCreator(name);
@@ -164,8 +165,9 @@ public class WorldManager {
 	 * Unloads the given world.
 	 * 
 	 * @param world The world.
+	 * @return True if successful, false otherwise.
 	 */
-	public void unloadWorld(World world) {
-		Bukkit.getServer().unloadWorld(world, false);
+	public boolean unloadWorld(World world) {
+		return Bukkit.unloadWorld(world, true);
 	}
 }
