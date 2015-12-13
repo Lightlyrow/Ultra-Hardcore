@@ -57,6 +57,7 @@ import com.leontg77.ultrahardcore.scenario.scenarios.Inventors;
 import com.leontg77.ultrahardcore.scenario.scenarios.Kings;
 import com.leontg77.ultrahardcore.scenario.scenarios.Krenzinator;
 import com.leontg77.ultrahardcore.scenario.scenarios.LAFS;
+import com.leontg77.ultrahardcore.scenario.scenarios.Landmines;
 import com.leontg77.ultrahardcore.scenario.scenarios.Lootcrates;
 import com.leontg77.ultrahardcore.scenario.scenarios.MeleeFun;
 import com.leontg77.ultrahardcore.scenario.scenarios.Moles;
@@ -166,6 +167,7 @@ public class ScenarioManager {
 		scenarios.add(new Kings());
 		scenarios.add(new Krenzinator());
 		scenarios.add(new LAFS());
+		scenarios.add(new Landmines());
 		scenarios.add(new Lootcrates());
 		scenarios.add(new MeleeFun());
 		scenarios.add(new Moles());
