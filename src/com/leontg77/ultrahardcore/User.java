@@ -22,6 +22,7 @@ import org.bukkit.potion.PotionEffect;
 
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
+import com.leontg77.ultrahardcore.utils.FileUtils;
 
 /**
  * User class.
@@ -88,6 +89,8 @@ public class User {
         	try {
         		file.createNewFile();
         		creating = true;
+        		
+        		FileUtils.updateUserFiles();
         	} catch (Exception e) {
         		plugin.getLogger().severe(ChatColor.RED + "Could not create " + uuid + ".yml!");
         	}
@@ -441,26 +444,26 @@ public class User {
      * @author LeonTG77
      */
     public enum Stat {
-    	DEATHS("Deaths"), 
-    	KILLS("Kills"), 
     	WINS("Wins"), 
     	GAMESPLAYED("Games played"), 
+    	KILLS("Kills"), 
+    	DEATHS("Deaths"), 
+    	DAMAGETAKEN("Damage taken"), 
     	ARENAKILLS("Arena Kills"), 
     	ARENADEATHS("Arena Deaths"), 
+    	KILLSTREAK("Highest Killstreak"), 
     	ARENAKILLSTREAK("Highest Arena Killstreak"), 
     	GOLDENAPPLESEATEN("Golden Apples Eaten"),
     	GOLDENHEADSEATEN("Golden Heads Eaten"), 
     	HORSESTAMED("Horses Tamed"), 
     	WOLVESTAMED("Wolves Tamed"), 
+    	POTIONS("Potions Drunk"), 
     	NETHER("Went to Nether"), 
     	END("Went to The End"), 
     	DIAMONDS("Mined diamonds"),
     	GOLD("Mined gold"),
     	HOSTILEMOBKILLS("Killed a monster"),
-    	ANIMALKILLS("Killed an animal"), 
-    	KILLSTREAK("Highest Killstreak"), 
-    	DAMAGETAKEN("Damage taken"), 
-    	POTIONS("Potions Drunk");
+    	ANIMALKILLS("Killed an animal");
     	
     	private String name;
     	
