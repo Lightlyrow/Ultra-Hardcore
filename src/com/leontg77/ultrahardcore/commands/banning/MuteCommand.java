@@ -49,6 +49,11 @@ public class MuteCommand implements CommandExecutor {
 		User user = User.get(target);
 
 		if (user.isMuted()) {
+	    	if (!sender.hasPermission("uhc.unmute")) {
+	    		sender.sendMessage(Main.NO_PERM_MSG);
+	    		return true;
+	    	}
+	    	
 			user.unmute();
 			
 			PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been unmuted.");
