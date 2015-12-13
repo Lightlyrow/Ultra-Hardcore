@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.utils;
+package com.leontg77.ultrahardcore.managers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 
+import com.leontg77.ultrahardcore.utils.LocationUtils;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
+
 /**
  * Scatter utilities class.
  * <p>
@@ -16,8 +19,8 @@ import org.bukkit.World;
  * 
  * @author LeonTG77
  */
-public class ScatterUtils {
-	private static Material[] nospawn = { Material.STATIONARY_WATER, Material.WATER, Material.STATIONARY_LAVA, Material.LAVA, Material.CACTUS };
+public class ScatterManager {
+	private static final Material[] nospawn = { Material.STATIONARY_WATER, Material.WATER, Material.STATIONARY_LAVA, Material.LAVA, Material.CACTUS };
 	
 	/**
 	 * Get a list of available scatter locations.
@@ -28,7 +31,7 @@ public class ScatterUtils {
 	 * 
 	 * @return A list of vaild scatter locations.
 	 */
-	public static List<Location> getScatterLocations(World world, int radius, int count) {
+	public static List<Location> findScatterLocations(World world, int radius, int count) {
 		ArrayList<Location> locs = new ArrayList<Location>();
 		
 		for (int i = 0; i < count; i++) {
