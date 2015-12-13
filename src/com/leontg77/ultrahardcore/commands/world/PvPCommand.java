@@ -4,110 +4,69 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 
-public class PvPCommand implements CommandExecutor, TabCompleter {
+/**
+ * PvP command class.
+ * 
+ * @author LeonTG77
+ */
+public class PvPCommand extends UHCCommand {
+
+	public PvPCommand() {
+		super("pvp", "<world|global> <on|off>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.pvp")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
+		if (args.length < 2) {
+			return false;
 		}
 		
-		if (args.length < 2) {
-			sender.sendMessage(Main.PREFIX + "Usage: /pvp <world|global> <on|off>");
-			return true;
-		}
+		boolean enable = parseBoolean(args[1], "PvP");
 		
 		if (args[0].equalsIgnoreCase("global")) {
-			if (args[1].equalsIgnoreCase("on")) {
-				for (World world : Bukkit.getWorlds()) {
-					world.setPVP(true);
-				}
-				sender.sendMessage(Main.PREFIX + "Global pvp has been enabled.");
-			} else if (args[1].equalsIgnoreCase("off")) {
-				for (World world : Bukkit.getWorlds()) {
-					world.setPVP(false);
-				}
-				sender.sendMessage(Main.PREFIX + "Global pvp has been disabled.");
-			} else {
-				sender.sendMessage(Main.PREFIX + "Usage: /pvp <world|global> <on|off>");
+			for (World world : Bukkit.getWorlds()) {
+				world.setPVP(enable);
 			}
+			
+			sender.sendMessage(Main.PREFIX + "Global pvp has been " + booleanToString(enable) + ".");
 			return true;
 		}
 		
-		World world = Bukkit.getServer().getWorld(args[0]);
+		World world = Bukkit.getWorld(args[0]);
 		
 		if (world == null) {
-			sender.sendMessage(ChatColor.RED + "That world does not exist.");
-			return true;
-		}
-		
-		if (args[1].equalsIgnoreCase("on")) {
-			sender.sendMessage(Main.PREFIX + "PvP in §a" + world.getName() + " §7has been enabled.");
-			world.setPVP(true);
-		} else if (args[1].equalsIgnoreCase("off")) {
-			sender.sendMessage(Main.PREFIX + "PvP in §a" + world.getName() + " §7has been disabled.");
-			world.setPVP(false);
-		} else {
-			sender.sendMessage(Main.PREFIX + "Usage: /pvp <world|global> <on|off>");
-		}
-		return true;
-	}
-	
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.pvp")) {
-			return null;
+			throw new CommandException("The world '" + args[0] + "'  does not exist.");
 		}
 
-    	ArrayList<String> toReturn = new ArrayList<String>();
+		sender.sendMessage(Main.PREFIX + "PvP in '§a" + world.getName() + "§7' has been " + booleanToString(enable) + ".");
+		world.setPVP(enable);
+		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		List<String> toReturn = new ArrayList<String>();
     	
 		if (args.length == 1) {
-        	ArrayList<String> types = new ArrayList<String>();
-        	types.add("global");
+        	toReturn.add("global");
         	
-        	for (World world : Bukkit.getServer().getWorlds()) {
-        		types.add(world.getName());
-        	}
-        	
-        	if (args[0].equals("")) {
-        		for (String type : types) {
-    				toReturn.add(type);
-        		}
-        	} else {
-        		for (String type : types) {
-        			if (type.toLowerCase().startsWith(args[0].toLowerCase())) {
-        				toReturn.add(type);
-        			}
-        		}
+        	for (World world : Bukkit.getWorlds()) {
+        		toReturn.add(world.getName());
         	}
         }
 		
 		if (args.length == 2) {
-        	ArrayList<String> types = new ArrayList<String>();
-        	types.add("on");
-        	types.add("off");
-        	
-        	if (args[0].equals("")) {
-        		for (String type : types) {
-        			toReturn.add(type);
-        		}
-        	} else {
-        		for (String type : types) {
-        			if (type.toLowerCase().startsWith(args[0].toLowerCase())) {
-        				toReturn.add(type);
-        			}
-        		}
-        	}
+        	toReturn.add("on");
+        	toReturn.add("off");
         }
+		
 		return toReturn;
 	}
 }
