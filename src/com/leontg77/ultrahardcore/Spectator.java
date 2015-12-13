@@ -605,7 +605,7 @@ public class Spectator {
 
 			new BukkitRunnable() {
 				public void run() {
-					String name = NameUtils.fixString(cause.name().replace("_TICK", ""), true);
+					String name = NameUtils.capitalizeString(cause.name().replace("_TICK", ""), true);
 					double damage = olddamage - player.getHealth();
 					
 					if (damage <= 0) {

@@ -66,7 +66,7 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 				biomes.append("§f, ");
 			}
 			
-			biomes.append(biomeColor(b) + NameUtils.fixString(b.name(), true));
+			biomes.append(biomeColor(b) + NameUtils.capitalizeString(b.name(), true));
 		}
 
 		sender.sendMessage(PREFIX + "List of all biome colors:");

@@ -327,7 +327,7 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add(" ");
 		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled, deals 1 heart." : "§cDisabled."));
 		lore.add(" ");
-		lore.add("§8» §7Border shrinks: §6" + NameUtils.fixString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
+		lore.add("§8» §7Border shrinks: §6" + NameUtils.capitalizeString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
 		lore.add("§8» §7The border will kill you if you go outside!");
 		lore.add(" ");
 		lore.add("§8» §7At meetup you can do everything you want");

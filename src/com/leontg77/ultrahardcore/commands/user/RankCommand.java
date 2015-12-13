@@ -69,12 +69,12 @@ public class RankCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "§6" + offline.getName() + " §7has been given §a" + NameUtils.fixString(rank.name(), false) + " §7rank.");
+			PlayerUtils.broadcast(Main.PREFIX + "§6" + offline.getName() + " §7has been given §a" + NameUtils.capitalizeString(rank.name(), false) + " §7rank.");
 			User.get(offline).setRank(rank);
 			return true;
 		}
 		
-		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been given §a" + NameUtils.fixString(rank.name(), false) + " §7rank.");
+		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been given §a" + NameUtils.capitalizeString(rank.name(), false) + " §7rank.");
 		User.get(target).setRank(rank);
 		return true;
 	}

@@ -27,15 +27,16 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User;
-import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.commands.team.TeamCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
+import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 import com.leontg77.ultrahardcore.worlds.WorldManager;
@@ -105,6 +106,7 @@ public class EndCommand implements CommandExecutor {
 		Date date = new Date();
 
 		Fireworks firework = Fireworks.getInstance();
+		FileUtils.updateUserFiles();
 		
 		int matchcount = 1;
 		
