@@ -86,7 +86,25 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 				return getAllPlayerNames(sender);
 			}
 			
-			return list;
+			if (list.isEmpty()) {
+				return list;
+			}
+			
+			List<String> toReturn = new ArrayList<String>();
+			
+			if (args[args.length - 1].isEmpty()) {
+				for (String type : list) {
+					toReturn.add(type);
+				}
+			} else {
+				for (String type : list) {
+					if (type.toLowerCase().startsWith(args[args.length - 1].toLowerCase())) {
+						toReturn.add(type);
+					}
+				}
+			}
+			
+			return toReturn;
 		} catch (Exception ex) {
 			// send them the error message in red if anything failed.
 			sender.sendMessage(ChatColor.RED + ex.getMessage());
