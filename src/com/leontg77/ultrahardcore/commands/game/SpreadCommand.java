@@ -26,11 +26,11 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Parkour;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.EntityUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
-import com.leontg77.ultrahardcore.utils.ScatterUtils;
 
 /**
  * Spread command class.
@@ -156,7 +156,7 @@ public class SpreadCommand implements CommandExecutor {
 					}
 					
 					if (teams) {
-						List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(name), radius, te + so);
+						List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(name), radius, te + so);
 						
 						int index = 0;
 						
@@ -176,7 +176,7 @@ public class SpreadCommand implements CommandExecutor {
 							}
 						}
 					} else {
-						List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(name), radius, Bukkit.getServer().getWhitelistedPlayers().size());
+						List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(name), radius, Bukkit.getServer().getWhitelistedPlayers().size());
 					
 						int index = 0;
 						
@@ -288,7 +288,7 @@ public class SpreadCommand implements CommandExecutor {
 					
 					if (teams) {
 						if (target.getScoreboard().getEntryTeam(target.getName()) == null) {
-							List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(name), radius, 1);
+							List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(name), radius, 1);
 							scatterLocs.put(target.getName(), loc.get(0));
 							return;
 						}
@@ -304,7 +304,7 @@ public class SpreadCommand implements CommandExecutor {
 							}
 						}
 					} else {
-						List<Location> loc = ScatterUtils.getScatterLocations(Bukkit.getWorld(name), radius, 1);
+						List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(name), radius, 1);
 						scatterLocs.put(target.getName(), loc.get(0));
 					}
 				}

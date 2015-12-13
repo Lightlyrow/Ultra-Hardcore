@@ -17,8 +17,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.ScatterUtils;
 
 /**
  * MonstersInc scenario class.
@@ -110,7 +110,7 @@ public class MonstersInc extends Scenario implements Listener {
 		Location loc;
 		
 		if (door.isEmpty()) {
-			List<Location> locs = ScatterUtils.getScatterLocations(block.getWorld(), 500, 1);
+			List<Location> locs = ScatterManager.findScatterLocations(block.getWorld(), 500, 1);
 			
 			if (locs.isEmpty()) {
 				player.sendMessage(PREFIX + "There are no other doors or random locations.");

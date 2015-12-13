@@ -27,8 +27,8 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import com.leontg77.ultrahardcore.listeners.ArenaListener;
 import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
-import com.leontg77.ultrahardcore.utils.ScatterUtils;
 import com.leontg77.ultrahardcore.worlds.WorldManager;
 
 /**
@@ -242,7 +242,7 @@ public class Arena {
 		Location loc;
 		
 		try {
-			loc = ScatterUtils.getScatterLocations(Bukkit.getWorld("arena"), (int) Bukkit.getWorld("arena").getWorldBorder().getSize() / 3, 1).get(0);
+			loc = ScatterManager.findScatterLocations(Bukkit.getWorld("arena"), (int) Bukkit.getWorld("arena").getWorldBorder().getSize() / 3, 1).get(0);
 		} catch (Exception e) {
 			player.sendMessage(ChatColor.RED + "Could not teleport you to the arena.");
 			return;
