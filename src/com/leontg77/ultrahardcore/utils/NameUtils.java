@@ -23,7 +23,15 @@ public class NameUtils {
 	 * @param replaceUnderscore True to replace all _ with a space, false otherwise.
 	 * @return The new fixed text.
 	 */
-	public static String fixString(String text, boolean replaceUnderscore) {
+	public static String capitalizeString(String text, boolean replaceUnderscore) {
+		if (text.isEmpty()) {
+			return text;
+		}
+		
+		if (text.length() == 1) {
+			return text.toUpperCase();
+		}
+		
 		String toReturn = text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
 		
 		if (replaceUnderscore) {
