@@ -50,6 +50,7 @@ public class InvGUI {
 	
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
 	
+	private static TopStats topStats = new TopStats();
 	private static GameInfo gameInfo = new GameInfo();
 	
 	/**
@@ -63,6 +64,10 @@ public class InvGUI {
 	
 	public static GameInfo getGameInfo() {
 		return gameInfo;
+	}
+	
+	public static TopStats getTopStats() {
+		return topStats;
 	}
 	
 	public Inventory openStats(Player player, User user) {
@@ -387,7 +392,7 @@ public class InvGUI {
 			ArrayList<String> headLore = new ArrayList<String>();
 			headLore.add(" ");
 			headLore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host).getKeys(false).size());
-			headLore.add("§8» §7Rank: §6" + NameUtils.fixString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+			headLore.add("§8» §7Rank: §6" + NameUtils.capitalizeString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
 			headLore.add(" ");
 			headLore.add("§8» §7Host name: §6" + host);
 			headLore.add("§8» §7IGN: §6" + name);
