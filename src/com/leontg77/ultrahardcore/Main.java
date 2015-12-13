@@ -101,10 +101,6 @@ import com.leontg77.ultrahardcore.commands.user.HotbarCommand;
 import com.leontg77.ultrahardcore.commands.user.InfoCommand;
 import com.leontg77.ultrahardcore.commands.user.RankCommand;
 import com.leontg77.ultrahardcore.commands.user.StatsCommand;
-import com.leontg77.ultrahardcore.commands.user.TopCommand;
-import com.leontg77.ultrahardcore.commands.world.BorderCommand;
-import com.leontg77.ultrahardcore.commands.world.PregenCommand;
-import com.leontg77.ultrahardcore.commands.world.PvPCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.HOFListener;
@@ -197,6 +193,13 @@ public class Main extends JavaPlugin {
 		BoardManager.getInstance().setup();
 		TeamManager.getInstance().setup();
 		
+		FileUtils.updateUserFiles();
+		
+		InvGUI.getGameInfo().updateStaff();
+		InvGUI.getGameInfo().update();
+		
+		InvGUI.getTopStats().update();
+		
 		Game game = Game.getInstance();
 		
 		recoverData();
@@ -233,12 +236,10 @@ public class Main extends JavaPlugin {
 		// register all commands.
 		new CommandHandler().registerCommands();
 		
-		
 		getCommand("arena").setExecutor(new ArenaCommand());
 		getCommand("ban").setExecutor(new BanCommand());
 		getCommand("banip").setExecutor(new BanIPCommand());
 		getCommand("board").setExecutor(new BoardCommand());
-		getCommand("border").setExecutor(new BorderCommand());
 		getCommand("broadcast").setExecutor(new BroadcastCommand());
 		getCommand("butcher").setExecutor(new ButcherCommand());
 		getCommand("chat").setExecutor(new ChatCommand());
@@ -267,8 +268,6 @@ public class Main extends JavaPlugin {
 		getCommand("mute").setExecutor(new MuteCommand());
 		getCommand("near").setExecutor(new NearCommand());
 		getCommand("pm").setExecutor(new PmCommand());
-		getCommand("pregen").setExecutor(new PregenCommand());
-		getCommand("pvp").setExecutor(new PvPCommand());
 		getCommand("random").setExecutor(new RandomCommand());
 		getCommand("rank").setExecutor(new RankCommand());
 		getCommand("reply").setExecutor(new ReplyCommand());
@@ -289,7 +288,6 @@ public class Main extends JavaPlugin {
 		getCommand("timeleft").setExecutor(new TimeLeftCommand());
 		getCommand("timer").setExecutor(new TimerCommand());
 		getCommand("teamloc").setExecutor(new TlCommand());
-		getCommand("top").setExecutor(new TopCommand());
 		getCommand("tp").setExecutor(new TpCommand());
 		getCommand("tps").setExecutor(new TpsCommand());
 		getCommand("uhc").setExecutor(new UHCCmd());
@@ -314,9 +312,6 @@ public class Main extends JavaPlugin {
 		for (Player online : PlayerUtils.getPlayers()) {	
 			PermissionsManager.addPermissions(online);
 		}
-		
-		InvGUI.getGameInfo().updateStaff();
-		InvGUI.getGameInfo().update();
 		
 		new BukkitRunnable() {
 			public void run() {
