@@ -18,6 +18,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author LeonTG77
  */
 public class FileUtils {
+	private static List<FileConfiguration> files = new ArrayList<FileConfiguration>();
 	
 	/**
 	 * Get a list of all the user file configurations.
@@ -25,15 +26,20 @@ public class FileUtils {
 	 * @return The list of file configurations.
 	 */
 	public static List<FileConfiguration> getUserFiles() {
+		return files;
+	}
+	
+	/**
+	 * Update the files storage.
+	 */
+	public static void updateUserFiles() {
 		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 		
-		List<FileConfiguration> files = new ArrayList<FileConfiguration>();
+		files.clear();
 		
 		for (File file : folder.listFiles()) {
 			files.add(YamlConfiguration.loadConfiguration(file));
 		}
-		
-		return files;
 	}
 	
 	/**
