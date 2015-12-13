@@ -14,6 +14,10 @@ import org.bukkit.entity.Player;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.resetting.FeedCommand;
 import com.leontg77.ultrahardcore.commands.resetting.SethealthCommand;
+import com.leontg77.ultrahardcore.commands.user.TopCommand;
+import com.leontg77.ultrahardcore.commands.world.BorderCommand;
+import com.leontg77.ultrahardcore.commands.world.PregenCommand;
+import com.leontg77.ultrahardcore.commands.world.PvPCommand;
 import com.leontg77.ultrahardcore.commands.world.WorldCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -31,6 +35,14 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	public void registerCommands() {
 		cmds.add(new FeedCommand());
 		cmds.add(new SethealthCommand());
+		
+		
+
+		cmds.add(new TopCommand());
+		
+		cmds.add(new BorderCommand());
+		cmds.add(new PregenCommand());
+		cmds.add(new PvPCommand());
 		cmds.add(new WorldCommand());
 		
 		for (UHCCommand cmd : cmds) {
