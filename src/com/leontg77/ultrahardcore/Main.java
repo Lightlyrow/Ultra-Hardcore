@@ -42,6 +42,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.commands.CommandHandler;
+import com.leontg77.ultrahardcore.commands.arena.ArenaCommand;
 import com.leontg77.ultrahardcore.commands.banning.BanCommand;
 import com.leontg77.ultrahardcore.commands.banning.BanIPCommand;
 import com.leontg77.ultrahardcore.commands.banning.MuteCommand;
@@ -69,7 +70,6 @@ import com.leontg77.ultrahardcore.commands.basic.TextCommand;
 import com.leontg77.ultrahardcore.commands.basic.TimeLeftCommand;
 import com.leontg77.ultrahardcore.commands.basic.TpCommand;
 import com.leontg77.ultrahardcore.commands.basic.TpsCommand;
-import com.leontg77.ultrahardcore.commands.game.ArenaCommand;
 import com.leontg77.ultrahardcore.commands.game.BoardCommand;
 import com.leontg77.ultrahardcore.commands.game.ChatCommand;
 import com.leontg77.ultrahardcore.commands.game.ConfigCommand;
@@ -78,14 +78,13 @@ import com.leontg77.ultrahardcore.commands.game.HelpopCommand;
 import com.leontg77.ultrahardcore.commands.game.MatchpostCommand;
 import com.leontg77.ultrahardcore.commands.game.RandomCommand;
 import com.leontg77.ultrahardcore.commands.game.ScenarioCommand;
-import com.leontg77.ultrahardcore.commands.game.SpecChatCommand;
-import com.leontg77.ultrahardcore.commands.game.SpectateCommand;
 import com.leontg77.ultrahardcore.commands.game.SpreadCommand;
 import com.leontg77.ultrahardcore.commands.game.StartCommand;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
-import com.leontg77.ultrahardcore.commands.game.UHCCmd;
 import com.leontg77.ultrahardcore.commands.game.VoteCommand;
 import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
+import com.leontg77.ultrahardcore.commands.inventory.HOFCommand;
+import com.leontg77.ultrahardcore.commands.inventory.UHCCmd;
 import com.leontg77.ultrahardcore.commands.resetting.ClearInvCommand;
 import com.leontg77.ultrahardcore.commands.resetting.ClearXpCommand;
 import com.leontg77.ultrahardcore.commands.resetting.GiveCommand;
@@ -93,10 +92,11 @@ import com.leontg77.ultrahardcore.commands.resetting.GiveallCommand;
 import com.leontg77.ultrahardcore.commands.resetting.HealCommand;
 import com.leontg77.ultrahardcore.commands.resetting.HealthCommand;
 import com.leontg77.ultrahardcore.commands.resetting.SetmaxhealthCommand;
+import com.leontg77.ultrahardcore.commands.spectate.SpecChatCommand;
+import com.leontg77.ultrahardcore.commands.spectate.SpectateCommand;
 import com.leontg77.ultrahardcore.commands.team.PmCommand;
 import com.leontg77.ultrahardcore.commands.team.TeamCommand;
 import com.leontg77.ultrahardcore.commands.team.TlCommand;
-import com.leontg77.ultrahardcore.commands.user.HOFCommand;
 import com.leontg77.ultrahardcore.commands.user.HotbarCommand;
 import com.leontg77.ultrahardcore.commands.user.InfoCommand;
 import com.leontg77.ultrahardcore.commands.user.RankCommand;
@@ -197,8 +197,6 @@ public class Main extends JavaPlugin {
 		
 		InvGUI.getGameInfo().updateStaff();
 		InvGUI.getGameInfo().update();
-		
-		InvGUI.getTopStats().update();
 		
 		Game game = Game.getInstance();
 		
