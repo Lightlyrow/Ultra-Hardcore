@@ -43,18 +43,18 @@ public class BiomeSwap {
 	}
 
 	private void doSwap(List<String> swaps) {
-		for (String s : swaps) {
-			String[] biomes = s.split(";");
+		for (String swap : swaps) {
+			String[] biomes = swap.split(";");
 			
 			if (biomes.length == 2) {
 				if (biomes[0].equalsIgnoreCase("all")) {
 					SwappableBiome newBiome = fromString(biomes[1]);
 					
 					if (newBiome != null) {
-						plugin.getLogger().info("Swapping all biomes with " + newBiome.toString().toLowerCase().replaceAll("_", ""));
+						plugin.getLogger().info("Swapping all biomes with '" + newBiome.toString().toLowerCase().replaceAll("_", " ") + "'");
 						swapBiome(newBiome);
 					} else {
-						plugin.getLogger().warning("Invalid biome swap config value in: " + s);
+						plugin.getLogger().warning("Invalid biome swap config value in: " + swap);
 					}
 				} 
 				else if (biomes[1].equalsIgnoreCase("random")) {
@@ -62,7 +62,7 @@ public class BiomeSwap {
 					SwappableBiome oldBiome = fromString(biomes[0]);
 					
 					if (oldBiome != null) {
-						plugin.getLogger().info("Swapping " + oldBiome.toString().toLowerCase().replaceAll("_", "") + " with " + newBiome.toString().toLowerCase().replaceAll("_", ""));
+						plugin.getLogger().info("Swapping '" + oldBiome.toString().toLowerCase().replaceAll("_", " ") + "' with '" + newBiome.toString().toLowerCase().replaceAll("_", " ") + "'");
 						swapBiome(oldBiome, newBiome);
 					} else {
 						plugin.getLogger().warning("Invalid biome swap config value: " + biomes[0]);
@@ -73,14 +73,14 @@ public class BiomeSwap {
 					SwappableBiome newBiome = fromString(biomes[1]);
 					
 					if ((oldBiome != null) && (newBiome != null)) {
-						plugin.getLogger().info("Swapping " + oldBiome.toString().toLowerCase().replaceAll("_", "") + " with " + newBiome.toString().toLowerCase().replaceAll("_", ""));
+						plugin.getLogger().info("Swapping '" + oldBiome.toString().toLowerCase().replaceAll("_", " ") + "' with '" + newBiome.toString().toLowerCase().replaceAll("_", " ") + "'");
 						swapBiome(oldBiome, newBiome);
 					} else {
-						plugin.getLogger().warning("Invalid biome swap config value in: " + s);
+						plugin.getLogger().warning("Invalid biome swap config value in: " + swap);
 					}
 				}
 			} else {
-				plugin.getLogger().warning("Invalid biome swap config string: " + s);
+				plugin.getLogger().warning("Invalid biome swap config string: " + swap);
 			}
 		}
 	}
