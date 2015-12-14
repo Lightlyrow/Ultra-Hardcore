@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.commands.game;
+package com.leontg77.ultrahardcore.commands.spectate;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.commands.user;
+package com.leontg77.ultrahardcore.commands.inventory;
 
 import java.util.ArrayList;
 import java.util.List;
