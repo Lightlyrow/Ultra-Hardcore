@@ -1,6 +1,7 @@
 package com.leontg77.ultrahardcore;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,7 +16,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Announcer {
-	private ArrayList<String> messages = new ArrayList<String>();
+	private List<String> messages = new ArrayList<String>();
 	private static Announcer instance = new Announcer();
 	
 	/**
@@ -50,7 +51,7 @@ public class Announcer {
 		messages.add("Follow our twitter for games and updates, §a@ArcticUHC§7!");
 		messages.add("You can apply for a rank at §6http://goo.gl/forms/O6tklNcrEu");
 		messages.add("You can view your stats by using §a/stats§7.");
-		messages.add("You can view the top stats with §a/top [stat]§7.");
+		messages.add("You can view the top stats with §a/top§7.");
 		messages.add("View the border size with §a/border§7.");
 		messages.add("How long til pvp/meetup? Use §a/timeleft§7.");
 		messages.add("View the enabled scenario with info by doing §a/scen§7.");
