@@ -2,7 +2,9 @@ package com.leontg77.ultrahardcore.managers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,7 +15,8 @@ import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.pregenner.Main;
+import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Team management class.
@@ -25,9 +28,10 @@ import com.leontg77.pregenner.Main;
 @SuppressWarnings("deprecation")
 public class TeamManager {
 	private Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
-	private List<Team> teams = new ArrayList<Team>();
-	
 	private static TeamManager manager = new TeamManager();
+
+	public static HashMap<String, List<String>> savedTeams = new HashMap<String, List<String>>();
+	private List<Team> teams = new ArrayList<Team>();
 	
 	/**
 	 * Gets the instance of the class.
@@ -136,9 +140,17 @@ public class TeamManager {
 	 * @param player the player joining.
 	 */
 	public void joinTeam(Team team, OfflinePlayer player) {	
-		if (team != null) {
-			team.addPlayer(player);
+		if (team == null) {
+			return;
 		}
+		
+		if (!savedTeams.containsKey(team.getName())) {
+			List<String> players = new ArrayList<String>(team.getEntries());
+			savedTeams.put(team.getName(), players);
+		}
+		
+		team.addPlayer(player);
+		savedTeams.get(team.getName()).add(player.getName());
 	}
 
 	/**
@@ -151,10 +163,7 @@ public class TeamManager {
 	 */
 	public void joinTeam(String name, OfflinePlayer player) {	
 		Team team = sb.getTeam(name);
-		
-		if (team != null) {
-			team.addPlayer(player);
-		}
+		joinTeam(team, player);
 	}
 	
 	/**
@@ -172,9 +181,32 @@ public class TeamManager {
 				
 				if (team != null) {
 					team.removePlayer(player);
+					
+					if (!savedTeams.containsKey(team.getName())) {
+						List<String> players = new ArrayList<String>(team.getEntries());
+						savedTeams.put(team.getName(), players);
+					}
+
+					savedTeams.get(team.getName()).add(player.getName());
 				}
 			}
 		}.runTaskLater(Main.plugin, 1);
+	}
+	
+	/**
+	 * Get the players on the given team.
+	 * 
+	 * @param team The given team.
+	 * @return A list of OfflinePlayer's on the team.
+	 */
+	public List<OfflinePlayer> getPlayers(Team team) {
+		List<OfflinePlayer> players = new ArrayList<OfflinePlayer>();
+		
+		for (String entry : team.getEntries()) {
+			players.add(PlayerUtils.getOfflinePlayer(entry));
+		}
+		
+		return players;
 	}
 	
 	/**
@@ -210,7 +242,22 @@ public class TeamManager {
 	 * @return The team.
 	 */
 	public Team getTeam(String name) {
-		return sb.getTeam(name);
+		for (Team team : sb.getTeams()) {
+			if (team.getName().equalsIgnoreCase(name)) {
+				return team;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Get a list of all teams.
+	 * 
+	 * @return A list of all teams.
+	 */
+	public Map<String, List<String>> getSavedTeams() {
+		return savedTeams;
 	}
 	
 	/**
@@ -228,14 +275,14 @@ public class TeamManager {
 	 * @return A list of teams with players.
 	 */
 	public List<Team> getTeamsWithPlayers() {
-		ArrayList<Team> list = new ArrayList<Team>();
+		List<Team> teamsWithPlayers = new ArrayList<Team>();
 		
 		for (Team team : teams) {
 			if (team.getSize() > 0) {
-				list.add(team);
+				teamsWithPlayers.add(team);
 			}
 		}
 		
-		return list;
+		return teamsWithPlayers;
 	}
 }
