@@ -4,75 +4,79 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
+
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * Team command class.
  * 
  * @author LeonTG77
  */
-public class TeamCommand implements CommandExecutor, TabCompleter {
+public class TeamCommand extends UHCCommand {
 	public static HashMap<Player, List<Player>> invites = new HashMap<Player, List<Player>>();
 	public static HashMap<String, List<String>> savedTeams = new HashMap<String, List<String>>();
-
+	
+	private int teamsize = 0;
+	
+	public TeamCommand() {
+		super("team", "");
+	}
+	
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		TeamManager teams = TeamManager.getInstance();
 		Game game = Game.getInstance();
 		
 		if (args.length == 0) {
-			sendHelp(sender);
-			return true;
+			// the method returns true but hey, one less line :D
+			return sendHelp(sender);
 		}
 		
 		if (args.length > 1) {
-			Player target = Bukkit.getServer().getPlayer(args[1]);
+			Player target = Bukkit.getPlayer(args[1]);
 			
 			if (args[0].equalsIgnoreCase("info")) {
-				if (!sender.hasPermission("uhc.team")) {
-					sendHelp(sender);
-					return true;
+				if (!sender.hasPermission("uhc.team.admin")) {
+					return sendHelp(sender);
 				}
 				
 				if (target == null) {
-					sender.sendMessage(ChatColor.RED + args[1] + " is not online.");
-					return true;
+					throw new CommandException("'" + args[1] + "' is not online.");
 				}
 
 				Team team = teams.getTeam(target);
+
+				sender.sendMessage(Main.PREFIX + ChatColor.GREEN + target.getName() + "'s §7team info:");
+				sender.sendMessage("§8» §7Team: §c" + (team == null ? "None" : team.getPrefix() + team.getName()));
 				
-				if (team == null || Spectator.getInstance().isSpectating(target)) {
-					sender.sendMessage(Main.PREFIX + ChatColor.GREEN + target.getName() + "'s §7team info:");
-					sender.sendMessage("§8» §7Team: §cNone");
-					
-					if (Main.kills.containsKey(target.getName())) {
-						sender.sendMessage("§8» §7Kills: §a" + Main.kills.get(target.getName()));
-					}
-					return true;
+				if (Main.kills.containsKey(target.getName())) {
+					sender.sendMessage("§8» §7Kills: §a" + Main.kills.get(target.getName()));
 				}
 				
-				if (!savedTeams.containsKey(team.getName())) {
+				if (team == null) {
+					return true;
+				}
+				eams.containsKey(team.getName())) {
 					ArrayList<String> players = new ArrayList<String>(team.getEntries());
 					TeamCommand.savedTeams.put(team.getName(), players);
 				}
@@ -98,13 +102,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					}
 					i++;
 				}
-				
-				sender.sendMessage(Main.PREFIX + ChatColor.GREEN + target.getName() + "'s §7team info:");
-				sender.sendMessage("§8» §7Team: " + team.getPrefix() + team.getName());
-				
-				if (Main.kills.containsKey(target.getName())) {
-					sender.sendMessage("§8» §7Kills: §a" + Main.kills.get(target.getName()));
-				}
+				if (!savedT
 				
 				if (Main.teamKills.containsKey(team.getName())) {
 					sender.sendMessage("§8» §7Team Kills: §a" + Main.teamKills.get(team.getName()));
@@ -118,8 +116,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 		
 			if (args[0].equalsIgnoreCase("invite")) {
 				if (!(sender instanceof Player)) {
-					sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
-					return true;
+					throw new CommandException("Only players can create and manage teams.");
 				}
 				
 				Player player = (Player) sender;
@@ -132,8 +129,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				Team team = teams.getTeam(player);
 				
 				if (team == null) {
-					sender.sendMessage(Main.PREFIX + "You are not on a team.");
-					return true;
+					throw new CommandException("You are not on a team, create one using /team create.");
 				}
 				
 				if (target == null) {
@@ -141,7 +137,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 					return true;
 				}
 				
-				if (team.getSize() >= Game.getInstance().getTeamSize()) {
+				if (team.getSize() >= teamsize) {
 					sender.sendMessage(Main.PREFIX + "Your team is currently full.");
 					return true;
 				}
@@ -239,7 +235,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					
-					if (team.getSize() >= Game.getInstance().getTeamSize()) {
+					if (team.getSize() >= teamsize) {
 						sender.sendMessage(Main.PREFIX + "That team is currently full.");
 						return true;
 					}
@@ -582,12 +578,19 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
+			if (args.length == 1) {
+				sendHelp(sender);
+				return true;
+			}
+			
 			if (game.teamManagement()) {
 				sender.sendMessage(Main.PREFIX + "Team management is already enabled.");
 				return true;
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "You can now create your own teams! (Max team size: §6" + game.getTeamSize() + "§7)");
+			teamsize = parseInt(args[1], "teamsize");
+			
+			PlayerUtils.broadcast(Main.PREFIX + "You can now create your own teams! (Max team size: §6" + teamsize + "§7)");
 			PlayerUtils.broadcast(Main.PREFIX + "Use §a/team create §7and §a/team invite§7 to create the team.");
 
 			if (game.pregameBoard()) {
@@ -625,7 +628,6 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 		return true;
 	}
 	
-	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		ArrayList<String> toReturn = new ArrayList<String>();
     	
@@ -729,7 +731,7 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 	 * 
 	 * @param sender the player.
 	 */
-	public void sendHelp(CommandSender sender) {
+	public boolean sendHelp(CommandSender sender) {
 		sender.sendMessage(Main.PREFIX + "Team help:");
 		sender.sendMessage("§8» §f/pm <message> §7- §f§oTalk in team chat.");
 		sender.sendMessage("§8» §f/tl §7- §f§oTell your coords to your teammates.");
@@ -756,5 +758,12 @@ public class TeamCommand implements CommandExecutor, TabCompleter {
 			sender.sendMessage("§8» §f/team friendlyfire <true|false> §7- §f§oToggle FriendlyFire.");
 			sender.sendMessage("§8» §f/team clear §7- §f§oClear all teams.");
 		}
+		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
