@@ -1,8 +1,5 @@
 package com.leontg77.ultrahardcore.commands.game;
 
-import static com.leontg77.ultrahardcore.Main.plugin;
-
-import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,9 +26,7 @@ import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User;
-import com.leontg77.ultrahardcore.commands.team.TeamCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -159,7 +154,6 @@ public class EndCommand implements CommandExecutor {
 		spec.specinfo.clear();
 		spec.cmdspy.clear();
 		
-		TeamCommand.savedTeams.clear();
 		firework.startFireworkShow();
 		
 		SpecInfo.getTotalDiamonds().clear();
@@ -178,6 +172,7 @@ public class EndCommand implements CommandExecutor {
 		game.setTeamSize("No");
 		
 		TeamManager teams = TeamManager.getInstance();
+		teams.getSavedTeams().clear();
 		Team team = teams.getTeam("spec");
 		
 		for (String member : team.getEntries()) {
@@ -216,28 +211,7 @@ public class EndCommand implements CommandExecutor {
 			}
 		}.runTaskLater(Main.plugin, 600);
 		
-		File playerData = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata");
-		File stats = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "stats");
-		
-		for (File dataFiles : playerData.listFiles()) {
-			dataFiles.delete();
-		}
-		
-		for (File statsFiles : stats.listFiles()) {
-			statsFiles.delete();
-		}
-		
-		try {
-			Bukkit.getServer().getScheduler().cancelTask(Timers.taskMinutes);
-		} catch (Exception e) {
-			plugin.getLogger().warning("Could not cancel task " + Timers.taskMinutes);
-		}
-		
-		try {
-			Bukkit.getServer().getScheduler().cancelTask(Timers.taskSeconds);
-		} catch (Exception e) {
-			plugin.getLogger().warning("Could not cancel task " + Timers.taskSeconds);
-		}
+		FileUtils.deletePlayerDataAndStats();
 		return true;
 	}
 }
