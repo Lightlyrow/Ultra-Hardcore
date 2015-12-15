@@ -71,19 +71,19 @@ public class InvGUI {
 	}
 	
 	public Inventory openStats(Player player, User user) {
-		Inventory inv = Bukkit.createInventory(user.getPlayer(), InventoryType.HOPPER, "Â» Â§7" + user.getPlayer().getName() + "'s Stats");
+		Inventory inv = Bukkit.createInventory(user.getPlayer(), InventoryType.HOPPER, "» §7" + user.getPlayer().getName() + "'s Stats");
 		ArrayList<String> lore = new ArrayList<String>(); 
 		
 		ItemStack general = new ItemStack (Material.SIGN);
 		ItemMeta generalMeta = general.getItemMeta();
-		generalMeta.setDisplayName("Â§8Â» Â§6General Stats Â§8Â«");
+		generalMeta.setDisplayName("§8» §6General Stats §8«");
 		lore.add(" ");
-		lore.add("Â§8Â» Â§7Games played: Â§a" + user.getStat(Stat.GAMESPLAYED));
-		lore.add("Â§8Â» Â§7Wins: Â§a" + user.getStat(Stat.WINS));
+		lore.add("§8» §7Games played: §a" + user.getStat(Stat.GAMESPLAYED));
+		lore.add("§8» §7Wins: §a" + user.getStat(Stat.WINS));
 		lore.add(" ");
-		lore.add("Â§8Â» Â§7Hostile kills: Â§a" + user.getStat(Stat.HOSTILEMOBKILLS));
-		lore.add("Â§8Â» Â§7Animal kills: Â§a" + user.getStat(Stat.ANIMALKILLS));
-		lore.add("Â§8Â» Â§7Damage taken: Â§a" + NumberUtils.convertDouble(user.getStatDouble(Stat.DAMAGETAKEN) / 2));
+		lore.add("§8» §7Hostile kills: §a" + user.getStat(Stat.HOSTILEMOBKILLS));
+		lore.add("§8» §7Animal kills: §a" + user.getStat(Stat.ANIMALKILLS));
+		lore.add("§8» §7Damage taken: §a" + NumberUtils.convertDouble(user.getStatDouble(Stat.DAMAGETAKEN) / 2));
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
@@ -92,13 +92,13 @@ public class InvGUI {
 		
 		ItemStack pvpmining = new ItemStack (Material.DIAMOND_AXE);
 		ItemMeta pvpminingMeta = pvpmining.getItemMeta();
-		pvpminingMeta.setDisplayName("Â§8Â» Â§6PvP & Mining Stats Â§8Â«");
+		pvpminingMeta.setDisplayName("§8» §6PvP & Mining Stats §8«");
 		lore.add(" ");
-		lore.add("Â§8Â» Â§7Highest Arena Killstreak: Â§a" + user.getStat(Stat.ARENAKILLSTREAK));
-		lore.add("Â§8Â» Â§7Highest Killstreak: Â§a" + user.getStat(Stat.KILLSTREAK));
+		lore.add("§8» §7Highest Arena Killstreak: §a" + user.getStat(Stat.ARENAKILLSTREAK));
+		lore.add("§8» §7Highest Killstreak: §a" + user.getStat(Stat.KILLSTREAK));
 		lore.add(" ");
-		lore.add("Â§8Â» Â§7Kills: Â§a" + user.getStat(Stat.KILLS));
-		lore.add("Â§8Â» Â§7Deaths: Â§a" + user.getStat(Stat.DEATHS));
+		lore.add("§8» §7Kills: §a" + user.getStat(Stat.KILLS));
+		lore.add("§8» §7Deaths: §a" + user.getStat(Stat.DEATHS));
 		
 		double kdr;
 		if (user.getStat(Stat.DEATHS) == 0) {
@@ -107,13 +107,13 @@ public class InvGUI {
 			kdr = ((double) user.getStat(Stat.KILLS)) / ((double) user.getStat(Stat.DEATHS));
 		}
 		
-		lore.add("Â§8Â» Â§7KDR: Â§a" + NumberUtils.convertDouble(kdr));
+		lore.add("§8» §7KDR: §a" + NumberUtils.convertDouble(kdr));
 		lore.add(" ");
-		lore.add("Â§8Â» Â§7Diamonds mined: Â§a" + user.getStat(Stat.DIAMONDS));
-		lore.add("Â§8Â» Â§7Gold mined: Â§a" + user.getStat(Stat.GOLD));
+		lore.add("§8» §7Diamonds mined: §a" + user.getStat(Stat.DIAMONDS));
+		lore.add("§8» §7Gold mined: §a" + user.getStat(Stat.GOLD));
 		lore.add(" ");
-		lore.add("Â§8Â» Â§7Arena Kills: Â§a" + user.getStat(Stat.ARENAKILLS));
-		lore.add("Â§8Â» Â§7Arena Deaths: Â§a" + user.getStat(Stat.ARENADEATHS));
+		lore.add("§8» §7Arena Kills: §a" + user.getStat(Stat.ARENAKILLS));
+		lore.add("§8» §7Arena Deaths: §a" + user.getStat(Stat.ARENADEATHS));
 		
 		double arenakdr;
 		if (user.getStat(Stat.ARENADEATHS) == 0) {
@@ -122,7 +122,7 @@ public class InvGUI {
 			arenakdr = ((double) user.getStat(Stat.ARENAKILLS)) / ((double) user.getStat(Stat.ARENADEATHS));
 		}
 		
-		lore.add("Â§8Â» Â§7Arena KDR: Â§a" + NumberUtils.convertDouble(arenakdr));
+		lore.add("§8» §7Arena KDR: §a" + NumberUtils.convertDouble(arenakdr));
 		lore.add(" ");
 		pvpminingMeta.setLore(lore); 
 		pvpminingMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
@@ -133,17 +133,17 @@ public class InvGUI {
 		
 		ItemStack misc = new ItemStack (Material.NETHER_STALK);
 		ItemMeta miscMeta = misc.getItemMeta();
-		miscMeta.setDisplayName("Â§8Â» Â§6Misc Stats Â§8Â«");
+		miscMeta.setDisplayName("§8» §6Misc Stats §8«");
 		lore.add(" ");
-		lore.add("Â§8Â» Â§7Golden Apples eaten: Â§a" + user.getStat(Stat.GOLDENAPPLESEATEN));
-		lore.add("Â§8Â» Â§7Golden Heads eaten: Â§a" + user.getStat(Stat.GOLDENHEADSEATEN));
-		lore.add("Â§8Â» Â§7Potions drunk: Â§a" + user.getStat(Stat.POTIONS));
+		lore.add("§8» §7Golden Apples eaten: §a" + user.getStat(Stat.GOLDENAPPLESEATEN));
+		lore.add("§8» §7Golden Heads eaten: §a" + user.getStat(Stat.GOLDENHEADSEATEN));
+		lore.add("§8» §7Potions drunk: §a" + user.getStat(Stat.POTIONS));
 		lore.add(" ");
-		lore.add("Â§8Â» Â§7Nethers entered: Â§a" + user.getStat(Stat.NETHER));
-		lore.add("Â§8Â» Â§7Ends entered: Â§a" + user.getStat(Stat.END));
+		lore.add("§8» §7Nethers entered: §a" + user.getStat(Stat.NETHER));
+		lore.add("§8» §7Ends entered: §a" + user.getStat(Stat.END));
 		lore.add(" ");
-		lore.add("Â§8Â» Â§7Horses tamed: Â§a" + user.getStat(Stat.HORSESTAMED));
-		lore.add("Â§8Â» Â§7Wolves tamed: Â§a" + user.getStat(Stat.WOLVESTAMED));
+		lore.add("§8» §7Horses tamed: §a" + user.getStat(Stat.HORSESTAMED));
+		lore.add("§8» §7Wolves tamed: §a" + user.getStat(Stat.WOLVESTAMED));
 		lore.add(" ");
 		miscMeta.setLore(lore);
 		misc.setItemMeta(miscMeta);
@@ -175,7 +175,7 @@ public class InvGUI {
 		pagesForPlayer.put(player, new HashMap<Integer, Inventory>());
 		
 		for (int current = 1; current <= pages; current++) {
-			inv = Bukkit.createInventory(null, 54, "Â» Â§7Player Selector");
+			inv = Bukkit.createInventory(null, 54, "» §7Player Selector");
 			
 			for (int i = 0; i < 35; i++) {
 				if (list.size() < 1) {
@@ -190,8 +190,8 @@ public class InvGUI {
 				
 				ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 				SkullMeta meta = (SkullMeta) item.getItemMeta();
-				meta.setDisplayName("Â§a" + target.getName());
-				meta.setLore(Arrays.asList("Â§7Click to teleport."));
+				meta.setDisplayName("§a" + target.getName());
+				meta.setLore(Arrays.asList("§7Click to teleport."));
 				meta.setOwner(target.getName());
 				item.setItemMeta(meta);
 				inv.setItem(i, item);
@@ -200,13 +200,13 @@ public class InvGUI {
 			ItemStack nextpage = new ItemStack (Material.ARROW);
 			ItemMeta pagemeta = nextpage.getItemMeta();
 			pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
-			pagemeta.setLore(Arrays.asList("Â§7Switch to the next page."));
+			pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
 			nextpage.setItemMeta(pagemeta);
 			
 			ItemStack prevpage = new ItemStack (Material.ARROW);
 			ItemMeta prevmeta = prevpage.getItemMeta();
 			prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
-			prevmeta.setLore(Arrays.asList("Â§7Switch to the previous page."));
+			prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
 			prevpage.setItemMeta(prevmeta);
 			
 			if (current != 1) {
@@ -236,7 +236,7 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openPlayerInventory(final Player player, final Player target) {
-		final Inventory inv = Bukkit.getServer().createInventory(target, 54, "Â» Â§7" + target.getName() + "'s Inventory");
+		final Inventory inv = Bukkit.getServer().createInventory(target, 54, "» §7" + target.getName() + "'s Inventory");
 	
 		invsee.put(inv, new BukkitRunnable() {
 			public void run() {
@@ -249,25 +249,25 @@ public class InvGUI {
 				
 				ItemStack info = new ItemStack (Material.BOOK);
 				ItemMeta infoMeta = info.getItemMeta();
-				infoMeta.setDisplayName("Â§8Â» Â§6Player Info Â§8Â«");
+				infoMeta.setDisplayName("§8» §6Player Info §8«");
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add("Â§8Â» Â§7Name: Â§a" + target.getName());
+				lore.add("§8» §7Name: §a" + target.getName());
 				lore.add(" ");
 				int health = (int) target.getHealth();
-				lore.add("Â§8Â» Â§7Hearts: Â§6" + (((double) health) / 2) + "Â§4â™¥");
-				lore.add("Â§8Â» Â§7Percent: Â§6" + NumberUtils.makePercent(target.getHealth()) + "%");
-				lore.add("Â§8Â» Â§7Hunger: Â§6" + (target.getFoodLevel() / 2));
-				lore.add("Â§8Â» Â§7Xp level: Â§6" + target.getLevel());
-				lore.add("Â§8Â» Â§7Location: Â§6x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ() + " (" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ")");
+				lore.add("§8» §7Hearts: §6" + (((double) health) / 2) + "§4™¥");
+				lore.add("§8» §7Percent: §6" + NumberUtils.makePercent(target.getHealth()) + "%");
+				lore.add("§8» §7Hunger: §6" + (target.getFoodLevel() / 2));
+				lore.add("§8» §7Xp level: §6" + target.getLevel());
+				lore.add("§8» §7Location: §6x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ() + " (" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ")");
 				lore.add(" ");
-				lore.add("Â§8Â» Â§cPotion effects:");
+				lore.add("§8» §cPotion effects:");
 				
 				if (target.getActivePotionEffects().size() == 0) {
-					lore.add("Â§8Â» Â§7None");
+					lore.add("§8» §7None");
 				}
 				
 				for (PotionEffect effects : target.getActivePotionEffects()) {
-					lore.add("Â§8Â» Â§7P:Â§6" + NameUtils.getPotionName(effects.getType()) + " Â§7T:Â§6" + (effects.getAmplifier() + 1) + " Â§7D:Â§6" + DateUtils.ticksToString(effects.getDuration() / 20));
+					lore.add("§8» §7P:§6" + NameUtils.getPotionName(effects.getType()) + " §7T:§6" + (effects.getAmplifier() + 1) + " §7D:§6" + DateUtils.ticksToString(effects.getDuration() / 20));
 				}
 				
 				infoMeta.setLore(lore);
@@ -278,7 +278,7 @@ public class InvGUI {
 				for (int i = 9; i < 18; i++) {
 					ItemStack glass = new ItemStack (Material.STAINED_GLASS_PANE, 1, (short) 15);
 					ItemMeta glassMeta = glass.getItemMeta();
-					glassMeta.setDisplayName("Â§0:>");
+					glassMeta.setDisplayName("§0:>");
 					glass.setItemMeta(glassMeta);
 					inv.setItem(8, info);
 					inv.setItem(i, glass);
@@ -320,7 +320,7 @@ public class InvGUI {
 		pagesForPlayer.put(player, new HashMap<Integer, Inventory>());
 		
 		for (int current = 1; current <= pages; current++) {
-			inv = Bukkit.createInventory(null, 54, "Â» Â§7" + host + "'s HoF, Page " + current);
+			inv = Bukkit.createInventory(null, 54, "» §7" + host + "'s HoF, Page " + current);
 			
 			for (int i = 0; i < 35; i++) {
 				if (list.size() < 1) {
@@ -336,32 +336,32 @@ public class InvGUI {
 				
 				ItemStack item = new ItemStack (Material.GOLDEN_APPLE, 1, isSpecial ? (short) 1 : (short) 0);
 				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("Â§8Â» Â§6" + host + "'s #" + target + " Â§8Â«");
+				meta.setDisplayName("§8» §6" + host + "'s #" + target + " §8«");
 				
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add("Â§7" + settings.getHOF().getString(host + "." + target + ".date", "N/A"));
+				lore.add("§7" + settings.getHOF().getString(host + "." + target + ".date", "N/A"));
 				lore.add(" ");
-				lore.add("Â§8Â» Â§cWinners:");
+				lore.add("§8» §cWinners:");
 				
 				for (String winners : settings.getHOF().getStringList(host + "." + target + ".winners")) {
-					lore.add("Â§8Â» Â§7" + winners);
+					lore.add("§8» §7" + winners);
 				}
 				
 				lore.add(" ");
-				lore.add("Â§8Â» Â§cKills:");
-				lore.add("Â§8Â» Â§7" + settings.getHOF().getString(host + "." + target + ".kills", "-1"));
+				lore.add("§8» §cKills:");
+				lore.add("§8» §7" + settings.getHOF().getString(host + "." + target + ".kills", "-1"));
 				
 				if (!settings.getHOF().getString(host + "." + target + ".teamsize", "FFA").isEmpty()) {
 					lore.add(" ");
-					lore.add("Â§8Â» Â§cTeamsize:");
-					lore.add("Â§8Â» Â§7" + settings.getHOF().getString(host + "." + target + ".teamsize", "FFA"));
+					lore.add("§8» §cTeamsize:");
+					lore.add("§8» §7" + settings.getHOF().getString(host + "." + target + ".teamsize", "FFA"));
 				}
 				
 				lore.add(" ");
-				lore.add("Â§8Â» Â§cScenario:");
+				lore.add("§8» §cScenario:");
 				
 				for (String scenario : settings.getHOF().getString(host + "." + target + ".scenarios", "Vanilla+").split(", ")) {
-					lore.add("Â§8Â» Â§7" + scenario);
+					lore.add("§8» §7" + scenario);
 				}
 				
 				lore.add(" ");
@@ -373,29 +373,29 @@ public class InvGUI {
 			ItemStack nextpage = new ItemStack (Material.ARROW);
 			ItemMeta pagemeta = nextpage.getItemMeta();
 			pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
-			pagemeta.setLore(Arrays.asList("Â§7Switch to the next page."));
+			pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
 			nextpage.setItemMeta(pagemeta);
 			
 			ItemStack prevpage = new ItemStack (Material.ARROW);
 			ItemMeta prevmeta = prevpage.getItemMeta();
 			prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
-			prevmeta.setLore(Arrays.asList("Â§7Switch to the previous page."));
+			prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
 			prevpage.setItemMeta(prevmeta);
 			
 			String name = GameUtils.getHostName(GameUtils.getHostConfigUUID(host));
 			
 			ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-			headMeta.setDisplayName("Â§8Â» Â§6Host Info Â§8Â«");
+			headMeta.setDisplayName("§8» §6Host Info §8«");
 			headMeta.setOwner(name);
 			
 			ArrayList<String> headLore = new ArrayList<String>();
 			headLore.add(" ");
-			headLore.add("Â§8Â» Â§7Total games hosted: Â§6" + settings.getHOF().getConfigurationSection(host).getKeys(false).size());
-			headLore.add("Â§8Â» Â§7Rank: Â§6" + NameUtils.capitalizeString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+			headLore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host).getKeys(false).size());
+			headLore.add("§8» §7Rank: §6" + NameUtils.capitalizeString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
 			headLore.add(" ");
-			headLore.add("Â§8Â» Â§7Host name: Â§6" + host);
-			headLore.add("Â§8Â» Â§7IGN: Â§6" + name);
+			headLore.add("§8» §7Host name: §6" + host);
+			headLore.add("§8» §7IGN: §6" + name);
 			headLore.add(" ");
 			headMeta.setLore(headLore);
 			head.setItemMeta(headMeta);
@@ -427,151 +427,151 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openConfigOptions(Player player) {
-		Inventory inv = Bukkit.getServer().createInventory(null, 54, "Â» Â§7Game config");
+		Inventory inv = Bukkit.getServer().createInventory(null, 54, "» §7Game config");
 		Game game = Game.getInstance();
 		
 		ItemStack absorption = new ItemStack (Material.GOLDEN_APPLE);
 		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName((game.absorption() ? "Â§a" : "Â§c") + "Absorption");
+		absorptionMeta.setDisplayName((game.absorption() ? "§a" : "§c") + "Absorption");
 		absorption.setItemMeta(absorptionMeta);
 		inv.setItem(0, absorption);
 		
 		ItemStack heads = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 		ItemMeta headsMeta = heads.getItemMeta();
-		headsMeta.setDisplayName((game.goldenHeads() ? "Â§a" : "Â§c") + "Golden Heads");
+		headsMeta.setDisplayName((game.goldenHeads() ? "§a" : "§c") + "Golden Heads");
 		heads.setItemMeta(headsMeta);
 		inv.setItem(1, heads);
 		
 		ItemStack pearl = new ItemStack (Material.ENDER_PEARL);
 		ItemMeta peralMeta = pearl.getItemMeta();
-		peralMeta.setDisplayName((game.pearlDamage() ? "Â§a" : "Â§c") + "Pearl Damage");
+		peralMeta.setDisplayName((game.pearlDamage() ? "§a" : "§c") + "Pearl Damage");
 		pearl.setItemMeta(peralMeta);
 		inv.setItem(2, pearl);
 		
 		ItemStack notchApples = new ItemStack (Material.GOLDEN_APPLE, 1, (short) 1);
 		ItemMeta notchMeta = notchApples.getItemMeta();
-		notchMeta.setDisplayName((game.notchApples() ? "Â§a" : "Â§c") + "Notch Apples");
+		notchMeta.setDisplayName((game.notchApples() ? "§a" : "§c") + "Notch Apples");
 		notchApples.setItemMeta(notchMeta);
 		inv.setItem(3, notchApples);
 		
 		ItemStack hearts = new ItemStack (Material.INK_SACK, 1, (short) 1);
 		ItemMeta heartsMeta = hearts.getItemMeta();
-		heartsMeta.setDisplayName((game.heartsOnTab() ? "Â§a" : "Â§c") + "Hearts on tab");
+		heartsMeta.setDisplayName((game.heartsOnTab() ? "§a" : "§c") + "Hearts on tab");
 		hearts.setItemMeta(heartsMeta);
 		inv.setItem(5, hearts);
 		
 		ItemStack hardcore = new ItemStack (Material.REDSTONE);
 		ItemMeta hardcoreMeta = hardcore.getItemMeta();
-		hardcoreMeta.setDisplayName((game.hardcoreHearts() ? "Â§a" : "Â§c") + "Hardcore Hearts");
+		hardcoreMeta.setDisplayName((game.hardcoreHearts() ? "§a" : "§c") + "Hardcore Hearts");
 		hardcore.setItemMeta(hardcoreMeta);
 		inv.setItem(6, hardcore);
 		
 		ItemStack tab = new ItemStack (Material.SIGN);
 		ItemMeta tabMeta = tab.getItemMeta();
-		tabMeta.setDisplayName((game.tabShowsHealthColor() ? "Â§a" : "Â§c") + "Tab health color");
+		tabMeta.setDisplayName((game.tabShowsHealthColor() ? "§a" : "§c") + "Tab health color");
 		tab.setItemMeta(tabMeta);
 		inv.setItem(7, tab);
 		
 		ItemStack rr = new ItemStack (Material.PAINTING);
 		ItemMeta rrMeta = rr.getItemMeta();
-		rrMeta.setDisplayName((game.isRecordedRound() ? "Â§a" : "Â§c") + "Recorded Round");
+		rrMeta.setDisplayName((game.isRecordedRound() ? "§a" : "§c") + "Recorded Round");
 		rr.setItemMeta(rrMeta);
 		inv.setItem(8, rr);
 		
 		ItemStack nether = new ItemStack (Material.NETHER_STALK);
 		ItemMeta netherMeta = nether.getItemMeta();
-		netherMeta.setDisplayName((game.nether() ? "Â§a" : "Â§c") + "Nether");
+		netherMeta.setDisplayName((game.nether() ? "§a" : "§c") + "Nether");
 		nether.setItemMeta(netherMeta);
 		inv.setItem(18, nether);
 		
 		ItemStack end = new ItemStack (Material.ENDER_PORTAL_FRAME);
 		ItemMeta endMeta = end.getItemMeta();
-		endMeta.setDisplayName((game.theEnd() ? "Â§a" : "Â§c") + "The End");
+		endMeta.setDisplayName((game.theEnd() ? "§a" : "§c") + "The End");
 		end.setItemMeta(endMeta);
 		inv.setItem(19, end);
 		
 		ItemStack strip = new ItemStack (Material.DIAMOND_PICKAXE);
 		ItemMeta stripMeta = strip.getItemMeta();
-		stripMeta.setDisplayName((game.antiStripmine() ? "Â§a" : "Â§c") + "Anti Stripmine");
+		stripMeta.setDisplayName((game.antiStripmine() ? "§a" : "§c") + "Anti Stripmine");
 		stripMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		strip.setItemMeta(stripMeta);
 		inv.setItem(21, strip);
 		
 		ItemStack death = new ItemStack (Material.BLAZE_ROD);
 		ItemMeta deathMeta = death.getItemMeta();
-		deathMeta.setDisplayName((game.deathLightning() ? "Â§a" : "Â§c") + "Death Lightning");
+		deathMeta.setDisplayName((game.deathLightning() ? "§a" : "§c") + "Death Lightning");
 		death.setItemMeta(deathMeta);
 		inv.setItem(22, death);
 		
 		ItemStack horse = new ItemStack (Material.SADDLE);
 		ItemMeta horseMeta = horse.getItemMeta();
-		horseMeta.setDisplayName((game.horses() ? "Â§a" : "Â§c") + "Horses");
+		horseMeta.setDisplayName((game.horses() ? "§a" : "§c") + "Horses");
 		horse.setItemMeta(horseMeta);
 		inv.setItem(24, horse);
 		
 		ItemStack armor = new ItemStack (Material.IRON_BARDING);
 		ItemMeta armorMeta = armor.getItemMeta();
-		armorMeta.setDisplayName((game.horseArmor() ? "Â§a" : "Â§c") + "Horse Armor");
+		armorMeta.setDisplayName((game.horseArmor() ? "§a" : "§c") + "Horse Armor");
 		armor.setItemMeta(armorMeta);
 		inv.setItem(25, armor);
 		
 		ItemStack healing = new ItemStack (Material.BREAD);
 		ItemMeta healingMeta = healing.getItemMeta();
-		healingMeta.setDisplayName((game.horseHealing() ? "Â§a" : "Â§c") + "Horse Healing");
+		healingMeta.setDisplayName((game.horseHealing() ? "§a" : "§c") + "Horse Healing");
 		healing.setItemMeta(healingMeta);
 		inv.setItem(26, healing);
 		
 		ItemStack ghast = new ItemStack (Material.GHAST_TEAR);
 		ItemMeta ghastMeta = ghast.getItemMeta();
-		ghastMeta.setDisplayName((game.ghastDropGold() ? "Â§a" : "Â§c") + "Ghast drop gold");
+		ghastMeta.setDisplayName((game.ghastDropGold() ? "§a" : "§c") + "Ghast drop gold");
 		ghast.setItemMeta(ghastMeta);
 		inv.setItem(43, ghast);
 		
 		ItemStack melon = new ItemStack (Material.SPECKLED_MELON);
 		ItemMeta melonMeta = melon.getItemMeta();
-		melonMeta.setDisplayName((game.goldenMelonNeedsIngots() ? "Â§a" : "Â§c") + "Golden Melon needs ingots");
+		melonMeta.setDisplayName((game.goldenMelonNeedsIngots() ? "§a" : "§c") + "Golden Melon needs ingots");
 		melon.setItemMeta(melonMeta);
 		inv.setItem(44, melon);
 		
 		ItemStack shears = new ItemStack (Material.SHEARS);
 		ItemMeta shearsMeta = shears.getItemMeta();
-		shearsMeta.setDisplayName((game.shears() ? "Â§a" : "Â§c") + "Shears");
+		shearsMeta.setDisplayName((game.shears() ? "§a" : "§c") + "Shears");
 		shears.setItemMeta(shearsMeta);
 		inv.setItem(45, shears);
 		
 		ItemStack terrain = new ItemStack (Material.GRASS);
 		ItemMeta terrainMeta = terrain.getItemMeta();
-		terrainMeta.setDisplayName((game.oldTerrain() ? "Â§a" : "Â§c") + "Old Terrain");
+		terrainMeta.setDisplayName((game.oldTerrain() ? "§a" : "§c") + "Old Terrain");
 		terrain.setItemMeta(terrainMeta);
 		inv.setItem(46, terrain);
 		
 		ItemStack bookshelves = new ItemStack (Material.BOOKSHELF);
 		ItemMeta bookMeta = bookshelves.getItemMeta();
-		bookMeta.setDisplayName((game.bookshelves() ? "Â§a" : "Â§c") + "Bookshelves");
+		bookMeta.setDisplayName((game.bookshelves() ? "§a" : "§c") + "Bookshelves");
 		bookshelves.setItemMeta(bookMeta);
 		inv.setItem(47, bookshelves);
 		
 		ItemStack tier2 = new ItemStack (Material.GLOWSTONE_DUST);
 		ItemMeta tier2Meta = tier2.getItemMeta();
-		tier2Meta.setDisplayName((game.tier2() ? "Â§a" : "Â§c") + "Tier 2");
+		tier2Meta.setDisplayName((game.tier2() ? "§a" : "§c") + "Tier 2");
 		tier2.setItemMeta(tier2Meta);
 		inv.setItem(50, tier2);
 		
 		ItemStack splash = new ItemStack (Material.POTION, 1, (short) 16424);
 		ItemMeta splashMeta = splash.getItemMeta();
-		splashMeta.setDisplayName((game.splash() ? "Â§a" : "Â§c") + "Splash");
+		splashMeta.setDisplayName((game.splash() ? "§a" : "§c") + "Splash");
 		splash.setItemMeta(splashMeta);
 		inv.setItem(51, splash);
 		
 		ItemStack str = new ItemStack (Material.BLAZE_POWDER);
 		ItemMeta strMeta = str.getItemMeta();
-		strMeta.setDisplayName((game.strength() ? "Â§a" : "Â§c") + "Strength");
+		strMeta.setDisplayName((game.strength() ? "§a" : "§c") + "Strength");
 		str.setItemMeta(strMeta);
 		inv.setItem(52, str);
 		
 		ItemStack nerf = new ItemStack (Material.POTION, 1, (short) 8233);
 		ItemMeta nerfMeta = nerf.getItemMeta();
-		nerfMeta.setDisplayName((game.nerfedStrength() ? "Â§a" : "Â§c") + "Nerfed Strength");
+		nerfMeta.setDisplayName((game.nerfedStrength() ? "§a" : "§c") + "Nerfed Strength");
 		nerf.setItemMeta(nerfMeta);
 		inv.setItem(53, nerf);
 		
