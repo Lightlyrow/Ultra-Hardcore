@@ -25,7 +25,6 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.ultrahardcore.Main.BorderShrink;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.User.Stat;
-import com.leontg77.ultrahardcore.commands.team.TeamCommand;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.events.MeetupEvent;
@@ -214,7 +213,7 @@ public class Timers {
 					Main.teamKills.put(team.getName(), 0);
 					
 					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					TeamCommand.savedTeams.put(team.getName(), players);
+					teams.getSavedTeams().put(team.getName(), players);
 				}
 				
 				for (String entry : sb.board.getEntries()) {
