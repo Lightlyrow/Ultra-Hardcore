@@ -95,7 +95,7 @@ public class SpreadCommand implements CommandExecutor {
 			int t = 0;
 			int s = 0;
 			
-			if (!game.isFFA() && game.getTeamSize() > 1) {
+			if (game.getTeamSize().toLowerCase().startsWith("cto")) {
 				for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
 					if (BoardManager.getInstance().board.getEntryTeam(whitelisted.getName()) == null) {
 						Team team = TeamManager.getInstance().findAvailableTeam();
