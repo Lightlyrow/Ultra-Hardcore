@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
@@ -35,14 +34,6 @@ public class TopCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		ArrayList<String> toReturn = new ArrayList<String>();
-		
-		if (args.length == 1) {
-    		for (Stat stat : Stat.values()) {
-    			toReturn.add(stat.name().toLowerCase());
-    		}
-        }
-		
-    	return toReturn;
+		return new ArrayList<String>();
 	}
 }
