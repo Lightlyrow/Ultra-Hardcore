@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,6 +33,8 @@ import com.leontg77.ultrahardcore.utils.FileUtils;
  * @author LeonTG77
  */
 public class User {
+	private static File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+	
 	private Player player;
 	private String uuid;
 	
@@ -65,6 +68,28 @@ public class User {
 	}
 	
 	/**
+	 * Check if the userdata folder has a file with the given uuid.
+	 * 
+	 * @param uuid The uuid checking for.
+	 * @return True if it exist, false otherwise.
+	 */
+	public static boolean fileExist(UUID uuid) {
+		if (!folder.exists() || !folder.isDirectory()) {
+			return false;
+        }
+		
+		for (File file : folder.listFiles()) {
+			String fileName = file.getName().substring(0, file.getName().length() - 4);
+			
+			if (fileName.equals(uuid.toString())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Constuctor for player data.
 	 * <p>
 	 * This will set up the data for the player and create missing data.
@@ -76,8 +101,6 @@ public class User {
         if (!plugin.getDataFolder().exists()) {
         	plugin.getDataFolder().mkdir();
         }
-        
-        File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
         
         if (!folder.exists()) {
         	folder.mkdir(); 
