@@ -40,17 +40,17 @@ public class PacketUtils {
 		CraftPlayer craft = (CraftPlayer) player;
 		
 		IChatBaseComponent headerJSON = ChatSerializer.a(
-	      	"{text:'Â§4Â§lArctic UHCÂ§r Â§8- Â§aÂ§o@ArcticUHCÂ§r\n"
-	      	+ "Â§7Follow us for games and updates!\n'}"
+	      	"{text:'§4§lArctic UHC§r §8- §a§o@ArcticUHC§r\n"
+	      	+ "§7Follow us for games and updates!\n'}"
 	    );
 
-		String gamemode = GameUtils.getTeamSize() + "- " + game.getScenarios();
+		String gamemode = GameUtils.getTeamSize(false) + " " + game.getScenarios();
 		UUID host = game.getHost();
-		int teamsize = game.getTeamSize();
+		String teamsize = game.getTeamSize().toLowerCase();
 	        
 		IChatBaseComponent footerJSON = ChatSerializer.a(
-			"{text:'\nÂ§7" + gamemode + (teamsize > 0 || teamsize < -1 ? 
-			"\nÂ§4Host Â§8Â» Â§a" + Bukkit.getOfflinePlayer(host).getName() : "") + "'}"
+			"{text:'\n§7" + gamemode + (!teamsize.startsWith("no") && !teamsize.startsWith("open") ? 
+			"\n§4Host §8» §a" + Bukkit.getOfflinePlayer(host).getName() : "") + "'}"
 		);
 	        
 		PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
@@ -60,7 +60,7 @@ public class PacketUtils {
 			field.setAccessible(true);
 			field.set(headerPacket, footerJSON);
 		} catch (Exception e) {
-			Bukkit.getServer().getLogger().severe("Â§cCould not send tab list packets to " + player.getName());
+			Bukkit.getServer().getLogger().severe("§cCould not send tab list packets to " + player.getName());
 			return;
 		}
 		        
@@ -85,7 +85,7 @@ public class PacketUtils {
 			field.setAccessible(true);
 			field.set(headerPacket, footerJSON);
 		} catch (Exception e) {
-			Bukkit.getServer().getLogger().severe("Â§cCould not send tab list packets to " + player.getName());
+			Bukkit.getServer().getLogger().severe("§cCould not send tab list packets to " + player.getName());
 			return;
 		}
 		        
