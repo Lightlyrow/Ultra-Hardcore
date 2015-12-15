@@ -37,7 +37,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 	 * @author LeonTG77
 	 */
 	public enum ConfigValue {
-		APPLERATES, BORDERSHRINK, FLINTRATES, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PVP, RRNAME, SCENARIOS, TEAMSIZE, WORLD, FFA, HEADSHEAL, SHEARRATES, STATE;
+		APPLERATES, BORDERSHRINK, FLINTRATES, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PVP, RRNAME, SCENARIOS, TEAMSIZE, WORLD, HEADSHEAL, SHEARRATES, STATE;
 	}
 	
 	@Override
@@ -134,19 +134,6 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			
 			PlayerUtils.broadcast(Main.PREFIX + "The server is now in §a" + state.name().toLowerCase() + "§7 mode.");
 			State.setState(state);
-			break;
-		case FFA:
-			if (args[1].equalsIgnoreCase("true")) {
-				game.setFFA(true);
-
-				PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + "- " + game.getScenarios() + "§7.");
-			} else if (args[1].equalsIgnoreCase("false")) {
-				game.setFFA(false);
-
-				PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + "- " + game.getScenarios() + "§7.");
-			} else {
-				sender.sendMessage(ChatColor.RED + "FFA can only be true or false, not " + args[1] + ".");
-			}
 			break;
 		case FLINTRATES:
 			int flintRate;
@@ -257,16 +244,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			game.setShearRates(shearRate);
 			break;
 		case TEAMSIZE:
-			int teamSize;
-			
-			try {
-				teamSize = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild teamsize.");
-				return true;
-			}
-			
-			game.setTeamSize(teamSize);
+			game.setTeamSize(args[1]);
 			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + "- " + game.getScenarios() + "§7.");
 			break;
 		case WORLD:
