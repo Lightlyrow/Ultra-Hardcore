@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -100,7 +98,6 @@ import com.leontg77.ultrahardcore.commands.team.TlCommand;
 import com.leontg77.ultrahardcore.commands.user.HotbarCommand;
 import com.leontg77.ultrahardcore.commands.user.InfoCommand;
 import com.leontg77.ultrahardcore.commands.user.RankCommand;
-import com.leontg77.ultrahardcore.commands.user.StatsCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.HOFListener;
@@ -132,6 +129,8 @@ import com.leontg77.ultrahardcore.worlds.AntiStripmine;
 import com.leontg77.ultrahardcore.worlds.BiomeSwap;
 import com.leontg77.ultrahardcore.worlds.OldTerrain;
 import com.leontg77.ultrahardcore.worlds.WorldManager;
+
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 /**
  * Main class of the UHC plugin.
@@ -226,6 +225,7 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new ConfigListener(), this);
 		manager.registerEvents(new HOFListener(), this);
 		manager.registerEvents(InvGUI.getGameInfo(), this);
+		manager.registerEvents(InvGUI.getTopStats(), this);
 		manager.registerEvents(new InvseeListener(), this);
 		manager.registerEvents(new SelectorListener(), this);
 		manager.registerEvents(new SpectatorListener(), this);
@@ -279,8 +279,6 @@ public class Main extends JavaPlugin {
 		getCommand("spread").setExecutor(new SpreadCommand());
 		getCommand("ac").setExecutor(new StaffChatCommand());
 		getCommand("start").setExecutor(new StartCommand());
-		getCommand("stats").setExecutor(new StatsCommand());
-		getCommand("team").setExecutor(new TeamCommand());
 		getCommand("tempban").setExecutor(new TempbanCommand());
 		getCommand("text").setExecutor(new TextCommand());
 		getCommand("timeleft").setExecutor(new TimeLeftCommand());
