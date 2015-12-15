@@ -1,15 +1,16 @@
 package com.leontg77.ultrahardcore.commands.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 
 /**
@@ -17,22 +18,23 @@ import com.leontg77.ultrahardcore.inventory.InvGUI;
  * 
  * @author LeonTG77
  */
-public class StatsCommand implements CommandExecutor {
+public class StatsCommand extends UHCCommand {
 	
+	public StatsCommand() {
+		super("stats", "[player]");
+	}
+
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		Game game = Game.getInstance();
-		
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can view the own stats.");
-			return true;
+			throw new CommandException("Only players can view someones stats.");
 		}
 		
 		Player player = (Player) sender;
+		Game game = Game.getInstance();
 		
 		if (game.isRecordedRound()) {
-			sender.sendMessage(Main.PREFIX + "Stats are disabled in RR's.");
-			return true;
+			throw new CommandException("Stats are disabled in Recorded Rounds.");
 		}
 
 		InvGUI inv = InvGUI.getInstance();
@@ -45,12 +47,20 @@ public class StatsCommand implements CommandExecutor {
 		}
 		
 		if (target == null) {
-			sender.sendMessage(ChatColor.RED + args[0] + " is not online.");
-			return true;
+			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
 		User user = User.get(target);
 		inv.openStats(player, user);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		if (args.length != 1) {
+			return new ArrayList<String>();
+		}
+		
+		return null;
 	}
 }
