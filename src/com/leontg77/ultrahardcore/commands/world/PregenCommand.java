@@ -46,7 +46,7 @@ public class PregenCommand extends UHCCommand {
 		World world = Bukkit.getWorld(args[0]);
 		
 		if (world == null) {
-			throw new CommandException("The world '" + args[0] + "'  does not exist.");
+			throw new CommandException("The world '" + args[0] + "' does not exist.");
 		}
 		
 		int radius = parseInt(args[1], "radius");

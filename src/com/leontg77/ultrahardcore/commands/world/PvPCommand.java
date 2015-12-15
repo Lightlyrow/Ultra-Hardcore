@@ -42,7 +42,7 @@ public class PvPCommand extends UHCCommand {
 		World world = Bukkit.getWorld(args[0]);
 		
 		if (world == null) {
-			throw new CommandException("The world '" + args[0] + "'  does not exist.");
+			throw new CommandException("The world '" + args[0] + "' does not exist.");
 		}
 
 		sender.sendMessage(Main.PREFIX + "PvP in '§a" + world.getName() + "§7' has been " + booleanToString(enable) + ".");
