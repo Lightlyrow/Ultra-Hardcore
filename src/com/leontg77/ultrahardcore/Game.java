@@ -38,36 +38,11 @@ public class Game {
 	// TODO: <-- just for the marker.
 	
 	/**
-	 * Change the FFA mode.
-	 * 
-	 * @param ffa True to enable, false to disable.
-	 */
-	public void setFFA(boolean ffa) {
-		settings.getConfig().set("ffa", ffa);
-		settings.saveConfig();
-		
-		for (Player online : PlayerUtils.getPlayers()) {
-			PacketUtils.setTabList(online);
-		}
-		
-		InvGUI.getGameInfo().update();
-	}
-	
-	/**
-	 * Check if the game is in FFA mode
-	 * 
-	 * @return True if it is, false otherwise.
-	 */
-	public boolean isFFA() {
-		return settings.getConfig().getBoolean("ffa", true);
-	}
-	
-	/**
 	 * Set the team size of the game.
 	 * 
 	 * @param teamSize the new teamsize.
 	 */
-	public void setTeamSize(int teamSize) {
+	public void setTeamSize(String teamSize) {
 		settings.getConfig().set("teamsize", teamSize);
 		settings.saveConfig();
 		
@@ -83,8 +58,8 @@ public class Game {
 	 * 
 	 * @return The teamsize.
 	 */
-	public int getTeamSize() {
-		return settings.getConfig().getInt("teamsize", 0);
+	public String getTeamSize() {
+		return settings.getConfig().getString("teamsize", "No");
 	}
 	
 	/**
