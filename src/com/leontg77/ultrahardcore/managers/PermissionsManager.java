@@ -1,8 +1,5 @@
 package com.leontg77.ultrahardcore.managers;
 
-import static com.leontg77.ultrahardcore.Main.plugin;
-
-import java.io.File;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -29,16 +26,8 @@ public class PermissionsManager {
 	 * @param player the player.
 	 */
 	public static void addPermissions(Player player) {
-		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-        boolean found = false;
-		
-        if (folder.exists()) {
-    		for (File file : folder.listFiles()) {
-    			if (file.getName().substring(0, file.getName().length() - 4).equals(player.getUniqueId().toString())) {
-    				found = true;
-    				break;
-    			}
-    		}
+		if (!User.fileExist(player.getUniqueId())) {
+			return;
         }
 		
 		if (!permissions.containsKey(player.getName())) {
@@ -47,15 +36,13 @@ public class PermissionsManager {
 
 		PermissionAttachment perm = permissions.get(player.getName());
 		
-		if (!found) {
-			return;
-		}
-		
 		User user = User.get(player);
 		Rank rank = user.getRank();
 		
 		perm.setPermission("uhc.border", true);
+		perm.setPermission("uhc.stats", true);
 		perm.setPermission("uhc.top", true);
+		perm.setPermission("uhc.team", true);
 		
 		if (rank == Rank.USER) {
 			return;
@@ -64,6 +51,8 @@ public class PermissionsManager {
 		if (rank == Rank.OWNER) {
 			player.setOp(true);
 			return;
+		} else {
+			player.setOp(false);
 		}
 
 		perm.setPermission("uhc.spectate", true);
