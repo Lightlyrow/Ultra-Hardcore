@@ -28,7 +28,7 @@ import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 
 public class GameInfo extends InvGUI implements Listener {
-	private Inventory inv = Bukkit.getServer().createInventory(null, 45, "» §7Game Information");
+	private Inventory inv = Bukkit.createInventory(null, 45, "» §7Game Information");
 	
 	@EventHandler
     public void onInventoryClick(InventoryClickEvent event) {	
@@ -232,7 +232,7 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add("§8» §7Meetup is after: §a" + game.getMeetup() + " minutes.");
 			lore.add(" ");
 			lore.add("§8» §cTeamsize:");
-			lore.add("§8» §7" + GameUtils.getAdvancedTeamSize());
+			lore.add("§8» §7" + GameUtils.getTeamSize(true));
 			lore.add(" ");
 			lore.add("§8» §cScenarios:");
 			for (String scen : game.getScenarios().split(", ")) {
