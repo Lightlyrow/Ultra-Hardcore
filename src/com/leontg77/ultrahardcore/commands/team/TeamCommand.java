@@ -7,7 +7,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -33,8 +32,7 @@ import net.md_5.bungee.api.chat.TextComponent;
  * @author LeonTG77
  */
 public class TeamCommand extends UHCCommand {
-	public static HashMap<Player, List<Player>> invites = new HashMap<Player, List<Player>>();
-	public static HashMap<String, List<String>> savedTeams = new HashMap<String, List<String>>();
+	public static HashMap<String, List<String>> invites = new HashMap<String, List<String>>();
 	
 	private int teamsize = 0;
 	
@@ -49,7 +47,7 @@ public class TeamCommand extends UHCCommand {
 		
 		if (args.length == 0) {
 			// the method returns true but hey, one less line :D
-			return sendHelp(sender);
+			return helpMenu(sender);
 		}
 		
 		if (args.length > 1) {
@@ -57,7 +55,7 @@ public class TeamCommand extends UHCCommand {
 			
 			if (args[0].equalsIgnoreCase("info")) {
 				if (!sender.hasPermission("uhc.team.admin")) {
-					return sendHelp(sender);
+					return helpMenu(sender);
 				}
 				
 				if (target == null) {
@@ -76,17 +74,20 @@ public class TeamCommand extends UHCCommand {
 				if (team == null) {
 					return true;
 				}
-				eams.containsKey(team.getName())) {
+				
+				if (!teams.getSavedTeams().containsKey(team.getName())) {
 					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					TeamCommand.savedTeams.put(team.getName(), players);
+					teams.getSavedTeams().put(team.getName(), players);
 				}
 				
 				StringBuilder list = new StringBuilder("");
 				int i = 1;
 				
-				for (String entry : savedTeams.get(team.getName())) {
+				List<String> savedTeam = teams.getSavedTeams().get(team.getName());
+				
+				for (String entry : savedTeam) {
 					if (list.length() > 0) {
-						if (i == savedTeams.get(team.getName()).size()) {
+						if (i == savedTeam.size()) {
 							list.append(" §7and §f");
 						} else {
 							list.append("§7, §f");
@@ -102,7 +103,6 @@ public class TeamCommand extends UHCCommand {
 					}
 					i++;
 				}
-				if (!savedT
 				
 				if (Main.teamKills.containsKey(team.getName())) {
 					sender.sendMessage("§8» §7Team Kills: §a" + Main.teamKills.get(team.getName()));
@@ -133,32 +133,30 @@ public class TeamCommand extends UHCCommand {
 				}
 				
 				if (target == null) {
-					sender.sendMessage(ChatColor.RED + args[1] + " is not online.");
-					return true;
+					throw new CommandException("'" + args[1] + "' is not online.");
 				}
 				
 				if (team.getSize() >= teamsize) {
-					sender.sendMessage(Main.PREFIX + "Your team is currently full.");
-					return true;
+					throw new CommandException("Your team is currently full.");
 				}
 
 				Team team1 = teams.getTeam(target);
 				
 				if (team1 != null) {
-					sender.sendMessage(Main.PREFIX + "That player is already on a team.");
-					return true;
+					throw new CommandException("'" + target.getName() + "' is already on a team.");
 				}
 				
 				teams.sendMessage(team, Main.PREFIX + ChatColor.GREEN + target.getName() + " §7has been invited to your team.");
 
 				if (!invites.containsKey(sender)) {
-					invites.put(player, new ArrayList<Player>());
+					invites.put(player.getName(), new ArrayList<String>());
 				}
-				invites.get(sender).add(target);
+				
+				invites.get(sender.getName()).add(target.getName());
 				target.sendMessage(Main.PREFIX + "You have been invited to §a" + sender.getName() + "'s §7team.");
 				
 				ComponentBuilder builder = new ComponentBuilder("");
-				builder.append(Main.PREFIX + "§6§l§nClick here to accept his request.");
+				builder.append(Main.PREFIX + "§b§n§oClick here to accept the request.");
 				builder.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/team accept " + sender.getName()));
 				builder.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] { new TextComponent("Click to join " + sender.getName() + "'s team.") }));
 				target.spigot().sendMessage(builder.create());
@@ -167,8 +165,7 @@ public class TeamCommand extends UHCCommand {
 			
 			if (args[0].equalsIgnoreCase("kick")) {
 				if (!(sender instanceof Player)) {
-					sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
-					return true;
+					throw new CommandException("Only players can create and manage teams.");
 				}
 				
 				Player player = (Player) sender;
@@ -181,33 +178,26 @@ public class TeamCommand extends UHCCommand {
 				Team team = teams.getTeam(player);
 				
 				if (team == null) {
-					sender.sendMessage(Main.PREFIX + "You are not on a team.");
-					return true;
+					throw new CommandException("You are not on a team.");
 				}
 				
 				if (target == null) {
-					sender.sendMessage(ChatColor.RED + args[1] + " is not online.");
-					return true;
+					throw new CommandException("'" + args[1] + "' is not online.");
 				}
 				
 				if (!team.getEntries().contains(target.getName())) {
-					sender.sendMessage(Main.PREFIX + "That player is not on your team.");
-					return true;
+					throw new CommandException("'" + target.getName() + "' is not on your team.");
 				}
 				
-				team.removeEntry(target.getName());
+				teams.leaveTeam(target);
 				target.sendMessage(Main.PREFIX + "You got kicked out of your team.");
-				
-				ArrayList<String> players = new ArrayList<String>(team.getEntries());
-				TeamCommand.savedTeams.put(team.getName(), players);
 				teams.sendMessage(team, Main.PREFIX + ChatColor.GREEN + target.getName() + " §7was kicked from your team.");
 				return true;
 			}
 			
 			if (args[0].equalsIgnoreCase("accept")) {
 				if (!(sender instanceof Player)) {
-					sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
-					return true;
+					throw new CommandException("Only players can create and manage teams.");
 				}
 				
 				Player player = (Player) sender;
@@ -218,176 +208,129 @@ public class TeamCommand extends UHCCommand {
 				}
 				
 				if (target == null) {
-					sender.sendMessage(ChatColor.RED + args[1] + " is not online.");
-					return true;
+					throw new CommandException("'" + args[1] + "' is not online.");
 				}
 				
-				if (player.getScoreboard().getEntryTeam(player.getName()) != null) {
-					sender.sendMessage(Main.PREFIX + "You are already on a team.");
-					return true;
+				if (teams.getTeam(player) != null) {
+					throw new CommandException("You are already on a team.");
 				}
 				
-				if (invites.containsKey(target) && invites.get(target).contains(sender)) {
-					Team team = teams.getTeam(target);
-					
-					if (team == null) {
-						sender.sendMessage(Main.PREFIX + "That player is not on a team.");
-						return true;
-					}
-					
-					if (team.getSize() >= teamsize) {
-						sender.sendMessage(Main.PREFIX + "That team is currently full.");
-						return true;
-					}
-				
-					sender.sendMessage(Main.PREFIX + "Request accepted.");
-					team.addEntry(sender.getName());
-					
-					teams.sendMessage(team, Main.PREFIX + ChatColor.GREEN + sender.getName() + " §7joined your team.");
-					
-					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					TeamCommand.savedTeams.put(team.getName(), players);
-					
-					invites.get(target).remove(sender);
-				} else {
+				if (!invites.containsKey(target.getName()) || !invites.get(target.getName()).contains(sender.getName())) {
 					sender.sendMessage(Main.PREFIX + ChatColor.GREEN + target.getName() + " §7hasn't sent you any requests.");
-				}
-				return true;
-			}
-			
-			if (args[0].equalsIgnoreCase("deny")) {
-				if (!game.teamManagement()) {
-					sender.sendMessage(Main.PREFIX + "Team management is currently disabled.");
-					return true;
-				}
-				
-				if (target == null) {
-					sender.sendMessage(ChatColor.RED + args[1] + " is not online.");
-					return true;
-				}
-				
-				if (invites.containsKey(target) && invites.get(target).contains(sender)) {
-					target.sendMessage(Main.PREFIX + ChatColor.GREEN + sender.getName() + " §7denied your request.");
-					sender.sendMessage(Main.PREFIX + "Request denied.");
-					
-					invites.get(target).remove(sender);
-				} else {
-					sender.sendMessage(Main.PREFIX + ChatColor.GREEN + target.getName() + " §7hasn't sent you any requests.");
-				}
-				return true;
-			}
-			
-			if (args[0].equalsIgnoreCase("remove")) {
-				if (!sender.hasPermission("uhc.team")) {
-					sendHelp(sender);
-					return true;
-				}
-				
-				if (target == null) {
-					OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[1]);
-					
-					Team team = teams.getTeam(offline);
-					
-					if (team == null) {
-						sender.sendMessage(ChatColor.RED + args[1] + " is not online.");
-						return true;
-					}
-					
-					sender.sendMessage(Main.PREFIX + ChatColor.GREEN + offline.getName() + " §7was removed from his team.");
-					teams.leaveTeam(offline);
-
-					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					TeamCommand.savedTeams.put(team.getName(), players);
 					return true;
 				}
 				
 				Team team = teams.getTeam(target);
 				
 				if (team == null) {
-					sender.sendMessage(Main.PREFIX + "That player is not on a team.");
+					throw new CommandException("'" + target.getName() + "' is not on a team");
+				}
+				
+				if (team.getSize() >= teamsize) {
+					throw new CommandException("That team is currently full.");
+				}
+				
+				teams.sendMessage(team, Main.PREFIX + ChatColor.GREEN + sender.getName() + " §7joined your team.");
+				sender.sendMessage(Main.PREFIX + "Request accepted, you joined their team.");
+				teams.joinTeam(team, player);
+				
+				invites.get(target.getName()).remove(sender.getName());
+				return true;
+			}
+			
+			if (args[0].equalsIgnoreCase("deny")) {
+				if (!(sender instanceof Player)) {
+					throw new CommandException("Only players can create and manage teams.");
+				}
+				
+				Player player = (Player) sender;
+				
+				if (!game.teamManagement()) {
+					sender.sendMessage(Main.PREFIX + "Team management is currently disabled.");
 					return true;
+				}
+				
+				if (target == null) {
+					throw new CommandException("'" + args[1] + "' is not online.");
+				}
+				
+				if (!invites.containsKey(target.getName()) || !invites.get(target.getName()).contains(player.getName())) {
+					sender.sendMessage(Main.PREFIX + ChatColor.GREEN + target.getName() + " §7hasn't sent you any requests.");
+					return true;
+				}
+				
+				target.sendMessage(Main.PREFIX + ChatColor.GREEN + player.getName() + " §7denied your request.");
+				sender.sendMessage(Main.PREFIX + "Request denied.");
+				invites.get(target.getName()).remove(player.getName());
+				return true;
+			}
+			
+			if (args[0].equalsIgnoreCase("remove")) {
+				if (!sender.hasPermission("uhc.team.admin")) {
+					return helpMenu(sender);
+				}
+				
+				OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[1]);
+				Team team = teams.getTeam(offline);
+				
+				if (team == null) {
+					throw new CommandException("'" + offline.getName() + "' is not on a team.");
 				}
 				
 				sender.sendMessage(Main.PREFIX + ChatColor.GREEN + target.getName() + " §7was removed from his team.");
 				teams.leaveTeam(target);
-
-				ArrayList<String> players = new ArrayList<String>(team.getEntries());
-				savedTeams.put(team.getName(), players);
 				return true;
 			}
 			
 			if (args[0].equalsIgnoreCase("delete")) {
-				if (!sender.hasPermission("uhc.team")) {
-					sendHelp(sender);
-					return true;
+				if (!sender.hasPermission("uhc.team.admin")) {
+					return helpMenu(sender);
 				}
 				
 				Team team = teams.getTeam(args[1]);
 				
 				if (team == null) {
-					sender.sendMessage(Main.PREFIX + "That team does not exist.");
-					return true;
+					throw new CommandException("'" + args[1] + "' is not a vaild team.");
 				}
 				
-				for (String p : team.getEntries()) {
-					team.removeEntry(p);
+				for (OfflinePlayer player : teams.getPlayers(team)) {
+					teams.leaveTeam(player);
 				}
 				
-				ArrayList<String> players = new ArrayList<String>(team.getEntries());
-				TeamCommand.savedTeams.put(team.getName(), players);
-				
-				sender.sendMessage(Main.PREFIX + "Team " + team.getName() + " has been deleted.");
+				sender.sendMessage(Main.PREFIX + "Team §a" + team.getName() + " §7has been deleted.");
 				return true;
 			}
 			
 			if (args[0].equalsIgnoreCase("friendlyfire")) {
-				if (!sender.hasPermission("uhc.team")) {
-					sendHelp(sender);
-					return true;
+				if (!sender.hasPermission("uhc.team.admin")) {
+					return helpMenu(sender);
 				}
 				
-				boolean enable;
+				boolean enable = parseBoolean(args[1], "FriendlyFire");
 				
-				if (args[1].equalsIgnoreCase("true")) {
-					enable = true;
-				}
-				else if (args[1].equalsIgnoreCase("false")) {
-					enable = false;
-				}
-				else {
-					sender.sendMessage(Main.PREFIX + "FriendlyFire can only be true or false.");
-					return true;
-				}
-				
-				for (Team team : BoardManager.getInstance().board.getTeams()) {
+				for (Team team : teams.getTeams()) {
 					team.setAllowFriendlyFire(enable);
 				}
 				
-				PlayerUtils.broadcast(Main.PREFIX + "FriendlyFire is now " + (enable ? "enabled." : "disabled."));
+				PlayerUtils.broadcast(Main.PREFIX + "FriendlyFire is now " + booleanToString(enable) + ".");
 				return true;
 			}
 		}
 	
 		if (args.length > 2) {
 			if (args[0].equalsIgnoreCase("add")) {
-				if (!sender.hasPermission("uhc.team")) {
-					sendHelp(sender);
-					return true;
+				if (!sender.hasPermission("uhc.team.admin")) {
+					return helpMenu(sender);
 				}
 				
 				Team team = teams.getTeam(args[1]);
 				
 				if (team == null) {
-					sender.sendMessage(Main.PREFIX + "That team does not exist.");
-					return true;
+					throw new CommandException("'" + args[1] + "' is not a vaild team.");
 				}
 				
 				OfflinePlayer offline = PlayerUtils.getOfflinePlayer(args[2]);
-				
 				teams.joinTeam(team, offline);
-				
-				ArrayList<String> players = new ArrayList<String>(team.getEntries());
-				TeamCommand.savedTeams.put(team.getName(), players);
 				
 				sender.sendMessage(Main.PREFIX + ChatColor.GREEN + offline.getName() + "§7 was added to team " + team.getName() + ".");
 				return true;
@@ -396,8 +339,7 @@ public class TeamCommand extends UHCCommand {
 		
 		if (args[0].equalsIgnoreCase("create")) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
-				return true;
+				throw new CommandException("Only players can create and manage teams.");
 			}
 			
 			Player player = (Player) sender;
@@ -408,21 +350,16 @@ public class TeamCommand extends UHCCommand {
 			}
 		
 			if (teams.getTeam(player) != null) {
-				sender.sendMessage(Main.PREFIX + "You are already on a team.");
-				return true;
+				throw new CommandException("You are already on a team.");
 			}
 			
 			Team team = teams.findAvailableTeam();
 			
 			if (team == null) {
-				sender.sendMessage(Main.PREFIX + "There are no more available teams.");
-				return true;
+				throw new CommandException("There are no more available teams.");
 			}
 			
 			teams.joinTeam(team, player);
-			
-			ArrayList<String> players = new ArrayList<String>(team.getEntries());
-			TeamCommand.savedTeams.put(team.getName(), players);
 			
 			sender.sendMessage(Main.PREFIX + "Team created! Use §a/team invite <player>§7 to invite a player.");
 			return true;
@@ -430,8 +367,7 @@ public class TeamCommand extends UHCCommand {
 		
 		if (args[0].equalsIgnoreCase("leave")) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
-				return true;
+				throw new CommandException("Only players can create and manage teams.");
 			}
 			
 			Player player = (Player) sender;
@@ -444,24 +380,19 @@ public class TeamCommand extends UHCCommand {
 			Team team = teams.getTeam(player);
 			
 			if (team == null) {
-				sender.sendMessage(Main.PREFIX + "You are not on a team.");
-				return true;
+				throw new CommandException("You are not on a team.");
 			}
 
 			sender.sendMessage(Main.PREFIX + "You left your team.");
 			teams.leaveTeam(player);
 			
-			ArrayList<String> players = new ArrayList<String>(team.getEntries());
-			TeamCommand.savedTeams.put(team.getName(), players);
-			
-			teams.sendMessage(team, Main.PREFIX + sender.getName() + " left your team.");
+			teams.sendMessage(team, Main.PREFIX + player.getName() + " left your team.");
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("info")) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(ChatColor.RED + "Only players can create and manage teams.");
-				return true;
+				throw new CommandException("Only players can create and manage teams.");
 			}
 			
 			Player player = (Player) sender;
@@ -469,21 +400,22 @@ public class TeamCommand extends UHCCommand {
 			Team team = teams.getTeam(player);
 			
 			if (team == null || Spectator.getInstance().isSpectating(player)) {
-				sender.sendMessage(Main.PREFIX + "You are not on a team.");
-				return true;
+				throw new CommandException("You are not on a team.");
 			}
 			
-			if (!savedTeams.containsKey(team.getName())) {
+			if (!teams.getSavedTeams().containsKey(team.getName())) {
 				ArrayList<String> players = new ArrayList<String>(team.getEntries());
-				TeamCommand.savedTeams.put(team.getName(), players);
+				teams.getSavedTeams().put(team.getName(), players);
 			}
 			
 			StringBuilder list = new StringBuilder("");
 			int i = 1;
 			
-			for (String entry : savedTeams.get(team.getName())) {
+			List<String> savedTeam = teams.getSavedTeams().get(team.getName());
+			
+			for (String entry : savedTeam) {
 				if (list.length() > 0) {
-					if (i == savedTeams.get(team.getName()).size()) {
+					if (i == savedTeam.size()) {
 						list.append(" §7and §f");
 					} else {
 						list.append("§7, §f");
@@ -499,62 +431,70 @@ public class TeamCommand extends UHCCommand {
 				}
 				i++;
 			}
+
+			sender.sendMessage(Main.PREFIX + "Your team info:");
+			sender.sendMessage("§8» §7Team: §c" + (team == null ? "None" : team.getPrefix() + team.getName()));
 			
-			sender.sendMessage(Main.PREFIX + "Your teammates: §o(Names in red means they are offline)");
+			if (Main.kills.containsKey(player.getName())) {
+				sender.sendMessage("§8» §7Kills: §a" + Main.kills.get(player.getName()));
+			}
+			
+			if (Main.teamKills.containsKey(team.getName())) {
+				sender.sendMessage("§8» §7Team Kills: §a" + Main.teamKills.get(team.getName()));
+			}
+			
+			sender.sendMessage("§8» ---------------------------");
+			sender.sendMessage("§8» §7Teammates: §o(Names in red means they are offline)");
 			sender.sendMessage("§8» §f" + list.toString().trim());
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("clear")) {
-			if (!sender.hasPermission("uhc.team")) {
-				sendHelp(sender);
-				return true;
+			if (!sender.hasPermission("uhc.team.admin")) {
+				return helpMenu(sender);
+			}
+
+			BoardManager manager = BoardManager.getInstance();
+			
+			for (Team team : manager.board.getTeams()) {
+				for (OfflinePlayer player : teams.getPlayers(team)) {
+					teams.leaveTeam(player);
+				}
 			}
 			
-			if (sender.hasPermission("uhc.team")) {
-				for (Team team : BoardManager.getInstance().board.getTeams()) {
-					for (String p : team.getEntries()) {
-						team.removeEntry(p);
-					}
-				}
-				
-				for (String key : savedTeams.keySet()) {
-					savedTeams.get(key).clear();
-				}
-				
-				PlayerUtils.broadcast(Main.PREFIX + "All teams has been cleared.");
-			} else {
-				sendHelp(sender);
-			}
+			teams.getSavedTeams().clear();
+			PlayerUtils.broadcast(Main.PREFIX + "All teams has been cleared.");
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("color")) {
-			if (!sender.hasPermission("uhc.team")) {
-				sendHelp(sender);
-				return true;
+			if (!sender.hasPermission("uhc.team.admin")) {
+				return helpMenu(sender);
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "All teams has been re-colored.");
+			// it doesn't do anything other than change the color if the team exist.
 			teams.setup();
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("list")) {
 			if (teams.getTeamsWithPlayers().size() == 0) {
-				sender.sendMessage(Main.PREFIX + "There are no teams.");
+				sender.sendMessage(Main.PREFIX + "There are no teams with players in it.");
 				return true;
 			}
 			
-			sender.sendMessage(Main.PREFIX + "List of teams:");
+			sender.sendMessage(Main.PREFIX + "List of all teams:");
 			
 			for (Team team : teams.getTeamsWithPlayers()) {
 				StringBuilder list = new StringBuilder("");
 				int i = 1;
 				
-				for (String entry : team.getEntries()) {
+				List<String> savedTeam = teams.getSavedTeams().get(team.getName());
+				
+				for (String entry : savedTeam) {
 					if (list.length() > 0) {
-						if (i == team.getEntries().size()) {
+						if (i == savedTeam.size()) {
 							list.append(" and ");
 						} else {
 							list.append(", ");
@@ -573,14 +513,8 @@ public class TeamCommand extends UHCCommand {
 		BoardManager board = BoardManager.getInstance();
 		
 		if (args[0].equalsIgnoreCase("enable")) {
-			if (!sender.hasPermission("uhc.team")) {
-				sendHelp(sender);
-				return true;
-			}
-			
-			if (args.length == 1) {
-				sendHelp(sender);
-				return true;
+			if (!sender.hasPermission("uhc.team.admin") || args.length == 1) {
+				return helpMenu(sender);
 			}
 			
 			if (game.teamManagement()) {
@@ -598,14 +532,14 @@ public class TeamCommand extends UHCCommand {
 				board.setScore("§8» §cTeam:", 13);
 				board.setScore("§8» §7/team", 12);
 			}
+			
 			game.setTeamManagement(true);
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("disable")) {
-			if (!sender.hasPermission("uhc.team")) {
-				sendHelp(sender);
-				return true;
+			if (!sender.hasPermission("uhc.team.admin")) {
+				return helpMenu(sender);
 			}
 			
 			if (!game.teamManagement()) {
@@ -623,107 +557,65 @@ public class TeamCommand extends UHCCommand {
 			game.setTeamManagement(false);
 			return true;
 		}
-		
-		sendHelp(sender);
-		return true;
+
+		return helpMenu(sender);
 	}
-	
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		ArrayList<String> toReturn = new ArrayList<String>();
-    	
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		List<String> toReturn = new ArrayList<String>();
+		
 		if (args.length == 1) {
-        	ArrayList<String> types = new ArrayList<String>();
-        	types.add("create");
-        	types.add("invite");
-        	types.add("kick");
-        	types.add("accept");
-        	types.add("deny");
-        	types.add("info");
-        	types.add("list");
-        	
-        	if (sender.hasPermission("uhc.team")) {
-	        	types.add("clear");
-	        	types.add("add");
-	        	types.add("remove");
-	        	types.add("delete");
-	        	types.add("friendlyfire");
-        	}
-        	
-        	if (args[0].equals("")) {
-        		for (String type : types) {
-        			toReturn.add(type);
-        		}
-        	} else {
-        		for (String type : types) {
-        			if (type.toLowerCase().startsWith(args[0].toLowerCase())) {
-        				toReturn.add(type);
-        			}
-        		}
-        	}
-        }
+			toReturn.add("info");
+			toReturn.add("list");
+			
+			if (Game.getInstance().teamManagement()) {
+				toReturn.add("create");
+				toReturn.add("leave");
+				toReturn.add("invite");
+				toReturn.add("kick");
+				toReturn.add("accept");
+				toReturn.add("deny");
+			}
+			
+			if (sender.hasPermission("uhc.team.admin")) {
+				toReturn.add("enable");
+				toReturn.add("disable");
+				toReturn.add("add");
+				toReturn.add("remove");
+				toReturn.add("delete");
+				toReturn.add("friendlyfire");
+				toReturn.add("clear");
+			}
+		}
 		
 		if (args.length == 2) {
-        	if (args[0].equalsIgnoreCase("add")) {
-	        	if (args[1].equals("")) {
-	        		for (Team teams : TeamManager.getInstance().getTeams()) {
-	        			toReturn.add(teams.getName());
-	        		}
-	        	} else {
-	        		for (Team teams : TeamManager.getInstance().getTeams()) {
-	        			if (teams.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				toReturn.add(teams.getName());
-	        			}
-	        		}
-	        	}
-        	}
-        	else if (args[0].equalsIgnoreCase("delete")) {
-	        	if (args[1].equals("")) {
-	        		for (Team teams : TeamManager.getInstance().getTeams()) {
-	        			toReturn.add(teams.getName());
-	        		}
-	        	} else {
-	        		for (Team teams : TeamManager.getInstance().getTeams()) {
-	        			if (teams.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				toReturn.add(teams.getName());
-	        			}
-	        		}
-	        	}
-        	}
-        	else if (args[0].equalsIgnoreCase("friendlyfire")) {
-	        	toReturn.add("true");
-	        	toReturn.add("false");
-        	} else {
-	        	if (args[1].equals("")) {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			toReturn.add(online.getName());
-	        		}
-	        	} else {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				toReturn.add(online.getName());
-	        			}
-	        		}
-	        	}
-        	}
-        }
+			switch (args[0].toLowerCase()) {
+			case "invite":
+			case "kick":
+			case "remove":
+			case "accept":
+			case "deny":
+			case "info":
+				return null;
+			case "add":
+			case "delete":
+				for (Team team : TeamManager.getInstance().getTeams()) {
+					toReturn.add(team.getName());
+				}
+				break;
+			case "friendlyfire":
+				toReturn.add("true");
+				toReturn.add("false");
+				break;
+			}
+		}
 		
-		if (args.length == 3) {
-        	if (args[0].equalsIgnoreCase("add")) {
-	        	if (args[2].equals("")) {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			toReturn.add(online.getName());
-	        		}
-	        	} else {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			if (online.getName().toLowerCase().startsWith(args[2].toLowerCase())) {
-	        				toReturn.add(online.getName());
-	        			}
-	        		}
-	        	}
-        	}
-        }
+		if (args.length == 3 && args[0].equalsIgnoreCase("add")) {
+			return null;
+		}
 		
-    	return toReturn;
+		return toReturn;
 	}
 	
 	/**
@@ -731,7 +623,7 @@ public class TeamCommand extends UHCCommand {
 	 * 
 	 * @param sender the player.
 	 */
-	public boolean sendHelp(CommandSender sender) {
+	public boolean helpMenu(CommandSender sender) {
 		sender.sendMessage(Main.PREFIX + "Team help:");
 		sender.sendMessage("§8» §f/pm <message> §7- §f§oTalk in team chat.");
 		sender.sendMessage("§8» §f/tl §7- §f§oTell your coords to your teammates.");
@@ -747,10 +639,10 @@ public class TeamCommand extends UHCCommand {
 			sender.sendMessage("§8» §f/team deny <player> §7- §f§oDeny the players request.");
 		}
 		
-		if (sender.hasPermission("uhc.team")) {
+		if (sender.hasPermission("uhc.team.admin")) {
 			sender.sendMessage(Main.PREFIX + "Team admin help:");
 			sender.sendMessage("§8» §f/team info <player> §7- §f§oDisplay the targets team info.");
-			sender.sendMessage("§8» §f/team enable §7- §f§oEnable team management.");
+			sender.sendMessage("§8» §f/team enable <teamsize> §7- §f§oEnable team management.");
 			sender.sendMessage("§8» §f/team disable §7- §f§oDisable team management.");
 			sender.sendMessage("§8» §f/team add <team> <player> §7- §f§oAdd a player to a team.");
 			sender.sendMessage("§8» §f/team remove <player> §7- §f§oRemove a player from his team.");
@@ -759,11 +651,5 @@ public class TeamCommand extends UHCCommand {
 			sender.sendMessage("§8» §f/team clear §7- §f§oClear all teams.");
 		}
 		return true;
-	}
-
-	@Override
-	public List<String> tabComplete(CommandSender sender, String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
