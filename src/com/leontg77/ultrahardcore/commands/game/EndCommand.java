@@ -175,8 +175,7 @@ public class EndCommand implements CommandExecutor {
 		game.setAntiStripmine(true);
 		game.setMatchPost("none");
 		game.setMaxPlayers(150);
-		game.setTeamSize(0);
-		game.setFFA(true);
+		game.setTeamSize("No");
 		
 		TeamManager teams = TeamManager.getInstance();
 		Team team = teams.getTeam("spec");
