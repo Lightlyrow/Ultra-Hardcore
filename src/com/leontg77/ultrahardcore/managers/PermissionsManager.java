@@ -72,7 +72,7 @@ public class PermissionsManager {
 			perm.setPermission("uhc.cmdspy", true);
 			perm.setPermission("uhc.staff", true);
 			perm.setPermission("uhc.admin", true);
-			perm.setPermission("uhc.team", true);
+			perm.setPermission("uhc.team.admin", true);
 			perm.setPermission("uhc.tempban", true);
 			perm.setPermission("uhc.tp", true);
 			perm.setPermission("uhc.whitelist", true);
@@ -110,11 +110,6 @@ public class PermissionsManager {
 				perm.setPermission("uhc.bigcrack", true);
 				perm.setPermission("uhc.slimycrack", true);
 				perm.setPermission("uhc.kings", true);
-				perm.setPermission("mysteryteams.admin", true);
-				perm.setPermission("mysteryteams.admin", true);
-				perm.setPermission("mysteryteams.admin", true);
-				perm.setPermission("mysteryteams.admin", true);
-				perm.setPermission("mysteryteams.admin", true);
 				perm.setPermission("mysteryteams.admin", true);
 				
 				perm.setPermission("uhc.pvp", true);
