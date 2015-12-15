@@ -50,7 +50,7 @@ public class LogoutListener implements Listener {
 		}
 		
 		if (!spec.isSpectating(player)) {
-			PlayerUtils.broadcast("ยง8[ยงc-ยง8] ยง7" + player.getName() + " has left.");
+			PlayerUtils.broadcast("ง8[งc-ง8] ง7" + player.getName() + " has left.");
 		}
 		
 		InvGUI inv = InvGUI.getInstance();
@@ -97,6 +97,6 @@ public class LogoutListener implements Listener {
 			return;
 		}
 		
-		event.setReason("ยง8ยป ยง7Kicked for spamming ยง8ยซ");
+		event.setReason("ง8ป ง7Kicked for spamming ง8ซ");
 	}
 }

@@ -81,7 +81,7 @@ public class iPvPListener implements Listener {
 					continue;
 				}
 				
-				PlayerUtils.broadcast(Main.PREFIX + "ยงc" + player.getName() + " ยง7attempted to iPvP ยงc" + near.getName(), "uhc.staff");
+				PlayerUtils.broadcast(Main.PREFIX + "งc" + player.getName() + " ง7attempted to iPvP งc" + near.getName(), "uhc.staff");
 				
 				player.sendMessage(Main.PREFIX + "iPvP is not allowed before PvP.");
 				player.sendMessage(Main.PREFIX + "Stop iPvPing now or staff will take action.");

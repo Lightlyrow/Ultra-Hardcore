@@ -153,7 +153,7 @@ public class PlayerListener implements Listener {
 
 		if (killer == null) {
 			if (worlds.contains(player.getWorld()) && !game.isRecordedRound() && State.isState(State.INGAME)) {
-				board.setScore("Â§8Â» Â§aÂ§lPvE", board.getScore("Â§8Â» Â§aÂ§lPvE") + 1);
+				board.setScore("§8» §a§lPvE", board.getScore("§8» §a§lPvE") + 1);
 		        board.resetScore(player.getName());
 			}
 
@@ -164,10 +164,10 @@ public class PlayerListener implements Listener {
 			}
 
 			for (Player online : PlayerUtils.getPlayers()) {
-				online.sendMessage("Â§8Â» Â§f" + deathMessage);
+				online.sendMessage("§8» §f" + deathMessage);
 			}
 			
-			Bukkit.getLogger().info("Â§8Â» Â§f" + deathMessage);
+			Bukkit.getLogger().info("§8» §f" + deathMessage);
 			event.setDeathMessage(null);
 			return;
 		}
@@ -178,21 +178,21 @@ public class PlayerListener implements Listener {
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
 				String name = item.getItemMeta().getDisplayName();
 				
-				ComponentBuilder builder = new ComponentBuilder("Â§8Â» Â§r" + deathMessage.replace("[" + name + "]", ""));
+				ComponentBuilder builder = new ComponentBuilder("§8» §r" + deathMessage.replace("[" + name + "]", ""));
 				StringBuilder colored = new StringBuilder();
 				
 				if (killer.getItemInHand().getEnchantments().isEmpty()) {
 					for (String entry : name.split(" ")) {
-						colored.append("Â§o" + entry).append(" ");
+						colored.append("§o" + entry).append(" ");
 					}
 					
-					builder.append("Â§f[" + colored.toString().trim() + "Â§f]");
+					builder.append("§f[" + colored.toString().trim() + "§f]");
 				} else {
 					for (String entry : name.split(" ")) {
-						colored.append("Â§bÂ§o" + entry).append(" ");
+						colored.append("§b§o" + entry).append(" ");
 					}
 					
-					builder.append("Â§b[" + colored.toString().trim() + "Â§b]");
+					builder.append("§b[" + colored.toString().trim() + "§b]");
 				}
 				
 				builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] {new TextComponent(NameUtils.convertToJson(item))}));
@@ -202,15 +202,15 @@ public class PlayerListener implements Listener {
 					online.spigot().sendMessage(result);
 				}
 				
-				Bukkit.getLogger().info("Â§8Â» Â§f" + event.getDeathMessage());
+				Bukkit.getLogger().info("§8» §f" + event.getDeathMessage());
 				
 				event.setDeathMessage(null);
 			} else {
 				for (Player online : PlayerUtils.getPlayers()) {
-					online.sendMessage("Â§8Â» Â§f" + deathMessage);
+					online.sendMessage("§8» §f" + deathMessage);
 				}
 				
-				Bukkit.getLogger().info("Â§8Â» Â§f" + deathMessage);
+				Bukkit.getLogger().info("§8» §f" + deathMessage);
 				event.setDeathMessage(null);
 			}
 		}
@@ -269,7 +269,7 @@ public class PlayerListener implements Listener {
 		}
 		
 		player.sendMessage(Main.PREFIX + "Thanks for playing this game, it really means a lot :)");
-		player.sendMessage(Main.PREFIX + "Follow us on twtter to know when our next games are: Â§a@ArcticUHC");
+		player.sendMessage(Main.PREFIX + "Follow us on twtter to know when our next games are: §a@ArcticUHC");
 		
 		for (Player online : PlayerUtils.getPlayers()) {
 			online.hidePlayer(player);
@@ -315,7 +315,7 @@ public class PlayerListener implements Listener {
 		event.setCancelled(true);
     	
     	if (game.isRecordedRound()) {
-    		PlayerUtils.broadcast("Â§7" + name + "Â§8 Â» Â§f" + message);
+    		PlayerUtils.broadcast("§7" + name + "§8 » §f" + message);
     		return;
     	}
 		
@@ -359,12 +359,12 @@ public class PlayerListener implements Listener {
 			Date date = new Date();
 			
 			if (user.getUnmuteTime() == -1 || user.getUnmuteTime() > date.getTime()) {
-				player.sendMessage(Main.PREFIX + "You have been muted for: Â§a" + user.getMutedReason());
+				player.sendMessage(Main.PREFIX + "You have been muted for: §a" + user.getMutedReason());
 				
 				if (user.getUnmuteTime() < 0) {
 					player.sendMessage(Main.PREFIX + "Your mute is permanent.");
 				} else {
-					player.sendMessage(Main.PREFIX + "Your mute expires in: Â§a" + DateUtils.formatDateDiff(user.getUnmuteTime()));
+					player.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getUnmuteTime()));
 				}
 				return;
 			} 
@@ -380,27 +380,27 @@ public class PlayerListener implements Listener {
 			String prefix;
 			
 			if (uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
-				prefix = "Â§3Owner";
+				prefix = "§3Owner";
 			} else {
-				prefix = "Â§4Owner";
+				prefix = "§4Owner";
 			}
 			
-			PlayerUtils.broadcast("Â§8[" + prefix + "Â§8] | Â§f" + name + "Â§8 Â» Â§f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[" + prefix + "§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
 		if (user.getRank() == Rank.HOST) {
-			PlayerUtils.broadcast("Â§8[Â§4HostÂ§8] | Â§f" + name + "Â§8 Â» Â§f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§4Host§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
 		if (user.getRank() == Rank.TRIAL) {
-			PlayerUtils.broadcast("Â§8[Â§4TrialÂ§8] | Â§f" + name + "Â§8 Â» Â§f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§4Trial§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
 		if (user.getRank() == Rank.STAFF) {
-			PlayerUtils.broadcast("Â§8[Â§cStaffÂ§8] | Â§f" + name + "Â§8 Â» Â§f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§cStaff§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
@@ -410,7 +410,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 
-			PlayerUtils.broadcast("Â§8[Â§aDonatorÂ§8] | Â§f" + name + "Â§8 Â» Â§f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§aDonator§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		} 
 		
@@ -420,7 +420,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 
-			PlayerUtils.broadcast("Â§8[Â§9SpecÂ§8] | Â§f" + name + "Â§8 Â» Â§f" + message);
+			PlayerUtils.broadcast("§8[§9Spec§8] | §f" + name + "§8 » §f" + message);
 			return;
 		} 
 			
@@ -429,7 +429,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		PlayerUtils.broadcast("Â§7" + name + "Â§8 Â» Â§f" + message);
+		PlayerUtils.broadcast("§7" + name + "§8 » §f" + message);
 	}
 	
 	@EventHandler
@@ -456,7 +456,7 @@ public class PlayerListener implements Listener {
 				continue;
 			}
 			
-			online.sendMessage("Â§e" + player.getName() + ": Â§7" + message);
+			online.sendMessage("§e" + player.getName() + ": §7" + message);
 		}
 		
 		String command = message.split(" ")[0].substring(1);
@@ -493,7 +493,7 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void onServerListPing(ServerListPingEvent event) {
-		event.setMotd("Â§4Â§lArctic UHC Â§8Â» Â§6" + GameUtils.getMOTDMessage() + " Â§8Â« [Â§71.8Â§8] [Â§7EUÂ§8]\nÂ§8Â» Â§7Â§oFollow us on twitter, Â§aÂ§o@ArcticUHCÂ§7Â§o!");
+		event.setMotd("§4§lArctic UHC §8» §6" + GameUtils.getMOTDMessage() + " §8« [§71.8§8] [§7EU§8]\n§8» §7§oFollow us on twitter, §a§o@ArcticUHC§7§o!");
 		event.setMaxPlayers(game.getMaxPlayers());
 	}
 	
@@ -548,7 +548,7 @@ public class PlayerListener implements Listener {
 			Random rand = new Random();
 			Player target = list.get(rand.nextInt(list.size()));
 			
-			player.sendMessage(Main.PREFIX + "Teleported to Â§a" + target.getName() + "Â§7.");
+			player.sendMessage(Main.PREFIX + "Teleported to §a" + target.getName() + "§7.");
 			player.teleport(target.getLocation());
 		}
 	}
@@ -640,7 +640,7 @@ public class PlayerListener implements Listener {
         }
 		
 		if (item.getType() == Material.GOLDEN_APPLE) {
-			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("Â§6Golden Head")) {
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
 				ScenarioManager scen = ScenarioManager.getInstance();
 				
 				if (scen.getScenario(VengefulSpirits.class).isEnabled()) {
@@ -724,7 +724,7 @@ public class PlayerListener implements Listener {
 		        }.runTaskLater(Main.plugin, 1);
 			}
 			
-			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("Â§6Golden Head")) {
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 * (game.goldenHeadsHeal() * 2), 1));
 				user.increaseStat(Stat.GOLDENHEADSEATEN);
 			} else {
