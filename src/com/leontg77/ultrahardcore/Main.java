@@ -93,7 +93,6 @@ import com.leontg77.ultrahardcore.commands.resetting.SetmaxhealthCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpecChatCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpectateCommand;
 import com.leontg77.ultrahardcore.commands.team.PmCommand;
-import com.leontg77.ultrahardcore.commands.team.TeamCommand;
 import com.leontg77.ultrahardcore.commands.team.TlCommand;
 import com.leontg77.ultrahardcore.commands.user.HotbarCommand;
 import com.leontg77.ultrahardcore.commands.user.InfoCommand;
@@ -469,7 +468,7 @@ public class Main extends JavaPlugin {
 			settings.getData().set("kills." + kEntry.getKey(), kEntry.getValue());
 		}
 		
-		for (Entry<String, List<String>> entry : TeamCommand.savedTeams.entrySet()) {
+		for (Entry<String, List<String>> entry : TeamManager.getInstance().getSavedTeams().entrySet()) {
 			settings.getData().set("teams.data." + entry.getKey(), entry.getValue());
 		}
 		
@@ -511,7 +510,7 @@ public class Main extends JavaPlugin {
 		try {
 			if (settings.getData().getConfigurationSection("team") != null) {
 				for (String name : settings.getData().getConfigurationSection("teams.data").getKeys(false)) {
-					TeamCommand.savedTeams.put("teams.data." + name, settings.getData().getStringList("teams.data." + name));
+					TeamManager.getInstance().getSavedTeams().put("teams.data." + name, settings.getData().getStringList("teams.data." + name));
 				}
 			}
 		} catch (Exception e) {
