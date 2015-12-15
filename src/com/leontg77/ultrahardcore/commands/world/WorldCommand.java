@@ -86,7 +86,7 @@ public class WorldCommand extends UHCCommand {
 				World world = Bukkit.getWorld(args[1]);
 				
 				if (world == null) {
-					throw new CommandException("The world '" + args[1] + "'  does not exist.");
+					throw new CommandException("The world '" + args[1] + "' does not exist.");
 				}
 				
 				if (world.getName().equals("lobby")) {
@@ -116,7 +116,7 @@ public class WorldCommand extends UHCCommand {
 				World world = Bukkit.getWorld(args[1]);
 				
 				if (world == null) {
-					throw new CommandException("The world '" + args[1] + "'  does not exist.");
+					throw new CommandException("The world '" + args[1] + "' does not exist.");
 				}
 				
 				player.sendMessage(Main.PREFIX + "Teleported to world '§a" + world.getName() + "§7'.");
@@ -158,7 +158,7 @@ public class WorldCommand extends UHCCommand {
 				World world = Bukkit.getWorld(args[1]);
 				
 				if (world != null) {
-					throw new CommandException("The world '" + args[1] + "'  is already loaded.");
+					throw new CommandException("The world '" + args[1] + "' is already loaded.");
 				}
 				
 				manager.loadWorld(args[1]);
@@ -175,7 +175,7 @@ public class WorldCommand extends UHCCommand {
 				World world = Bukkit.getWorld(args[1]);
 				
 				if (world == null) {
-					throw new CommandException("The world '" + args[1] + "'  does not exist.");
+					throw new CommandException("The world '" + args[1] + "' does not exist.");
 				}
 				
 				if (world == Bukkit.getWorlds().get(0)) {
