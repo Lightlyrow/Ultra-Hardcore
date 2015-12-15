@@ -161,63 +161,31 @@ public class GameUtils {
 		}
 	}
 
+	public static String getTeamSize() {
+		return getTeamSize(false);
+	}
+
 	/**
 	 * Get the teamsize in a string format.
 	 * 
+	 * @param advancedFFA Wether to spell it as "FFA" or "Free for all"
 	 * @return The string format.
 	 */
-	public static String getTeamSize() {
+	public static String getTeamSize(boolean advancedFFA) {
 		Game game = Game.getInstance();
 		
-		if (game.isFFA()) {
-			if (game.getTeamSize() == 1) {
-				return "FFA ";
-			} 
-			else if (game.getTeamSize() == 0) {
-				return "No ";
-			}
-			else if (game.getTeamSize() == -1) {
-				return "Open ";
-			} 
-			else if (game.getTeamSize() == -2) {
-				return "";
-			}
-			else {
-				return "rTo" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
-			}
+		if (game.getTeamSize().startsWith("FFA")) {
+			return advancedFFA ? "Free for all " : "FFA ";
 		} 
-		else {
-			return "cTo" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
-		}
-	}
-	
-	/**
-	 * Get the teamsize in a more advanced string format.
-	 * 
-	 * @return The string in advanced format.
-	 */
-	public static String getAdvancedTeamSize() {
-		Game game = Game.getInstance();
 		
-		if (game.isFFA()) {
-			if (game.getTeamSize() == 1) {
-				return "Free for all ";
-			} 
-			else if (game.getTeamSize() == 0) {
-				return "No ";
-			}
-			else if (game.getTeamSize() == -1) {
-				return "Open ";
-			} 
-			else if (game.getTeamSize() == -2) {
-				return "";
-			}
-			else {
-				return "Random To" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
-			}
+		if (game.getTeamSize().startsWith("rTo")) {
+			return "Random " + game.getTeamSize().substring(1) + " ";
 		} 
-		else {
-			return "Chosen To" + (game.getTeamSize() > 0 ? game.getTeamSize() : "X") + " ";
-		}
+		
+		if (game.getTeamSize().startsWith("cTo")) {
+			return "Chosen " + game.getTeamSize().substring(1) + " ";
+		} 
+		
+		return game.getTeamSize();
 	}
 }
