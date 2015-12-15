@@ -54,7 +54,7 @@ public class BorderCommand extends UHCCommand {
 		World world = Bukkit.getWorld(args[0]);
 		
 		if (world == null) {
-			throw new CommandException("The world '" + args[0] + "'  does not exist.");
+			throw new CommandException("The world '" + args[0] + "' does not exist.");
 		}
 
 		WorldBorder border = world.getWorldBorder();
