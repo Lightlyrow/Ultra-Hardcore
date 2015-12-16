@@ -57,6 +57,10 @@ public class LoginListener implements Listener {
 		user.getFile().set("uuid", player.getUniqueId().toString());
 		user.getFile().set("ip", player.getAddress().getAddress().getHostAddress());
 		
+		if (!player.hasPermission("uhc.border")) {
+			PermissionsManager.addPermissions(player);
+        }
+		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Date date = new Date();
 		
@@ -154,7 +158,10 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
-		PermissionsManager.addPermissions(player);
+		
+		if (User.fileExist(player.getUniqueId())) {
+			PermissionsManager.addPermissions(player);
+        }
 		
 		if (event.getResult() == Result.KICK_BANNED) {
 			BanList name = Bukkit.getBanList(Type.NAME);

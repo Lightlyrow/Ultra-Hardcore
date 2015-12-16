@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.commands.msg.MsgCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
@@ -74,19 +75,19 @@ public class LogoutListener implements Listener {
 			Main.rainbow.remove(player);
 		}
 		
-		if (Main.msg.containsKey(player)) {
-			Main.msg.remove(player);
+		if (MsgCommand.msg.containsKey(player)) {
+			MsgCommand.msg.remove(player);
 		}
 		
 		HashSet<CommandSender> temp = new HashSet<CommandSender>();
 		
-		for (CommandSender key : Main.msg.keySet()) {
+		for (CommandSender key : MsgCommand.msg.keySet()) {
 			temp.add(key);
 		}
 		
 		for (CommandSender key : temp) {
-			if (Main.msg.get(key).equals(player)) {
-				Main.msg.remove(key);
+			if (MsgCommand.msg.get(key).equals(player)) {
+				MsgCommand.msg.remove(key);
 			}
 		}
 	}

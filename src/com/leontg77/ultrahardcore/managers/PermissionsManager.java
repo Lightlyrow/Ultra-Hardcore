@@ -26,10 +26,6 @@ public class PermissionsManager {
 	 * @param player the player.
 	 */
 	public static void addPermissions(Player player) {
-		if (!User.fileExist(player.getUniqueId())) {
-			return;
-        }
-		
 		if (!permissions.containsKey(player.getName())) {
 			permissions.put(player.getName(), player.addAttachment(Main.plugin));
 		}
