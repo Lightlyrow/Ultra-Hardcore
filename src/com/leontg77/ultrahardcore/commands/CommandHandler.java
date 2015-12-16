@@ -12,6 +12,8 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.msg.MsgCommand;
+import com.leontg77.ultrahardcore.commands.msg.ReplyCommand;
 import com.leontg77.ultrahardcore.commands.resetting.FeedCommand;
 import com.leontg77.ultrahardcore.commands.resetting.SethealthCommand;
 import com.leontg77.ultrahardcore.commands.team.TeamCommand;
@@ -37,8 +39,10 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	public void registerCommands() {
 		cmds.add(new FeedCommand());
 		cmds.add(new SethealthCommand());
-		
 
+		cmds.add(new MsgCommand());
+		cmds.add(new ReplyCommand());
+		
 		cmds.add(new TeamCommand());
 
 		cmds.add(new StatsCommand());
@@ -99,7 +103,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 			List<String> list = command.tabComplete(sender, args);
 			
 			if (list == null) {
-				return getAllPlayerNames(sender);
+				list = getAllPlayerNames(sender);
 			}
 			
 			if (list.isEmpty()) {
