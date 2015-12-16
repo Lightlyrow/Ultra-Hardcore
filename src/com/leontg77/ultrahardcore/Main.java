@@ -13,7 +13,6 @@ import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -57,9 +56,7 @@ import com.leontg77.ultrahardcore.commands.basic.InvseeCommand;
 import com.leontg77.ultrahardcore.commands.basic.KickCommand;
 import com.leontg77.ultrahardcore.commands.basic.ListCommand;
 import com.leontg77.ultrahardcore.commands.basic.MsCommand;
-import com.leontg77.ultrahardcore.commands.basic.MsgCommand;
 import com.leontg77.ultrahardcore.commands.basic.NearCommand;
-import com.leontg77.ultrahardcore.commands.basic.ReplyCommand;
 import com.leontg77.ultrahardcore.commands.basic.SetspawnCommand;
 import com.leontg77.ultrahardcore.commands.basic.SkullCommand;
 import com.leontg77.ultrahardcore.commands.basic.SpeedCommand;
@@ -144,7 +141,6 @@ public class Main extends JavaPlugin {
 	public static final String NO_PERM_MSG = "§cYou don't have permission.";
 	public static final String PREFIX = "§4§lUHC §8» §7";
 	
-	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
 	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
 	
 	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
@@ -261,13 +257,11 @@ public class Main extends JavaPlugin {
 		getCommand("list").setExecutor(new ListCommand());
 		getCommand("matchpost").setExecutor(new MatchpostCommand());
 		getCommand("ms").setExecutor(new MsCommand());
-		getCommand("msg").setExecutor(new MsgCommand());
 		getCommand("mute").setExecutor(new MuteCommand());
 		getCommand("near").setExecutor(new NearCommand());
 		getCommand("pm").setExecutor(new PmCommand());
 		getCommand("random").setExecutor(new RandomCommand());
 		getCommand("rank").setExecutor(new RankCommand());
-		getCommand("reply").setExecutor(new ReplyCommand());
 		getCommand("scenario").setExecutor(new ScenarioCommand());
 		getCommand("setmaxhealth").setExecutor(new SetmaxhealthCommand());
 		getCommand("skull").setExecutor(new SkullCommand());
