@@ -385,22 +385,22 @@ public class PlayerListener implements Listener {
 				prefix = "§4Owner";
 			}
 			
-			PlayerUtils.broadcast("§8[" + prefix + "§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[" + prefix + "§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
 		if (user.getRank() == Rank.HOST) {
-			PlayerUtils.broadcast("§8[§4Host§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§4Host§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
 		if (user.getRank() == Rank.TRIAL) {
-			PlayerUtils.broadcast("§8[§4Trial§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§4Trial§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
 		if (user.getRank() == Rank.STAFF) {
-			PlayerUtils.broadcast("§8[§cStaff§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§cStaff§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
@@ -410,7 +410,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 
-			PlayerUtils.broadcast("§8[§aDonator§8] | §f" + name + "§8 » §f" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§aDonator§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		} 
 		
@@ -420,7 +420,7 @@ public class PlayerListener implements Listener {
 				return;
 			}
 
-			PlayerUtils.broadcast("§8[§9Spec§8] | §f" + name + "§8 » §f" + message);
+			PlayerUtils.broadcast("§8[§9Spec§8] §f" + name + "§8 » §7" + message);
 			return;
 		} 
 			
@@ -429,7 +429,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		PlayerUtils.broadcast("§7" + name + "§8 » §f" + message);
+		PlayerUtils.broadcast("§f" + name + "§8 » §7" + message);
 	}
 	
 	@EventHandler
