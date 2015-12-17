@@ -15,7 +15,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
@@ -24,8 +23,8 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Spectator;
-import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
@@ -79,20 +78,18 @@ public class EndCommand implements CommandExecutor {
 			
 			User user = User.get(winner);
 
-			if (!game.isRecordedRound() && !Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
+			if (!game.isRecordedRound() && !GameUtils.getHostName(game.getHost()).equalsIgnoreCase("LeonsPrivate")) {
 				user.getFile().set("stats.wins", user.getFile().getInt("stats.wins") + 1);
 				user.saveFile();
 			}
 			
-			PlayerUtils.broadcast("§8» §7" + args[i]);
+			PlayerUtils.broadcast(Main.PREFIX + args[i]);
 			winners.add(args[i]);
 		}
 		
 		PlayerUtils.broadcast(" ");
 		PlayerUtils.broadcast(Main.PREFIX + "With §a" + kills + "§7 kills.");
 		PlayerUtils.broadcast(Main.PREFIX + "View the hall of fame with §a/hof");
-		PlayerUtils.broadcast(" ");
-		PlayerUtils.broadcast(Main.PREFIX + "Congrats on the win and thanks for playing!");
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		String host = GameUtils.getHostConfigName(GameUtils.getHostName(game.getHost()));
@@ -147,17 +144,8 @@ public class EndCommand implements CommandExecutor {
 			online.saveData();
 		}
 		
-		HandlerList.unregisterAll(new SpecInfo());
 		State.setState(State.NOT_RUNNING);
-
-		spec.spectators.clear();
-		spec.specinfo.clear();
-		spec.cmdspy.clear();
-		
 		firework.startFireworkShow();
-		
-		SpecInfo.getTotalDiamonds().clear();
-		SpecInfo.getTotalGold().clear();
 		
 		Main.teamKills.clear();
 		Main.kills.clear();
@@ -209,9 +197,31 @@ public class EndCommand implements CommandExecutor {
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Deleted used worlds.");
 			}
-		}.runTaskLater(Main.plugin, 600);
+		}.runTaskLater(Main.plugin, 500);
+
+		new BukkitRunnable() {
+			public void run() {
+				String kickMessage = 
+				"§8» §cThanks for playing! §8«" +
+			    "\n" + 
+			    "\n§7If you'd like to know about updates and upcoming games," +
+			    "\n§7you can follow us on twitter §a@ArcticUHC§7!";
+				
+				for (Player online : PlayerUtils.getPlayers()) {
+					online.kickPlayer(kickMessage);
+				}
+				
+				Bukkit.shutdown();
+			}
+		}.runTaskLater(Main.plugin, 800);
 		
-		FileUtils.deletePlayerDataAndStats();
+		if (Bukkit.getScheduler().isQueued(Timers.taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(Timers.taskMinutes)) {
+			Bukkit.getScheduler().cancelTask(Timers.taskMinutes);
+		}
+		
+		if (Bukkit.getScheduler().isQueued(Timers.taskSeconds) || Bukkit.getScheduler().isCurrentlyRunning(Timers.taskSeconds)) {
+			Bukkit.getScheduler().cancelTask(Timers.taskSeconds);
+		}
 		return true;
 	}
 }
