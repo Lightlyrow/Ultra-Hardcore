@@ -382,23 +382,23 @@ public class GameInfo extends InvGUI implements Listener {
 		int j = -1;
 		
 		for (FileConfiguration config : FileUtils.getUserFiles()) {
-			if (config.getString("rank").equals(Rank.OWNER.name())) {
+			if (config.getString("rank", "USER").equals(Rank.OWNER.name())) {
 				hostL.add(config.getString("username"));
 			}
 
-			if (config.getString("rank").equals(Rank.HOST.name())) {
+			if (config.getString("rank", "USER").equals(Rank.HOST.name())) {
 				hostL.add(config.getString("username"));
 			}
 			
-			if (config.getString("rank").equals(Rank.TRIAL.name())) {
+			if (config.getString("rank", "USER").equals(Rank.TRIAL.name())) {
 				hostL.add(config.getString("username"));
 			}
 			
-			if (config.getString("rank").equals(Rank.STAFF.name())) {
+			if (config.getString("rank", "USER").equals(Rank.STAFF.name())) {
 				staffL.add(config.getString("username"));
 			}
 			
-			if (config.getString("rank").equals(Rank.SPEC.name())) {
+			if (config.getString("rank", "USER").equals(Rank.SPEC.name())) {
 				specL.add(config.getString("username"));
 			}
 		}
