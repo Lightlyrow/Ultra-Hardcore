@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.managers;
+ package com.leontg77.ultrahardcore.managers;
 
 import java.util.HashMap;
 
@@ -35,24 +35,37 @@ public class PermissionsManager {
 		User user = User.get(player);
 		Rank rank = user.getRank();
 		
-		perm.setPermission("uhc.border", true);
-		perm.setPermission("uhc.stats", true);
-		perm.setPermission("uhc.top", true);
-		perm.setPermission("uhc.team", true);
-		
-		if (rank == Rank.USER) {
-			return;
-		}
-		
 		if (rank == Rank.OWNER) {
 			player.setOp(true);
 			return;
 		} else {
 			player.setOp(false);
 		}
+		
+		perm.setPermission("uhc.border", true);
+		perm.setPermission("uhc.stats", true);
+		perm.setPermission("uhc.top", true);
+		perm.setPermission("uhc.team", true);
+		perm.setPermission("uhc.msg", true);
+		perm.setPermission("uhc.reply", true);
+		
+		if (rank == Rank.USER) {
+			return;
+		}
+		
+		// adding donation features at at later date.
+		
+		if (rank == Rank.DONATOR) {
+			return;
+		}
 
 		perm.setPermission("uhc.spectate", true);
 		perm.setPermission("uhc.prelist", true);
+		perm.setPermission("uhc.near", true);
+		
+		if (rank == Rank.SPEC) {
+			return;
+		}
 		
 		if (rank == Rank.STAFF || rank == Rank.TRIAL || rank == Rank.HOST) {
 			perm.setPermission("uhc.ban", true);
@@ -109,6 +122,8 @@ public class PermissionsManager {
 				perm.setPermission("mysteryteams.admin", true);
 				
 				perm.setPermission("uhc.pvp", true);
+				perm.setPermission("uhc.pregen", true);
+				perm.setPermission("uhc.border.set", true);
 				perm.setPermission("uhc.world", true);
 				
 				if (rank == Rank.HOST) {
