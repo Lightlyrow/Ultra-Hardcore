@@ -1,7 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import org.bukkit.Achievement;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,6 +9,7 @@ import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Achievement Paranoia scenario class.
@@ -29,15 +29,10 @@ public class AchievementParanoia extends Scenario implements Listener {
 	@Override
 	public void onEnable() {
 		// remove all achievements for all players.
-		for (Player online : Bukkit.getOnlinePlayers()) {
-			for (Achievement ach : Achievement.values()) {
-				if (online.hasAchievement(ach)) {
-					online.removeAchievement(ach);
-				}
-			}
-			
+		for (Player online : PlayerUtils.getPlayers()) {
 			// add only open inventory, to make sure they don't cheat the system.
 			online.awardAchievement(Achievement.OPEN_INVENTORY);
+			online.removeAchievement(Achievement.MINE_WOOD);
 		}
 	}
 
@@ -50,9 +45,7 @@ public class AchievementParanoia extends Scenario implements Listener {
 		Achievement ach = event.getAchievement();
 		Player player = event.getPlayer();
 
-		for (Player online : Bukkit.getOnlinePlayers()) {
-			online.sendMessage(PREFIX + "§a" + player.getName() + "§f has earned §e" + achievementName(ach) + "§f at " + locToString(player.getLocation()));
-		}
+		PlayerUtils.broadcast(PREFIX + "§a" + player.getName() + "§f has earned §e" + achievementName(ach) + "§f at " + locToString(player.getLocation()));
 	}
 
 	/**
