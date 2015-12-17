@@ -318,7 +318,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 				
 				// teammates shouldn't have the same effect...
 				for (String entry : team.getEntries()) {
-					if (types.containsKey(entry) && types.get(entry) == type) {
+					if (types.containsKey(entry) && types.get(entry).equals(type)) {
 						continue;
 					}
 				}
