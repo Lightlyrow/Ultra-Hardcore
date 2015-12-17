@@ -110,7 +110,7 @@ public class Game {
 	 * @return The host.
 	 */
 	public UUID getHost() {
-		return UUID.fromString(settings.getConfig().getString("host", "None"));
+		return UUID.fromString(settings.getConfig().getString("host", UUID.randomUUID().toString()));
 	}
 
 	/**
