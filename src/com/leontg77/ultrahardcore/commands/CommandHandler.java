@@ -12,11 +12,11 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.commands.basic.NearCommand;
 import com.leontg77.ultrahardcore.commands.msg.MsgCommand;
 import com.leontg77.ultrahardcore.commands.msg.ReplyCommand;
 import com.leontg77.ultrahardcore.commands.resetting.FeedCommand;
 import com.leontg77.ultrahardcore.commands.resetting.SethealthCommand;
+import com.leontg77.ultrahardcore.commands.spectate.NearCommand;
 import com.leontg77.ultrahardcore.commands.team.TeamCommand;
 import com.leontg77.ultrahardcore.commands.user.StatsCommand;
 import com.leontg77.ultrahardcore.commands.user.TopCommand;
