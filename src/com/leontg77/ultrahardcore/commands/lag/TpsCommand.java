@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.commands.basic;
+package com.leontg77.ultrahardcore.commands.lag;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;

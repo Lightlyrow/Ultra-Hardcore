@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.commands.basic;
+package com.leontg77.ultrahardcore.commands.lag;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
