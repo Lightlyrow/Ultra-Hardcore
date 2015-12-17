@@ -84,11 +84,11 @@ public class PlayerUtils {
 		
 		String consoleMsg = message;
 
-		message = message.replaceAll("§l", "");
-		message = message.replaceAll("§o", "");
-		message = message.replaceAll("§r", "");
-		message = message.replaceAll("§m", "");
-		message = message.replaceAll("§n", "");
+		consoleMsg = consoleMsg.replaceAll("§l", "");
+		consoleMsg = consoleMsg.replaceAll("§o", "");
+		consoleMsg = consoleMsg.replaceAll("§r", "");
+		consoleMsg = consoleMsg.replaceAll("§m", "");
+		consoleMsg = consoleMsg.replaceAll("§n", "");
 		
 		Bukkit.getLogger().info(consoleMsg);
 	}
