@@ -64,11 +64,7 @@ public class PlayerUtils {
 	 * @param message the message.
 	 */
 	public static void broadcast(String message) {
-		for (Player online : getPlayers()) {
-			online.sendMessage(message);
-		}
-		
-		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "§f").replaceAll("§m", "").replaceAll("§n", ""));
+		broadcast(message, null);
 	}
 	
 	/**
@@ -79,12 +75,22 @@ public class PlayerUtils {
 	 */
 	public static void broadcast(String message, String permission) {
 		for (Player online : getPlayers()) {
-			if (online.hasPermission(permission)) {
-				online.sendMessage(message);
+			if (permission != null && !online.hasPermission(permission)) {
+				continue;
 			}
+			
+			online.sendMessage(message);
 		}
 		
-		Bukkit.getLogger().info(message.replaceAll("§l", "").replaceAll("§o", "").replaceAll("§r", "§f").replaceAll("§m", "").replaceAll("§n", ""));
+		String consoleMsg = message;
+
+		message = message.replaceAll("§l", "");
+		message = message.replaceAll("§o", "");
+		message = message.replaceAll("§r", "");
+		message = message.replaceAll("§m", "");
+		message = message.replaceAll("§n", "");
+		
+		Bukkit.getLogger().info(consoleMsg);
 	}
 	
 	/**
