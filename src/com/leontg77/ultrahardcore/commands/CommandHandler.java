@@ -12,6 +12,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.basic.NearCommand;
 import com.leontg77.ultrahardcore.commands.msg.MsgCommand;
 import com.leontg77.ultrahardcore.commands.msg.ReplyCommand;
 import com.leontg77.ultrahardcore.commands.resetting.FeedCommand;
@@ -39,6 +40,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	public void registerCommands() {
 		cmds.add(new FeedCommand());
 		cmds.add(new SethealthCommand());
+		cmds.add(new NearCommand());
 
 		cmds.add(new MsgCommand());
 		cmds.add(new ReplyCommand());
