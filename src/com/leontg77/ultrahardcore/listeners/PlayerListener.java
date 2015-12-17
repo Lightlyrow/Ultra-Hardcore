@@ -479,6 +479,20 @@ public class PlayerListener implements Listener {
 		
 		if (command.equalsIgnoreCase("rl") || command.equalsIgnoreCase("reload") || command.equalsIgnoreCase("stop") || command.equalsIgnoreCase("restart")) {
 			if (!State.isState(State.INGAME)) {
+				if (!command.equalsIgnoreCase("stop") && !command.equalsIgnoreCase("restart")) {
+					return;
+				}
+				
+				if (!player.hasPermission("uhc.restart")) {
+					return;
+				}
+				
+				for (Player online : PlayerUtils.getPlayers()) {
+					online.kickPlayer("§8» §7The server is restarting §8«");
+				}
+				
+				Bukkit.shutdown();
+				event.setCancelled(true);
 				return;
 			}
 			
