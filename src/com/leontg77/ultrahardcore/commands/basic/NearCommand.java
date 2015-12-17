@@ -1,14 +1,18 @@
 package com.leontg77.ultrahardcore.commands.basic;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -16,58 +20,80 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class NearCommand implements CommandExecutor {
+public class NearCommand extends UHCCommand {
+
+	public NearCommand() {
+		super("near", "[radius]");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can see nearby players.");
-			return true;
+			throw new CommandException("Only players can see nearby players.");
 		}
 
 		Spectator spec = Spectator.getInstance();
 		Player player = (Player) sender;
 		
-		if (!sender.hasPermission("uhc.near") && !spec.isSpectating(player)) {
-			player.sendMessage(Main.NO_PERM_MSG);
-			return true;
+		if (!spec.isSpectating(player)) {
+			throw new CommandException("You can only do this while spectating.");
 		}
 		
 		StringBuilder nearList = new StringBuilder("");
-		
 		int radius = 200;
 		
 		if (args.length > 0) {
-			try {
-				radius = Integer.parseInt(args[0]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + "'" + args[0] + "' is not a vaild radius.");
-				return true;
-			}
+			radius = parseInt(args[0], "radius");
 		}
 		
 		for (Entity near : PlayerUtils.getNearby(player.getLocation(), radius)) {
-			if (near instanceof Player) {
-				Player nearby = (Player) near;
-				
-				if (nearby == player) {
-					continue;
-				}
-				
-				if (!player.canSee(nearby)) {
-					continue;
-				}
-				
-				if (nearList.length() > 0) {
-					nearList.append("§8, ");
-				}
-				
-				nearList.append("§a" + nearby.getName() + "§7(§c" + ((int) player.getLocation().distance(nearby.getLocation())) + "m§7)§a");
+			if (!(near instanceof Player)) {
+				continue;
 			}
+
+			Player nearby = (Player) near;
+			
+			if (nearby == player) {
+				continue;
+			}
+			
+			if (!player.canSee(nearby)) {
+				continue;
+			}
+			
+			if (nearList.length() > 0) {
+				nearList.append("§8, ");
+			}
+			
+			nearList.append(getTeamColorAndName(nearby) + "§7(§c" + ((int) player.getLocation().distance(nearby.getLocation())) + "m§7)§a");
 		}
 		
-		player.sendMessage(Main.PREFIX + "Nearby players:");
+		player.sendMessage(Main.PREFIX + "Nearby players: §8(§7Radius: §6" + radius + "§8)");
 		player.sendMessage("§8» §7" + (nearList.length() > 0 ? nearList.toString().trim() : "There are no players nearby."));
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return new ArrayList<String>();
+	}
+
+	/**
+	 * Get the team color and the name for the given player.
+	 * <p>
+	 * If they're not on a team, it returns their name in white.
+	 * 
+	 * @param player The player checking.
+	 * @return The team color and the name
+	 */
+	private String getTeamColorAndName(Player player) {
+		TeamManager manager = TeamManager.getInstance();
+		Team team = manager.getTeam(player);
+		
+		if (team == null) {
+			return "§f" + player.getName();
+		}
+		
+		return team.getPrefix() + player.getName();
 	}
 }
