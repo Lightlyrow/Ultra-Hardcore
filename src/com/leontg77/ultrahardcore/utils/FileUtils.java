@@ -35,6 +35,10 @@ public class FileUtils {
 	public static void updateUserFiles() {
 		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 		
+		if (!folder.exists()) {
+			return;
+		}
+		
 		files.clear();
 		
 		for (File file : folder.listFiles()) {
