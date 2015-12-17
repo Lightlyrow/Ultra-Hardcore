@@ -98,6 +98,7 @@ public class PermissionsManager {
 				perm.setPermission("uhc.end", true);
 				perm.setPermission("uhc.feed", true);
 				perm.setPermission("uhc.feed.other", true);
+				perm.setPermission("uhc.restart", true);
 				perm.setPermission("uhc.giveall", true);
 				perm.setPermission("uhc.heal", true);
 				perm.setPermission("uhc.heal.other", true);
