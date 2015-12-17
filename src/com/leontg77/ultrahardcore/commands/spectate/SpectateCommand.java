@@ -77,7 +77,7 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 		
 		Player target = (Player) sender;
 		
-		if (args.length > 1 && sender.hasPermission("uhc.spectate.others")) {
+		if (args.length > 1 && sender.hasPermission("uhc.spectate.other")) {
 			target = Bukkit.getServer().getPlayer(args[1]);
 		}
 		
