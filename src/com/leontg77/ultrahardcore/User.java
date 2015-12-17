@@ -237,6 +237,27 @@ public class User {
 		
 		return rank;
 	}
+
+	/**
+	 * Get the color of the rank the player has.
+	 * 
+	 * @return The rank color.
+	 */
+	public String getRankColor() {
+		switch (getRank()) {
+		case DONATOR:
+			return "§a";
+		case HOST:
+		case TRIAL:
+			return "§4";
+		case OWNER:
+			return "§4§l";
+		case STAFF:
+			return "§c";
+		default:
+			return "§7";
+		}
+	}
 	
 	/**
 	 * Mute the user.
