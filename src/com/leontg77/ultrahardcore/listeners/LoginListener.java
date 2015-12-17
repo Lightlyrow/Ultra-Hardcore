@@ -91,7 +91,7 @@ public class LoginListener implements Listener {
 				
 				spec.enableSpecmode(player);
 			} else {
-				PlayerUtils.broadcast("§8[§a+§8] §7" + player.getName() + " has joined.");
+				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName() + " §7has joined.");
 				
 				if (user.isNew()) {
 					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
