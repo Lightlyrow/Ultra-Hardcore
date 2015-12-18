@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
@@ -77,14 +76,8 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openSelector(Player player) {
-		ArrayList<Player> list = new ArrayList<Player>(PlayerUtils.getPlayers());
+		List<Player> list = GameUtils.getGamePlayers();
 		Inventory inv = null;
-
-		for (Player online : PlayerUtils.getPlayers()) {
-			if (Spectator.getInstance().isSpectating(online) || !GameUtils.getGameWorlds().contains(online.getWorld())) {
-				list.remove(online);
-			}
-		}
 		
 		int pages = ((list.size() / 28) + 1);
 		
