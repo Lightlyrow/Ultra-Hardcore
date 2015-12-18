@@ -1,6 +1,5 @@
 package com.leontg77.ultrahardcore.commands.msg;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -70,11 +69,7 @@ public class MsgCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		if (args.length == 1) {
-			return null; // returning null actually returns a list of all online player names.
-		}
-		
-		return new ArrayList<String>(); // while returning an empty list suggests nothing for tab complete.
+		return null; // returning null actually returns a list of all online player names.
 	}
 	
 	/**

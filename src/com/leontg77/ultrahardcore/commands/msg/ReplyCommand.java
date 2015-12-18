@@ -1,6 +1,5 @@
 package com.leontg77.ultrahardcore.commands.msg;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -63,6 +62,6 @@ public class ReplyCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		return new ArrayList<String>(); // returning a empty list gives no suggetions.
+		return null; // returning null actually returns a list of all online player names.
 	}
 }
