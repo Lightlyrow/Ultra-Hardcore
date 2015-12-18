@@ -98,8 +98,6 @@ import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.HOFListener;
 import com.leontg77.ultrahardcore.inventory.listener.InvseeListener;
 import com.leontg77.ultrahardcore.inventory.listener.SelectorListener;
-import com.leontg77.ultrahardcore.inventory.listener.SpectatorListener;
-import com.leontg77.ultrahardcore.inventory.listener.StatsListener;
 import com.leontg77.ultrahardcore.listeners.BlockListener;
 import com.leontg77.ultrahardcore.listeners.BuildProtectListener;
 import com.leontg77.ultrahardcore.listeners.ChristmasListener;
@@ -109,6 +107,7 @@ import com.leontg77.ultrahardcore.listeners.LoginListener;
 import com.leontg77.ultrahardcore.listeners.LogoutListener;
 import com.leontg77.ultrahardcore.listeners.PlayerListener;
 import com.leontg77.ultrahardcore.listeners.PortalListener;
+import com.leontg77.ultrahardcore.listeners.SpectatorListener;
 import com.leontg77.ultrahardcore.listeners.WorldListener;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
@@ -218,12 +217,13 @@ public class Main extends JavaPlugin {
 		// register all inventory listeners.
 		manager.registerEvents(new ConfigListener(), this);
 		manager.registerEvents(new HOFListener(), this);
-		manager.registerEvents(InvGUI.getGameInfo(), this);
-		manager.registerEvents(InvGUI.getTopStats(), this);
 		manager.registerEvents(new InvseeListener(), this);
 		manager.registerEvents(new SelectorListener(), this);
 		manager.registerEvents(new SpectatorListener(), this);
-		manager.registerEvents(new StatsListener(), this);
+		
+		manager.registerEvents(InvGUI.getGameInfo(), this);
+		manager.registerEvents(InvGUI.getTopStats(), this);
+		manager.registerEvents(InvGUI.getStats(), this);
 
 		// register all commands.
 		new CommandHandler().registerCommands();
@@ -326,19 +326,20 @@ public class Main extends JavaPlugin {
 						inv.setBoots(rainbowArmor(online, boots));
 					}
 					
+					String percentString = NumberUtils.makePercent(online.getHealth());
 					Game game = Game.getInstance();
 					
 					if (game.tabShowsHealthColor()) {
-						String percentColor = NumberUtils.makePercent(online.getHealth()).substring(0, 2);
+						String percentColor = percentString.substring(0, 2);
 					    
 					    online.setPlayerListName(percentColor + online.getName());
 					}
 
+					int percent = Integer.parseInt(percentString.substring(2));
 					Scoreboard sb = BoardManager.getInstance().board;
-					int percent = Integer.parseInt(NumberUtils.makePercent(online.getHealth()).substring(2));
 					
-					Objective tabList = sb.getObjective("tabHealth");
 					Objective bellowName = sb.getObjective("nameHealth");
+					Objective tabList = sb.getObjective("tabHealth");
 					
 					if (tabList != null) {
 						Score score = tabList.getScore(online.getName());
