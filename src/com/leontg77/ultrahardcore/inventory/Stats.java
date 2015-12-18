@@ -7,6 +7,9 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -22,8 +25,23 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * 
  * @author LeonTG77
  */
-public class Stats extends InvGUI {
+public class Stats extends InvGUI implements Listener {
 	private Map<String, Inventory> invs = new HashMap<String, Inventory>();
+	
+	@EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {	
+        if (event.getCurrentItem() == null) {
+        	return;
+        }
+        
+		Inventory inv = event.getInventory();
+		
+		if (!inv.getTitle().endsWith("'s Stats")) {
+			return;
+		}
+		
+		event.setCancelled(true);
+	}
 	
 	/**
 	 * Get the stats inventory for the given user.
