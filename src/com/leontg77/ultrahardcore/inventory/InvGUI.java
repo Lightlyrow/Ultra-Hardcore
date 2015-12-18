@@ -10,9 +10,7 @@ import java.util.TimeZone;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -27,7 +25,6 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.User;
-import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
@@ -49,8 +46,9 @@ public class InvGUI {
 	public HashMap<Player, Integer> currentPage = new HashMap<Player, Integer>();
 	
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
-	
+
 	private static TopStats topStats = new TopStats();
+	private static Stats stats = new Stats();
 	private static GameInfo gameInfo = new GameInfo();
 	
 	/**
@@ -70,91 +68,9 @@ public class InvGUI {
 		return topStats;
 	}
 	
-	public Inventory openStats(Player player, User user) {
-		Inventory inv = Bukkit.createInventory(user.getPlayer(), InventoryType.HOPPER, "» §7" + user.getPlayer().getName() + "'s Stats");
-		ArrayList<String> lore = new ArrayList<String>(); 
-		
-		ItemStack general = new ItemStack (Material.SIGN);
-		ItemMeta generalMeta = general.getItemMeta();
-		generalMeta.setDisplayName("§8» §6General Stats §8«");
-		lore.add(" ");
-		lore.add("§8» §7Games played: §a" + user.getStat(Stat.GAMESPLAYED));
-		lore.add("§8» §7Wins: §a" + user.getStat(Stat.WINS));
-		lore.add(" ");
-		lore.add("§8» §7Hostile kills: §a" + user.getStat(Stat.HOSTILEMOBKILLS));
-		lore.add("§8» §7Animal kills: §a" + user.getStat(Stat.ANIMALKILLS));
-		lore.add("§8» §7Damage taken: §a" + NumberUtils.convertDouble(user.getStatDouble(Stat.DAMAGETAKEN) / 2));
-		lore.add(" ");
-		generalMeta.setLore(lore);
-		general.setItemMeta(generalMeta);
-		inv.setItem(0, general);
-		lore.clear();
-		
-		ItemStack pvpmining = new ItemStack (Material.DIAMOND_AXE);
-		ItemMeta pvpminingMeta = pvpmining.getItemMeta();
-		pvpminingMeta.setDisplayName("§8» §6PvP & Mining Stats §8«");
-		lore.add(" ");
-		lore.add("§8» §7Highest Arena Killstreak: §a" + user.getStat(Stat.ARENAKILLSTREAK));
-		lore.add("§8» §7Highest Killstreak: §a" + user.getStat(Stat.KILLSTREAK));
-		lore.add(" ");
-		lore.add("§8» §7Kills: §a" + user.getStat(Stat.KILLS));
-		lore.add("§8» §7Deaths: §a" + user.getStat(Stat.DEATHS));
-		
-		double kdr;
-		if (user.getStat(Stat.DEATHS) == 0) {
-			kdr = ((double) user.getStat(Stat.KILLS));
-		} else {
-			kdr = ((double) user.getStat(Stat.KILLS)) / ((double) user.getStat(Stat.DEATHS));
-		}
-		
-		lore.add("§8» §7KDR: §a" + NumberUtils.convertDouble(kdr));
-		lore.add(" ");
-		lore.add("§8» §7Diamonds mined: §a" + user.getStat(Stat.DIAMONDS));
-		lore.add("§8» §7Gold mined: §a" + user.getStat(Stat.GOLD));
-		lore.add(" ");
-		lore.add("§8» §7Arena Kills: §a" + user.getStat(Stat.ARENAKILLS));
-		lore.add("§8» §7Arena Deaths: §a" + user.getStat(Stat.ARENADEATHS));
-		
-		double arenakdr;
-		if (user.getStat(Stat.ARENADEATHS) == 0) {
-			arenakdr = ((double) user.getStat(Stat.ARENAKILLS));
-		} else {
-			arenakdr = ((double) user.getStat(Stat.ARENAKILLS)) / ((double) user.getStat(Stat.ARENADEATHS));
-		}
-		
-		lore.add("§8» §7Arena KDR: §a" + NumberUtils.convertDouble(arenakdr));
-		lore.add(" ");
-		pvpminingMeta.setLore(lore); 
-		pvpminingMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
-		pvpminingMeta.addEnchant(Enchantment.DURABILITY, 1, true);
-		pvpmining.setItemMeta(pvpminingMeta);
-		inv.setItem(2, pvpmining);
-		lore.clear();
-		
-		ItemStack misc = new ItemStack (Material.NETHER_STALK);
-		ItemMeta miscMeta = misc.getItemMeta();
-		miscMeta.setDisplayName("§8» §6Misc Stats §8«");
-		lore.add(" ");
-		lore.add("§8» §7Golden Apples eaten: §a" + user.getStat(Stat.GOLDENAPPLESEATEN));
-		lore.add("§8» §7Golden Heads eaten: §a" + user.getStat(Stat.GOLDENHEADSEATEN));
-		lore.add("§8» §7Potions drunk: §a" + user.getStat(Stat.POTIONS));
-		lore.add(" ");
-		lore.add("§8» §7Nethers entered: §a" + user.getStat(Stat.NETHER));
-		lore.add("§8» §7Ends entered: §a" + user.getStat(Stat.END));
-		lore.add(" ");
-		lore.add("§8» §7Horses tamed: §a" + user.getStat(Stat.HORSESTAMED));
-		lore.add("§8» §7Wolves tamed: §a" + user.getStat(Stat.WOLVESTAMED));
-		lore.add(" ");
-		miscMeta.setLore(lore);
-		misc.setItemMeta(miscMeta);
-		inv.setItem(4, misc);
-		lore.clear();
-		
-		player.openInventory(inv);
-		return inv;
-	}
-	
-	/**
+	public static Stats getStats() {
+		return stats;
+	}/**
 	 * Opens an inventory of all the online players that is playing.
 	 * 
 	 * @param player the player opening for.
