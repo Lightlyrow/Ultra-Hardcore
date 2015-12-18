@@ -165,6 +165,10 @@ public class TopStats extends InvGUI implements Listener {
 		int number = 1;
 		
 		for (int i = data.size() - 1; i >= data.size() - 10; i--) {
+			if (i >= data.size()) {
+				continue;
+			}
+			
 			String line = data.get(i);
 			
 			String value = line.split(" ")[0];
