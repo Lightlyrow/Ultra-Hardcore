@@ -37,13 +37,12 @@ public class StatsCommand extends UHCCommand {
 			throw new CommandException("Stats are disabled in Recorded Rounds.");
 		}
 
-		InvGUI inv = InvGUI.getInstance();
 		Player target;
 		
 		if (args.length == 0) {
 			target = player;
 		} else {
-			target = Bukkit.getServer().getPlayer(args[0]);
+			target = Bukkit.getPlayer(args[0]);
 		}
 		
 		if (target == null) {
@@ -51,7 +50,7 @@ public class StatsCommand extends UHCCommand {
 		}
 		
 		User user = User.get(target);
-		inv.openStats(player, user);
+		player.openInventory(InvGUI.getStats().get(user));
 		return true;
 	}
 
