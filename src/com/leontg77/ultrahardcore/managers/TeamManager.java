@@ -90,7 +90,7 @@ public class TeamManager {
 
 		list.addAll(tempList);
 		
-		Team spec = (sb.getTeam("spec") == null ? sb.registerNewTeam("spec") : sb.getTeam("spec"));
+		Team spec = (getTeam("spec") == null ? sb.registerNewTeam("spec") : sb.getTeam("spec"));
 		spec.setDisplayName("spec");
 		spec.setPrefix("§7§o");
 		spec.setSuffix("§f");
@@ -162,7 +162,7 @@ public class TeamManager {
 	 * @param player the player joining.
 	 */
 	public void joinTeam(String name, OfflinePlayer player) {	
-		Team team = sb.getTeam(name);
+		Team team = getTeam(name);
 		joinTeam(team, player);
 	}
 	
@@ -185,9 +185,9 @@ public class TeamManager {
 					if (!savedTeams.containsKey(team.getName())) {
 						List<String> players = new ArrayList<String>(team.getEntries());
 						savedTeams.put(team.getName(), players);
+					} else {
+						savedTeams.get(team.getName()).remove(player.getName());
 					}
-
-					savedTeams.get(team.getName()).add(player.getName());
 				}
 			}
 		}.runTaskLater(Main.plugin, 1);
@@ -232,7 +232,7 @@ public class TeamManager {
 	 * @return The team, null if the player isn't on a team.
 	 */
 	public Team getTeam(OfflinePlayer player) {
-		return sb.getEntryTeam(player.getName());
+		return sb.getPlayerTeam(player);
 	}
 
 	/**
