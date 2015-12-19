@@ -136,7 +136,7 @@ public class User {
         	config.set("firstjoined", new Date().getTime());
         	config.set("lastlogin", new Date().getTime());
         	config.set("lastlogout", -1l);
-        	config.set("rank", Rank.USER.name());
+        	config.set("rank", Rank.DEFAULT.name());
         	
 			config.set("muted.status", false);
 			config.set("muted.reason", "NOT_MUTED");
@@ -232,7 +232,7 @@ public class User {
 		try {
 			rank = Rank.valueOf(config.getString("rank", "USER"));
 		} catch (Exception e) {
-			rank = Rank.USER;
+			rank = Rank.DEFAULT;
 		}
 		
 		return rank;
@@ -469,7 +469,7 @@ public class User {
      * @author LeonTG77
      */
     public enum Rank {
-    	USER(1), DONATOR(2), SPEC(3), STAFF(4), TRIAL(5), HOST(6), OWNER(7);
+    	DEFAULT(1), DONATOR(2), SPEC(3), STAFF(4), TRIAL(5), HOST(6), OWNER(7);
     	
     	int level;
     	
