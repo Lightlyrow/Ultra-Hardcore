@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import net.minecraft.server.v1_8_R3.MinecraftServer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -40,6 +42,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.commands.CommandHandler;
 import com.leontg77.ultrahardcore.commands.arena.ArenaCommand;
+import com.leontg77.ultrahardcore.commands.arena.HotbarCommand;
 import com.leontg77.ultrahardcore.commands.banning.BanCommand;
 import com.leontg77.ultrahardcore.commands.banning.BanIPCommand;
 import com.leontg77.ultrahardcore.commands.banning.KickCommand;
@@ -66,7 +69,6 @@ import com.leontg77.ultrahardcore.commands.game.ConfigCommand;
 import com.leontg77.ultrahardcore.commands.game.EndCommand;
 import com.leontg77.ultrahardcore.commands.game.HelpopCommand;
 import com.leontg77.ultrahardcore.commands.game.MatchpostCommand;
-import com.leontg77.ultrahardcore.commands.game.RandomCommand;
 import com.leontg77.ultrahardcore.commands.game.ScenarioCommand;
 import com.leontg77.ultrahardcore.commands.game.SpreadCommand;
 import com.leontg77.ultrahardcore.commands.game.StartCommand;
@@ -89,10 +91,6 @@ import com.leontg77.ultrahardcore.commands.spectate.SpecChatCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpectateCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpeedCommand;
 import com.leontg77.ultrahardcore.commands.team.PmCommand;
-import com.leontg77.ultrahardcore.commands.team.TlCommand;
-import com.leontg77.ultrahardcore.commands.user.HotbarCommand;
-import com.leontg77.ultrahardcore.commands.user.InfoCommand;
-import com.leontg77.ultrahardcore.commands.user.RankCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.HOFListener;
@@ -123,8 +121,6 @@ import com.leontg77.ultrahardcore.worlds.AntiStripmine;
 import com.leontg77.ultrahardcore.worlds.BiomeSwap;
 import com.leontg77.ultrahardcore.worlds.OldTerrain;
 import com.leontg77.ultrahardcore.worlds.WorldManager;
-
-import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 /**
  * Main class of the UHC plugin.
@@ -250,7 +246,6 @@ public class Main extends JavaPlugin {
 		getCommand("helpop").setExecutor(new HelpopCommand());
 		getCommand("hof").setExecutor(new HOFCommand());
 		getCommand("hotbar").setExecutor(new HotbarCommand());
-		getCommand("info").setExecutor(new InfoCommand());
 		getCommand("invsee").setExecutor(new InvseeCommand());
 		getCommand("kick").setExecutor(new KickCommand());
 		getCommand("list").setExecutor(new ListCommand());
@@ -258,8 +253,6 @@ public class Main extends JavaPlugin {
 		getCommand("ms").setExecutor(new MsCommand());
 		getCommand("mute").setExecutor(new MuteCommand());
 		getCommand("pm").setExecutor(new PmCommand());
-		getCommand("random").setExecutor(new RandomCommand());
-		getCommand("rank").setExecutor(new RankCommand());
 		getCommand("scenario").setExecutor(new ScenarioCommand());
 		getCommand("setmaxhealth").setExecutor(new SetmaxhealthCommand());
 		getCommand("skull").setExecutor(new SkullCommand());
@@ -274,7 +267,6 @@ public class Main extends JavaPlugin {
 		getCommand("text").setExecutor(new TextCommand());
 		getCommand("timeleft").setExecutor(new TimeLeftCommand());
 		getCommand("timer").setExecutor(new TimerCommand());
-		getCommand("teamloc").setExecutor(new TlCommand());
 		getCommand("tp").setExecutor(new TpCommand());
 		getCommand("tps").setExecutor(new TpsCommand());
 		getCommand("uhc").setExecutor(new UHCCmd());
