@@ -315,12 +315,18 @@ public class User {
 	 * 
 	 * @return The unmute time.
 	 */
-	public long getUnmuteTime() {
+	public Date getMuteExpiration() {
 		if (!isMuted()) {
-			return -1;
+			return null;
 		}
 	
-		return config.getLong("muted.time", -1);
+		long unmute = config.getLong("muted.time", -1);
+		
+		if (unmute == -1) {
+			return null;
+		}
+		
+		return new Date(unmute);
 	}
 	
 	/**
@@ -332,7 +338,7 @@ public class User {
 	public void setStat(Stat stat, double value) {
 		Game game = Game.getInstance();
 		
-		if (game.isRecordedRound() || Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
+		if (game.isRecordedRound() || game.isPrivateGame()) {
 			return;
 		}
 		
@@ -359,7 +365,7 @@ public class User {
 	public void increaseStat(Stat stat) {
 		Game game = Game.getInstance();
 		
-		if (game.isRecordedRound() || Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
+		if (game.isRecordedRound() || game.isPrivateGame()) {
 			return;
 		}
 		
@@ -477,6 +483,13 @@ public class User {
     		this.level = level;
     	}
     	
+    	/**
+    	 * Get the level of the rank.
+    	 * <p>
+    	 * It goes in order from 1 to 7 with 7 being the highest rank and 1 being the lowest.
+    	 * 
+    	 * @return The level.
+    	 */
     	public int getLevel() {
     		return level;
     	}
@@ -515,6 +528,11 @@ public class User {
     		this.name = name;
     	}
     	
+    	/**
+    	 * Get the name of the stat.
+    	 * 
+    	 * @return The name.
+    	 */
     	public String getName() {
     		return name;
     	}
