@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
@@ -25,6 +26,12 @@ public class TopCommand extends UHCCommand {
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
 			throw new CommandException("Only players can open the top 10 inventory.");
+		}
+		
+		Game game = Game.getInstance();
+		
+		if (game.isRecordedRound()) {
+			throw new CommandException("Stats are disabled in Recorded Rounds.");
 		}
 		
 		Player player = (Player) sender;
