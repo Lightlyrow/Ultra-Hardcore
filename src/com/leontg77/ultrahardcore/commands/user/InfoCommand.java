@@ -1,9 +1,8 @@
 package com.leontg77.ultrahardcore.commands.user;
 
-import static com.leontg77.ultrahardcore.Main.plugin;
-
-import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.bukkit.BanEntry;
@@ -11,12 +10,12 @@ import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -25,37 +24,22 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class InfoCommand implements CommandExecutor {	
+public class InfoCommand extends UHCCommand {	
+
+	public InfoCommand() {
+		super("info", "<player>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.info")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
-			sender.sendMessage(Main.PREFIX + "Usage: /info <player>");
-			return true;
+			return false;
 		}
-
-		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-        boolean found = false;
         
 		OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[0]);
 		
-        if (folder.exists()) {
-    		for (File file : folder.listFiles()) {
-    			if (file.getName().substring(0, file.getName().length() - 4).equals(target.getUniqueId().toString())) {
-    				found = true;
-    				break;
-    			}
-    		}
-        }
-		
-		if (!found) {
-			sender.sendMessage(Main.PREFIX + args[0] + " has never joined this server.");
-			return true;
+		if (!User.fileExist(target.getUniqueId())) {
+			throw new CommandException("'" + args[0] + "' has never joined this server.");
 		}
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -70,10 +54,10 @@ public class InfoCommand implements CommandExecutor {
 		String banMessage;
 		
 		if (user.isMuted()) {
-			if (user.getUnmuteTime() == -1) {
+			if (user.getMuteExpiration() == null) {
 				muteMessage = "§aTrue§7, Reason: §6" + user.getMutedReason() + " §8(§apermanent§8)";
 			} else {
-				muteMessage = "§aTrue§7, Reason: §6" + user.getMutedReason() + " §8(§a" + DateUtils.formatDateDiff(user.getUnmuteTime()) + "§8)";
+				muteMessage = "§aTrue§7, Reason: §6" + user.getMutedReason() + " §8(§a" + DateUtils.formatDateDiff(user.getMuteExpiration().getTime()) + "§8)";
 			}
 		} else {
 			muteMessage = "§cFalse";
@@ -91,9 +75,9 @@ public class InfoCommand implements CommandExecutor {
 
 		sender.sendMessage(Main.PREFIX + "Info about §6" + target.getName() + "§8:");
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
-		sender.sendMessage("§8» §7Status: §6" + (target.getPlayer() == null ? "§cNot online" : "§aOnline"));
+		sender.sendMessage("§8» §7Status: §6" + (target.getPlayer() == null ? "§cOffline" : "§aOnline"));
 		sender.sendMessage("§8» §7UUID: §6" + user.getFile().getString("uuid"));
-		sender.sendMessage("§8» §7IP: §6" + (sender.hasPermission("uhc.info.ip") ? user.getFile().getString("ip") : "§m###.##.##.###"));
+		sender.sendMessage("§8» §7IP: §6" + (sender.hasPermission("uhc.info.ip") ? user.getFile().getString("ip") : "§m" + user.getFile().getString("ip").replaceAll("[0-9]", "#")));
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		sender.sendMessage("§8» §7Banned: §6" + banMessage);
 		sender.sendMessage("§8» §7Muted: §6" + muteMessage);
@@ -103,5 +87,14 @@ public class InfoCommand implements CommandExecutor {
 		sender.sendMessage("§8» §7Last logout: §6" + (lastlogout == -1l ? "§cHasn't logged out" : DateUtils.formatDateDiff(lastlogout)));
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		if (args.length == 1) {
+			return null;
+		}
+		
+		return new ArrayList<String>();
 	}
 }
