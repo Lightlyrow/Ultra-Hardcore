@@ -3,11 +3,11 @@ package com.leontg77.ultrahardcore.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
@@ -17,7 +17,11 @@ import com.leontg77.ultrahardcore.commands.msg.ReplyCommand;
 import com.leontg77.ultrahardcore.commands.resetting.FeedCommand;
 import com.leontg77.ultrahardcore.commands.resetting.SethealthCommand;
 import com.leontg77.ultrahardcore.commands.spectate.NearCommand;
+import com.leontg77.ultrahardcore.commands.team.RandomCommand;
 import com.leontg77.ultrahardcore.commands.team.TeamCommand;
+import com.leontg77.ultrahardcore.commands.team.TlCommand;
+import com.leontg77.ultrahardcore.commands.user.InfoCommand;
+import com.leontg77.ultrahardcore.commands.user.RankCommand;
 import com.leontg77.ultrahardcore.commands.user.StatsCommand;
 import com.leontg77.ultrahardcore.commands.user.TopCommand;
 import com.leontg77.ultrahardcore.commands.world.BorderCommand;
@@ -45,8 +49,12 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new MsgCommand());
 		cmds.add(new ReplyCommand());
 		
+		cmds.add(new RandomCommand());
 		cmds.add(new TeamCommand());
+		cmds.add(new TlCommand());
 
+		cmds.add(new InfoCommand());
+		cmds.add(new RankCommand());
 		cmds.add(new StatsCommand());
 		cmds.add(new TopCommand());
 		
@@ -56,7 +64,16 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new WorldCommand());
 		
 		for (UHCCommand cmd : cmds) {
-			Bukkit.getPluginCommand(cmd.getName()).setExecutor(this);
+			PluginCommand pCmd = Main.plugin.getCommand(cmd.getName());
+			
+			// if its null, broadcast the command name so I know which one it is.
+			if (pCmd == null) {
+				PlayerUtils.broadcast(cmd.getName());
+				continue;
+			}
+			
+			pCmd.setExecutor(this);
+			pCmd.setTabCompleter(this);
 		}
 	}
 
