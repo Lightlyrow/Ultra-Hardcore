@@ -492,6 +492,10 @@ public class TeamCommand extends UHCCommand {
 				
 				List<String> savedTeam = teams.getSavedTeams().get(team.getName());
 				
+				if (savedTeam == null) {
+					continue;
+				}
+				
 				for (String entry : savedTeam) {
 					if (list.length() > 0) {
 						if (i == savedTeam.size()) {
