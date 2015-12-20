@@ -65,9 +65,9 @@ public class OldTerrain extends BlockPopulator implements Listener {
                         boolean replace;
                         
                         if (block.getType() == Material.GOLD_ORE) {
-                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 75;
+                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 70;
                         } else {
-                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 75;
+                        	replace = rand.nextInt(RANDOM_BOUNDS) >= 70;
                         }
                         
                         OreTraverser oreTraverser = new OreTraverser();
