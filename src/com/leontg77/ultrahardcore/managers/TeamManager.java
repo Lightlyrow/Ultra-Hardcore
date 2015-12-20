@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +17,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Team management class.
@@ -199,14 +199,8 @@ public class TeamManager {
 	 * @param team The given team.
 	 * @return A list of OfflinePlayer's on the team.
 	 */
-	public List<OfflinePlayer> getPlayers(Team team) {
-		List<OfflinePlayer> players = new ArrayList<OfflinePlayer>();
-		
-		for (String entry : team.getEntries()) {
-			players.add(PlayerUtils.getOfflinePlayer(entry));
-		}
-		
-		return players;
+	public Set<OfflinePlayer> getPlayers(Team team) {
+		return team.getPlayers();
 	}
 	
 	/**
