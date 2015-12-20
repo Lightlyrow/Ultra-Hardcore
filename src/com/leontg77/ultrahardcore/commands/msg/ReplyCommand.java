@@ -37,10 +37,10 @@ public class ReplyCommand extends UHCCommand {
     		
 			sender.sendMessage(Main.PREFIX + "You have been muted for: §a" + user.getMutedReason());
 			
-			if (user.getUnmuteTime() < 0) {
+			if (user.getMuteExpiration() == null) {
 				sender.sendMessage(Main.PREFIX + "Your mute is permanent.");
 			} else {
-				sender.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getUnmuteTime()));
+				sender.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getMuteExpiration().getTime()));
 			}
 			return true;
     	}
