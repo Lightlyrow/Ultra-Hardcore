@@ -51,12 +51,14 @@ public class LogoutListener implements Listener {
 		}
 		
 		if (!spec.isSpectating(player)) {
-			PlayerUtils.broadcast("§8[§c-§8] " + user.getRankColor() + player.getName() + " §7has left.");
+			PlayerUtils.broadcast("Â§8[Â§c-Â§8] " + user.getRankColor() + player.getName() + " Â§7has left.");
 		}
 		
 		InvGUI inv = InvGUI.getInstance();
 
 		// clear ALL data from the player, incase of a memory leak.
+		
+		System.gc();
 		
 		if (InvGUI.invsee.containsKey(inv)) {
 			InvGUI.invsee.get(inv).cancel();
@@ -98,6 +100,6 @@ public class LogoutListener implements Listener {
 			return;
 		}
 		
-		event.setReason("§8» §7Kicked for spamming §8«");
+		event.setReason("ï¿½8ï¿½ ï¿½7Kicked for spamming ï¿½8ï¿½");
 	}
 }

@@ -91,12 +91,12 @@ public class LoginListener implements Listener {
 				
 				spec.enableSpecmode(player);
 			} else {
-				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName() + " §7has joined.");
+				PlayerUtils.broadcast("Â§8[Â§a+Â§8] " + user.getRankColor() + player.getName() + " Â§7has joined.");
 				
 				if (user.isNew()) {
 					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 					
-					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! §8[§a#" + NumberFormat.getInstance(Locale.UK).format(f.listFiles().length) + "§8]");
+					PlayerUtils.broadcast(Main.PREFIX + "Welcome Â§6" + player.getName() + " Â§7to the server! Â§8[Â§a#" + NumberFormat.getInstance(Locale.UK).format(f.listFiles().length) + "Â§8]");
 				}
 			}
 		}
@@ -113,7 +113,7 @@ public class LoginListener implements Listener {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1726272000, 2));
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "- §a" + player.getName() + " §7scheduled scatter.");
+			PlayerUtils.broadcast(Main.PREFIX + "- Â§a" + player.getName() + " Â§7scheduled scatter.");
 			player.teleport(scatter.get(player.getName()));
 			scatter.remove(player.getName());
 		}
@@ -138,20 +138,20 @@ public class LoginListener implements Listener {
 		}
 		
 		if (!game.isRecordedRound()) {
-			player.sendMessage("§8» §m----------§8[ §4§lArctic UHC §8]§m----------§8 «");
+			player.sendMessage("Â§8Â» Â§m----------Â§8[ Â§4Â§lArctic UHC Â§8]Â§m----------Â§8 Â«");
 			
 			if (GameUtils.getTeamSize().startsWith("No")) {
-				player.sendMessage("§8» §c No games running");
+				player.sendMessage("Â§8Â» Â§c No games running");
 			} 
 			else if (GameUtils.getTeamSize().startsWith("Open")) {
-				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
+				player.sendMessage("Â§8Â» Â§7 Open PvP, use Â§a/a Â§7to join.");
 			} 
 			else {
-				player.sendMessage("§8» §7 Host: §a" + Bukkit.getOfflinePlayer(game.getHost()).getName());
-				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + game.getScenarios());
+				player.sendMessage("Â§8Â» Â§7 Host: Â§a" + Bukkit.getOfflinePlayer(game.getHost()).getName());
+				player.sendMessage("Â§8Â» Â§7 Gamemode: Â§a" + GameUtils.getTeamSize() + game.getScenarios());
 			}
 			
-			player.sendMessage("§8» §m---------------------------------§8 «");
+			player.sendMessage("Â§8Â» Â§m---------------------------------Â§8 Â«");
 		}
 	}
 	
@@ -177,16 +177,16 @@ public class LoginListener implements Listener {
 				}
 
 				BanEntry ban = name.getBanEntry(player.getName());
-				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " for:§c " + ban.getReason(), "uhc.staff");
+				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " Â§7tried to join while being " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " for:Â§c " + ban.getReason(), "uhc.staff");
 				
 				event.setKickMessage(
-				"§8» §7You have been §4" + (ban.getExpiration() == null ? "banned" : "temp-banned") + " §7from §6Arctic UHC §8«" +
+				"Â§8Â» Â§7You have been Â§4" + (ban.getExpiration() == null ? "banned" : "temp-banned") + " Â§7from Â§6Arctic UHC Â§8Â«" +
 				"\n" + 
-				"\n§cReason §8» §7" + ban.getReason() +
-				"\n§cBanned by §8» §7" + ban.getSource() + (ban.getExpiration() == null ? "" : "" +
-				"\n§cExpires in §8» §7" + DateUtils.formatDateDiff(ban.getExpiration().getTime())) +
+				"\nÂ§cReason Â§8Â» Â§7" + ban.getReason() +
+				"\nÂ§cBanned by Â§8Â» Â§7" + ban.getSource() + (ban.getExpiration() == null ? "" : "" +
+				"\nÂ§cExpires in Â§8Â» Â§7" + DateUtils.formatDateDiff(ban.getExpiration().getTime())) +
 				"\n" +
-				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
+				"\nÂ§8Â» Â§7If you would like to appeal, DM our twitter Â§a@ArcticUHC Â§8Â«"
 				);
 			}
 			else if (ip.getBanEntry(adress) != null) {
@@ -197,15 +197,15 @@ public class LoginListener implements Listener {
 				}
 
 				BanEntry ban = ip.getBanEntry(adress);
-				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
+				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " Â§7tried to join while being IP-banned for:Â§c " + ban.getReason(), "uhc.staff");
 				
 				event.setKickMessage(
-				"§8» §7You have been §4IP banned §7from §6Arctic UHC §8«" +
+				"Â§8Â» Â§7You have been Â§4IP banned Â§7from Â§6Arctic UHC Â§8Â«" +
 				"\n" + 
-				"\n§cReason §8» §7" + ban.getReason() +
-				"\n§cBanned by §8» §7" +
+				"\nÂ§cReason Â§8Â» Â§7" + ban.getReason() +
+				"\nÂ§cBanned by Â§8Â» Â§7" +
 				"\n" +
-				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
+				"\nÂ§8Â» Â§7If you would like to appeal, DM our twitter Â§a@ArcticUHC Â§8Â«"
 				);
 			}
 			else {
@@ -231,7 +231,7 @@ public class LoginListener implements Listener {
 				}
 			} 
 
-			event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
+			event.disallow(Result.KICK_FULL, "Â§8Â» Â§7The server is currently full, try again later Â§8Â«");
 			return;
 		}
 		
@@ -244,7 +244,7 @@ public class LoginListener implements Listener {
 			String teamSize = GameUtils.getTeamSize();
 			
 			if (teamSize.startsWith("No") || game.isRecordedRound() || GameUtils.getHostName(game.getHost()).equalsIgnoreCase("LeonsPrivate")) {
-				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
+				event.setKickMessage("Â§8Â» Â§7You are not whitelisted Â§8Â«\n\nÂ§cThere are no games running");
 			} else if (teamSize.startsWith("Open")) {
 				Bukkit.setWhitelist(false);
 				event.allow();
@@ -252,21 +252,21 @@ public class LoginListener implements Listener {
 			} else {
 				switch (State.getState()) {
 				case CLOSED:
-					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has closed, you were too late.");
+					event.setKickMessage("Â§8Â» Â§7You are not whitelisted Â§8Â«\n\nÂ§cThe game has closed, you were too late.");
 					break;
 				case INGAME:
 				case SCATTER:
-					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has already started");
+					event.setKickMessage("Â§8Â» Â§7You are not whitelisted Â§8Â«\n\nÂ§cThe game has already started");
 					break;
 				case NOT_RUNNING:
-					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThe game has not opened yet,\n§ccheck the post for open time.\n\n§7Match post: §a" + game.getMatchPost());
+					event.setKickMessage("Â§8Â» Â§7You are not whitelisted Â§8Â«\n\nÂ§cThe game has not opened yet,\nÂ§ccheck the post for open time.\n\nÂ§7Match post: Â§a" + game.getMatchPost());
 					break;
 				case OPEN:
 					Bukkit.setWhitelist(false);
 					event.allow();
 					break;
 				default:
-					event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
+					event.setKickMessage("Â§8Â» Â§7You are not whitelisted Â§8Â«\n\nÂ§cThere are no games running");
 					break;
 				}
 			}
@@ -285,7 +285,7 @@ public class LoginListener implements Listener {
 				if (moles && !State.isState(State.INGAME)) {
 					String kickMsg = event.getKickMessage();
 					
-					event.disallow(Result.KICK_WHITELIST, "§4§lPre-whitelist is disabled for Mole games\n\n" + kickMsg);
+					event.disallow(Result.KICK_WHITELIST, "Â§4Â§lPre-whitelist is disabled for Mole games\n\n" + kickMsg);
 					return;
 				}
 				
