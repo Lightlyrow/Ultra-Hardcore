@@ -1,13 +1,15 @@
 package com.leontg77.ultrahardcore.commands.team;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 
 /**
@@ -15,28 +17,35 @@ import com.leontg77.ultrahardcore.managers.TeamManager;
  * 
  * @author LeonTG77
  */
-public class TlCommand implements CommandExecutor {
+public class TlCommand extends UHCCommand {
+
+	public TlCommand() {
+		super("tl", "");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can display their location to their.");
-			return true;
+			throw new CommandException("Only players can display their location to their location.");
 		}
 		
 		Player player = (Player) sender;
-		
+
+		TeamManager teams = TeamManager.getInstance(); 
 		Spectator spec = Spectator.getInstance();
-		TeamManager teams = TeamManager.getInstance();
 		
 		Team team = teams.getTeam(player);
 		
 		if (team == null || spec.isSpectating(player)) { 
-        	player.sendMessage(ChatColor.RED + "You are not on a team.");
-        	return true;
+			throw new CommandException("You are not on a team.");
 		} 
 		
-		teams.sendMessage(team, "§9§lTeam §8» §7" + player.getName() + "'s loc: §fx:" + player.getLocation().getBlockX() + " y:" + player.getLocation().getBlockY() + " z:" + player.getLocation().getBlockZ() + " (" + player.getWorld().getEnvironment().name().replaceAll("_", " ").replaceAll("NORMAL", "overworld").toLowerCase().replaceAll("normal", "overworld") + ")");
+		teams.sendMessage(team, "§9§lTeam §8» §7" + player.getName() + "'s coords: §fx:" + player.getLocation().getBlockX() + " y:" + player.getLocation().getBlockY() + " z:" + player.getLocation().getBlockZ() + " (" + player.getWorld().getEnvironment().name().replaceAll("_", " ").replaceAll("NORMAL", "overworld").toLowerCase().replaceAll("normal", "overworld") + ")");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return new ArrayList<String>();
 	}
 }
