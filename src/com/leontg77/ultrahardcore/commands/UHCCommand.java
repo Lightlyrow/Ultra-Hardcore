@@ -20,7 +20,7 @@ public abstract class UHCCommand {
 	 * @param name The name of the command.
 	 * @param usage the command usage (after /command)
 	 */
-	protected UHCCommand(String name, String usage) {
+	public UHCCommand(String name, String usage) {
 		this.usage = usage;
 		this.name = name;
 	}
