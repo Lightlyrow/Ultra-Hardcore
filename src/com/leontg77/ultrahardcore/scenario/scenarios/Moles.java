@@ -40,6 +40,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 @SuppressWarnings("deprecation")
 public class Moles extends Scenario implements Listener, CommandExecutor {
+	private ArrayList<String> hasUsedKit = new ArrayList<String>();
 	private ArrayList<String> moles = new ArrayList<String>();
 
 	public Moles() {
@@ -70,7 +71,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 					cancel();
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 0);
+						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
 					
 					for (Team team : TeamManager.getInstance().getTeamsWithPlayers()) {
@@ -270,6 +271,10 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			return;
 		}
 		
+		if (hasUsedKit.contains(player.getName())) {
+			return;
+		}
+		
 		if (item.getItemMeta().getDisplayName().equals("§aThe Mobber")) {
 			ItemStack wool1 = new ItemStack (Material.MONSTER_EGG, 1, (short) 50);
 			
@@ -294,6 +299,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			player.getInventory().setItem(13, wool5);
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
+			hasUsedKit.add(player.getName());
 			return;
 		}
 
@@ -321,6 +327,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			player.getInventory().setItem(13, wool5);
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
+			hasUsedKit.add(player.getName());
 			return;
 		}
 		
@@ -348,6 +355,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			player.getInventory().setItem(13, wool5);
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
+			hasUsedKit.add(player.getName());
 			return;
 		}
 		
@@ -383,6 +391,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			player.getInventory().setItem(13, wool5);
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
+			hasUsedKit.add(player.getName());
 			return;
 		}
 		
@@ -410,6 +419,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			player.getInventory().setItem(13, wool5);
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
+			hasUsedKit.add(player.getName());
 			return;
 		}
 		
@@ -437,6 +447,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			player.getInventory().setItem(13, wool5);
 			player.getInventory().setItem(14, wool6);
 			event.setCancelled(true);
+			hasUsedKit.add(player.getName());
 		}
 	}
 
