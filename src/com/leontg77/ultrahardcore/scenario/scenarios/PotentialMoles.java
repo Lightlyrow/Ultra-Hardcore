@@ -33,6 +33,7 @@ public class PotentialMoles extends Scenario implements Listener {
 		Moles moles = scen.getScenario(Moles.class);
 		
 		moles.setEnabled(true);
+		// we need make the moles plugin run the onpvpenableevent as well.
 		moles.on(event);
 	}
 }
