@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.commands.user;
+package com.leontg77.ultrahardcore.commands.arena;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
