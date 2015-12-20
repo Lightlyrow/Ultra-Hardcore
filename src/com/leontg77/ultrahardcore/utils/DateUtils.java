@@ -180,6 +180,7 @@ public class DateUtils {
  
         Calendar max = new GregorianCalendar();
         max.add(Calendar.YEAR, 10);
+        
         if (c.after(max)) {
             return max.getTimeInMillis();
         }
@@ -248,6 +249,7 @@ public class DateUtils {
  
     /**
      * Get the difference between 2 calendar instances with a maximum accuracy of 3 fields.
+     * 
      * @param fromDate The calendar to check from
      * @param toDate The calendar to check against
      * @return A {@link #timePattern} compatible string.
