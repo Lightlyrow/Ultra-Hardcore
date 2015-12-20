@@ -10,6 +10,7 @@ import com.leontg77.ultrahardcore.Main.BorderShrink;
 import com.leontg77.ultrahardcore.Main.HardcoreHearts;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -300,6 +301,15 @@ public class Game {
 	 */
 	public boolean isRecordedRound() {
 		return settings.getConfig().getBoolean("recordedround.enabled", false);
+	}
+
+	/**
+	 * Get if the game is a private game.
+	 * 
+	 * @return True if it is, false otherwise.
+	 */
+	public boolean isPrivateGame() {
+		return GameUtils.getHostName(getHost()).equals("LeonsPrivate");
 	}
 	
 	/**
