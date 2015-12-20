@@ -136,9 +136,9 @@ commands:
     description: Check the time left.
   timer:
     description: Hotbar timer command.
-  teamloc:
-    description: Tell your location out to your teammates.
-    aliases: [tl, pmcoords]
+  tl:
+    description: Display your location to your teammates.
+    aliases: [sendcoords, pmcoords, teamcoords, teamloc]
   top:
     description: View the top scores for a specific stat.
   tps:
