@@ -5,16 +5,14 @@ import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -23,67 +21,64 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class SpectateCommand implements CommandExecutor, TabCompleter {
+public class SpectateCommand extends UHCCommand {
+
+	public SpectateCommand() {
+		super("spectate", "<help|on|off|toggle|list|cmdspy|info> [player]");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.spectate")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-    		return true;
-		}
-		
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
-			sender.sendMessage(Main.PREFIX + "Usage: /spec <on|off|toggle|list|cmdspy|info> [player]");
-    		return true;
+    		return false;
 		}
 		
 		Spectator spec = Spectator.getInstance();
 		
 		if (args[0].equalsIgnoreCase("list")) {
-			if (spec.spectators.size() < 1) {
+			if (spec.getSpectators().isEmpty()) {
 		    	sender.sendMessage(Main.PREFIX + "There are no spectators.");
 				return true;
 			}
 			
-			ArrayList<String> players = new ArrayList<String>(spec.spectators);
-			Collections.shuffle(players);
+			ArrayList<String> specs = new ArrayList<String>(spec.getSpectators());
+			Collections.shuffle(specs);
 			
-	    	StringBuilder list = new StringBuilder();
-	    	int p = 1;
+	    	StringBuilder spectatorList = new StringBuilder();
+	    	int i = 1;
 	    		
-	    	for (int i = 0; i < players.size(); i++) {
-	    		if (list.length() > 0) {
-					if (p == players.size()) {
-						list.append(" §8and §a");
+	    	for (String spectator : specs) {
+	    		if (spectatorList.length() > 0) {
+					if (i == specs.size()) {
+						spectatorList.append(" §8and §a");
 					} else {
-						list.append("§8, §a");
+						spectatorList.append("§8, §a");
 					}
 				}
 				
-	    		String s = players.get(i);
-				list.append(Bukkit.getPlayer(s) == null ? "§c" + s : "§a" + s);
-				p++;
+				spectatorList.append(Bukkit.getPlayer(spectator) == null ? "§c" + spectator : "§a" + spectator);
+				i++;
 			}
 	    			
-	    	sender.sendMessage(Main.PREFIX + "There are §6" + (p - 1) + " §7spectators.");
-	    	sender.sendMessage("§8» §7Spectators§8: §a" + list.toString() + "§8.");
+	    	sender.sendMessage(Main.PREFIX + "There are §6" + (i - 1) + " §7spectators.");
+	    	sender.sendMessage("§8» §7Spectators§8: §a" + spectatorList.toString() + "§8.");
 			return true;
 		}
 		
-		if (!(sender instanceof Player) && args.length == 1) {
-			sender.sendMessage(ChatColor.RED + "Only players can manage their spectator mode.");
-			return true;
-		}
+		Player target;
 		
-		Player target = (Player) sender;
-		
-		if (args.length > 1 && sender.hasPermission("uhc.spectate.other")) {
-			target = Bukkit.getServer().getPlayer(args[1]);
+		if (args.length == 1) {
+			if (!(sender instanceof Player)) {
+				throw new CommandException("Only players can manage their spectator mode.");
+			}
+			
+			target = (Player) sender;
+		} else {
+			target = Bukkit.getPlayer(args[1]);
 		}
 		
 		if (target == null) {
-			sender.sendMessage(ChatColor.RED + args[1] + " is not online.");
-			return true;
+			throw new CommandException("'" + args[1] + "' is not online.");
 		}
 		
 		if (args[0].equalsIgnoreCase("toggle")) {
@@ -132,15 +127,15 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 		}
 
 		if (args[0].equalsIgnoreCase("info")) {
-			if (spec.specinfo.contains(target.getName())) {
-				spec.specinfo.remove(target.getName());
+			if (spec.getSpecInfoers().contains(target.getName())) {
+				spec.getSpecInfoers().remove(target.getName());
 				
 				if (target != sender) {
 					sender.sendMessage(Main.PREFIX + "You disabled " + target.getName() + "'s specinfo.");
 				}
 				target.sendMessage(Main.PREFIX + "Your specinfo has been disabled.");
 			} else {
-				spec.specinfo.add(target.getName());
+				spec.getSpecInfoers().add(target.getName());
 				
 				if (target != sender) {
 					sender.sendMessage(Main.PREFIX + "You enabled " + target.getName() + "'s specinfo.");
@@ -156,15 +151,15 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
-			if (spec.cmdspy.contains(target.getName())) {
-				spec.cmdspy.remove(target.getName());
+			if (spec.getCommandSpyers().contains(target.getName())) {
+				spec.getCommandSpyers().remove(target.getName());
 				
 				if (target != sender) {
 					sender.sendMessage(Main.PREFIX + "You disabled " + target.getName() + "'s commandspy.");
 				}
 				target.sendMessage(Main.PREFIX + "Your commandspy has been disabled.");
 			} else {
-				spec.cmdspy.add(target.getName());
+				spec.getCommandSpyers().add(target.getName());
 				
 				if (target != sender) {
 					sender.sendMessage(Main.PREFIX + "You enabled " + target.getName() + "'s commandspy.");
@@ -174,119 +169,55 @@ public class SpectateCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		
-		target.sendMessage(Main.PREFIX + "Usage: /spec <on|off|toggle|list|cmdspy|info> [player]");
-		return true;
+		return false;
 	}
-	
+
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.spectate")) {
-    		return null;
-		}
-		
-		ArrayList<String> toReturn = new ArrayList<String>();
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		List<String> toReturn = new ArrayList<String>();
     	
 		if (args.length == 1) {
-        	ArrayList<String> types = new ArrayList<String>();
-        	types.add("on");
-        	types.add("off");
-        	types.add("toggle");
-        	types.add("list");
-        	types.add("cmdspy");
-        	types.add("info");
-        	
-        	if (args[0].equals("")) {
-        		for (String type : types) {
-        			toReturn.add(type);
-        		}
-        	} else {
-        		for (String type : types) {
-        			if (type.startsWith(args[0].toLowerCase())) {
-        				toReturn.add(type);
-        			}
-        		}
-        	}
+			toReturn.add("help");
+			toReturn.add("on");
+        	toReturn.add("off");
+        	toReturn.add("toggle");
+        	toReturn.add("list");
+        	toReturn.add("cmdspy");
+        	toReturn.add("info");
         }
 		
 		if (args.length == 2) {
 			if (!sender.hasPermission("uhc.spectate.other")) {
-		        return null;
+		        return new ArrayList<String>();
 			}
 			
 			if (args[0].equalsIgnoreCase("on")) {
-	        	if (args[1].equals("")) {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-        				if (!Spectator.getInstance().isSpectating(online)) {
-	        				toReturn.add(online.getName());
-        				}
-	        		}
-	        	} else {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				if (!Spectator.getInstance().isSpectating(online)) {
-		        				toReturn.add(online.getName());
-	        				}
-	        			}
-	        		}
-	        	}
-        	}
-        	else if (args[0].equalsIgnoreCase("off")) {
-	        	if (args[1].equals("")) {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-        				if (Spectator.getInstance().isSpectating(online)) {
-	        				toReturn.add(online.getName());
-        				}
-	        		}
-	        	} else {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				if (Spectator.getInstance().isSpectating(online)) {
-		        				toReturn.add(online.getName());
-	        				}
-	        			}
-	        		}
-	        	}
-        	}
-        	else if (args[0].equalsIgnoreCase("toggle")) {
-	        	if (args[1].equals("")) {
-	        		for (Player online : PlayerUtils.getPlayers()) {
+        		for (Player online : PlayerUtils.getPlayers()) {
+    				if (!Spectator.getInstance().isSpectating(online)) {
         				toReturn.add(online.getName());
-	        		}
-	        	} else {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				toReturn.add(online.getName());
-	        			}
-	        		}
-	        	}
-        	}
-        	else if (args[0].equalsIgnoreCase("cmdspy")) {
-	        	if (args[1].equals("")) {
-	        		for (Player online : PlayerUtils.getPlayers()) {
+    				}
+        		}
+        	} else if (args[0].equalsIgnoreCase("off")) {
+        		for (Player online : PlayerUtils.getPlayers()) {
+    				if (Spectator.getInstance().isSpectating(online)) {
         				toReturn.add(online.getName());
-        			}
-	        	} else {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				toReturn.add(online.getName());
-	        			}
-	        		}
-	        	}
-        	}
-        	else if (args[0].equalsIgnoreCase("info")) {
-	        	if (args[1].equals("")) {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-        				toReturn.add(online.getName());
-        			}
-	        	} else {
-	        		for (Player online : PlayerUtils.getPlayers()) {
-	        			if (online.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				toReturn.add(online.getName());
-	        			}
-	        		}
-	        	}
+    				}
+        		}
+        	} else if (args[0].equalsIgnoreCase("toggle")) {
+        		for (Player online : PlayerUtils.getPlayers()) {
+    				toReturn.add(online.getName());
+        		}
+        	} else if (args[0].equalsIgnoreCase("cmdspy")) {
+        		for (Player online : PlayerUtils.getPlayers()) {
+    				toReturn.add(online.getName());
+    			}
+        	} else if (args[0].equalsIgnoreCase("info")) {
+        		for (Player online : PlayerUtils.getPlayers()) {
+    				toReturn.add(online.getName());
+    			}
         	}
         }
+		
 		return toReturn;
 	}
 }
