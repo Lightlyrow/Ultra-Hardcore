@@ -243,7 +243,7 @@ public class LoginListener implements Listener {
 			
 			String teamSize = GameUtils.getTeamSize();
 			
-			if (teamSize.startsWith("No") || game.isRecordedRound() || GameUtils.getHostName(game.getHost()).equalsIgnoreCase("LeonsPrivate")) {
+			if (teamSize.startsWith("No") || game.isRecordedRound() || game.isPrivateGame()) {
 				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
 			} else if (teamSize.startsWith("Open")) {
 				Bukkit.setWhitelist(false);
@@ -276,8 +276,8 @@ public class LoginListener implements Listener {
 				
 				boolean moles = false;
 				
-				for (String scen : scenario.split(" ")) {
-					if (scen.equalsIgnoreCase("moles")) {
+				for (String scen : scenario.split(", ")) {
+					if (scen.toLowerCase().contains("moles")) {
 						moles = true;
 					}
 				}
