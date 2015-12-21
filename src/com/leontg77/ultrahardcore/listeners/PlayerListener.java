@@ -379,9 +379,9 @@ public class PlayerListener implements Listener {
 			String prefix;
 			
 			if (uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
-				prefix = "§3Owner";
+				prefix = "§3§oOwner";
 			} else {
-				prefix = "§4Owner";
+				prefix = "§4§oOwner";
 			}
 			
 			PlayerUtils.broadcast("§8[" + prefix + "§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));

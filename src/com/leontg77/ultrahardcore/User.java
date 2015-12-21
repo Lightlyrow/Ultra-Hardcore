@@ -251,7 +251,11 @@ public class User {
 		case TRIAL:
 			return "§4";
 		case OWNER:
-			return "§4§l";
+			if (uuid.equals("02dc5178-f7ec-4254-8401-1a57a7442a2f")) {
+				return "§3§o";
+			} else {
+				return "§4§o";
+			}
 		case STAFF:
 			return "§c";
 		default:
