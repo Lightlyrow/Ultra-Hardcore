@@ -77,11 +77,6 @@ public class EntityListener implements Listener {
 		
 		Biome biome = loc.getBlock().getBiome();
 		
-		if (reason == SpawnReason.NETHER_PORTAL || (State.isState(State.INGAME) && reason == SpawnReason.SPAWNER_EGG)) {
-			event.setCancelled(true);
-			return;
-		}
-		
 		if (world.getName().equals("lobby") || world.getName().equals("arena")) {
 			if (reason != SpawnReason.CUSTOM) {
 				event.setCancelled(true);
