@@ -49,6 +49,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.msg", true);
 		perm.setPermission("uhc.reply", true);
 		perm.setPermission("uhc.tl", true);
+		perm.setPermission("uhc.pm", true);
 		
 		if (rank == Rank.DEFAULT) {
 			return;
