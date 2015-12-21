@@ -113,6 +113,18 @@ public abstract class UHCCommand {
 	}
 	
 	/**
+	 * Parse an float from the given string.
+	 * 
+	 * @param parse The string to parse.
+	 * @return The float parsed.
+	 * 
+	 * @throws CommandException If the string typed isn't an float, this will send the sender a message.
+	 */
+	public float parseFloat(String parse) throws CommandException {
+		return parseFloat(parse, "number");
+	}
+	
+	/**
 	 * Parse an int from the given string.
 	 * 
 	 * @param parse The string to parse.
@@ -158,6 +170,23 @@ public abstract class UHCCommand {
 	public long parseLong(String parse, String criteria) throws CommandException {
 		try {
 			return Long.parseLong(parse);
+		} catch (Exception e) {
+			throw new CommandException("'" + parse + "' is not a vaild " + criteria + ".");
+		}
+	}
+	
+	/**
+	 * Parse an float from the given string.
+	 * 
+	 * @param parse The string to parse.
+	 * @param criteria What the long is used for.
+	 * @return The float parsed.
+	 * 
+	 * @throws CommandException If the string typed isn't an float, this will send the sender a message.
+	 */
+	public float parseFloat(String parse, String criteria) throws CommandException {
+		try {
+			return Float.parseFloat(parse);
 		} catch (Exception e) {
 			throw new CommandException("'" + parse + "' is not a vaild " + criteria + ".");
 		}
