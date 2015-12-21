@@ -44,7 +44,7 @@ public class PacketUtils {
 	      	+ "§7Follow us for games and updates!\n'}"
 	    );
 
-		String gamemode = GameUtils.getTeamSize(false) + " " + game.getScenarios();
+		String gamemode = GameUtils.getTeamSize(false) + "§8- §7" + game.getScenarios().replaceAll(",", "§8,§7");
 		UUID host = game.getHost();
 		String teamsize = game.getTeamSize().toLowerCase();
 	        
