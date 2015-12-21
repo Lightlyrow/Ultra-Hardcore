@@ -1,6 +1,5 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -22,6 +21,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Team;
 
+import com.google.common.collect.Lists;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
@@ -55,9 +55,6 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 
 	@Override
 	public void onEnable() {
-		// this doesn't disable it, but it just does the same thing (clearing effects and resetting).
-		onDisable();
-		
 		PlayerUtils.broadcast(Main.PREFIX + "Superhero types will be set at final heal!");
 	}
 	
@@ -66,9 +63,12 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		PlayerUtils.broadcast(Main.PREFIX + "Setting hero types...");
 		
 		for (Player online : PlayerUtils.getPlayers()) {
-			HeroType type = getRandom(online);
+			HeroType type = getRandomType(online);
 			
-			types.put(online.getName(), type);
+			if (type == null) {
+				continue;
+			}
+			
 			addEffects(online, type);
 			
 			online.sendMessage(Main.PREFIX + "You are the §a" + type.name().toLowerCase() + " §7hero type.");
@@ -154,7 +154,13 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			HeroType type = getRandom(target);
+			HeroType type = getRandomType(target);
+			
+			if (type == null) {
+				sender.sendMessage(ChatColor.RED + "No available effects found for '" + target.getName() + "'.");
+				return true;
+			}
+			
 			addEffects(target, type);
 			
 			sender.sendMessage(Main.PREFIX + "Given §a" + target.getName() + " §7an random effect.");
@@ -299,39 +305,34 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		player.setMaxHealth(20.0);
 	}
 	
+	private static final Random RANDOM = new Random();
+	
 	/**
 	 * Get a random HeroType for the given player.
 	 * 
 	 * @param player The player getting for.
 	 * @return A random hero type (not invis if hes on a team).
 	 */
-	private HeroType getRandom(Player player) {
-		Team team = TeamManager.getInstance().getTeam(player);
-		List<HeroType> list = new ArrayList<HeroType>();
-		
-		for (HeroType type : HeroType.values()) {
-			if (team != null) {
-				// invis is broken with teams in 1.8, so hop over that one.
-				if (type == HeroType.INVIS) {
-					continue;
-				}
-				
-				// teammates shouldn't have the same effect...
-				for (String entry : team.getEntries()) {
-					if (types.containsKey(entry) && types.get(entry).equals(type)) {
-						continue;
-					}
-				}
-			}
-			
-			list.add(type);
-		}
-		
-		HeroType type = list.get(new Random().nextInt(list.size()));
-		types.put(player.getName(), type);
-		
-		return type;
-	}
+    private HeroType getRandomType(Player player) {
+        List<HeroType> available = Lists.newArrayList(HeroType.values());
+        Team team = TeamManager.getInstance().getTeam(player);
+
+        if (team != null) {
+            available.remove(HeroType.INVIS);
+            
+            // Teammates shouldn't have the same effect...
+            for (String entry : team.getEntries()) {
+                available.remove(types.get(entry));
+            }
+        }
+
+        if (available.size() == 0) return null;
+
+        HeroType type = available.get(RANDOM.nextInt(available.size()));
+        types.put(player.getName(), type);
+
+        return type;
+    }
 	
 	private static final int effectTicks = NumberUtils.get999DaysInTicks();
 	
