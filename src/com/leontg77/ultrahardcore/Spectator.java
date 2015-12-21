@@ -35,6 +35,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
@@ -62,9 +63,9 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
 public class Spectator {
 	private static Spectator instance = new Spectator();
 	
-	public Set<String> spectators = new HashSet<String>();
-	public Set<String> specinfo = new HashSet<String>();
-	public Set<String> cmdspy = new HashSet<String>();
+	private Set<String> spectators = new HashSet<String>();
+	private Set<String> specinfo = new HashSet<String>();
+	private Set<String> cmdspy = new HashSet<String>();
 	
 	/**
 	 * Gets the instance of the class.
@@ -73,6 +74,33 @@ public class Spectator {
 	 */
 	public static Spectator getInstance() {
 		return instance;
+	}
+	
+	/**
+	 * Get a list of all spectators.
+	 * 
+	 * @return List of spectators.
+	 */
+	public Set<String> getSpectators() {
+		return spectators;
+	}
+
+	/**
+	 * Get a list of all players with specinfo.
+	 * 
+	 * @return List of players with specinfo.
+	 */
+	public Set<String> getSpecInfoers() {
+		return specinfo;
+	}
+
+	/**
+	 * Get a list of all players with commandspy.
+	 * 
+	 * @return List of players with commandspy.
+	 */
+	public Set<String> getCommandSpyers() {
+		return cmdspy;
 	}
 	
 	/**
@@ -105,14 +133,16 @@ public class Spectator {
 		tpMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click to teleport to 0,0."));
 		tp.setItemMeta(tpMeta);
 		
+		PlayerInventory inv = player.getInventory();
+		
 		// remove the spectator items just to make sure they won't drop.
-		player.getInventory().remove(compass);
-		player.getInventory().remove(vision);
-		player.getInventory().remove(nether);
-		player.getInventory().remove(tp);
+		inv.removeItem(compass);
+		inv.removeItem(vision);
+		inv.removeItem(nether);
+		inv.removeItem(tp);
 		
 		// loop thru the players inventory contents and drop any found to the ground.
-		for (ItemStack content : player.getInventory().getContents()) {
+		for (ItemStack content : inv.getContents()) {
 			// the current loop value is null, hop over.
 			if (content == null) {
 				continue;
@@ -122,7 +152,7 @@ public class Spectator {
 		}
 
 		// loop thru the players armor contents and drop any found to the ground.
-		for (ItemStack armorContent : player.getInventory().getArmorContents()) {
+		for (ItemStack armorContent : inv.getArmorContents()) {
 			// armor contents never seem to be null so i'm checking the type for air as well.
 			if (armorContent == null || armorContent.getType() == Material.AIR) {
 				continue;
