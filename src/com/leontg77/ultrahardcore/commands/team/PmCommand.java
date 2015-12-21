@@ -1,14 +1,14 @@
 package com.leontg77.ultrahardcore.commands.team;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 
 /**
@@ -16,20 +16,22 @@ import com.leontg77.ultrahardcore.managers.TeamManager;
  * 
  * @author LeonTG77
  */
-public class PmCommand implements CommandExecutor {
+public class PmCommand extends UHCCommand {
+
+	public PmCommand() {
+		super("pm", "<message>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can use teamchat.");
-			return true;
+			throw new CommandException("Only players can talk in team chat.");
 		}
 		
 		Player player = (Player) sender;
 		
 		if (args.length == 0) {
-			player.sendMessage(Main.PREFIX + "Usage: /pm <message>");
-			return true;
+			return false;
 		}
 		
 		Spectator spec = Spectator.getInstance();
@@ -38,8 +40,7 @@ public class PmCommand implements CommandExecutor {
 		Team team = teams.getTeam(player);
 		
 		if (team == null || spec.isSpectating(player)) { 
-        	player.sendMessage(ChatColor.RED + "You are not on a team.");
-        	return true;
+			throw new CommandException("You are not on a team.");
 		} 
 		
 		StringBuilder message = new StringBuilder();
@@ -52,5 +53,10 @@ public class PmCommand implements CommandExecutor {
         
         teams.sendMessage(team, "§9§lTeam §8» §7" + player.getName() + ": §f" + msg);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return null;
 	}
 }
