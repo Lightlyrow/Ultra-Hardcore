@@ -17,6 +17,9 @@ import com.leontg77.ultrahardcore.commands.msg.ReplyCommand;
 import com.leontg77.ultrahardcore.commands.resetting.FeedCommand;
 import com.leontg77.ultrahardcore.commands.resetting.SethealthCommand;
 import com.leontg77.ultrahardcore.commands.spectate.NearCommand;
+import com.leontg77.ultrahardcore.commands.spectate.SpectateCommand;
+import com.leontg77.ultrahardcore.commands.spectate.SpeedCommand;
+import com.leontg77.ultrahardcore.commands.team.PmCommand;
 import com.leontg77.ultrahardcore.commands.team.RandomCommand;
 import com.leontg77.ultrahardcore.commands.team.TeamCommand;
 import com.leontg77.ultrahardcore.commands.team.TlCommand;
@@ -44,11 +47,15 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	public void registerCommands() {
 		cmds.add(new FeedCommand());
 		cmds.add(new SethealthCommand());
-		cmds.add(new NearCommand());
 
 		cmds.add(new MsgCommand());
 		cmds.add(new ReplyCommand());
+
+		cmds.add(new SpectateCommand());
+		cmds.add(new NearCommand());
+		cmds.add(new SpeedCommand());
 		
+		cmds.add(new PmCommand());
 		cmds.add(new RandomCommand());
 		cmds.add(new TeamCommand());
 		cmds.add(new TlCommand());
