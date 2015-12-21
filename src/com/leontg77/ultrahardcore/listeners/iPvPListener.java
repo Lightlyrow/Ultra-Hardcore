@@ -1,17 +1,15 @@
 package com.leontg77.ultrahardcore.listeners;
 
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.block.BlockEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
@@ -28,14 +26,23 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
 public class iPvPListener implements Listener {
 	private Game game = Game.getInstance();
 	
-	@EventHandler
+	/* Not needed for now.
+	 * 
+	 * @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {	
+        Action action = event.getAction();
         Player player = event.getPlayer();
         
-        Action action = event.getAction();
+        Block block = event.getClickedBlock();
         ItemStack item = event.getItem();
         
+        TeamManager manager = TeamManager.getInstance();
         Spectator spec = Spectator.getInstance();
+        
+        // silly, no spectators should trigger this (since they have a lava bucket in their inv)
+        if (spec.isSpectating(player)) {
+        	return;
+        }
         
         if (action != Action.RIGHT_CLICK_BLOCK) {
         	return;
@@ -49,15 +56,15 @@ public class iPvPListener implements Listener {
         	return;
         }
         
-        if (item == null) {
+    	if (item == null || block == null) {
         	return;
-        }
+    	}
         
-    	if (item.getType() != Material.LAVA_BUCKET && item.getType() != Material.FLINT_AND_STEEL && item.getType() != Material.CACTUS) {
+    	if (!isIPvP(event)) {
         	return;
     	}
 		
-		Team pTeam = TeamManager.getInstance().getTeam(player);
+		Team playerTeam = manager.getTeam(player);
     	
     	for (Entity nearby : PlayerUtils.getNearby(event.getClickedBlock().getLocation(), 5)) {
 			if (!(nearby instanceof Player)) {
@@ -74,14 +81,14 @@ public class iPvPListener implements Listener {
 				continue;
 			}
 			
-			Team nearTeam = TeamManager.getInstance().getTeam(near);
+			Team nearTeam = manager.getTeam(near);
 			
-			if (pTeam != null && nearTeam != null) {
-				if (pTeam == nearTeam) {
+			if (playerTeam != null && nearTeam != null) {
+				if (playerTeam == nearTeam) {
 					continue;
 				}
 				
-				PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7attempted to iPvP §c" + near.getName(), "uhc.staff");
+				PlayerUtils.broadcast(Main.PREFIX + "Â§c" + player.getName() + " Â§7attempted to iPvP ï¿½c" + near.getName(), "uhc.staff");
 				
 				player.sendMessage(Main.PREFIX + "iPvP is not allowed before PvP.");
 				player.sendMessage(Main.PREFIX + "Stop iPvPing now or staff will take action.");
@@ -91,5 +98,67 @@ public class iPvPListener implements Listener {
 				break;
 			}
 		}
+	}*/
+	
+	@EventHandler
+	public void on(BlockPlaceEvent event) {
+		Player player = event.getPlayer();
+
+        ItemStack item = event.getItemInHand();
+		Block block = event.getBlock();
+        
+        TeamManager manager = TeamManager.getInstance();
+        Spectator spec = Spectator.getInstance();
+        
+        // silly, no spectators should trigger this (since they have a lava bucket in their inv)
+        if (spec.isSpectating(player)) {
+        	return;
+        }
+        
+        if (!State.isState(State.INGAME) || game.isRecordedRound()) {
+        	return;
+        }
+        
+        if (Timers.pvp <= 0) {
+        	return;
+        }
+        
+    	if (item == null || block == null) {
+        	return;
+    	}
+        
+    	if (isIPvP(event)) {
+        	event.setCancelled(true);
+    	}
+		
+		Team playerTeam = manager.getTeam(player);
+		playerTeam.getClass();
+	}
+
+	private boolean isIPvP(BlockEvent event) {
+		return isSpleef(event) || isSuffocation(event) || isDamageBlock(event);
+	}
+
+	private boolean isDamageBlock(BlockEvent event) {
+		Block block = event.getBlock();
+		
+		switch (block.getType()) {
+		case LAVA_BUCKET:
+		case CACTUS:
+		case FIRE:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private boolean isSuffocation(BlockEvent event) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean isSpleef(BlockEvent event) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
