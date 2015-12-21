@@ -1,105 +1,102 @@
 package com.leontg77.ultrahardcore.commands.spectate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 
 /**
  * Speed command class.
  * 
  * @author LeonTG77
  */
-public class SpeedCommand implements CommandExecutor {
+public class SpeedCommand extends UHCCommand {
+
+	public SpeedCommand() {
+		super("speed", "<speed> [player]");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.speed")) {
-        	sender.sendMessage(Main.NO_PERM_MSG);
-        	return true;
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
+		if (!Spectator.getInstance().isSpectating(sender.getName())) {
+			throw new CommandException("You can only do this while spectating.");
 		}
 		
 		if (args.length == 0) {
-			sender.sendMessage(Main.PREFIX + "Usage: /speed <speed> [player]");
-			return true;
+			return false;
 		}
 		
-		float speed;
-		float orgspeed;
-		
-		try {
-			speed = Float.parseFloat(args[0]);
-		} catch (Exception e) {
-			sender.sendMessage(ChatColor.RED + "Invaild number.");
-			return true;
-		}
+		float speed = parseFloat(args[0], "speed");
 		
 		if (speed > 10f) {
 			speed = 10f;
-			orgspeed = 10f;
 		} else if (speed < 0.0001f) {
 			speed = 0.0001f;
-			orgspeed = 0.0001f;
-		} else {
-			orgspeed = speed;
-		}
+		} 
+		
+		float orgSpeed = speed;
+		Player target;
 		
 		if (args.length == 1) {
 			if (!(sender instanceof Player)) {
-    			sender.sendMessage(ChatColor.RED + "Only players can change their walk/fly speed.");
-				return true;
+				throw new CommandException("Only players can change their walk/fly speed.");
 			}
 			
-			Player player = (Player) sender;
-			
-    		float defaultSpeed = player.isFlying() ? 0.1f : 0.2f;
-    		float maxSpeed = 1f;
-
-    		if (speed < 1f) {
-    			speed = defaultSpeed * speed;
-    		} else {
-    			float ratio = ((speed - 1) / 9) * (maxSpeed - defaultSpeed);
-    			speed = ratio + defaultSpeed;
-    		}
-			
-    		if (player.isFlying()) {
-    			player.setFlySpeed(speed);
-        		player.sendMessage(Main.PREFIX + "You set your flying speed to §6" + orgspeed + "§7.");
-    		} else {
-    			player.setWalkSpeed(speed);
-        		player.sendMessage(Main.PREFIX + "You set your walking speed to §6" + orgspeed + "§7.");
-    		}
-			return true;
+			target = (Player) sender;
+		} else {
+			target = Bukkit.getPlayer(args[1]);
 		}
 		
-		Player target = Bukkit.getServer().getPlayer(args[1]);
-		
 		if (target == null) {
-			sender.sendMessage(ChatColor.RED + args[0] + " is not online.");
-			return true;
+			throw new CommandException("'" + args[1] + "' is not online.");
 		}
 		
 		float defaultSpeed = target.isFlying() ? 0.1f : 0.2f;
 		float maxSpeed = 1f;
 
-		if (speed < 1f) {
+		if (speed < maxSpeed) {
 			speed = defaultSpeed * speed;
 		} else {
 			float ratio = ((speed - 1) / 9) * (maxSpeed - defaultSpeed);
+			
 			speed = ratio + defaultSpeed;
 		}
 		
 		if (target.isFlying()) {
 			target.setFlySpeed(speed);
-    		sender.sendMessage(Main.PREFIX + "You set your flying speed to §6" + orgspeed + "§7.");
+			
+			if (target == sender) {
+	    		sender.sendMessage(Main.PREFIX + "You set your flying speed to §6" + orgSpeed + "§7.");
+			} else {
+	    		sender.sendMessage(Main.PREFIX + "You set " + target.getName() + "'s flying speed to §6" + orgSpeed + "§7.");
+	    		target.sendMessage(Main.PREFIX + "Your flying speed was set to §6" + orgSpeed + "§7.");
+			}
 		} else {
 			target.setWalkSpeed(speed);
-			sender.sendMessage(Main.PREFIX + "You set your walking speed to §6" + orgspeed + "§7.");
+			
+			if (target == sender) {
+	    		sender.sendMessage(Main.PREFIX + "You set your walking speed to §6" + orgSpeed + "§7.");
+			} else {
+	    		sender.sendMessage(Main.PREFIX + "You set " + target.getName() + "'s walking speed to §6" + orgSpeed + "§7.");
+	    		target.sendMessage(Main.PREFIX + "Your walking speed was set to §6" + orgSpeed + "§7.");
+			}
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		if (args.length == 2) {
+			return null;
+		}
+		
+		return new ArrayList<String>();
 	}
 }
