@@ -1,15 +1,18 @@
 package com.leontg77.ultrahardcore.listeners;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
@@ -25,6 +28,9 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class iPvPListener implements Listener {
 	private Game game = Game.getInstance();
+    
+	private TeamManager manager = TeamManager.getInstance();
+    private Spectator spec = Spectator.getInstance();
 	
 	/* Not needed for now.
 	 * 
@@ -103,36 +109,33 @@ public class iPvPListener implements Listener {
 	@EventHandler
 	public void on(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
-
-        ItemStack item = event.getItemInHand();
 		Block block = event.getBlock();
-        
-        TeamManager manager = TeamManager.getInstance();
-        Spectator spec = Spectator.getInstance();
         
         // silly, no spectators should trigger this (since they have a lava bucket in their inv)
         if (spec.isSpectating(player)) {
         	return;
         }
         
-        if (!State.isState(State.INGAME) || game.isRecordedRound()) {
+        // do not care before start or if its an RR
+        if (game.isRecordedRound() || !State.isState(State.INGAME)) {
         	return;
         }
         
+        // if pvp is enabled we want them to be able to iPvP
         if (Timers.pvp <= 0) {
         	return;
         }
         
-    	if (item == null || block == null) {
+    	if (block == null) {
         	return;
     	}
         
-    	if (isIPvP(event)) {
+    	if (isIPvP(event) && isAnyoneNearby(player, block.getLocation())) {
+			player.sendMessage(Main.PREFIX + "iPvP is not allowed before PvP.");
+			player.sendMessage(Main.PREFIX + "Stop iPvPing now or staff will take action.");
+			
         	event.setCancelled(true);
     	}
-		
-		Team playerTeam = manager.getTeam(player);
-		playerTeam.getClass();
 	}
 
 	private boolean isIPvP(BlockEvent event) {
@@ -153,12 +156,52 @@ public class iPvPListener implements Listener {
 	}
 
 	private boolean isSuffocation(BlockEvent event) {
-		// TODO Auto-generated method stub
-		return false;
+		Block block = event.getBlock();
+		boolean isFallingBlock = false;
+		
+		switch (block.getType()) {
+		case SAND:
+		case GRAVEL:
+		case ANVIL:
+			isFallingBlock = true;
+		default:
+			isFallingBlock = false;
+		}
+		
+		return block.getRelative(BlockFace.DOWN).getType() == null && isFallingBlock;
 	}
 
 	private boolean isSpleef(BlockEvent event) {
-		// TODO Auto-generated method stub
+		// TODO: Code this.
 		return false;
+	}
+
+	private boolean isAnyoneNearby(Player iPvPer, Location loc) {
+		Team playerTeam = manager.getTeam(iPvPer);
+    	
+    	for (Entity near : PlayerUtils.getNearby(loc, 10)) {
+			if (!(near instanceof Player)) {
+				continue;
+			}
+			
+			Player nearby = (Player) near;
+			
+			if (nearby == iPvPer) {
+				continue;
+			}
+			
+			if (spec.isSpectating(nearby)) {
+				continue;
+			}
+			
+			Team nearTeam = manager.getTeam(nearby);
+			
+			if (playerTeam == null || !playerTeam.equals(nearTeam)) {
+				PlayerUtils.broadcast(Main.PREFIX + "§c" + iPvPer.getName() + " §7attempted to iPvP �c" + near.getName(), "uhc.staff");
+				return true;
+			}
+		}
+    	
+    	return false;
 	}
 }
