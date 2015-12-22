@@ -3,12 +3,15 @@ package com.leontg77.ultrahardcore.listeners;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Game;
@@ -161,4 +164,77 @@ public class ChatListener implements Listener {
 
 		PlayerUtils.broadcast("§f" + name + "§8 » §7" + message);
 	}
+	
+  	@EventHandler
+  	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+  		String message = event.getMessage();
+  		Player player = event.getPlayer();
+  		
+  		Spectator spec = Spectator.getInstance();
+  		
+  		for (Player online : PlayerUtils.getPlayers()) {
+  			if (online == player) {
+  				continue;
+  			}
+  			
+  			if (!online.hasPermission("uhc.cmdspy")) {
+  				continue;
+  			}
+  			
+  			if (!spec.hasCommandSpy(online) && State.isState(State.INGAME)) {
+  				continue;
+  			}
+  			
+  			if (online.getGameMode() != GameMode.CREATIVE && !spec.isSpectating(online)) {
+  				continue;
+  			}
+  			
+  			online.sendMessage("§e" + player.getName() + ": §7" + message);
+  		}
+  		
+  		String command = message.split(" ")[0].substring(1);
+  		
+  		if (command.equalsIgnoreCase("me") || command.equalsIgnoreCase("kill")) {
+  			player.sendMessage(Main.NO_PERM_MSG);
+  			event.setCancelled(true);
+  			return;
+  		}
+  		
+  		if (command.startsWith("bukkit:") || command.startsWith("minecraft:")) {
+  			if (player.hasPermission("uhc.admin")) {
+  				return;
+  			}
+  			
+  			player.sendMessage(Main.NO_PERM_MSG);
+  			event.setCancelled(true);
+  			return;
+  		}
+  		
+  		if (command.equalsIgnoreCase("rl") || command.equalsIgnoreCase("reload") || command.equalsIgnoreCase("stop") || command.equalsIgnoreCase("restart")) {
+  			if (!State.isState(State.INGAME)) {
+  				if (!command.equalsIgnoreCase("stop") && !command.equalsIgnoreCase("restart")) {
+  					return;
+  				}
+  				
+  				if (!player.hasPermission("uhc.restart")) {
+  					return;
+  				}
+  				
+  				for (Player online : PlayerUtils.getPlayers()) {
+  					online.kickPlayer("§8» §7The server is restarting §8«");
+  				}
+  				
+  				Bukkit.shutdown();
+  				event.setCancelled(true);
+  				return;
+  			}
+  			
+  			String finalCommand = command.replace("rl", "reload");
+  			
+  			player.sendMessage(ChatColor.RED + "You may not want to " + finalCommand + " when a game is running.");
+  			player.sendMessage(ChatColor.RED + "If you still want to " + finalCommand + ", do it in the console.");
+  			event.setCancelled(true);
+  			return;
+  		}
+  	}
 }
