@@ -3,8 +3,10 @@ package com.leontg77.ultrahardcore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
@@ -453,8 +455,8 @@ public class Main extends JavaPlugin {
 			settings.getData().set("kills." + kEntry.getKey(), kEntry.getValue());
 		}
 		
-		for (Entry<String, List<String>> entry : TeamManager.getInstance().getSavedTeams().entrySet()) {
-			settings.getData().set("teams.data." + entry.getKey(), entry.getValue());
+		for (Entry<String, Set<String>> entry : TeamManager.getInstance().getSavedTeams().entrySet()) {
+			settings.getData().set("teams.data." + entry.getKey(), new ArrayList<String>(entry.getValue()));
 		}
 		
 		settings.saveData();
@@ -495,7 +497,7 @@ public class Main extends JavaPlugin {
 		try {
 			if (settings.getData().getConfigurationSection("team") != null) {
 				for (String name : settings.getData().getConfigurationSection("teams.data").getKeys(false)) {
-					TeamManager.getInstance().getSavedTeams().put("teams.data." + name, settings.getData().getStringList("teams.data." + name));
+					TeamManager.getInstance().getSavedTeams().put("teams.data." + name, new HashSet<String>(settings.getData().getStringList("teams.data." + name)));
 				}
 			}
 		} catch (Exception e) {

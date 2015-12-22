@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -30,7 +29,7 @@ public class TeamManager {
 	private Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
 	private static TeamManager manager = new TeamManager();
 
-	public static HashMap<String, List<String>> savedTeams = new HashMap<String, List<String>>();
+	public static HashMap<String, Set<String>> savedTeams = new HashMap<String, Set<String>>();
 	private List<Team> teams = new ArrayList<Team>();
 	
 	/**
@@ -145,8 +144,7 @@ public class TeamManager {
 		}
 		
 		if (!savedTeams.containsKey(team.getName())) {
-			List<String> players = new ArrayList<String>(team.getEntries());
-			savedTeams.put(team.getName(), players);
+			savedTeams.put(team.getName(), team.getEntries());
 		}
 		
 		team.addPlayer(player);
@@ -183,8 +181,7 @@ public class TeamManager {
 					team.removePlayer(player);
 					
 					if (!savedTeams.containsKey(team.getName())) {
-						List<String> players = new ArrayList<String>(team.getEntries());
-						savedTeams.put(team.getName(), players);
+						savedTeams.put(team.getName(), team.getEntries());
 					} else {
 						savedTeams.get(team.getName()).remove(player.getName());
 					}
@@ -250,7 +247,7 @@ public class TeamManager {
 	 * 
 	 * @return A list of all teams.
 	 */
-	public Map<String, List<String>> getSavedTeams() {
+	public HashMap<String, Set<String>> getSavedTeams() {
 		return savedTeams;
 	}
 	

@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore;
 
-import java.util.ArrayList;
-
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -212,8 +210,7 @@ public class Timers {
 				for (Team team : teams.getTeamsWithPlayers()) {
 					Main.teamKills.put(team.getName(), 0);
 					
-					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					teams.getSavedTeams().put(team.getName(), players);
+					teams.getSavedTeams().put(team.getName(), team.getEntries());
 				}
 				
 				for (String entry : sb.board.getEntries()) {

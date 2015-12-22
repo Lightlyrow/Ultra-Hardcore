@@ -3,6 +3,13 @@ package com.leontg77.ultrahardcore.commands.team;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,12 +26,6 @@ import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
-
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * Team command class.
@@ -76,14 +77,13 @@ public class TeamCommand extends UHCCommand {
 				}
 				
 				if (!teams.getSavedTeams().containsKey(team.getName())) {
-					ArrayList<String> players = new ArrayList<String>(team.getEntries());
-					teams.getSavedTeams().put(team.getName(), players);
+					teams.getSavedTeams().put(team.getName(), team.getEntries());
 				}
 				
 				StringBuilder list = new StringBuilder("");
 				int i = 1;
 				
-				List<String> savedTeam = teams.getSavedTeams().get(team.getName());
+				Set<String> savedTeam = teams.getSavedTeams().get(team.getName());
 				
 				for (String entry : savedTeam) {
 					if (list.length() > 0) {
@@ -404,14 +404,13 @@ public class TeamCommand extends UHCCommand {
 			}
 			
 			if (!teams.getSavedTeams().containsKey(team.getName())) {
-				ArrayList<String> players = new ArrayList<String>(team.getEntries());
-				teams.getSavedTeams().put(team.getName(), players);
+				teams.getSavedTeams().put(team.getName(), team.getEntries());
 			}
 			
 			StringBuilder list = new StringBuilder("");
 			int i = 1;
 			
-			List<String> savedTeam = teams.getSavedTeams().get(team.getName());
+			Set<String> savedTeam = teams.getSavedTeams().get(team.getName());
 			
 			for (String entry : savedTeam) {
 				if (list.length() > 0) {
@@ -490,7 +489,7 @@ public class TeamCommand extends UHCCommand {
 				StringBuilder list = new StringBuilder("");
 				int i = 1;
 				
-				List<String> savedTeam = teams.getSavedTeams().get(team.getName());
+				Set<String> savedTeam = teams.getSavedTeams().get(team.getName());
 				
 				if (savedTeam == null) {
 					continue;
