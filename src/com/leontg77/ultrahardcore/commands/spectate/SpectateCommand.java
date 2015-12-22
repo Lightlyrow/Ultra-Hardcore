@@ -35,6 +35,11 @@ public class SpectateCommand extends UHCCommand {
 		
 		Spectator spec = Spectator.getInstance();
 		
+		if (args[0].equalsIgnoreCase("help")) {
+			
+			return true;
+		}
+		
 		if (args[0].equalsIgnoreCase("list")) {
 			if (spec.getSpectators().isEmpty()) {
 		    	sender.sendMessage(Main.PREFIX + "There are no spectators.");
@@ -83,8 +88,7 @@ public class SpectateCommand extends UHCCommand {
 		
 		if (args[0].equalsIgnoreCase("toggle")) {
 			if (GameUtils.getGameWorlds().contains(target.getWorld())) {
-				sender.sendMessage(Main.PREFIX + "You cannot toggle spec mode while in the game world.");
-				return true;
+				throw new CommandException("You need to be in spawn to do this.");
 			}
 
 			if (target != sender) {
@@ -97,9 +101,12 @@ public class SpectateCommand extends UHCCommand {
 		}
 		
 		if (args[0].equalsIgnoreCase("on")) {
+			if (spec.isSpectating(target)) {
+				throw new CommandException((target == sender ? "You are" : "'" + target.getName() + "' is") + " already spectating.");
+			}
+			
 			if (State.isState(State.INGAME) && GameUtils.getGameWorlds().contains(target.getWorld())) {
-				sender.sendMessage(Main.PREFIX + "You cannot go in spec mode while in the game world.");
-				return true;
+				throw new CommandException("You need to be in spawn to do this.");
 			}
 			
 			if (target != sender) {
@@ -112,9 +119,12 @@ public class SpectateCommand extends UHCCommand {
 		}
 		
 		if (args[0].equalsIgnoreCase("off")) {
+			if (!spec.isSpectating(target)) {
+				throw new CommandException((target == sender ? "You are" : "'" + target.getName() + "' is") + " not spectating.");
+			}
+			
 			if (GameUtils.getGameWorlds().contains(target.getWorld())) {
-				sender.sendMessage(Main.PREFIX + "You cannot go out of spec mode while in the game world.");
-				return true;
+				throw new CommandException("You need to be in spawn to do this.");
 			}
 
 			if (target != sender) {
