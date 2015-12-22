@@ -130,11 +130,7 @@ public class DeathListener implements Listener {
 				return;
 			}
 
-			for (Player online : PlayerUtils.getPlayers()) {
-				online.sendMessage("§8» §f" + deathMessage);
-			}
-			
-			Bukkit.getLogger().info("§8» §f" + deathMessage);
+			PlayerUtils.broadcast("§8» §f" + deathMessage);
 			event.setDeathMessage(null);
 			return;
 		}
@@ -173,11 +169,7 @@ public class DeathListener implements Listener {
 				
 				event.setDeathMessage(null);
 			} else {
-				for (Player online : PlayerUtils.getPlayers()) {
-					online.sendMessage("§8» §f" + deathMessage);
-				}
-				
-				Bukkit.getLogger().info("§8» §f" + deathMessage);
+				PlayerUtils.broadcast("§8» §f" + deathMessage);
 				event.setDeathMessage(null);
 			}
 		}
@@ -185,41 +177,47 @@ public class DeathListener implements Listener {
 		Team pteam = TeamManager.getInstance().getTeam(player);
 		Team team = TeamManager.getInstance().getTeam(killer);
 		
-		if (pteam == null || !pteam.equals(team)) {
-			if (worlds.contains(player.getWorld())) {
-				board.setScore(killer.getName(), board.getScore(killer.getName()) + 1);
-				
-				if (game.isRecordedRound()) {
-					return;
-				}
-				
-				if (State.isState(State.INGAME)) {
-					board.resetScore(player.getName());
-				}
+		if (pteam != null && pteam.equals(team)) {
+			return;
+		}
+		
+		if (!worlds.contains(player.getWorld())) {
+			return;
+		}
+		
+		board.setScore(killer.getName(), board.getScore(killer.getName()) + 1);
+		
+		if (game.isRecordedRound()) {
+			return;
+		}
+		
+		if (State.isState(State.INGAME)) {
+			board.resetScore(player.getName());
+		}
 
-				user.increaseStat(Stat.DEATHS);
-				
-				User killUser = User.get(killer);
-				killUser.increaseStat(Stat.KILLS);
-				
-				if (killUser.getStat(Stat.KILLSTREAK) < board.getScore(killer.getName())) {
-					killUser.setStat(Stat.KILLSTREAK, board.getScore(killer.getName()));
-				}
-				
-				if (Main.kills.containsKey(killer.getName())) {
-					Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);
-				} else {
-					Main.kills.put(killer.getName(), 1);
-				}
+		user.increaseStat(Stat.DEATHS);
+		
+		User killUser = User.get(killer);
+		killUser.increaseStat(Stat.KILLS);
+		
+		if (killUser.getStat(Stat.KILLSTREAK) < board.getScore(killer.getName())) {
+			killUser.setStat(Stat.KILLSTREAK, board.getScore(killer.getName()));
+		}
+		
+		if (Main.kills.containsKey(killer.getName())) {
+			Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);
+		} else {
+			Main.kills.put(killer.getName(), 1);
+		}
 
-				if (team != null) {
-					if (Main.teamKills.containsKey(team.getName())) {
-						Main.teamKills.put(team.getName(), Main.teamKills.get(team.getName()) + 1);
-					} else {
-						Main.teamKills.put(team.getName(), 1);
-					}
-				}
-			}
+		if (team == null) {
+			return;
+		}
+		
+		if (Main.teamKills.containsKey(team.getName())) {
+			Main.teamKills.put(team.getName(), Main.teamKills.get(team.getName()) + 1);
+		} else {
+			Main.teamKills.put(team.getName(), 1);
 		}
 	}
 	
