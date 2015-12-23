@@ -8,13 +8,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.SkullType;
-import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,11 +24,10 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.User;
-import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
-import com.leontg77.ultrahardcore.utils.BlockUtils;
+import com.leontg77.ultrahardcore.module.modules.DeathLightningModule;
+import com.leontg77.ultrahardcore.module.modules.GoldenHeadModule;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -49,11 +42,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
 public class DeathListener implements Listener {
 	private Game game = Game.getInstance();
 	
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerDeath(final PlayerDeathEvent event) {
+	@EventHandler(priority = EventPriority.HIGH)
+	public void on(final PlayerDeathEvent event) {
 		final Player player = event.getEntity();
-		Arena arena = Arena.getInstance();
+		final Arena arena = Arena.getInstance();
 		
+		// if they have hardcore hearts, auto respawn them before they're able to respawn themselves.
 		if (game.hardcoreHearts()) {
 			new BukkitRunnable() {
 				public void run() {
@@ -62,69 +56,42 @@ public class DeathListener implements Listener {
 			}.runTaskLater(Main.plugin, 18);
 		}
 		
+		// the arena has it's own way of doing deaths.
 		if (arena.isEnabled() && arena.hasPlayer(player)) {
 			return;
 		} 
 
-		BoardManager board = BoardManager.getInstance();
-		User user = User.get(player);
-		
+		final List<World> worlds = GameUtils.getGameWorlds();
+	    final String deathMessage = event.getDeathMessage();
+	    
+	    event.setDeathMessage(null);
+	    
+	    // I don't care about the rest if it hasn't started or they're not in a game world.
+	    if (!State.isState(State.INGAME) || !worlds.contains(player.getWorld())) {
+	    	return;
+	    }
+
+		final BoardManager board = BoardManager.getInstance();
+		// they're dead, no more wl for them.
 		player.setWhitelisted(false);
 		
 		if (game.deathLightning()) {
-		    player.getWorld().strikeLightningEffect(player.getLocation());
-		    
-		    for (Player online : PlayerUtils.getPlayers()) {
-		    	if (online.getWorld() == player.getWorld()) {
-		    		continue;
-		    	}
-		    	
-		    	Location loc = player.getLocation().clone();
-		    	loc.setWorld(online.getWorld());
-		    	
-		    	online.playSound(loc, Sound.AMBIENCE_THUNDER, 1, 1);
-		    }
+	    	// for now, until I add a listener register for it.
+			new DeathLightningModule().on(event);
 		}
-		
-		List<World> worlds = GameUtils.getGameWorlds();
 
-	    if (game.goldenHeads() && worlds.contains(player.getWorld())) {
-			new BukkitRunnable() {
-				@SuppressWarnings("deprecation")
-				public void run() {
-					player.getLocation().getBlock().setType(Material.NETHER_FENCE);
-					player.getLocation().add(0, 1, 0).getBlock().setType(Material.SKULL);
-				    
-					Skull skull;
-					
-					try {
-				        skull = (Skull) player.getLocation().add(0, 1, 0).getBlock().getState();
-					} catch (Exception e) {
-						Bukkit.getLogger().warning("Could not place player skull.");
-						return;
-					}
-					
-				    skull.setSkullType(SkullType.PLAYER);
-				    skull.setOwner(player.getName());
-				    skull.setRotation(BlockUtils.getBlockDirection(player.getLocation()));
-				    skull.update();
-				    
-				    Block b = player.getLocation().add(0, 1, 0).getBlock();
-				    b.setData((byte) 0x1, true);
-				}
-			}.runTaskLater(Main.plugin, 1);
+	    if (game.goldenHeads()) {
+	    	// for now, until I add a listener register for it.
+			new GoldenHeadModule().on(event);
 	    }
 
-		final String deathMessage = event.getDeathMessage();
 		final Player killer = player.getKiller();
 
 		if (killer == null) {
-			if (worlds.contains(player.getWorld()) && !game.isRecordedRound() && State.isState(State.INGAME)) {
+			if (!game.isRecordedRound()) {
 				board.setScore("§8» §a§lPvE", board.getScore("§8» §a§lPvE") + 1);
 		        board.resetScore(player.getName());
 			}
-
-			user.increaseStat(Stat.DEATHS);
 			
 			if (deathMessage == null) {
 				return;
@@ -138,7 +105,7 @@ public class DeathListener implements Listener {
 		if (deathMessage != null && !deathMessage.isEmpty()) {
 			ItemStack item = killer.getItemInHand();
 			
-			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
+			if (item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
 				String name = item.getItemMeta().getDisplayName();
 				
 				ComponentBuilder builder = new ComponentBuilder("§8» §r" + deathMessage.replace("[" + name + "]", ""));
@@ -158,14 +125,14 @@ public class DeathListener implements Listener {
 					builder.append("§b[" + colored.toString().trim() + "§b]");
 				}
 				
-				builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] {new TextComponent(NameUtils.convertToJson(item))}));
+				builder.event(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] {new TextComponent( NameUtils.convertToJson(item)) }));
 				final BaseComponent[] result = builder.create();
 
 				for (Player online : PlayerUtils.getPlayers()) {
 					online.spigot().sendMessage(result);
 				}
 				
-				Bukkit.getLogger().info("§8» §f" + event.getDeathMessage());
+				Bukkit.getLogger().info("§8» §f" + deathMessage);
 				
 				event.setDeathMessage(null);
 			} else {
@@ -174,14 +141,10 @@ public class DeathListener implements Listener {
 			}
 		}
 		
-		Team pteam = TeamManager.getInstance().getTeam(player);
-		Team team = TeamManager.getInstance().getTeam(killer);
+		final Team pteam = TeamManager.getInstance().getTeam(player);
+		final Team team = TeamManager.getInstance().getTeam(killer);
 		
 		if (pteam != null && pteam.equals(team)) {
-			return;
-		}
-		
-		if (!worlds.contains(player.getWorld())) {
 			return;
 		}
 		
@@ -191,18 +154,7 @@ public class DeathListener implements Listener {
 			return;
 		}
 		
-		if (State.isState(State.INGAME)) {
-			board.resetScore(player.getName());
-		}
-
-		user.increaseStat(Stat.DEATHS);
-		
-		User killUser = User.get(killer);
-		killUser.increaseStat(Stat.KILLS);
-		
-		if (killUser.getStat(Stat.KILLSTREAK) < board.getScore(killer.getName())) {
-			killUser.setStat(Stat.KILLSTREAK, board.getScore(killer.getName()));
-		}
+		board.resetScore(player.getName());
 		
 		if (Main.kills.containsKey(killer.getName())) {
 			Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);
@@ -222,7 +174,7 @@ public class DeathListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent event) {
+	public void on(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
 		Arena arena = Arena.getInstance();
 		
@@ -233,21 +185,20 @@ public class DeathListener implements Listener {
 			return;
 		}
 		
-		player.sendMessage(Main.PREFIX + "Thanks for playing this game, it really means a lot :)");
-		player.sendMessage(Main.PREFIX + "Follow us on twtter to know when our next games are: §a@ArcticUHC");
-		
 		for (Player online : PlayerUtils.getPlayers()) {
 			online.hidePlayer(player);
 		}
 		
+		player.sendMessage(Main.PREFIX + "Thanks for playing this game, it really means a lot :)");
+		player.sendMessage(Main.PREFIX + "Follow us on twtter to know when our next games are: §a§o@ArcticUHC");
+		player.sendMessage(Main.PREFIX + "Please do not spam, rage, spoil or be a bad sportsman.");
+		
 		if (!player.hasPermission("uhc.prelist")) {
 			player.sendMessage(Main.PREFIX + "You may stay as long as you want (You are vanished).");
-			player.sendMessage(Main.PREFIX + "Please do not spam, rage, spoil or be a bad sportsman.");
 			return;
 		}
 		
 		player.sendMessage(Main.PREFIX + "You will be put into spectator mode in 10 seconds.");
-		player.sendMessage(Main.PREFIX + "Please do not spam, rage, spoil or be a bad sportsman.");
 		
 		new BukkitRunnable() {
 			public void run() {
