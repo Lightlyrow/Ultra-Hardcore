@@ -1,8 +1,8 @@
 package com.leontg77.ultrahardcore.commands.spectate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -24,7 +24,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
 public class SpectateCommand extends UHCCommand {
 
 	public SpectateCommand() {
-		super("spectate", "<help|on|off|toggle|list|cmdspy|info> [player]");
+		super("spectate", "<on|off|toggle|list|cmdspy|info> [player]");
 	}
 
 	@Override
@@ -35,19 +35,13 @@ public class SpectateCommand extends UHCCommand {
 		
 		Spectator spec = Spectator.getInstance();
 		
-		if (args[0].equalsIgnoreCase("help")) {
-			
-			return true;
-		}
-		
 		if (args[0].equalsIgnoreCase("list")) {
 			if (spec.getSpectators().isEmpty()) {
 		    	sender.sendMessage(Main.PREFIX + "There are no spectators.");
 				return true;
 			}
 			
-			ArrayList<String> specs = new ArrayList<String>(spec.getSpectators());
-			Collections.shuffle(specs);
+			Set<String> specs = spec.getSpectators();
 			
 	    	StringBuilder spectatorList = new StringBuilder();
 	    	int i = 1;
@@ -61,7 +55,7 @@ public class SpectateCommand extends UHCCommand {
 					}
 				}
 				
-				spectatorList.append(Bukkit.getPlayer(spectator) == null ? "§c" + spectator : "§a" + spectator);
+				spectatorList.append((Bukkit.getPlayer(spectator) == null ? "§c" : "§a") + spectator);
 				i++;
 			}
 	    			
@@ -185,6 +179,7 @@ public class SpectateCommand extends UHCCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
 		List<String> toReturn = new ArrayList<String>();
+		Spectator spec = Spectator.getInstance();
     	
 		if (args.length == 1) {
 			toReturn.add("help");
@@ -203,13 +198,13 @@ public class SpectateCommand extends UHCCommand {
 			
 			if (args[0].equalsIgnoreCase("on")) {
         		for (Player online : PlayerUtils.getPlayers()) {
-    				if (!Spectator.getInstance().isSpectating(online)) {
+    				if (!spec.isSpectating(online)) {
         				toReturn.add(online.getName());
     				}
         		}
         	} else if (args[0].equalsIgnoreCase("off")) {
         		for (Player online : PlayerUtils.getPlayers()) {
-    				if (Spectator.getInstance().isSpectating(online)) {
+    				if (spec.isSpectating(online)) {
         				toReturn.add(online.getName());
     				}
         		}
