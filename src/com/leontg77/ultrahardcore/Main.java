@@ -107,6 +107,7 @@ import com.leontg77.ultrahardcore.listeners.LogoutListener;
 import com.leontg77.ultrahardcore.listeners.PlayerListener;
 import com.leontg77.ultrahardcore.listeners.PortalListener;
 import com.leontg77.ultrahardcore.listeners.SpectatorListener;
+import com.leontg77.ultrahardcore.listeners.StatsListener;
 import com.leontg77.ultrahardcore.listeners.WorldListener;
 import com.leontg77.ultrahardcore.listeners.iPvPListener;
 import com.leontg77.ultrahardcore.managers.BoardManager;
@@ -212,6 +213,7 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new LogoutListener(), this);
 		manager.registerEvents(new PlayerListener(), this);
 		manager.registerEvents(new PortalListener(), this);
+		manager.registerEvents(new StatsListener(), this);
 		manager.registerEvents(new WorldListener(), this);
 		manager.registerEvents(new UBLListener(), this);
 
