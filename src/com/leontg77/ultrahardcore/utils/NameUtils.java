@@ -3,6 +3,8 @@ package com.leontg77.ultrahardcore.utils;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
@@ -101,14 +103,14 @@ public class NameUtils {
 	}
 	
 	/**
-	* Converts an {@link org.bukkit.inventory.ItemStack} to a Json string
-	* for sending with {@link net.md_5.bungee.api.chat.BaseComponent}'s.
+	* Converts an {@link ItemStack} to a Json string
+	* for sending with {@link BaseComponent}'s.
 	*
 	* @param itemStack the item to convert
 	* @return the Json string representation of the item
 	*/
 	public static String convertToJson(ItemStack itemStack) {
-	    Class<?> craftitemstack = ReflectionUtils.getOBCClass("inventory.CraftItemStack");
+		Class<?> craftitemstack = ReflectionUtils.getOBCClass("inventory.CraftItemStack");
 	    Method method = ReflectionUtils.getMethod(craftitemstack, "asNMSCopy", ItemStack.class);
 
 	    Class<?> itemstack = ReflectionUtils.getNMSClass("ItemStack");
