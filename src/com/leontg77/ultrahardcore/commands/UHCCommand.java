@@ -12,7 +12,8 @@ import com.leontg77.ultrahardcore.utils.NameUtils;
  * @author LeonTG77
  */
 public abstract class UHCCommand {
-	private String name, usage;
+	private String usage;
+	private String name;
 	
 	/**
 	 * Constructor for the uhc command super class.
