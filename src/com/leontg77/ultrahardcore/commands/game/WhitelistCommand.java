@@ -22,7 +22,8 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class WhitelistCommand implements CommandExecutor, TabCompleter {
-
+	public static boolean prewls = true;
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.hasPermission("uhc.whitelist")) {
@@ -68,6 +69,16 @@ public class WhitelistCommand implements CommandExecutor, TabCompleter {
     			return true;
            	}  
        	}
+		
+       	if (args[0].equalsIgnoreCase("prewl")) {
+       		if (prewls) {
+       			PlayerUtils.broadcast(Main.PREFIX + "Pre whitelists disabled.");
+       			prewls = false;
+       		} else {
+       			PlayerUtils.broadcast(Main.PREFIX + "Pre whitelists enabled.");
+       			prewls = true;
+       		}
+   		} 
 		
        	if (args[0].equalsIgnoreCase("on")) {
        		if (Bukkit.hasWhitelist()) {
