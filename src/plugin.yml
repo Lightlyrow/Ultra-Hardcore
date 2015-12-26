@@ -87,6 +87,9 @@ commands:
   pm:
     description: Team chat command.
     aliases: [tc]
+  pmores:
+    description: Send your ore count to your team.
+    aliases: [sendores]
   pregen:
     description: Pregen a world.
   pvp:
