@@ -1,5 +1,8 @@
 package com.leontg77.ultrahardcore;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -197,20 +200,14 @@ public class Timers {
 				pvpSeconds = (pvp * 60);
 				meetupSeconds = (meetup * 60);
 				
-				timer();
-
 				Bukkit.getServer().setIdleTimeout(10);
-				SpecInfo.getTotalDiamonds().clear();
-				SpecInfo.getTotalGold().clear();
-
-				for (Player online : PlayerUtils.getPlayers()) {
-					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
-				}
+				timer();
 				
 				for (Team team : teams.getTeamsWithPlayers()) {
 					Main.teamKills.put(team.getName(), 0);
 					
-					teams.getSavedTeams().put(team.getName(), team.getEntries());
+					Set<String> players = new HashSet<String>(team.getEntries());
+					teams.getSavedTeams().put(team.getName(), players);
 				}
 				
 				for (String entry : sb.board.getEntries()) {
@@ -243,6 +240,7 @@ public class Timers {
 				Bukkit.getPluginManager().callEvent(new GameStartEvent());
 				
 				for (Player online : PlayerUtils.getPlayers()) {
+					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 					
 					for (Achievement a : Achievement.values()) {
@@ -250,6 +248,8 @@ public class Timers {
 							online.removeAchievement(a);
 						}
 					}
+					
+					SpecInfo.getTotal(online).clear();
 					
 					User user = User.get(online);
 					
@@ -571,8 +571,6 @@ public class Timers {
 				timerRR();
 
 				Bukkit.getServer().setIdleTimeout(10);
-				SpecInfo.getTotalDiamonds().clear();
-				SpecInfo.getTotalGold().clear();
 				
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
@@ -608,6 +606,8 @@ public class Timers {
 							online.removeAchievement(a);
 						}
 					}
+					
+					SpecInfo.getTotal(online).clear();
 					
 					if (spec.isSpectating(online)) {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
