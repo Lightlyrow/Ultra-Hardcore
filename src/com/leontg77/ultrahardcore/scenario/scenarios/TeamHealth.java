@@ -63,6 +63,10 @@ public class TeamHealth extends Scenario implements Listener {
 		if (teamHealth == null) {
 			teamHealth = board.registerNewObjective("teamHealth", "dummy");
 		}
+		
+		if (State.isState(State.INGAME)) {
+			on(new GameStartEvent());
+		}
 	}
 	
 	@EventHandler
