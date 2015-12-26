@@ -89,7 +89,6 @@ import com.leontg77.ultrahardcore.commands.resetting.HealCommand;
 import com.leontg77.ultrahardcore.commands.resetting.HealthCommand;
 import com.leontg77.ultrahardcore.commands.resetting.SetmaxhealthCommand;
 import com.leontg77.ultrahardcore.commands.spectate.InvseeCommand;
-import com.leontg77.ultrahardcore.commands.spectate.SpecChatCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.HOFListener;
@@ -262,7 +261,6 @@ public class Main extends JavaPlugin {
 		getCommand("scenario").setExecutor(new ScenarioCommand());
 		getCommand("setmaxhealth").setExecutor(new SetmaxhealthCommand());
 		getCommand("skull").setExecutor(new SkullCommand());
-		getCommand("sc").setExecutor(new SpecChatCommand());
 		getCommand("setspawn").setExecutor(new SetspawnCommand());
 		getCommand("spread").setExecutor(new SpreadCommand());
 		getCommand("ac").setExecutor(new StaffChatCommand());
