@@ -50,23 +50,25 @@ public class PermissionsManager {
 		perm.setPermission("uhc.reply", true);
 		perm.setPermission("uhc.tl", true);
 		perm.setPermission("uhc.pm", true);
+		perm.setPermission("uhc.pmores", true);
+		
+		// spectator perms, they can only use them if they're spectating.
+		perm.setPermission("uhc.near", true);
+		perm.setPermission("uhc.invsee", true);
 		
 		if (rank == Rank.DEFAULT) {
+			return;
+		}
+		perm.setPermission("uhc.spectate", true);
+		perm.setPermission("uhc.prelist", true);
+		
+		if (rank == Rank.SPEC) {
 			return;
 		}
 		
 		// adding donation features at at later date.
 		
 		if (rank == Rank.DONATOR) {
-			return;
-		}
-
-		perm.setPermission("uhc.spectate", true);
-		perm.setPermission("uhc.prelist", true);
-		perm.setPermission("uhc.near", true);
-		perm.setPermission("uhc.invsee", true);
-		
-		if (rank == Rank.SPEC) {
 			return;
 		}
 		
