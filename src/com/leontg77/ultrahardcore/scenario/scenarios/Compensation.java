@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -54,7 +55,7 @@ public class Compensation extends Scenario implements Listener {
 		inv.getResult().setAmount(result.getAmount() * 4);
     }
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
 		if (Arena.getInstance().isEnabled()) {
 			return;
