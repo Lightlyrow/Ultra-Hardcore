@@ -32,10 +32,6 @@ public class PmCommand extends UHCCommand {
 		
 		Player player = (Player) sender;
 		
-		if (args.length == 0) {
-			return false;
-		}
-		
 		Spectator spec = Spectator.getInstance();
 		TeamManager teams = TeamManager.getInstance();
 		
@@ -44,6 +40,10 @@ public class PmCommand extends UHCCommand {
 		if (team == null || spec.isSpectating(player)) { 
 			throw new CommandException("You are not on a team.");
 		} 
+		
+		if (args.length == 0) {
+			return false;
+		}
 		
 		String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
         teams.sendMessage(team, "§8[§9TeamChat§8] §7" + player.getName() + " §8» §f" + msg);
