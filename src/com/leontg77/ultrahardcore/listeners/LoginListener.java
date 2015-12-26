@@ -31,6 +31,7 @@ import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.game.SpreadCommand;
+import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
@@ -147,7 +148,7 @@ public class LoginListener implements Listener {
 				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
 			} 
 			else {
-				player.sendMessage("§8» §7 Host: §a" + Bukkit.getOfflinePlayer(game.getHost()).getName());
+				player.sendMessage("§8» §7 Host: §a" + GameUtils.getHostName(game.getHost()));
 				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + game.getScenarios());
 			}
 			
@@ -203,7 +204,7 @@ public class LoginListener implements Listener {
 				"§8» §7You have been §4IP banned §7from §6Arctic UHC §8«" +
 				"\n" + 
 				"\n§cReason §8» §7" + ban.getReason() +
-				"\n§cBanned by §8» §7" +
+				"\n§cBanned by §8» §7" + ban.getSource() + 
 				"\n" +
 				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
 				);
@@ -211,6 +212,11 @@ public class LoginListener implements Listener {
 			else {
 				event.allow();
 			}
+			return;
+		}
+		
+		if (Spectator.getInstance().isSpectating(player)) {
+			event.allow();
 			return;
 		}
 		
@@ -270,20 +276,8 @@ public class LoginListener implements Listener {
 			}
 			
 			if (player.hasPermission("uhc.prelist")) {
-				String scenario = game.getScenarios();
-				
-				boolean moles = false;
-				
-				for (String scen : scenario.split(", ")) {
-					if (scen.toLowerCase().contains("moles")) {
-						moles = true;
-					}
-				}
-				
-				if (moles && !State.isState(State.INGAME)) {
-					String kickMsg = event.getKickMessage();
-					
-					event.disallow(Result.KICK_WHITELIST, "§4§lPre-whitelist is disabled for Mole games\n\n" + kickMsg);
+				if (!WhitelistCommand.prewls && !State.isState(State.INGAME)) {
+					event.disallow(Result.KICK_WHITELIST, "§4Pre-whitelist has been disabled\n\n" + event.getKickMessage());
 					return;
 				}
 				
