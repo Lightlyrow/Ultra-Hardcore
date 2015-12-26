@@ -1,11 +1,13 @@
 package com.leontg77.ultrahardcore.commands.team;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
@@ -43,15 +45,8 @@ public class PmCommand extends UHCCommand {
 			throw new CommandException("You are not on a team.");
 		} 
 		
-		StringBuilder message = new StringBuilder();
-        
-        for (int i = 0; i < args.length; i++) {
-        	message.append(args[i]).append(" ");
-        }
-               
-        String msg = message.toString().trim();
-        
-        teams.sendMessage(team, "§9§lTeam §8» §7" + player.getName() + ": §f" + msg);
+		String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
+        teams.sendMessage(team, "§8[§9TeamChat§8] §7" + player.getName() + " §8» §f" + msg);
 		return true;
 	}
 
