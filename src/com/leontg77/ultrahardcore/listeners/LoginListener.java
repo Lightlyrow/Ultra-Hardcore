@@ -215,24 +215,22 @@ public class LoginListener implements Listener {
 		}
 		
 		if (PlayerUtils.getPlayers().size() >= game.getMaxPlayers()) {
-			if (game.isRecordedRound()) {
-				return;
-			}
-			
-			if (player.isWhitelisted() || player.isOp()) {
-				event.allow();
-				return;
-			}
-			
-			if (player.hasPermission("uhc.staff")) {
-				if (State.isState(State.INGAME)) {
+			if (!game.isRecordedRound()) {
+				if (player.isWhitelisted() || player.isOp()) {
 					event.allow();
 					return;
 				}
-			} 
+				
+				if (player.hasPermission("uhc.staff")) {
+					if (State.isState(State.INGAME)) {
+						event.allow();
+						return;
+					}
+				} 
 
-			event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
-			return;
+				event.disallow(Result.KICK_FULL, "§8» §7The server is currently full, try again later §8«");
+				return;
+			}
 		}
 		
 		if (event.getResult() == Result.KICK_WHITELIST) {
