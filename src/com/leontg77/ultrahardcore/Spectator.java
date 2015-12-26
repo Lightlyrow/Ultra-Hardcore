@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
@@ -24,7 +25,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -341,18 +341,54 @@ public class Spectator {
 	 * @author LeonTG77
 	 */
 	public static class SpecInfo implements Listener {
-		private static HashMap<String, Integer> totalDiamonds = new HashMap<String, Integer>();
-		private static HashMap<String, Integer> totalGold = new HashMap<String, Integer>();
+		// first string is the player name, then the ore type and the integer is the amount of that type.
+		private static Map<String, Map<Material, Integer>> total = new HashMap<String, Map<Material, Integer>>();
 		
-		private HashSet<Location> locs = new HashSet<Location>();
+		private Set<Location> locs = new HashSet<Location>();
 		private Spectator spec = Spectator.getInstance();
 
-		public static HashMap<String, Integer> getTotalDiamonds() {
-			return totalDiamonds;
+		/**
+		 * Get a map of the material of the ore and the amount the player has mined.
+		 * 
+		 * @param player The player that owns the map.
+		 * @return The map.
+		 */
+		public static Map<Material, Integer> getTotal(Player player) {
+			if (!total.containsKey(player.getName())) {
+				total.put(player.getName(), new HashMap<Material, Integer>());
+				
+				for (Material type : Material.values()) {
+					if (!isOre(type)) {
+						continue;
+					}
+					
+					total.get(player.getName()).put(type, 0);
+				}
+			}
+			
+			return total.get(player.getName());
 		}
 
-		public static HashMap<String, Integer> getTotalGold() {
-			return totalGold;
+		/**
+		 * Check if the given material is an ore.
+		 * 
+		 * @param ore The material checking.
+		 * @return True if its an ore, false otherwise.
+		 */
+		private static boolean isOre(Material ore) {
+			switch (ore) {
+			case REDSTONE_ORE:
+			case COAL_ORE:
+			case DIAMOND_ORE:
+			case EMERALD_ORE:
+			case GOLD_ORE:
+			case IRON_ORE:
+			case LAPIS_ORE:
+			case QUARTZ_ORE:
+				return true;
+			default:
+				return false;
+			}
 		}
 		
 		/**
@@ -372,81 +408,43 @@ public class Spectator {
 
 		@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 		public void onBlockBreak(BlockBreakEvent event) {
+			Player player = event.getPlayer();
 			Block block = event.getBlock();
-			
-			if (block.getType() == Material.GOLD_ORE) {
-				if (locs.contains(block.getLocation())) {
-					return;
-				}
 
-				Location loc = block.getLocation();
-				Player player = event.getPlayer();
-				
-				int amount = 0;
-				
-				for (int x = loc.getBlockX() - 2; x <= loc.getBlockX() + 2; x++) {
-					for (int y = loc.getBlockY() - 2; y <= loc.getBlockY() + 2; y++) {
-						for (int z = loc.getBlockZ() - 2; z <= loc.getBlockZ() + 2; z++) {
-							if (loc.getWorld().getBlockAt(x, y, z).getType() == Material.GOLD_ORE) {
-								locs.add(loc.getWorld().getBlockAt(x, y, z).getLocation());
-								amount++;
-							}
-						}
-					}
-				}
-				
-				if (getTotalGold().containsKey(player.getName())) {
-					getTotalGold().put(player.getName(), getTotalGold().get(player.getName()) + amount);
-				} else {
-					getTotalGold().put(player.getName(), amount);
-				}
-				
-				broadcast("§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + getTotalGold().get(player.getName()) + "§f]");
+			Location loc = block.getLocation();
+			Material type = block.getType();
+			
+			if (!isOre(type)) {
 				return;
 			}
 			
-			if (block.getType() == Material.DIAMOND_ORE) {
-				if (locs.contains(block.getLocation())) {
-					return;
-				}
-
-				Location loc = block.getLocation();
-				Player player = event.getPlayer();
-				
-				int amount = 0;
-				
-				for (int x = loc.getBlockX() - 2; x <= loc.getBlockX() + 2; x++) {
-					for (int y = loc.getBlockY() - 2; y <= loc.getBlockY() + 2; y++) {
-						for (int z = loc.getBlockZ() - 2; z <= loc.getBlockZ() + 2; z++) {
-							if (loc.getWorld().getBlockAt(x, y, z).getType() == Material.DIAMOND_ORE) {
-								locs.add(loc.getWorld().getBlockAt(x, y, z).getLocation());
-								amount++;
-							}
-						}
-					}
-				}
-				
-				if (getTotalDiamonds().containsKey(player.getName())) {
-					getTotalDiamonds().put(player.getName(), getTotalDiamonds().get(player.getName()) + amount);
-				} else {
-					getTotalDiamonds().put(player.getName(), amount);
-				}
-				
-				broadcast("§7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + getTotalDiamonds().get(player.getName()) + "§f]");
-			}
-		}
-
-		@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-		public void onBlockPlace(BlockPlaceEvent event) {
-			Block block = event.getBlockPlaced();
-			
-			if (block.getType() == Material.GOLD_ORE) {
-				locs.add(block.getLocation());
+			if (locs.contains(loc)) {
+				locs.remove(loc);
 				return;
 			}
 			
-			if (block.getType() == Material.DIAMOND_ORE) {
-				locs.add(block.getLocation());
+			int amount = 0;
+			
+			for (int x = loc.getBlockX() - 2; x <= loc.getBlockX() + 2; x++) {
+				for (int y = loc.getBlockY() - 2; y <= loc.getBlockY() + 2; y++) {
+					for (int z = loc.getBlockZ() - 2; z <= loc.getBlockZ() + 2; z++) {
+						Block locBlock = loc.getWorld().getBlockAt(x, y, z);
+						
+						if (locBlock.getType().equals(type)) {
+							locs.add(loc.getWorld().getBlockAt(x, y, z).getLocation());
+							amount++;
+						}
+					}
+				}
+			}
+			
+			Map<Material, Integer> total = getTotal(player);
+			total.put(type, total.get(type) + amount);
+			
+			if (block.getType() == Material.GOLD_ORE) {
+				broadcast("§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + total.get(type) + "§f]");
+			} else if (block.getType() == Material.DIAMOND_ORE) {
+				broadcast("§7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + total.get(type) + "§f]");
 			}
 		}
 
