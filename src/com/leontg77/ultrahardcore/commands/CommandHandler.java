@@ -20,6 +20,7 @@ import com.leontg77.ultrahardcore.commands.spectate.NearCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpectateCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpeedCommand;
 import com.leontg77.ultrahardcore.commands.team.PmCommand;
+import com.leontg77.ultrahardcore.commands.team.PmoresCommand;
 import com.leontg77.ultrahardcore.commands.team.RandomCommand;
 import com.leontg77.ultrahardcore.commands.team.TeamCommand;
 import com.leontg77.ultrahardcore.commands.team.TlCommand;
@@ -56,6 +57,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new SpeedCommand());
 		
 		cmds.add(new PmCommand());
+		cmds.add(new PmoresCommand());
 		cmds.add(new RandomCommand());
 		cmds.add(new TeamCommand());
 		cmds.add(new TlCommand());
@@ -104,9 +106,12 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 			if (!command.execute(sender, args)) {
 				sender.sendMessage(Main.PREFIX + "Usage: " + command.getUsage());
 			}
+		} catch (CommandException ex) {
+			sender.sendMessage(ChatColor.RED + ex.getMessage());
 		} catch (Exception ex) {
 			// send them the error message in red if anything failed.
 			sender.sendMessage(ChatColor.RED + ex.getMessage());
+			ex.printStackTrace();
 		}
 		return true;
 	}
