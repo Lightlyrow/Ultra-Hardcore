@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.commands.team;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -77,7 +78,8 @@ public class TeamCommand extends UHCCommand {
 				}
 				
 				if (!teams.getSavedTeams().containsKey(team.getName())) {
-					teams.getSavedTeams().put(team.getName(), team.getEntries());
+					Set<String> players = new HashSet<String>(team.getEntries());
+					teams.getSavedTeams().put(team.getName(), players);
 				}
 				
 				StringBuilder list = new StringBuilder("");
@@ -404,7 +406,8 @@ public class TeamCommand extends UHCCommand {
 			}
 			
 			if (!teams.getSavedTeams().containsKey(team.getName())) {
-				teams.getSavedTeams().put(team.getName(), team.getEntries());
+				Set<String> players = new HashSet<String>(team.getEntries());
+				teams.getSavedTeams().put(team.getName(), players);
 			}
 			
 			StringBuilder list = new StringBuilder("");

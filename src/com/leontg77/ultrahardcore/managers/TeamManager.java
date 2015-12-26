@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.managers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -144,7 +145,8 @@ public class TeamManager {
 		}
 		
 		if (!savedTeams.containsKey(team.getName())) {
-			savedTeams.put(team.getName(), team.getEntries());
+			Set<String> players = new HashSet<String>(team.getEntries());
+			savedTeams.put(team.getName(), players);
 		}
 		
 		team.addPlayer(player);
@@ -177,14 +179,17 @@ public class TeamManager {
 			public void run() {
 				Team team = getTeam(player);
 				
-				if (team != null) {
-					team.removePlayer(player);
-					
-					if (!savedTeams.containsKey(team.getName())) {
-						savedTeams.put(team.getName(), team.getEntries());
-					} else {
-						savedTeams.get(team.getName()).remove(player.getName());
-					}
+				if (team == null) {
+					return;
+				}
+				
+				team.removePlayer(player);
+				
+				if (!savedTeams.containsKey(team.getName())) {
+					Set<String> players = new HashSet<String>(team.getEntries());
+					savedTeams.put(team.getName(), players);
+				} else {
+					savedTeams.get(team.getName()).remove(player.getName());
 				}
 			}
 		}.runTaskLater(Main.plugin, 1);
