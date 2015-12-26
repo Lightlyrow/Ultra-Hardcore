@@ -44,7 +44,9 @@ public class ChatListener implements Listener {
 		Team team = teams.getTeam(player);
 		
 		String message = event.getMessage();
+		
 		String name = (team == null || team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName());
+		String color = name.startsWith("§") ? "§f" : "§7";
 		
 		event.setCancelled(true);
     	
@@ -118,22 +120,22 @@ public class ChatListener implements Listener {
 				prefix = "§4§oOwner";
 			}
 			
-			PlayerUtils.broadcast("§8[" + prefix + "§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[" + prefix + "§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
 		if (user.getRank() == Rank.HOST) {
-			PlayerUtils.broadcast("§8[§4Host§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§4Host§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
 		if (user.getRank() == Rank.TRIAL) {
-			PlayerUtils.broadcast("§8[§4Trial§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§4Trial§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
 		if (user.getRank() == Rank.STAFF) {
-			PlayerUtils.broadcast("§8[§cStaff§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§cStaff§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		}
 		
@@ -143,7 +145,7 @@ public class ChatListener implements Listener {
 				return;
 			}
 
-			PlayerUtils.broadcast("§8[§aDonator§8] §f" + name + "§8 » §7" + ChatColor.translateAlternateColorCodes('&', message));
+			PlayerUtils.broadcast("§8[§aDonator§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
 			return;
 		} 
 		
@@ -153,7 +155,7 @@ public class ChatListener implements Listener {
 				return;
 			}
 
-			PlayerUtils.broadcast("§8[§9Spec§8] §f" + name + "§8 » §7" + message);
+			PlayerUtils.broadcast("§8[§9Spec§8] §f" + name + "§8 » " + color + message);
 			return;
 		} 
 			
