@@ -279,8 +279,8 @@ public class TeamCommand extends UHCCommand {
 					throw new CommandException("'" + offline.getName() + "' is not on a team.");
 				}
 				
-				sender.sendMessage(Main.PREFIX + ChatColor.GREEN + target.getName() + " §7was removed from his team.");
-				teams.leaveTeam(target);
+				sender.sendMessage(Main.PREFIX + ChatColor.GREEN + offline.getName() + " §7was removed from his team.");
+				teams.leaveTeam(offline);
 				return true;
 			}
 			
