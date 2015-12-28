@@ -13,8 +13,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Scoreboard;
 
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -31,10 +34,17 @@ public class Paranoia extends Scenario implements Listener {
 	}
 
 	@Override
-	public void onDisable() {}
+	public void onDisable() {
+		BoardManager.getInstance().setup();
+	}
 
 	@Override
-	public void onEnable() {}
+	public void onEnable() {
+		Scoreboard board = BoardManager.getInstance().board;
+		
+		board.clearSlot(DisplaySlot.PLAYER_LIST);
+		board.clearSlot(DisplaySlot.BELOW_NAME);
+	}
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
