@@ -1,15 +1,16 @@
-package com.leontg77.ultrahardcore.commands.resetting;
+package com.leontg77.ultrahardcore.commands.give;
+
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -18,17 +19,21 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 @SuppressWarnings("deprecation")
-public class GiveCommand implements CommandExecutor {	
+public class GiveCommand extends UHCCommand {	
+
+	public GiveCommand() {
+		super("give", "<player> <item> [amount] [durability]");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) {
 		if (!sender.hasPermission("uhc.give")) {
 			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
 		if (args.length < 2) {
-			sender.sendMessage(Main.PREFIX + "Usage: /give <player> <item> [amount] [durability]");
+			sender.sendMessage(Main.PREFIX + "Usage: /give ");
 			return true;
 		}
 		
@@ -83,5 +88,11 @@ public class GiveCommand implements CommandExecutor {
 		sender.sendMessage(Main.PREFIX + "You gave " + target.getName() + " §a" + amount + " " + item.getType().name().toLowerCase().replaceAll("_", " ") + (amount > 1 ? "s" : "") + "§7.");
 		target.sendMessage(Main.PREFIX + "You recieved §a" + amount + " " + item.getType().name().toLowerCase().replaceAll("_", " ") + (amount > 1 ? "s" : "") + "§7.");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.commands.resetting;
+package com.leontg77.ultrahardcore.commands.give;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
