@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.commands.resetting;
+package com.leontg77.ultrahardcore.commands.player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +30,7 @@ public class SethealthCommand extends UHCCommand {
 			return false;
 		}
 		
-		double health;
-		
-		try {
-			health = Double.parseDouble(args[0]);
-		} catch (Exception e) {
-			throw new CommandException("'" + args[0] + "' is not an vaild health.");
-		}
+		double health = parseDouble(args[0], "health");
 		
 		// health can't be lower than 0
 		if (health < 0) {
@@ -76,7 +70,7 @@ public class SethealthCommand extends UHCCommand {
 			return true;
 		}
 		
-		Player target = Bukkit.getServer().getPlayer(args[1]);
+		Player target = Bukkit.getPlayer(args[1]);
 		
 		if (target == null) {
 			throw new CommandException("'" + args[1] + "' is not online.");
@@ -87,18 +81,19 @@ public class SethealthCommand extends UHCCommand {
 			health = target.getMaxHealth();
 		}
 
-		sender.sendMessage(Main.PREFIX + "You set §6" + target.getName() + "'s §7health to §6" + NumberUtils.makePercent(health).substring(2) + "%");
+		sender.sendMessage(Main.PREFIX + "You set §a" + target.getName() + "'s §7health to §6" + NumberUtils.makePercent(health).substring(2) + "%");
 		target.sendMessage(Main.PREFIX + "Your health was set to §6" + NumberUtils.makePercent(health).substring(2) + "%");
+		
 		target.setHealth(health);
 		return true;
 	}
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		if (args.length != 2) {
-			return new ArrayList<String>();
+		if (args.length == 2) {
+			return null;
 		}
-		
-		return null;
+
+		return new ArrayList<String>();
 	}
 }
