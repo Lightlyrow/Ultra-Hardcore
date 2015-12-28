@@ -1,13 +1,13 @@
 name: UHC
 main: com.leontg77.ultrahardcore.Main
-version: 1.8
+version: 1.9
 author: LeonTG77
-description: UHC plugin made for Leons UHC
-softdepend: [ProtocolLib, WorldBorder]
+description: UHC plugin made for ArcitcUHC by LeonTG77
+softdepend: [ProtocolLib, Pregenner]
 
 commands:
   arena:
-    description: Command to join the arena.
+    description: Join the arena.
     aliases: [a, p]
   ban:
     description: Ban a player.
@@ -18,22 +18,22 @@ commands:
   board:
     description: Toggle the pregame board.
   border:
-    description: View the border size.
+    description: View or set the border size.
   broadcast:
     description: Broadcast a message to all players online.
     aliases: [bc, bcast]
   butcher:
     description: Kills all hostile mobs.
   config:
-    description: Change the config settings.
+    description: Change the game settings.
   chat:
-    description: Manage the chat.
+    description: Mute or clear the chat.
     aliases: [c]
   clearinv:
-    description: Clear someones inv.
+    description: Clear someones inventory.
     aliases: [clear, clearinv, ci]
   clearxp:
-    description: Clear someones xp.
+    description: Clear someones xp levels.
     aliases: [cxp]
   edit:
     description: Edit the sign you are looking at.
@@ -44,7 +44,7 @@ commands:
   fire:
     description: Start the firework show.
   fly:
-    description: Toggle fly mode.
+    description: Toggle someones fly mode.
   gamemode:
     description: Change your gamemode.
     aliases: [gm]
@@ -55,10 +55,10 @@ commands:
   heal:
     description: Heal someone.
   health:
-    description: View a player's health.
+    description: View someones health.
     aliases: [h]
   helpop:
-    description: If you need help from staff, use this command.
+    description: Ask staff for help.
   hof:
     description: View the hall of fame.
   hotbar:
