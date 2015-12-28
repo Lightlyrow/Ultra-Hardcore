@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -16,6 +17,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -315,5 +317,15 @@ public class PlayerListener implements Listener {
 		if (event.getFoodLevel() < player.getFoodLevel()) {
 			event.setCancelled(new Random().nextInt(100) < 66);
 	    }
+	}
+	
+	@EventHandler
+	public void on(PlayerChangedWorldEvent event) {
+		Player player = event.getPlayer();
+		
+		if (player.getAllowFlight() && (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE)) {
+			player.setAllowFlight(false);
+			player.setFlying(false);
+		}
 	}
 }
