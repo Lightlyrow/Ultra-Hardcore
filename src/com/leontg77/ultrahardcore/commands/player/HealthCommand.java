@@ -1,13 +1,15 @@
-package com.leontg77.ultrahardcore.commands.resetting;
+package com.leontg77.ultrahardcore.commands.player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.Paranoia;
 import com.leontg77.ultrahardcore.scenario.scenarios.TeamHealth;
@@ -18,21 +20,23 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * 
  * @author LeonTG77
  */
-public class HealthCommand implements CommandExecutor {
+public class HealthCommand extends UHCCommand {
+
+	public HealthCommand() {
+		super("health", "[player]");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		ScenarioManager scen = ScenarioManager.getInstance();
 		
 		if (scen.getScenario(Paranoia.class).isEnabled() || scen.getScenario(TeamHealth.class).isEnabled()) {
-			sender.sendMessage(ChatColor.RED + "Oops, /h is disabled in this scenario.");
-			return true;
+			throw new CommandException("/h is disabled in this scenario.");
 		}
 		
 		if (args.length == 0) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(ChatColor.RED + "Only players can view their own health.");
-				return true;
+				throw new CommandException("Only players can view their own health.");
 			}
 			
 			Player player = (Player) sender;
@@ -44,11 +48,10 @@ public class HealthCommand implements CommandExecutor {
 			return true;
 		}
 		
-		Player target = Bukkit.getServer().getPlayer(args[0]);
+		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
-			sender.sendMessage(ChatColor.RED + args[0] + " is not online.");
-			return true;
+			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
 		double health = target.getHealth();
@@ -56,5 +59,14 @@ public class HealthCommand implements CommandExecutor {
 
 		sender.sendMessage(Main.PREFIX + "§a" + target.getName() + " §7is at §6" + NumberUtils.makePercent(health) + "%" + (maxhealth == 20 ? "" : " §7out of maximum §6" + NumberUtils.makePercent(maxhealth) + "%"));
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		if (args.length == 1) {
+			return null;
+		}
+
+		return new ArrayList<String>();
 	}
 }

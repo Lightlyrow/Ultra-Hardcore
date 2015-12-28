@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.commands.resetting;
+package com.leontg77.ultrahardcore.commands.player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,70 +14,61 @@ import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
- * Feed command class.
+ * Heal command class.
  * 
  * @author LeonTG77
  */
-public class FeedCommand extends UHCCommand {
+public class HealCommand extends UHCCommand {
 
-	public FeedCommand() {
-		super("feed", "[player]");
+	public HealCommand() {
+		super("heal", "[player]");
 	}
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
-		if (!sender.hasPermission("uhc.feed")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
 		if (args.length == 0) {
 			if (!(sender instanceof Player)) {
-				throw new CommandException("Only players can feed themselves.");
+				throw new CommandException("Only players can heal themselves.");
 			}
 			
 			Player player = (Player) sender;
 			User user = User.get(player);
 			
-			player.sendMessage(Main.PREFIX + "You have been fed.");
-			user.resetFood();
+			player.sendMessage(Main.PREFIX + "You have been healed.");
+			user.resetHealth();
 			return true;
-		}
-		
-		if (!sender.hasPermission("uhc.feed.other")) {
-			throw new CommandException("You cannot feed other players.");
 		}
 		
 		if (args[0].equals("*")) {
 			for (Player online : PlayerUtils.getPlayers()) {
 				User user = User.get(online);
-				user.resetFood();
+				user.resetHealth();
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "All players have been fed.");
+			PlayerUtils.broadcast(Main.PREFIX + "All players have been healed.");
 			return true;
 		}
 		
-		Player target = Bukkit.getServer().getPlayer(args[0]);
+		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
 			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
 		User user = User.get(target);
-		user.resetFood();
+		user.resetHealth();
 
-		sender.sendMessage(Main.PREFIX + "You fed §a" + target.getName() + "§7.");
-		target.sendMessage(Main.PREFIX + "You have been fed by §a" + sender.getName() + "§7.");
+		sender.sendMessage(Main.PREFIX + "You healed §a" + target.getName() + "§7.");
+		target.sendMessage(Main.PREFIX + "You have been healed.");
 		return true;
 	}
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		if (args.length != 1) {
-			return new ArrayList<String>();
+		if (args.length == 1) {
+			return null;
 		}
-		
-		return null;
+
+		return new ArrayList<String>();
 	}
 }
