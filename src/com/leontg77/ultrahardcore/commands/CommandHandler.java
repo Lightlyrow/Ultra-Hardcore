@@ -12,13 +12,25 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.lag.MsCommand;
+import com.leontg77.ultrahardcore.commands.lag.TpsCommand;
 import com.leontg77.ultrahardcore.commands.msg.MsgCommand;
 import com.leontg77.ultrahardcore.commands.msg.ReplyCommand;
-import com.leontg77.ultrahardcore.commands.resetting.FeedCommand;
-import com.leontg77.ultrahardcore.commands.resetting.SethealthCommand;
+import com.leontg77.ultrahardcore.commands.player.ClearInvCommand;
+import com.leontg77.ultrahardcore.commands.player.ClearXPCommand;
+import com.leontg77.ultrahardcore.commands.player.FeedCommand;
+import com.leontg77.ultrahardcore.commands.player.FlyCommand;
+import com.leontg77.ultrahardcore.commands.player.GamemodeCommand;
+import com.leontg77.ultrahardcore.commands.player.HealCommand;
+import com.leontg77.ultrahardcore.commands.player.HealthCommand;
+import com.leontg77.ultrahardcore.commands.player.SethealthCommand;
+import com.leontg77.ultrahardcore.commands.player.SetmaxhealthCommand;
+import com.leontg77.ultrahardcore.commands.spectate.InvseeCommand;
 import com.leontg77.ultrahardcore.commands.spectate.NearCommand;
+import com.leontg77.ultrahardcore.commands.spectate.SpecChatCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpectateCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpeedCommand;
+import com.leontg77.ultrahardcore.commands.spectate.TpCommand;
 import com.leontg77.ultrahardcore.commands.team.PmCommand;
 import com.leontg77.ultrahardcore.commands.team.PmoresCommand;
 import com.leontg77.ultrahardcore.commands.team.RandomCommand;
@@ -40,33 +52,53 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class CommandHandler implements CommandExecutor, TabCompleter {
-	public List<UHCCommand> cmds = new ArrayList<UHCCommand>();
+	private List<UHCCommand> cmds = new ArrayList<UHCCommand>();
 	
 	/**
 	 * Register all the commands.
 	 */
 	public void registerCommands() {
-		cmds.add(new FeedCommand());
-		cmds.add(new SethealthCommand());
-
+		// lag
+		cmds.add(new MsCommand());
+		cmds.add(new TpsCommand());
+		
+		// msg
 		cmds.add(new MsgCommand());
 		cmds.add(new ReplyCommand());
-
-		cmds.add(new SpectateCommand());
-		cmds.add(new NearCommand());
-		cmds.add(new SpeedCommand());
 		
+		// player
+		cmds.add(new ClearInvCommand());
+		cmds.add(new ClearXPCommand());
+		cmds.add(new FeedCommand());
+		cmds.add(new FlyCommand());
+		cmds.add(new GamemodeCommand());
+		cmds.add(new HealCommand());
+		cmds.add(new HealthCommand());
+		cmds.add(new SethealthCommand());
+		cmds.add(new SetmaxhealthCommand());
+
+		// spectate
+		cmds.add(new InvseeCommand());
+		cmds.add(new NearCommand());
+		cmds.add(new SpectateCommand());
+		cmds.add(new SpecChatCommand());
+		cmds.add(new SpeedCommand());
+		cmds.add(new TpCommand());
+		
+		// team
 		cmds.add(new PmCommand());
 		cmds.add(new PmoresCommand());
 		cmds.add(new RandomCommand());
 		cmds.add(new TeamCommand());
 		cmds.add(new TlCommand());
 
+		// user
 		cmds.add(new InfoCommand());
 		cmds.add(new RankCommand());
 		cmds.add(new StatsCommand());
 		cmds.add(new TopCommand());
 		
+		// world
 		cmds.add(new BorderCommand());
 		cmds.add(new PregenCommand());
 		cmds.add(new PvPCommand());
@@ -75,7 +107,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		for (UHCCommand cmd : cmds) {
 			PluginCommand pCmd = Main.plugin.getCommand(cmd.getName());
 			
-			// if its null, broadcast the command name so I know which one it is.
+			// if its null, broadcast the command name so I know which one it is (so I can fix it).
 			if (pCmd == null) {
 				PlayerUtils.broadcast(cmd.getName());
 				continue;
@@ -133,10 +165,12 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		try {
 			List<String> list = command.tabComplete(sender, args);
 			
+			// if the list is null, replace it with everyone online.
 			if (list == null) {
 				list = getAllPlayerNames(sender);
 			}
 			
+			// I don't want anything done if the list is empty.
 			if (list.isEmpty()) {
 				return list;
 			}

@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
@@ -56,15 +58,12 @@ import com.leontg77.ultrahardcore.commands.basic.BroadcastCommand;
 import com.leontg77.ultrahardcore.commands.basic.ButcherCommand;
 import com.leontg77.ultrahardcore.commands.basic.EditCommand;
 import com.leontg77.ultrahardcore.commands.basic.FireCommand;
-import com.leontg77.ultrahardcore.commands.basic.FlyCommand;
-import com.leontg77.ultrahardcore.commands.basic.GamemodeCommand;
 import com.leontg77.ultrahardcore.commands.basic.ListCommand;
 import com.leontg77.ultrahardcore.commands.basic.SetspawnCommand;
 import com.leontg77.ultrahardcore.commands.basic.SkullCommand;
 import com.leontg77.ultrahardcore.commands.basic.StaffChatCommand;
 import com.leontg77.ultrahardcore.commands.basic.TextCommand;
 import com.leontg77.ultrahardcore.commands.basic.TimeLeftCommand;
-import com.leontg77.ultrahardcore.commands.basic.TpCommand;
 import com.leontg77.ultrahardcore.commands.game.BoardCommand;
 import com.leontg77.ultrahardcore.commands.game.ChatCommand;
 import com.leontg77.ultrahardcore.commands.game.ConfigCommand;
@@ -77,18 +76,9 @@ import com.leontg77.ultrahardcore.commands.game.StartCommand;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
 import com.leontg77.ultrahardcore.commands.game.VoteCommand;
 import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
+import com.leontg77.ultrahardcore.commands.give.GiveallCommand;
 import com.leontg77.ultrahardcore.commands.inventory.HOFCommand;
 import com.leontg77.ultrahardcore.commands.inventory.UHCCmd;
-import com.leontg77.ultrahardcore.commands.lag.MsCommand;
-import com.leontg77.ultrahardcore.commands.lag.TpsCommand;
-import com.leontg77.ultrahardcore.commands.resetting.ClearInvCommand;
-import com.leontg77.ultrahardcore.commands.resetting.ClearXpCommand;
-import com.leontg77.ultrahardcore.commands.resetting.GiveCommand;
-import com.leontg77.ultrahardcore.commands.resetting.GiveallCommand;
-import com.leontg77.ultrahardcore.commands.resetting.HealCommand;
-import com.leontg77.ultrahardcore.commands.resetting.HealthCommand;
-import com.leontg77.ultrahardcore.commands.resetting.SetmaxhealthCommand;
-import com.leontg77.ultrahardcore.commands.spectate.InvseeCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.HOFListener;
@@ -137,10 +127,10 @@ public class Main extends JavaPlugin {
 	public static final String NO_PERM_MSG = "§cYou don't have permission.";
 	public static final String PREFIX = "§4§lUHC §8» §7";
 	
-	public static HashMap<Player, int[]> rainbow = new HashMap<Player, int[]>();
+	public static Map<Player, int[]> rainbow = new HashMap<Player, int[]>();
 	
-	public static HashMap<String, Integer> teamKills = new HashMap<String, Integer>();
-	public static HashMap<String, Integer> kills = new HashMap<String, Integer>();
+	public static Map<String, Integer> teamKills = new HashMap<String, Integer>();
+	public static Map<String, Integer> kills = new HashMap<String, Integer>();
 
 	public static Recipe melonRecipe;
 	public static Recipe headRecipe;
@@ -188,6 +178,7 @@ public class Main extends JavaPlugin {
 		InvGUI.getGameInfo().updateStaff();
 		InvGUI.getGameInfo().update();
 		
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Game game = Game.getInstance();
 		
 		recoverData();
@@ -237,29 +228,19 @@ public class Main extends JavaPlugin {
 		getCommand("broadcast").setExecutor(new BroadcastCommand());
 		getCommand("butcher").setExecutor(new ButcherCommand());
 		getCommand("chat").setExecutor(new ChatCommand());
-		getCommand("clearinv").setExecutor(new ClearInvCommand());
-		getCommand("clearxp").setExecutor(new ClearXpCommand());
 		getCommand("config").setExecutor(new ConfigCommand());
 		getCommand("edit").setExecutor(new EditCommand());
 		getCommand("end").setExecutor(new EndCommand());
 		getCommand("fire").setExecutor(new FireCommand());
-		getCommand("fly").setExecutor(new FlyCommand());
-		getCommand("gamemode").setExecutor(new GamemodeCommand());
 		getCommand("giveall").setExecutor(new GiveallCommand());
-		getCommand("give").setExecutor(new GiveCommand());
-		getCommand("heal").setExecutor(new HealCommand());
-		getCommand("health").setExecutor(new HealthCommand());
 		getCommand("helpop").setExecutor(new HelpopCommand());
 		getCommand("hof").setExecutor(new HOFCommand());
 		getCommand("hotbar").setExecutor(new HotbarCommand());
-		getCommand("invsee").setExecutor(new InvseeCommand());
 		getCommand("kick").setExecutor(new KickCommand());
 		getCommand("list").setExecutor(new ListCommand());
 		getCommand("matchpost").setExecutor(new MatchpostCommand());
-		getCommand("ms").setExecutor(new MsCommand());
 		getCommand("mute").setExecutor(new MuteCommand());
 		getCommand("scenario").setExecutor(new ScenarioCommand());
-		getCommand("setmaxhealth").setExecutor(new SetmaxhealthCommand());
 		getCommand("skull").setExecutor(new SkullCommand());
 		getCommand("setspawn").setExecutor(new SetspawnCommand());
 		getCommand("spread").setExecutor(new SpreadCommand());
@@ -269,8 +250,6 @@ public class Main extends JavaPlugin {
 		getCommand("text").setExecutor(new TextCommand());
 		getCommand("timeleft").setExecutor(new TimeLeftCommand());
 		getCommand("timer").setExecutor(new TimerCommand());
-		getCommand("tp").setExecutor(new TpCommand());
-		getCommand("tps").setExecutor(new TpsCommand());
 		getCommand("uhc").setExecutor(new UHCCmd());
 		getCommand("unban").setExecutor(new UnbanCommand());
 		getCommand("unbanip").setExecutor(new UnbanIPCommand());
@@ -279,12 +258,12 @@ public class Main extends JavaPlugin {
 		
 		switch (State.getState()) {
 		case NOT_RUNNING:
-			Bukkit.getServer().setIdleTimeout(60);
+			Bukkit.setIdleTimeout(60);
 			FileUtils.deletePlayerDataAndStats();
 			break;
 		case INGAME:
 			manager.registerEvents(new SpecInfo(), this);
-			Bukkit.getServer().setIdleTimeout(10);
+			Bukkit.setIdleTimeout(10);
 			break;
 		default:
 			break;
@@ -385,7 +364,10 @@ public class Main extends JavaPlugin {
 	 * @return The servers tps.
 	 */
 	public static double getTps() {
-		return MinecraftServer.getServer().recentTps[0];
+		double tps = MinecraftServer.getServer().recentTps[0];
+		String converted = NumberUtils.convertDouble(tps);
+		
+		return Double.parseDouble(converted);
 	}
 	
 	/**
