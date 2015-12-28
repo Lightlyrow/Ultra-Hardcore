@@ -1,6 +1,7 @@
  package com.leontg77.ultrahardcore.managers;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ import com.leontg77.ultrahardcore.User.Rank;
  * @author LeonTG77
  */
 public class PermissionsManager {
-	public static HashMap<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
+	public static Map<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
 	
 	/**
 	 * Handle the permissions for the given player.
@@ -51,14 +52,21 @@ public class PermissionsManager {
 		perm.setPermission("uhc.tl", true);
 		perm.setPermission("uhc.pm", true);
 		perm.setPermission("uhc.pmores", true);
+		perm.setPermission("uhc.health", true);
+		perm.setPermission("uhc.ms", true);
+		perm.setPermission("uhc.tps", true);
 		
 		// spectator perms, they can only use them if they're spectating.
-		perm.setPermission("uhc.near", true);
 		perm.setPermission("uhc.invsee", true);
+		perm.setPermission("uhc.near", true);
+		perm.setPermission("uhc.specchat", true);
+		perm.setPermission("uhc.speed", true);
+		perm.setPermission("uhc.tp", true);
 		
 		if (rank == Rank.DEFAULT) {
 			return;
 		}
+		
 		perm.setPermission("uhc.spectate", true);
 		perm.setPermission("uhc.prelist", true);
 		
@@ -79,46 +87,40 @@ public class PermissionsManager {
 		perm.setPermission("uhc.chat", true);
 		perm.setPermission("uhc.kick", true);
 		perm.setPermission("uhc.mute", true);
-		perm.setPermission("uhc.spectate", true);
-		perm.setPermission("uhc.seemsg", true);
 		perm.setPermission("uhc.cmdspy", true);
 		perm.setPermission("uhc.staff", true);
 		perm.setPermission("uhc.admin", true);
 		perm.setPermission("uhc.team.admin", true);
 		perm.setPermission("uhc.tempban", true);
-		perm.setPermission("uhc.tp", true);
+		perm.setPermission("uhc.tp.bypass", true);
 		perm.setPermission("uhc.whitelist", true);
 		
 		if (rank == Rank.STAFF) {
 			return;
 		}
-		
+
+		perm.setPermission("uhc.give", true);
+		perm.setPermission("uhc.tp.other", true);
 		perm.setPermission("uhc.arena", true);
 		perm.setPermission("uhc.board", true);
 		perm.setPermission("uhc.butcher", true);
 		perm.setPermission("uhc.clearinv", true);
 		perm.setPermission("uhc.clearxp", true);
-		perm.setPermission("uhc.clearinv.other", true);
-		perm.setPermission("uhc.clearxp.other", true);
 		perm.setPermission("uhc.config", true);
 		perm.setPermission("uhc.end", true);
 		perm.setPermission("uhc.feed", true);
-		perm.setPermission("uhc.feed.other", true);
 		perm.setPermission("uhc.restart", true);
 		perm.setPermission("uhc.giveall", true);
 		perm.setPermission("uhc.heal", true);
-		perm.setPermission("uhc.heal.other", true);
 		perm.setPermission("uhc.pregen", true);
 		perm.setPermission("uhc.random", true);
 		perm.setPermission("uhc.scenario", true);
 		perm.setPermission("uhc.sethealth", true);
 		perm.setPermission("uhc.setmaxhealth", true);
 		perm.setPermission("uhc.start", true);
-		perm.setPermission("uhc.spectate.other", true);
-		perm.setPermission("uhc.tps", true);
 		perm.setPermission("uhc.spread", true);
+		perm.setPermission("uhc.spectate.other", true);
 		perm.setPermission("uhc.timer", true);
-		perm.setPermission("uhc.border", true);
 		perm.setPermission("uhc.vote", true);
 		perm.setPermission("mysteryteams.admin", true);
 		perm.setPermission("uhc.bestbtc", true);
@@ -126,22 +128,11 @@ public class PermissionsManager {
 		perm.setPermission("uhc.bigcrack", true);
 		perm.setPermission("uhc.slimycrack", true);
 		perm.setPermission("uhc.kings", true);
-		perm.setPermission("mysteryteams.admin", true);
 		
 		perm.setPermission("uhc.pvp", true);
 		perm.setPermission("uhc.pregen", true);
 		perm.setPermission("uhc.border.set", true);
 		perm.setPermission("uhc.world", true);
-		
-		if (rank == Rank.TRIAL) {
-			return;
-		}
-		perm.setPermission("uhc.give", true);
-		perm.setPermission("uhc.gamemode", true);
-		perm.setPermission("uhc.near", true);
-		perm.setPermission("uhc.speed", true);
-		perm.setPermission("uhc.invsee", true);
-		perm.setPermission("uhc.tp.other", true);
 	}
 	
 	/**
