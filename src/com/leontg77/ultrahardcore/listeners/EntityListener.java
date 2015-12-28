@@ -3,7 +3,6 @@ package com.leontg77.ultrahardcore.listeners;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -54,6 +53,7 @@ import com.leontg77.ultrahardcore.scenario.scenarios.RewardingLongshots;
 import com.leontg77.ultrahardcore.scenario.scenarios.RewardingLongshotsPlus;
 import com.leontg77.ultrahardcore.scenario.scenarios.TeamHealth;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -211,7 +211,7 @@ public class EntityListener implements Listener {
 						User user = User.get(player);
 						Game game = Game.getInstance();
 						
-						if (game.isRecordedRound() || Bukkit.getOfflinePlayer(game.getHost()).getName().equalsIgnoreCase("LeonsPrivate")) {
+						if (game.isRecordedRound() || GameUtils.getHostName(game.getHost()).equalsIgnoreCase("LeonsPrivate")) {
 							return;
 						}
 						
