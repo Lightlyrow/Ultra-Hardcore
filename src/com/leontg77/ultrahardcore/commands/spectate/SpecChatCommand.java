@@ -3,14 +3,10 @@ package com.leontg77.ultrahardcore.commands.spectate;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
