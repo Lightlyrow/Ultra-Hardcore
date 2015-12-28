@@ -2,17 +2,17 @@ package com.leontg77.ultrahardcore.commands.lag;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
-import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -20,44 +20,61 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class TpsCommand implements CommandExecutor {
+public class TpsCommand extends UHCCommand {
 	
+	public TpsCommand() {
+		super("tps", "");
+	}
+
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		double tps = Main.getTps();
-		ChatColor color;
-		
-		if (tps >= 18.0 && tps <= 20.0) {
-			color = ChatColor.GREEN;
-		} else if (tps >= 15.0 && tps < 18.0) {
-			color = ChatColor.YELLOW;
-		} else {
-			color = ChatColor.RED;
-		}
-		
+	public boolean execute(CommandSender sender, String[] args) {
 		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 		
-		long startTime = runtime.getStartTime();
-		long ramUsage = (Runtime.getRuntime().totalMemory() / 1024 / 1024);
+		double tps = Main.getTps();
+		long maxRAM = 4096;
 		
-		sender.sendMessage(Main.PREFIX + "Server performance:");
-		sender.sendMessage("§8§l» §7Current TPS: " + color + NumberUtils.convertDouble(tps));
-		sender.sendMessage("§8§l» §7Uptime: §a" + DateUtils.formatDateDiff(startTime));
-		sender.sendMessage("§8§l» §7RAM Usage: §a" + ramUsage + " MB");
-		sender.sendMessage("§8§l» §7Max Memory: §a4096 MB");
+		long ramUsage = (Runtime.getRuntime().totalMemory() / 1024 / 1024);
+		long startTime = runtime.getStartTime();
 		
 		int entities = 0;
 		int chunks = 0;
 		
+		ChatColor color;
+		String status;
+		
+		if (((int) tps) == 20) {
+            status = "Perfect";
+            color = ChatColor.GREEN;
+        } else if (tps >= 17 && tps <= 23) {
+            status = "All Good";
+            color = ChatColor.GREEN;
+        } else if (tps >= 14 && tps <= 26) {
+            status = "Small Hiccup";
+            color = ChatColor.GOLD;
+        } else {
+            status = "Struggling";
+            color = ChatColor.RED;
+        }
+		
 		for (World world : Bukkit.getWorlds()) {
-			entities = entities + world.getEntities().size();
-			chunks = chunks + world.getLoadedChunks().length;
+			chunks += world.getLoadedChunks().length;
+			entities += world.getEntities().size();
 		}
 		
-		entities = entities - PlayerUtils.getPlayers().size();
-		
+		entities -= PlayerUtils.getPlayers().size();
+
+		sender.sendMessage(Main.PREFIX + "Server performance:");
+		sender.sendMessage("§8§l» §7Current TPS: " + color + tps + " §8(§6" + status + "§8)");
+		sender.sendMessage("§8§l» §7Uptime: §a" + DateUtils.formatDateDiff(startTime));
+		sender.sendMessage("§8§l» §7RAM Usage: §a" + ramUsage + " MB");
+		sender.sendMessage("§8§l» §7Max Memory: §a" + maxRAM + " MB");
 		sender.sendMessage("§8§l» §7Entities: §a" + entities);
 		sender.sendMessage("§8§l» §7Loaded chunks: §a" + chunks);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return new ArrayList<String>();
 	}
 }

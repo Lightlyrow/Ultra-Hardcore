@@ -1,13 +1,16 @@
 package com.leontg77.ultrahardcore.commands.lag;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -15,29 +18,71 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class MsCommand implements CommandExecutor {
+public class MsCommand extends UHCCommand {
 	
+	public MsCommand() {
+		super("ms", "[player]");
+	}
+
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
+		Player target;
+		int ping;
+		
 		if (args.length == 0) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(ChatColor.RED + "Only players can check their ping.");
-				return true;
+				throw new CommandException("Only players can view their own ping.");
 			}
 			
-			Player player = (Player) sender;
-			player.sendMessage(Main.PREFIX + "Your ping: §6" + PlayerUtils.getPing(player));
-			return true;
+			target = (Player) sender;
+		} else {
+			target = Bukkit.getPlayer(args[0]);
 		}
-		
-		Player target = Bukkit.getServer().getPlayer(args[0]);
 		
 		if (target == null) {
-			sender.sendMessage(ChatColor.RED + args[0] + " is not online.");
-			return true;
+			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
-		sender.sendMessage(Main.PREFIX + target.getName() + "'s ping: §6" + PlayerUtils.getPing(target));
+		ping = PlayerUtils.getPing(target);
+		
+		// Not calculated yet
+		if (ping == 0) { 
+			throw new CommandException((sender == target ? "Your" : target.getName() + "'s") + " ping hasn't been calculated yet, Try again later!");
+		}
+		
+		ChatColor color;
+		String status;
+		
+		if (ping < 0) { 
+			color = ChatColor.RED;
+			status = "Wat..?";
+		} else if (ping < 75) { 
+			color = ChatColor.GREEN;
+			status = "Good";
+		} else if (ping < 150) { 
+			color = ChatColor.DARK_GREEN;
+			status = "Decent";
+		} else if (ping < 250) { 
+			color = ChatColor.GOLD;
+			status = "Mediocre";
+		} else if (ping < 400) { 
+			color = ChatColor.RED;
+			status = "Bad";
+		} else { 
+			color = ChatColor.DARK_RED;
+			status = "Horrible";
+		}
+		
+		sender.sendMessage(Main.PREFIX + (sender == target ? "Your" : target.getName() + "'s") + " ping: " + color + ping + "ms §8(§6" + status + "§8)");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		if (args.length == 1) {
+			return null;
+		}
+		
+		return new ArrayList<String>();
 	}
 }
