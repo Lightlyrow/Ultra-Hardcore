@@ -3,7 +3,6 @@ package com.leontg77.ultrahardcore.commands.user;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -42,7 +41,6 @@ public class InfoCommand extends UHCCommand {
 			throw new CommandException("'" + args[0] + "' has never joined this server.");
 		}
 		
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		User user = User.get(target);
 		
 		BanList list = Bukkit.getBanList(Type.NAME);
