@@ -356,14 +356,18 @@ public class Spectator {
 		public static Map<Material, Integer> getTotal(Player player) {
 			if (!total.containsKey(player.getName())) {
 				total.put(player.getName(), new HashMap<Material, Integer>());
-				
-				for (Material type : Material.values()) {
-					if (!isOre(type)) {
-						continue;
-					}
-					
-					total.get(player.getName()).put(type, 0);
+			}
+			
+			for (Material type : Material.values()) {
+				if (total.get(player.getName()).containsKey(type)) {
+					continue;
 				}
+				
+				if (!isOre(type)) {
+					continue;
+				}
+				
+				total.get(player.getName()).put(type, 0);
 			}
 			
 			return total.get(player.getName());
@@ -687,9 +691,7 @@ public class Spectator {
 								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-S>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
 							} else if (proj instanceof Egg) {
 								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-E>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
-							} else if (proj instanceof FishHook) {
-								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-F>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
-							} else {
+							} else if (!(proj instanceof FishHook)) {
 								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-?P>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
 							}
 							return;
