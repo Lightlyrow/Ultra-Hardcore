@@ -1,14 +1,15 @@
 package com.leontg77.ultrahardcore.commands.spectate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 
 /**
@@ -16,38 +17,46 @@ import com.leontg77.ultrahardcore.inventory.InvGUI;
  * 
  * @author LeonTG77
  */
-public class InvseeCommand implements CommandExecutor {
+public class InvseeCommand extends UHCCommand {
+
+	public InvseeCommand() {
+		super("invsee", "<player>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can open player invs.");
-			return true;
+			throw new CommandException("Only players can open player invs.");
 		}
 
+		Spectator spec = Spectator.getInstance();
 		Player player = (Player) sender;
 		
-		Spectator spec = Spectator.getInstance();
-		InvGUI inv = InvGUI.getInstance();
-		
-		if (!sender.hasPermission("uhc.invsee") && !spec.isSpectating(player)) {
-			player.sendMessage(Main.NO_PERM_MSG);
-			return true;
+		if (!spec.isSpectating(player)) {
+			throw new CommandException("You can only do this while spectating.");
 		}
 		
 		if (args.length == 0) {
-    		player.sendMessage(Main.PREFIX + "Usage: /invsee <player>");
-    		return true;
+    		return false;
 		}
 		
 		Player target = Bukkit.getServer().getPlayer(args[0]);
 		
 		if (target == null) {
-			player.sendMessage(ChatColor.RED + args[0] + " is not online.");
-			return true;
+			throw new CommandException("'" + args[0] + "' is not online.");
 		} 
 		
+		InvGUI inv = InvGUI.getInstance();
 		inv.openPlayerInventory(player, target);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		if (args.length == 1) {
+			return null;
+		}
+		
+		return new ArrayList<String>();
 	}
 }
