@@ -47,13 +47,11 @@ public class Timebomb extends Scenario implements Listener {
 		final Location loc = player.getLocation().add(0, -1, 0);
 		event.setKeepInventory(true);
 		
-		loc.getBlock().setType(Material.CHEST);
-		loc.getBlock().getState().update(true);
+		loc.getBlock().setType(Material.TRAPPED_CHEST);
 		Chest chest = (Chest) loc.getBlock().getState();
 		
-		Location lo = loc.clone().add(0, 0, -1);
-		lo.getBlock().setType(Material.CHEST);
-		lo.getBlock().getState().update(true);
+		loc.add(0, 0, -1);
+		loc.getBlock().setType(Material.TRAPPED_CHEST);
 		
 		for (ItemStack item : player.getInventory().getContents()) {
 			if (item == null || item.getType() == Material.AIR) {
