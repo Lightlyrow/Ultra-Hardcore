@@ -13,9 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.worlds.WorldManager;
 
 /**
@@ -214,8 +214,8 @@ public class WorldCommand extends UHCCommand {
 		if (args.length == 2) {
 			switch (args[0].toLowerCase()) {
 			case "create":
-				for (String name : GameUtils.HOSTS_BY_NAME.keySet()) {
-					toReturn.add(name.toLowerCase());
+				for (String path : Settings.getInstance().getHOF().getKeys(false)) {
+					toReturn.add(path.toLowerCase());
 				}
 				break;
 			case "load":
