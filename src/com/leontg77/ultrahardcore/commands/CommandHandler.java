@@ -12,6 +12,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.give.GiveCommand;
+import com.leontg77.ultrahardcore.commands.give.GiveallCommand;
+import com.leontg77.ultrahardcore.commands.inventory.HOFCommand;
+import com.leontg77.ultrahardcore.commands.inventory.UHCCmd;
 import com.leontg77.ultrahardcore.commands.lag.MsCommand;
 import com.leontg77.ultrahardcore.commands.lag.TpsCommand;
 import com.leontg77.ultrahardcore.commands.msg.MsgCommand;
@@ -58,6 +62,14 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	 * Register all the commands.
 	 */
 	public void registerCommands() {
+		// give
+		cmds.add(new GiveallCommand());
+		cmds.add(new GiveCommand());
+		
+		// inventory
+		cmds.add(new HOFCommand());
+		cmds.add(new UHCCmd());
+		
 		// lag
 		cmds.add(new MsCommand());
 		cmds.add(new TpsCommand());

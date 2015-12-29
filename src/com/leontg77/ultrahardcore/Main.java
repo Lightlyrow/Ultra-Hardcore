@@ -76,9 +76,6 @@ import com.leontg77.ultrahardcore.commands.game.StartCommand;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
 import com.leontg77.ultrahardcore.commands.game.VoteCommand;
 import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
-import com.leontg77.ultrahardcore.commands.give.GiveallCommand;
-import com.leontg77.ultrahardcore.commands.inventory.HOFCommand;
-import com.leontg77.ultrahardcore.commands.inventory.UHCCmd;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.HOFListener;
@@ -111,7 +108,6 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 import com.leontg77.ultrahardcore.worlds.AntiStripmine;
 import com.leontg77.ultrahardcore.worlds.BiomeSwap;
-import com.leontg77.ultrahardcore.worlds.OldTerrain;
 import com.leontg77.ultrahardcore.worlds.WorldManager;
 
 /**
@@ -157,7 +153,6 @@ public class Main extends JavaPlugin {
 		Settings.getInstance().setup();
 	    
 		WorldManager.getInstance().loadWorlds();
-		OldTerrain.getInstance().setup();
 		
 		AntiStripmine.getInstance().setup();
 		BiomeSwap.getInstance().setup();
@@ -232,9 +227,7 @@ public class Main extends JavaPlugin {
 		getCommand("edit").setExecutor(new EditCommand());
 		getCommand("end").setExecutor(new EndCommand());
 		getCommand("fire").setExecutor(new FireCommand());
-		getCommand("giveall").setExecutor(new GiveallCommand());
 		getCommand("helpop").setExecutor(new HelpopCommand());
-		getCommand("hof").setExecutor(new HOFCommand());
 		getCommand("hotbar").setExecutor(new HotbarCommand());
 		getCommand("kick").setExecutor(new KickCommand());
 		getCommand("list").setExecutor(new ListCommand());
@@ -250,7 +243,6 @@ public class Main extends JavaPlugin {
 		getCommand("text").setExecutor(new TextCommand());
 		getCommand("timeleft").setExecutor(new TimeLeftCommand());
 		getCommand("timer").setExecutor(new TimerCommand());
-		getCommand("uhc").setExecutor(new UHCCmd());
 		getCommand("unban").setExecutor(new UnbanCommand());
 		getCommand("unbanip").setExecutor(new UnbanIPCommand());
 		getCommand("vote").setExecutor(new VoteCommand());
