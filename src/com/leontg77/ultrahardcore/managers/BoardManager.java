@@ -8,7 +8,6 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * The class for managing scoreboards.
@@ -60,7 +59,7 @@ public class BoardManager {
 		if (game.isRecordedRound()) {
 			kills.setDisplayName("§6" + game.getRRName());
 		} else {
-			kills.setDisplayName("§4§lUHC §r§8- §7§o" + GameUtils.getHostName(game.getHost()) + "§r");
+			kills.setDisplayName("§4§lUHC §r§8- §7§o" + game.getHost() + "§r");
 		}
 		
 		if (!game.arenaBoard()) {

@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore;
 
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -10,7 +8,6 @@ import com.leontg77.ultrahardcore.Main.BorderShrink;
 import com.leontg77.ultrahardcore.Main.HardcoreHearts;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -86,16 +83,16 @@ public class Game {
 	/**
 	 * Set the host of the game.
 	 * 
-	 * @param uuid The new host.
+	 * @param name The new host.
 	 */
-	public void setHost(UUID uuid) {
-		settings.getConfig().set("host", uuid.toString());
+	public void setHost(String name) {
+		settings.getConfig().set("host", name);
 		settings.saveConfig();
 		
 		if (!isRecordedRound()) {
 			BoardManager board = BoardManager.getInstance();
 			
-			board.kills.setDisplayName("§4§lUHC §r§8- §7§o" + Bukkit.getOfflinePlayer(uuid).getName() + "§r");
+			board.kills.setDisplayName("§4§lUHC §r§8- §7§o" + name + "§r");
 		}
 		
 		for (Player online : PlayerUtils.getPlayers()) {
@@ -110,8 +107,8 @@ public class Game {
 	 * 
 	 * @return The host.
 	 */
-	public UUID getHost() {
-		return UUID.fromString(settings.getConfig().getString("host", UUID.randomUUID().toString()));
+	public String getHost() {
+		return settings.getConfig().getString("host", "None");
 	}
 
 	/**
@@ -309,7 +306,7 @@ public class Game {
 	 * @return True if it is, false otherwise.
 	 */
 	public boolean isPrivateGame() {
-		return GameUtils.getHostName(getHost()).equals("LeonsPrivate");
+		return getHost().equals("LeonsPrivate");
 	}
 	
 	/**

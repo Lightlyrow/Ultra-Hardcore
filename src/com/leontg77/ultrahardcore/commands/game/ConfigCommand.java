@@ -163,7 +163,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			break;
 		case HOST:
 			PlayerUtils.broadcast(Main.PREFIX + "The host has been changed to §a" + args[1] + "§7.");
-			game.setHost(PlayerUtils.getOfflinePlayer(args[1]).getUniqueId());
+			game.setHost(args[1]);
 			break;
 		case MATCHPOST:
 			PlayerUtils.broadcast(Main.PREFIX + "The matchpost has been changed to §a" + args[1] + "§7.");

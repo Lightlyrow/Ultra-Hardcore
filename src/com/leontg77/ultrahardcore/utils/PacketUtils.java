@@ -1,7 +1,6 @@
 package com.leontg77.ultrahardcore.utils;
 
 import java.lang.reflect.Field;
-import java.util.UUID;
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
@@ -45,12 +44,12 @@ public class PacketUtils {
 	    );
 
 		String gamemode = GameUtils.getTeamSize(false) + "§8- §7" + game.getScenarios().replaceAll(",", "§8,§7");
-		UUID host = game.getHost();
+		String host = game.getHost();
 		String teamsize = game.getTeamSize().toLowerCase();
 	        
 		IChatBaseComponent footerJSON = ChatSerializer.a(
 			"{text:'\n§7" + gamemode + (!teamsize.startsWith("no") && !teamsize.startsWith("open") ? 
-			"\n§4Host §8» §a" + Bukkit.getOfflinePlayer(host).getName() : "") + "'}"
+			"\n§4Host §8» §a" + host : "") + "'}"
 		);
 	        
 		PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
