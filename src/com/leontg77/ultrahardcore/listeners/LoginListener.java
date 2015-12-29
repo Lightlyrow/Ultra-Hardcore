@@ -27,6 +27,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
@@ -49,9 +50,28 @@ public class LoginListener implements Listener {
 	private Game game = Game.getInstance();
 	
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Spectator spec = Spectator.getInstance();
+	public void on(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+		
+		Settings settings = Settings.getInstance();
+		Spectator spec = Spectator.getInstance();
+		
+		// update names (name changes)
+		for (String path : settings.getHOF().getKeys(false)) {
+			String confUUID = settings.getHOF().getString(path + ".uuid", "none");
+			String confName = settings.getHOF().getString(path + ".name", "none");
+			
+			if (confUUID.equals(player.getUniqueId().toString()) && !confName.equals(player.getName())) {
+				settings.getHOF().set(path + ".name", player.getName());
+			}
+			
+			Object games = settings.getHOF().get(path + ".games");
+			
+			// make sure games are listed last.
+			settings.getHOF().set(path + ".games", null);
+			settings.getHOF().set(path + ".games", games);
+		}
+		settings.saveHOF();
 		
 		User user = User.get(player);
 		user.getFile().set("username", player.getName());
@@ -148,7 +168,7 @@ public class LoginListener implements Listener {
 				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
 			} 
 			else {
-				player.sendMessage("§8» §7 Host: §a" + GameUtils.getHostName(game.getHost()));
+				player.sendMessage("§8» §7 Host: §a" + game.getHost());
 				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + game.getScenarios());
 			}
 			
