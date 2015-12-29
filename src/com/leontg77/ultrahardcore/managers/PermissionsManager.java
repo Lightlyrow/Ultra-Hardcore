@@ -55,6 +55,8 @@ public class PermissionsManager {
 		perm.setPermission("uhc.health", true);
 		perm.setPermission("uhc.ms", true);
 		perm.setPermission("uhc.tps", true);
+		perm.setPermission("uhc.uhc", true);
+		perm.setPermission("uhc.hof", true);
 		
 		// spectator perms, they can only use them if they're spectating.
 		perm.setPermission("uhc.invsee", true);
