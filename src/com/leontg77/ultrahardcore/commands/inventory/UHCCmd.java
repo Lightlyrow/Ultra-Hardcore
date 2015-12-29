@@ -1,11 +1,13 @@
 package com.leontg77.ultrahardcore.commands.inventory;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 
 /**
@@ -13,13 +15,16 @@ import com.leontg77.ultrahardcore.inventory.InvGUI;
  * 
  * @author LeonTG77
  */
-public class UHCCmd implements CommandExecutor {	
+public class UHCCmd extends UHCCommand {	
+
+	public UHCCmd() {
+		super("uhc", "");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can view the game info inventory.");
-			return true;
+			throw new CommandException("Only players can view the game info inventory.");
 		}
 		
 		Player player = (Player) sender;
@@ -27,5 +32,10 @@ public class UHCCmd implements CommandExecutor {
 		
 		inv.openGameInfo(player);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return new ArrayList<String>();
 	}
 }
