@@ -53,7 +53,6 @@ import com.leontg77.ultrahardcore.scenario.scenarios.RewardingLongshots;
 import com.leontg77.ultrahardcore.scenario.scenarios.RewardingLongshotsPlus;
 import com.leontg77.ultrahardcore.scenario.scenarios.TeamHealth;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -211,7 +210,7 @@ public class EntityListener implements Listener {
 						User user = User.get(player);
 						Game game = Game.getInstance();
 						
-						if (game.isRecordedRound() || GameUtils.getHostName(game.getHost()).equalsIgnoreCase("LeonsPrivate")) {
+						if (game.isRecordedRound() || game.isPrivateGame()) {
 							return;
 						}
 						
@@ -220,7 +219,7 @@ public class EntityListener implements Listener {
 						}
 						
 						String statName = Stat.DAMAGETAKEN.name().toLowerCase();
-						int current = user.getFile().getInt("stats." + statName, 0);
+						double current = user.getFile().getDouble("stats." + statName, 0);
 						
 						user.getFile().set("stats." + statName, current + damage);
 						user.saveFile();
