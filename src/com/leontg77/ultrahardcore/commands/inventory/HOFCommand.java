@@ -3,16 +3,14 @@ package com.leontg77.ultrahardcore.commands.inventory;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 
@@ -21,17 +19,15 @@ import com.leontg77.ultrahardcore.utils.GameUtils;
  * 
  * @author LeonTG77
  */
-public class HOFCommand implements CommandExecutor, TabCompleter {
+public class HOFCommand extends UHCCommand {
+
+	public HOFCommand() {
+		super("hof", "[host]");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can view the hall of fame.");
-			return true;
-		}
-		
-		Player player = (Player) sender;
-		String host = GameUtils.getHostConfigName(GameUtils.getHostName(Game.getInstance().getHost()));
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
+		String host = GameUtils.getHostName(Game.getInstance().getHost());
 		
 		Settings settings = Settings.getInstance();
 		InvGUI inv = InvGUI.getInstance();
@@ -48,12 +44,17 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			
-			host = GameUtils.getHostConfigName(args[0]);
+			host = GameUtils.getHostName(args[0]);
 		}
 		
+		if (!(sender instanceof Player)) {
+			throw new CommandException("Only players can view the hall of fame.");
+		}
+		
+		Player player = (Player) sender;
+		
 		if (settings.getHOF().getConfigurationSection(host) == null) {
-			sender.sendMessage(ChatColor.RED + "That player has not hosted any games here.");
-			return true;
+			throw new CommandException("'" + host + "' has never hosted any games here.");
 		}
 		
 		inv.openHOF(player, host);
@@ -61,7 +62,7 @@ public class HOFCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+	public List<String> tabComplete(CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) {
 			return null;
 		}
