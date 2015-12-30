@@ -17,7 +17,7 @@ public class MatchpostCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		String teamSize = GameUtils.getTeamSize();
+		String teamSize = GameUtils.getTeamSize(false, false);
 		Game game = Game.getInstance();
 		
 		if (teamSize.startsWith("No") || teamSize.startsWith("Open")) {
