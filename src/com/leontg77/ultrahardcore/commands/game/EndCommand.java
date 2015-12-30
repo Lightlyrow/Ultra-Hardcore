@@ -78,7 +78,7 @@ public class EndCommand implements CommandExecutor {
 			
 			User user = User.get(winner);
 
-			if (!game.isRecordedRound() && !GameUtils.getHostName(game.getHost()).equalsIgnoreCase("LeonsPrivate")) {
+			if (!game.isRecordedRound() && !game.isPrivateGame()) {
 				user.getFile().set("stats.wins", user.getFile().getInt("stats.wins") + 1);
 				user.saveFile();
 			}
@@ -92,7 +92,7 @@ public class EndCommand implements CommandExecutor {
 		PlayerUtils.broadcast(Main.PREFIX + "View the hall of fame with §a/hof");
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		String host = GameUtils.getHostConfigName(GameUtils.getHostName(game.getHost()));
+		String host = GameUtils.getHostName(game.getHost());
 		
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		Date date = new Date();
@@ -107,11 +107,11 @@ public class EndCommand implements CommandExecutor {
 		}
 
 		if (!game.isRecordedRound()) {
-			settings.getHOF().set(host + "." + matchcount + ".date", dateFormat.format(date));
-			settings.getHOF().set(host + "." + matchcount + ".winners", winners);
-			settings.getHOF().set(host + "." + matchcount + ".kills", kills);
-			settings.getHOF().set(host + "." + matchcount + ".teamsize", GameUtils.getTeamSize().trim());
-			settings.getHOF().set(host + "." + matchcount + ".scenarios", game.getScenarios());
+			settings.getHOF().set(host + ".games." + matchcount + ".date", dateFormat.format(date));
+			settings.getHOF().set(host + ".games." + matchcount + ".winners", winners);
+			settings.getHOF().set(host + ".games." + matchcount + ".kills", kills);
+			settings.getHOF().set(host + ".games." + matchcount + ".teamsize", GameUtils.getTeamSize().trim());
+			settings.getHOF().set(host + ".games." + matchcount + ".scenarios", game.getScenarios());
 			settings.saveHOF();
 		}
 		
