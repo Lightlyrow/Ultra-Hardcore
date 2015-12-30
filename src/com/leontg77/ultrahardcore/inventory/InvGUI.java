@@ -218,7 +218,7 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openHOF(Player player, String host) {
-		Set<String> keys = settings.getHOF().getConfigurationSection(host).getKeys(false);
+		Set<String> keys = settings.getHOF().getConfigurationSection(host + ".games").getKeys(false);
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		
 		ArrayList<String> list = new ArrayList<String>(keys);
@@ -248,28 +248,39 @@ public class InvGUI {
 				meta.setDisplayName("§8» §6" + host + "'s #" + target + " §8«");
 				
 				ArrayList<String> lore = new ArrayList<String>();
-				lore.add("§7" + settings.getHOF().getString(host + "." + target + ".date", "N/A"));
+				lore.add("§7" + settings.getHOF().getString(host + ".games." + target + ".date", "N/A"));
 				lore.add(" ");
 				lore.add("§8» §cWinners:");
 				
-				for (String winners : settings.getHOF().getStringList(host + "." + target + ".winners")) {
+				for (String winners : settings.getHOF().getStringList(host + ".games." + target + ".winners")) {
 					lore.add("§8» §7" + winners);
 				}
 				
 				lore.add(" ");
 				lore.add("§8» §cKills:");
-				lore.add("§8» §7" + settings.getHOF().getString(host + "." + target + ".kills", "-1"));
+				lore.add("§8» §7" + settings.getHOF().getString(host + ".games." + target + ".kills", "-1"));
 				
-				if (!settings.getHOF().getString(host + "." + target + ".teamsize", "FFA").isEmpty()) {
+				if (!settings.getHOF().getString(host + ".games." + target + ".teamsize", "FFA").isEmpty()) {
 					lore.add(" ");
 					lore.add("§8» §cTeamsize:");
-					lore.add("§8» §7" + settings.getHOF().getString(host + "." + target + ".teamsize", "FFA"));
+					
+					String teamsize = settings.getHOF().getString(host + ".games." + target + ".teamsize", "FFA");
+					
+					if (teamsize.startsWith("cTo")) {
+						teamsize = "Chosen To" + teamsize.substring(3);
+					}
+					
+					if (teamsize.startsWith("rTo")) {
+						teamsize = "Random To" + teamsize.substring(3);
+					}
+					
+					lore.add("§8» §7" + teamsize);
 				}
 				
 				lore.add(" ");
 				lore.add("§8» §cScenario:");
 				
-				for (String scenario : settings.getHOF().getString(host + "." + target + ".scenarios", "Vanilla+").split(", ")) {
+				for (String scenario : settings.getHOF().getString(host + ".games." + target + ".scenarios", "Vanilla+").split(", ")) {
 					lore.add("§8» §7" + scenario);
 				}
 				
@@ -291,7 +302,7 @@ public class InvGUI {
 			prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
 			prevpage.setItemMeta(prevmeta);
 			
-			String name = GameUtils.getHostName(GameUtils.getHostConfigUUID(host));
+			String name = settings.getHOF().getString(host + ".name");
 			
 			ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
@@ -300,7 +311,7 @@ public class InvGUI {
 			
 			ArrayList<String> headLore = new ArrayList<String>();
 			headLore.add(" ");
-			headLore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host).getKeys(false).size());
+			headLore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host + ".games").getKeys(false).size());
 			headLore.add("§8» §7Rank: §6" + NameUtils.capitalizeString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
 			headLore.add(" ");
 			headLore.add("§8» §7Host name: §6" + host);
