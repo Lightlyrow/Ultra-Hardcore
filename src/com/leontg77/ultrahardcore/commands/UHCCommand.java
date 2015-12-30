@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 
 /**
@@ -13,6 +14,7 @@ import com.leontg77.ultrahardcore.utils.NameUtils;
  */
 public abstract class UHCCommand {
 	private String name, usage;
+	protected Game game;
 	
 	/**
 	 * Constructor for the uhc command super class.
@@ -23,6 +25,8 @@ public abstract class UHCCommand {
 	public UHCCommand(String name, String usage) {
 		this.usage = usage;
 		this.name = name;
+		
+		this.game = Game.getInstance();
 	}
 	
 	/**
