@@ -120,12 +120,14 @@ public class TeamHealth extends Scenario implements Listener {
 		}
 		
 		Player player = event.getEntity();
-		Team team = TeamManager.getInstance().getTeam(player);
+		
+		TeamManager manager = TeamManager.getInstance();
+		Team team = manager.getTeam(player);
 
         if (team == null) {
         	return;
         }
         
-        team.removeEntry(player.getName());
+        manager.leaveTeam(player, false);
     }
 }
