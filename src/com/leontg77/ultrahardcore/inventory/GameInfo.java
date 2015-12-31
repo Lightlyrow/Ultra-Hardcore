@@ -111,7 +111,7 @@ public class GameInfo extends InvGUI implements Listener {
 		pvpMeta.setDisplayName("§8» §6PvP Rules §8«");
 		lore.add(" ");
 		lore.add("§8» §7iPvP: §cNot Allowed before pvp.");
-		lore.add("§8» §7Team Killing: " + ((GameUtils.getTeamSize().startsWith("r") || GameUtils.getTeamSize().isEmpty()) && !ScenarioManager.getInstance().getScenario(Moles.class).isEnabled() ? "§cNot Allowed." : "§aAllowed."));
+		lore.add("§8» §7Team Killing: " + (GameUtils.getTeamSize(false, false).startsWith("Random") && !ScenarioManager.getInstance().getScenario(Moles.class).isEnabled() ? "§cNot Allowed." : "§aAllowed."));
 		lore.add("§8» §7Stalking: §aAllowed. §c(Not excessive)");
 		lore.add("§8» §7Stealing: §aAllowed.");
 		lore.add("§8» §7Crossteaming: §cNot Allowed.");
@@ -215,11 +215,11 @@ public class GameInfo extends InvGUI implements Listener {
 		ItemStack scenario = new ItemStack (Material.BANNER, 1, (short) 14);
 		ItemMeta scenarioMeta = scenario.getItemMeta();
 		scenarioMeta.setDisplayName("§8» §6Game Information §8«");
-		if (GameUtils.getTeamSize().startsWith("No")) {
+		if (GameUtils.getTeamSize(false, false).startsWith("No")) {
 			lore.add(" ");
 			lore.add("§8» §7There are no games running.");
 			lore.add(" ");
-		} else if (GameUtils.getTeamSize().startsWith("Open")) {
+		} else if (GameUtils.getTeamSize(false, false).startsWith("Open")) {
 			lore.add(" ");
 			lore.add("§8» §7Currently having Open " + game.getScenarios());
 			lore.add(" ");
@@ -232,7 +232,7 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add("§8» §7Meetup is after: §a" + game.getMeetup() + " minutes.");
 			lore.add(" ");
 			lore.add("§8» §cTeamsize:");
-			lore.add("§8» §7" + GameUtils.getTeamSize(true));
+			lore.add("§8» §7" + GameUtils.getTeamSize(true, false));
 			lore.add(" ");
 			lore.add("§8» §cScenarios:");
 			for (String scen : game.getScenarios().split(", ")) {
@@ -351,7 +351,7 @@ public class GameInfo extends InvGUI implements Listener {
 		if (Game.getInstance().isRecordedRound()) {
 			lore.add("§8» §7Current Episode: §a" + Timers.meetup);
 			lore.add("§8» §7Time to next episode: §a" + Timers.time + " mins");
-		} else if (GameUtils.getTeamSize().startsWith("No") || GameUtils.getTeamSize().startsWith("Open")) {
+		} else if (GameUtils.getTeamSize(false, false).startsWith("No") || GameUtils.getTeamSize(false, false).startsWith("Open")) {
 			lore.add("§8» §7There are no matches running.");
 		} else if (!State.isState(State.INGAME)) {
 			lore.add("§8» §7The game has not started yet.");
