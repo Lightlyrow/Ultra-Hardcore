@@ -12,6 +12,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.game.ConfigCommand;
 import com.leontg77.ultrahardcore.commands.give.GiveCommand;
 import com.leontg77.ultrahardcore.commands.give.GiveallCommand;
 import com.leontg77.ultrahardcore.commands.inventory.HOFCommand;
@@ -62,6 +63,9 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	 * Register all the commands.
 	 */
 	public void registerCommands() {
+		// game
+		cmds.add(new ConfigCommand());
+		
 		// give
 		cmds.add(new GiveallCommand());
 		cmds.add(new GiveCommand());
