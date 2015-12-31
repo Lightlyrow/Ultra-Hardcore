@@ -373,17 +373,17 @@ public class ConfigListener implements Listener {
 			return;
 		}
 		
-		if (name.equalsIgnoreCase("Old Terrain")) {
-			if (game.oldTerrain()) {
-				PlayerUtils.broadcast(Main.PREFIX + "The terrain will now generate like in 1.8");
-				game.setOldTerrain(false);
+		if (name.equalsIgnoreCase("1.8 Stone")) {
+			if (game.newStone()) {
+				PlayerUtils.broadcast(Main.PREFIX + "Caves will no longer have Granite, Diorite and Andesite.");
+				game.setNewStone(false);
 				
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName("§c" + name);
 				item.setItemMeta(meta);
 			} else {
-				PlayerUtils.broadcast(Main.PREFIX + "The terrain will now generate like in 1.7");
-				game.setOldTerrain(true);
+				PlayerUtils.broadcast(Main.PREFIX + "Caves will now have Granite, Diorite and Andesite.");
+				game.setNewStone(true);
 				
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName("§a" + name);
