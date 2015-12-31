@@ -46,7 +46,7 @@ public class Arena {
 	public static final String PREFIX = "§4§lArena §8» §7";
 	private BukkitRunnable regen;
 	
-	public boolean reset = false;
+	public boolean isResetting = false;
 	public boolean wasEnabled = false;
 	
 	public Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -101,7 +101,6 @@ public class Arena {
 		}
 		
 		if (game.arenaBoard()) {
-			PlayerUtils.broadcast(PREFIX + "The arena board has been enabled.");
 			arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
 			
 			game.setPregameBoard(false);
@@ -168,7 +167,10 @@ public class Arena {
 			
 			PlayerUtils.broadcast(PREFIX + "The arena board has been disabled.");
 			BoardManager.getInstance().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
-			game.setArenaBoard(false);
+			
+			if (!isResetting) {
+				game.setArenaBoard(false);
+			}
 		}
 		
 		players.clear();
@@ -177,8 +179,11 @@ public class Arena {
 		regen = null;
 	}
 
+	/**
+	 * Reset the arena.
+	 */
 	public void reset() {
-		reset = true;
+		isResetting = true;
 		wasEnabled = isEnabled();
 		
 		if (wasEnabled) {
