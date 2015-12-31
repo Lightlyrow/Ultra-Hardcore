@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.listeners;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.bukkit.command.CommandSender;
@@ -81,7 +82,7 @@ public class LogoutListener implements Listener {
 			MsgCommand.msg.remove(player);
 		}
 		
-		HashSet<CommandSender> temp = new HashSet<CommandSender>();
+		Set<CommandSender> temp = new HashSet<CommandSender>();
 		
 		for (CommandSender key : MsgCommand.msg.keySet()) {
 			temp.add(key);
@@ -100,6 +101,6 @@ public class LogoutListener implements Listener {
 			return;
 		}
 		
-		event.setReason("�8� �7Kicked for spamming �8�");
+		event.setReason("§8» §7Kicked for spamming §8«");
 	}
 }
