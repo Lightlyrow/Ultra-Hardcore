@@ -110,7 +110,7 @@ public class EndCommand implements CommandExecutor {
 			settings.getHOF().set(host + ".games." + matchcount + ".date", dateFormat.format(date));
 			settings.getHOF().set(host + ".games." + matchcount + ".winners", winners);
 			settings.getHOF().set(host + ".games." + matchcount + ".kills", kills);
-			settings.getHOF().set(host + ".games." + matchcount + ".teamsize", GameUtils.getTeamSize().trim());
+			settings.getHOF().set(host + ".games." + matchcount + ".teamsize", GameUtils.getTeamSize(true, false).trim());
 			settings.getHOF().set(host + ".games." + matchcount + ".scenarios", game.getScenarios());
 			settings.saveHOF();
 		}
