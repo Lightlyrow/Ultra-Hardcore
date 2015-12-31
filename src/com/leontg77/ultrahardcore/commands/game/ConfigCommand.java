@@ -6,18 +6,21 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.Main.BorderShrink;
+import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
+import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -26,7 +29,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class ConfigCommand implements CommandExecutor, TabCompleter {
+public class ConfigCommand extends UHCCommand {
 
 	/**
 	 * ConfigValue class
@@ -37,20 +40,18 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 	 * @author LeonTG77
 	 */
 	public enum ConfigValue {
-		APPLERATES, BORDERSHRINK, FLINTRATES, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PVP, RRNAME, SCENARIOS, TEAMSIZE, WORLD, HEADSHEAL, SHEARRATES, STATE;
+		APPLERATES, BORDERSHRINK, FLINTRATES, HEADSHEAL, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PVP, RRNAME, SCENARIOS, SHEARRATES, STATE, TEAMSIZE, WORLD;
+	}
+
+	public ConfigCommand() {
+		super("config", "<option> <value>");
 	}
 	
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.config")) {
-			sender.sendMessage(Main.NO_PERM_MSG); 
-			return true;
-		}
-
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage(Main.PREFIX + "Usage: /config <type> <value>");
-				return true;
+				return false;
 			}
 			
 			Player player = (Player) sender;
@@ -61,11 +62,9 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 		}
 		
 		if (args.length == 1) {
-			sender.sendMessage(Main.PREFIX + "Usage: /config <type> <value>");
-			return true;
+			return false;
 		}
 		
-		Game game = Game.getInstance();
 		ConfigValue type;
 		
 		try {
@@ -93,13 +92,14 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 		
 		switch (type) {
 		case APPLERATES:
-			int appleRate;
+			double appleRate = parseDouble(args[1], "apple rate");
 			
-			try {
-				appleRate = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild apple rate.");
-				return true;
+			if (appleRate < 0) {
+				throw new CommandException("Apple rates cannot be lower than 0%");
+			}
+			
+			if (appleRate > 100) {
+				throw new CommandException("Apple rates cannot be higher than 100%");
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + appleRate + "%");
@@ -111,8 +111,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			try {
 				border = BorderShrink.valueOf(args[1].toUpperCase());
 			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild bordertype.");
-				return true;
+				throw new CommandException("'" + args[1] + "' is not a vaild border shink.");
 			}
 			
 			if (border == BorderShrink.NEVER) {
@@ -128,35 +127,28 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			try {
 				state = State.valueOf(args[1].toUpperCase());
 			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild state.");
-				return true;
+				throw new CommandException("'" + args[1] + "' is not a vaild state.");
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "The server is now in §a" + state.name().toLowerCase() + "§7 mode.");
 			State.setState(state);
 			break;
 		case FLINTRATES:
-			int flintRate;
+			double flintRate = parseDouble(args[1], "flint rate");
 			
-			try {
-				flintRate = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild flint rate.");
-				return true;
+			if (flintRate < 0) {
+				throw new CommandException("Flint rates cannot be lower than 0%");
+			}
+			
+			if (flintRate > 100) {
+				throw new CommandException("Flint rates cannot be higher than 100%");
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Flint rates has been changed to §a" + flintRate + "%");
 			game.setFlintRates(flintRate);
 			break;
 		case HEADSHEAL:
-			int headheals;
-			
-			try {
-				headheals = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild heal amount.");
-				return true;
-			}
+			double headheals = parseDouble(args[1], "heal amount");
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + headheals + "§7 hearts.");
 			game.setGoldenHeadsHeal(headheals);
@@ -170,14 +162,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			game.setMatchPost(args[1]);
 			break;
 		case MAXPLAYERS:
-			int maxplayers;
-			
-			try {
-				maxplayers = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild player limit.");
-				return true;
-			}
+			int maxplayers = parseInt(args[1], "maxplayers time");
 			
 			if (maxplayers > Bukkit.getMaxPlayers()) {
 				sender.sendMessage(ChatColor.RED + "You cannot set the slots higher than the servers max.");
@@ -193,27 +178,13 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			game.setMaxPlayers(maxplayers);
 			break;
 		case MEETUP:
-			int meetup;
-			
-			try {
-				meetup = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild meetup time.");
-				return true;
-			}
+			int meetup = parseInt(args[1], "meetup time");
 
 			PlayerUtils.broadcast(Main.PREFIX + "Meetup is now §a" + meetup + " §7minutes in.");
 			game.setMeetup(meetup);
 			break;
 		case PVP:
-			int pvp;
-			
-			try {
-				pvp = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild pvp time.");
-				return true;
-			}
+			int pvp = parseInt(args[1], "pvp time");
 			
 			PlayerUtils.broadcast(Main.PREFIX + "PvP will now be enabled §a" + pvp + " §7minutes in.");
 			game.setPvP(pvp);
@@ -228,16 +199,17 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			String scens = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
 			
 			game.setScenarios(scens);
-			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + "- " + game.getScenarios() + "§7.");
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize(true, true) + game.getScenarios() + "§7.");
 			break;
 		case SHEARRATES:
-			int shearRate;
+			double shearRate = parseDouble(args[1], "shear rate");
 			
-			try {
-				shearRate = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild shear rate.");
-				return true;
+			if (shearRate < 0) {
+				throw new CommandException("Shear rates cannot be lower than 0%");
+			}
+			
+			if (shearRate > 100) {
+				throw new CommandException("Shear rates cannot be higher than 100%");
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Shear rates has been changed to §a" + shearRate + "%");
@@ -245,7 +217,7 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 			break;
 		case TEAMSIZE:
 			game.setTeamSize(args[1]);
-			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize() + "- " + game.getScenarios() + "§7.");
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize(true, true) + game.getScenarios() + "§7.");
 			break;
 		case WORLD:
 			PlayerUtils.broadcast(Main.PREFIX + "The game will now be played in '§a" + args[1] + "§7'.");
@@ -258,25 +230,71 @@ public class ConfigCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-		if (!sender.hasPermission("uhc.config")) {
-			return null;
-		}
-		
-    	ArrayList<String> toReturn = new ArrayList<String>();
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		List<String> toReturn = new ArrayList<String>();
     	
 		if (args.length == 1) {
-        	if (args[0].equals("")) {
-        		for (ConfigValue type : ConfigValue.values()) {
-        			toReturn.add(type.name().toLowerCase());
-        		}
-        	} else {
-        		for (ConfigValue type : ConfigValue.values()) {
-        			if (type.name().toLowerCase().startsWith(args[0].toLowerCase())) {
-        				toReturn.add(type.name().toLowerCase());
-        			}
-        		}
-        	}
+    		for (ConfigValue type : ConfigValue.values()) {
+    			toReturn.add(type.name().toLowerCase());
+    		}
+        }
+    	
+		if (args.length == 2) {
+			ConfigValue configType;
+			
+			try {
+				configType = ConfigValue.valueOf(args[0].toUpperCase());
+			} catch (Exception e) {
+				return toReturn;
+			}
+			
+    		switch (configType) {
+			case BORDERSHRINK:
+	    		for (BorderShrink type : BorderShrink.values()) {
+	    			toReturn.add(type.name().toLowerCase());
+	    		}
+				break;
+			case HOST:
+	    		for (Player online : PlayerUtils.getPlayers()) {
+	    			Rank rank = User.get(online).getRank();
+	    			
+	    			if (rank.getLevel() > 4) {
+	    				toReturn.add(online.getName());
+	    			}
+	    		}
+				break;
+			case MATCHPOST:
+				toReturn.add("https://redd.it/######");
+				break;
+			case SCENARIOS:
+	    		for (Scenario type : ScenarioManager.getInstance().getScenarios()) {
+	    			toReturn.add(type.getName());
+	    		}
+				break;
+			case STATE:
+	    		for (State type : State.values()) {
+	    			toReturn.add(type.name().toLowerCase());
+	    		}
+				break;
+			case TEAMSIZE:
+				toReturn.add("FFA");
+				toReturn.add("cTo");
+				toReturn.add("rTo");
+				toReturn.add("pTo");
+				toReturn.add("mTo");
+				toReturn.add("CapTo");
+				toReturn.add("Auction");
+				toReturn.add("No");
+				toReturn.add("Open");
+				break;
+			case WORLD:
+				for (World world : Bukkit.getWorlds()) {
+					toReturn.add(world.getName());
+				}
+				break;
+			default:
+				break;
+    		}
         }
 		
     	return toReturn;
