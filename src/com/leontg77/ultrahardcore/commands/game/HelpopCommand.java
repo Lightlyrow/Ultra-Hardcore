@@ -1,6 +1,7 @@
 package com.leontg77.ultrahardcore.commands.game;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,7 +22,8 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class HelpopCommand implements CommandExecutor {
-	public static ArrayList<CommandSender> cooldown = new ArrayList<CommandSender>();
+	public static List<CommandSender> cooldown = new ArrayList<CommandSender>();
+	private static final String PREFIX = "§4§lHelp§8§l-§4§lOp §8» §7";
 
 	@Override
 	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
@@ -31,7 +33,7 @@ public class HelpopCommand implements CommandExecutor {
 		}
 		
 		if (cooldown.contains(sender)) {
-			sender.sendMessage("§4§lHelp§8§l-§4§lOp §8» §7Do not spam helpops.");
+			sender.sendMessage(PREFIX + "Do not spam helpops.");
 			return true;
 		}
 		
@@ -53,7 +55,7 @@ public class HelpopCommand implements CommandExecutor {
 			online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 		}
 		
-		Bukkit.getLogger().info("§4§lHelp§8§l-§4§lOp §8» §7" + sender.getName() + "§7: §6" + msg);
+		Bukkit.getLogger().info("§4Help§8-§4Op §8» §7" + sender.getName() + "§7: §6" + msg);
 		cooldown.add(sender);
 		
 		sender.sendMessage("§4§lHelp§8§l-§4§lOp §8» §7Helpop sent, please don't spam this.");
