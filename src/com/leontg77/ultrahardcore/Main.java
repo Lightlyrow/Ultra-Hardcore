@@ -66,7 +66,6 @@ import com.leontg77.ultrahardcore.commands.basic.TextCommand;
 import com.leontg77.ultrahardcore.commands.basic.TimeLeftCommand;
 import com.leontg77.ultrahardcore.commands.game.BoardCommand;
 import com.leontg77.ultrahardcore.commands.game.ChatCommand;
-import com.leontg77.ultrahardcore.commands.game.ConfigCommand;
 import com.leontg77.ultrahardcore.commands.game.EndCommand;
 import com.leontg77.ultrahardcore.commands.game.HelpopCommand;
 import com.leontg77.ultrahardcore.commands.game.MatchpostCommand;
@@ -78,7 +77,6 @@ import com.leontg77.ultrahardcore.commands.game.VoteCommand;
 import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
-import com.leontg77.ultrahardcore.inventory.listener.HOFListener;
 import com.leontg77.ultrahardcore.inventory.listener.InvseeListener;
 import com.leontg77.ultrahardcore.inventory.listener.SelectorListener;
 import com.leontg77.ultrahardcore.listeners.BlockListener;
@@ -170,8 +168,7 @@ public class Main extends JavaPlugin {
 		
 		FileUtils.updateUserFiles();
 		
-		InvGUI.getGameInfo().updateStaff();
-		InvGUI.getGameInfo().update();
+		InvGUI.getInstance().setup();
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Game game = Game.getInstance();
@@ -204,14 +201,9 @@ public class Main extends JavaPlugin {
 
 		// register all inventory listeners.
 		manager.registerEvents(new ConfigListener(), this);
-		manager.registerEvents(new HOFListener(), this);
 		manager.registerEvents(new InvseeListener(), this);
 		manager.registerEvents(new SelectorListener(), this);
 		manager.registerEvents(new SpectatorListener(), this);
-		
-		manager.registerEvents(InvGUI.getGameInfo(), this);
-		manager.registerEvents(InvGUI.getTopStats(), this);
-		manager.registerEvents(InvGUI.getStats(), this);
 
 		// register all commands.
 		new CommandHandler().registerCommands();
@@ -223,7 +215,6 @@ public class Main extends JavaPlugin {
 		getCommand("broadcast").setExecutor(new BroadcastCommand());
 		getCommand("butcher").setExecutor(new ButcherCommand());
 		getCommand("chat").setExecutor(new ChatCommand());
-		getCommand("config").setExecutor(new ConfigCommand());
 		getCommand("edit").setExecutor(new EditCommand());
 		getCommand("end").setExecutor(new EndCommand());
 		getCommand("fire").setExecutor(new FireCommand());
@@ -344,8 +335,6 @@ public class Main extends JavaPlugin {
 						world.setDifficulty(Difficulty.HARD);
 					}
 				}
-				
-				InvGUI.getGameInfo().updateTimer();
 			}
 		}.runTaskTimer(this, 1, 1);
 	}
@@ -371,6 +360,11 @@ public class Main extends JavaPlugin {
 		Settings settings = Settings.getInstance();
 		
 		World world = Bukkit.getWorld(settings.getData().getString("spawn.world", "lobby"));
+		
+		if (world == null) {
+			world = Bukkit.getWorlds().get(0);
+		}
+		
 		double x = settings.getData().getDouble("spawn.x", 0.5);
 		double y = settings.getData().getDouble("spawn.y", 33.0);
 		double z = settings.getData().getDouble("spawn.z", 0.5);
