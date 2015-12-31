@@ -6,13 +6,15 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
+import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.utils.GameUtils;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Hall of fame command class.
@@ -27,20 +29,18 @@ public class HOFCommand extends UHCCommand {
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
-		String host = GameUtils.getHostName(Game.getInstance().getHost());
-		
+		String host = GameUtils.getHostName(game.getHost());
 		Settings settings = Settings.getInstance();
-		InvGUI inv = InvGUI.getInstance();
 		
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("global")) {
-				int i = 0;
+				int matchCount = 0;
 				
-				for (String path : settings.getHOF().getKeys(false)) {
-					i = i + settings.getHOF().getConfigurationSection(path).getKeys(false).size();
+				for (String hostName : settings.getHOF().getKeys(false)) {
+					matchCount += settings.getHOF().getConfigurationSection(hostName + ".games").getKeys(false).size();
 				}
 				
-				sender.sendMessage(Main.PREFIX + "There's been a total of §a" + i + " §7games hosted here.");
+				sender.sendMessage(Main.PREFIX + "There's been a total of §a" + matchCount + " §7games hosted here.");
 				return true;
 			}
 			
@@ -57,37 +57,30 @@ public class HOFCommand extends UHCCommand {
 			throw new CommandException("'" + host + "' has never hosted any games here.");
 		}
 		
+		InvGUI inv = InvGUI.getInstance();
 		inv.openHOF(player, host);
 		return true;
 	}
 	
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		if (!(sender instanceof Player)) {
-			return null;
-		}
-		
-    	ArrayList<String> toReturn = new ArrayList<String>();
+		List<String> toReturn = new ArrayList<String>();
 		Settings settings = Settings.getInstance();
     	
 		if (args.length == 1) {
-        	if (args[0].equals("")) {
-        		for (String type : settings.getHOF().getKeys(false)) {
-    				toReturn.add(type);
-        		}
-        		
-				toReturn.add("global");
-        	} else {
-        		for (String type : settings.getHOF().getKeys(false)) {
-        			if (type.toLowerCase().startsWith(args[0].toLowerCase())) {
-        				toReturn.add(type);
-        			}
-        		}
-        		
-    			if ("global".startsWith(args[0].toLowerCase())) {
-    				toReturn.add("global");
+    		for (Player online : PlayerUtils.getPlayers()) {
+    			Rank rank = User.get(online).getRank();
+    			
+    			if (rank.getLevel() > 4) {
+    				toReturn.add(online.getName());
     			}
-        	}
+    		}
+    		
+    		for (String host : settings.getHOF().getKeys(false)) {
+				toReturn.add(host);
+    		}
+    		
+			toReturn.add("global");
         }
 		
     	return toReturn;
