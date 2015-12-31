@@ -76,7 +76,7 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			return;
 		}
 		
-		teams.leaveTeam(player);
+		teams.leaveTeam(player, false);
 		
 		for (String entry : team.getEntries()) {
 			types.remove(entry);
