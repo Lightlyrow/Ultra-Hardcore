@@ -173,7 +173,7 @@ public class TeamManager {
 	 * 
 	 * @param player the player thats leaving the team.
 	 */
-	public void leaveTeam(final OfflinePlayer player) {
+	public void leaveTeam(final OfflinePlayer player, final boolean unsave) {
 		// wait a tick, incase they got removed after death but other events with higher priority wants to use the team.
 		new BukkitRunnable() {
 			public void run() {
@@ -185,11 +185,19 @@ public class TeamManager {
 				
 				team.removePlayer(player);
 				
+				if (!unsave) {
+					return;
+				}
+				
 				if (!savedTeams.containsKey(team.getName())) {
 					Set<String> players = new HashSet<String>(team.getEntries());
 					savedTeams.put(team.getName(), players);
 				} else {
 					savedTeams.get(team.getName()).remove(player.getName());
+					
+					if (savedTeams.get(team.getName()).isEmpty()) {
+						savedTeams.remove(team.getName());
+					}
 				}
 			}
 		}.runTaskLater(Main.plugin, 1);
