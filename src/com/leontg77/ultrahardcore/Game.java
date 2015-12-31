@@ -356,7 +356,9 @@ public class Game {
 	 * 
 	 * @param appleRate The apple rate.
 	 */
-	public void setAppleRates(int appleRate) {
+	public void setAppleRates(double appleRate) {
+		appleRate /= 100;
+		
 		settings.getConfig().set("rates.apple.rate", appleRate);
 		settings.saveConfig();
 		
@@ -368,8 +370,8 @@ public class Game {
 	 * 
 	 * @return The apple rates.
 	 */
-	public int getAppleRates() {
-		return settings.getConfig().getInt("rates.apple.rate", 1);
+	public double getAppleRates() {
+		return settings.getConfig().getDouble("rates.apple.rate", 0.0055);
 	}
 	
 	/**
@@ -377,7 +379,9 @@ public class Game {
 	 * 
 	 * @param flintRate The flint rate.
 	 */
-	public void setFlintRates(int flintRate) {
+	public void setFlintRates(double flintRate) {
+		flintRate /= 100;
+		
 		settings.getConfig().set("rates.flint.rate", flintRate);
 		settings.saveConfig();
 		
@@ -389,8 +393,8 @@ public class Game {
 	 * 
 	 * @return The flint rates.
 	 */
-	public int getFlintRates() {
-		return settings.getConfig().getInt("rates.flint.rate", 35);
+	public double getFlintRates() {
+		return settings.getConfig().getDouble("rates.flint.rate", 0.1);
 	}
 
 	/**
@@ -419,7 +423,9 @@ public class Game {
 	 * 
 	 * @param shearRate The shears rate.
 	 */
-	public void setShearRates(int shearRate) {
+	public void setShearRates(double shearRate) {
+		shearRate /= 100;
+		
 		settings.getConfig().set("rates.shears.rate", shearRate);
 		settings.saveConfig();
 	}
@@ -429,12 +435,12 @@ public class Game {
 	 * 
 	 * @return The shear rates, 0 if shears are disabled.
 	 */
-	public int getShearRates() {
+	public double getShearRates() {
 		if (!shears()) {
 			return 0;
 		}
 		
-		return settings.getConfig().getInt("rates.shears.rate", 5);
+		return settings.getConfig().getDouble("rates.shears.rate", 0.5);
 	}
 	
 	// ############################ FEATURES ############################
@@ -501,11 +507,13 @@ public class Game {
 	}
 	
 	public int goldenHeadsHeal() {
-		return settings.getConfig().getInt("feature.goldenheads.heal", 4);
+		return settings.getConfig().getInt("feature.goldenheads.heal", 8);
 	}
 	
-	public void setGoldenHeadsHeal(int heal) {
-		settings.getConfig().set("feature.goldenheads.heal", heal);
+	public void setGoldenHeadsHeal(double headheals) {
+		headheals *= 2;
+		
+		settings.getConfig().set("feature.goldenheads.heal", (int) headheals);
 		settings.saveConfig();
 		
 		InvGUI.getGameInfo().update();
@@ -706,13 +714,13 @@ public class Game {
 		return settings.getConfig().getBoolean("feature.hardcoreHearts.enabled", true);
 	}
 
-	public void setOldTerrain(boolean enable) {
-		settings.getConfig().set("feature.oldTerrain.enabled", enable);
+	public void setNewStone(boolean enable) {
+		settings.getConfig().set("feature.newStone.enabled", enable);
 		settings.saveConfig();
 	}
 
-	public boolean oldTerrain() {
-		return settings.getConfig().getBoolean("feature.oldTerrain.enabled", true);
+	public boolean newStone() {
+		return settings.getConfig().getBoolean("feature.newStone.enabled", true);
 	}
 
 	public void setBookshelves(boolean enable) {
