@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +14,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -28,7 +27,6 @@ import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * The inventory managing class.
@@ -38,7 +36,6 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class InvGUI {
-	private Settings settings = Settings.getInstance();
 	private static InvGUI manager = new InvGUI();
 	
 	public HashMap<Player, HashMap<Integer, Inventory>> pagesForPlayer = new HashMap<Player, HashMap<Integer, Inventory>>();
@@ -47,8 +44,9 @@ public class InvGUI {
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
 
 	private static TopStats topStats = new TopStats();
-	private static Stats stats = new Stats();
 	private static GameInfo gameInfo = new GameInfo();
+	private static HallOfFame hof = new HallOfFame();
+	private static Stats stats = new Stats();
 	
 	/**
 	 * Gets the instance of this class
@@ -63,13 +61,42 @@ public class InvGUI {
 		return gameInfo;
 	}
 	
-	public static TopStats getTopStats() {
+	protected static TopStats getTopStats() {
 		return topStats;
 	}
 	
-	public static Stats getStats() {
+	protected static Stats getStats() {
 		return stats;
-	}/**
+	}
+	
+	protected static HallOfFame getHOF() {
+		return hof;
+	}
+	
+	public void setup() {
+		PluginManager manager = Bukkit.getPluginManager();
+		Settings settings = Settings.getInstance();
+		
+		manager.registerEvents(gameInfo, Main.plugin);
+		manager.registerEvents(topStats, Main.plugin);
+		manager.registerEvents(stats, Main.plugin);
+		manager.registerEvents(hof, Main.plugin);
+		
+		gameInfo.updateStaff();
+		gameInfo.update();
+		
+		for (String host : settings.getHOF().getKeys(false)) {
+			getHOF().update(host);
+		}
+		
+		new BukkitRunnable() {
+			public void run() {
+				gameInfo.updateTimer();
+			}
+		}.runTaskTimer(Main.plugin, 1, 1);
+	}
+	
+	/**
 	 * Opens an inventory of all the online players that is playing.
 	 * 
 	 * @param player the player opening for.
@@ -211,130 +238,43 @@ public class InvGUI {
 	}
 	
 	/**
-	 * Opens an inventory the given hosts hall of fame.
+	 * Opens an inventory of the given hosts hall of fame.
 	 * 
 	 * @param player the player opening for.
 	 * @param host The owner of the hall of fame.
 	 * @return The opened inventory.
 	 */
 	public Inventory openHOF(Player player, String host) {
-		Set<String> keys = settings.getHOF().getConfigurationSection(host + ".games").getKeys(false);
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		HallOfFame hof = getHOF();
+		Inventory inv = hof.get(host);
 		
-		ArrayList<String> list = new ArrayList<String>(keys);
-		Inventory inv = null;
+		hof.currentHost.put(player.getName(), host);
+		hof.currentPage.put(player.getName(), 1);
 		
-		int pages = ((list.size() / 28) + 1);
+		player.openInventory(inv);
+		return inv;
+	}
+	
+	/**
+	 * Opens stats inventory of the given user.
+	 * 
+	 * @param target The owner of the stats.
+	 * @return The opened inventory.
+	 */
+	public Inventory openStats(Player player, User target) {
+		Inventory inv = stats.get(target);
 		
-		pagesForPlayer.put(player, new HashMap<Integer, Inventory>());
-		
-		for (int current = 1; current <= pages; current++) {
-			inv = Bukkit.createInventory(null, 54, "» §7" + host + "'s HoF, Page " + current);
-			
-			for (int i = 0; i < 35; i++) {
-				if (list.size() < 1) {
-					continue;
-				}
-				
-				if (noItem(i)) {
-					continue;
-				}
-				
-				String target = list.remove(0);
-				boolean isSpecial = target.endsWith("50") || target.endsWith("00") || target.endsWith("25") || target.endsWith("75");
-				
-				ItemStack item = new ItemStack (Material.GOLDEN_APPLE, 1, isSpecial ? (short) 1 : (short) 0);
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("§8» §6" + host + "'s #" + target + " §8«");
-				
-				ArrayList<String> lore = new ArrayList<String>();
-				lore.add("§7" + settings.getHOF().getString(host + ".games." + target + ".date", "N/A"));
-				lore.add(" ");
-				lore.add("§8» §cWinners:");
-				
-				for (String winners : settings.getHOF().getStringList(host + ".games." + target + ".winners")) {
-					lore.add("§8» §7" + winners);
-				}
-				
-				lore.add(" ");
-				lore.add("§8» §cKills:");
-				lore.add("§8» §7" + settings.getHOF().getString(host + ".games." + target + ".kills", "-1"));
-				
-				if (!settings.getHOF().getString(host + ".games." + target + ".teamsize", "FFA").isEmpty()) {
-					lore.add(" ");
-					lore.add("§8» §cTeamsize:");
-					
-					String teamsize = settings.getHOF().getString(host + ".games." + target + ".teamsize", "FFA");
-					
-					if (teamsize.startsWith("cTo")) {
-						teamsize = "Chosen To" + teamsize.substring(3);
-					}
-					
-					if (teamsize.startsWith("rTo")) {
-						teamsize = "Random To" + teamsize.substring(3);
-					}
-					
-					lore.add("§8» §7" + teamsize);
-				}
-				
-				lore.add(" ");
-				lore.add("§8» §cScenario:");
-				
-				for (String scenario : settings.getHOF().getString(host + ".games." + target + ".scenarios", "Vanilla+").split(", ")) {
-					lore.add("§8» §7" + scenario);
-				}
-				
-				lore.add(" ");
-				meta.setLore(lore);
-				item.setItemMeta(meta);
-				inv.setItem(i, item);
-			}
-			
-			ItemStack nextpage = new ItemStack (Material.ARROW);
-			ItemMeta pagemeta = nextpage.getItemMeta();
-			pagemeta.setDisplayName(ChatColor.GREEN + "Next page");
-			pagemeta.setLore(Arrays.asList("§7Switch to the next page."));
-			nextpage.setItemMeta(pagemeta);
-			
-			ItemStack prevpage = new ItemStack (Material.ARROW);
-			ItemMeta prevmeta = prevpage.getItemMeta();
-			prevmeta.setDisplayName(ChatColor.GREEN + "Previous page");
-			prevmeta.setLore(Arrays.asList("§7Switch to the previous page."));
-			prevpage.setItemMeta(prevmeta);
-			
-			String name = settings.getHOF().getString(host + ".name");
-			
-			ItemStack head = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
-			SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-			headMeta.setDisplayName("§8» §6Host Info §8«");
-			headMeta.setOwner(name);
-			
-			ArrayList<String> headLore = new ArrayList<String>();
-			headLore.add(" ");
-			headLore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host + ".games").getKeys(false).size());
-			headLore.add("§8» §7Rank: §6" + NameUtils.capitalizeString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
-			headLore.add(" ");
-			headLore.add("§8» §7Host name: §6" + host);
-			headLore.add("§8» §7IGN: §6" + name);
-			headLore.add(" ");
-			headMeta.setLore(headLore);
-			head.setItemMeta(headMeta);
-			
-			inv.setItem(49, head);
-			
-			if (current != 1) {
-				inv.setItem(47, prevpage);
-			}
-			
-			if (current != pages) {
-				inv.setItem(51, nextpage);
-			}
-			
-			pagesForPlayer.get(player).put(current, inv);
-		}
-		
-		inv = pagesForPlayer.get(player).get(1);
-		currentPage.put(player, 1);
+		player.openInventory(inv);
+		return inv;
+	}
+	
+	/**
+	 * Opens top tats inventory.
+	 * 
+	 * @return The opened inventory.
+	 */
+	public Inventory openTopStats(Player player) {
+		Inventory inv = topStats.get();
 		
 		player.openInventory(inv);
 		return inv;
@@ -459,9 +399,9 @@ public class InvGUI {
 		shears.setItemMeta(shearsMeta);
 		inv.setItem(45, shears);
 		
-		ItemStack terrain = new ItemStack (Material.GRASS);
+		ItemStack terrain = new ItemStack (Material.STONE, 1, (short) 1);
 		ItemMeta terrainMeta = terrain.getItemMeta();
-		terrainMeta.setDisplayName((game.oldTerrain() ? "§a" : "§c") + "Old Terrain");
+		terrainMeta.setDisplayName((game.newStone() ? "§a" : "§c") + "1.8 Stone");
 		terrain.setItemMeta(terrainMeta);
 		inv.setItem(46, terrain);
 		
@@ -523,7 +463,7 @@ public class InvGUI {
 	 * @param slot The slot.
 	 * @return True if it shouldn't, false otherwise.
 	 */
-	private boolean noItem(int slot) {
+	protected boolean noItem(int slot) {
 		switch (slot) {
 		case 0:
 		case 8:
