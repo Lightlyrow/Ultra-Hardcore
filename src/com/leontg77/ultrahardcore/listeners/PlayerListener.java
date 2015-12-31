@@ -290,7 +290,7 @@ public class PlayerListener implements Listener {
 			}
 			
 			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 25 * (game.goldenHeadsHeal() * 2), 1));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (25 * game.goldenHeadsHeal()), 1));
 				user.increaseStat(Stat.GOLDENHEADSEATEN);
 			} else {
 				user.increaseStat(Stat.GOLDENAPPLESEATEN);
@@ -298,7 +298,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (item.getType() == Material.POTION) {
+		if (item.getType() == Material.POTION && item.getDurability() != 0) {
 			user.increaseStat(Stat.POTIONS);
 		}
 	}
