@@ -191,7 +191,7 @@ public class TeamCommand extends UHCCommand {
 					throw new CommandException("'" + target.getName() + "' is not on your team.");
 				}
 				
-				teams.leaveTeam(target);
+				teams.leaveTeam(target, true);
 				target.sendMessage(Main.PREFIX + "You got kicked out of your team.");
 				teams.sendMessage(team, Main.PREFIX + ChatColor.GREEN + target.getName() + " §7was kicked from your team.");
 				return true;
@@ -280,7 +280,7 @@ public class TeamCommand extends UHCCommand {
 				}
 				
 				sender.sendMessage(Main.PREFIX + ChatColor.GREEN + offline.getName() + " §7was removed from his team.");
-				teams.leaveTeam(offline);
+				teams.leaveTeam(offline, true);
 				return true;
 			}
 			
@@ -296,7 +296,7 @@ public class TeamCommand extends UHCCommand {
 				}
 				
 				for (OfflinePlayer player : teams.getPlayers(team)) {
-					teams.leaveTeam(player);
+					teams.leaveTeam(player, true);
 				}
 				
 				sender.sendMessage(Main.PREFIX + "Team §a" + team.getName() + " §7has been deleted.");
@@ -386,7 +386,7 @@ public class TeamCommand extends UHCCommand {
 			}
 
 			sender.sendMessage(Main.PREFIX + "You left your team.");
-			teams.leaveTeam(player);
+			teams.leaveTeam(player, true);
 			
 			teams.sendMessage(team, Main.PREFIX + player.getName() + " left your team.");
 			return true;
@@ -460,7 +460,7 @@ public class TeamCommand extends UHCCommand {
 			
 			for (Team team : manager.board.getTeams()) {
 				for (OfflinePlayer player : teams.getPlayers(team)) {
-					teams.leaveTeam(player);
+					teams.leaveTeam(player, true);
 				}
 			}
 			

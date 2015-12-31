@@ -43,7 +43,7 @@ public class PacketUtils {
 	      	+ "§7Follow us for games and updates!\n'}"
 	    );
 
-		String gamemode = GameUtils.getTeamSize(false) + "§8- §7" + game.getScenarios().replaceAll(",", "§8,§7");
+		String gamemode = GameUtils.getTeamSize(false, true).replaceAll("-", "§8-§7") + game.getScenarios().replaceAll(",", "§8,§7");
 		String host = game.getHost();
 		String teamsize = game.getTeamSize().toLowerCase();
 	        

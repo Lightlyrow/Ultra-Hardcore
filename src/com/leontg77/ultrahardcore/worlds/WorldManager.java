@@ -77,7 +77,7 @@ public class WorldManager {
 		creator.type(type);
 		creator.seed(seed);
 		
-		if (Game.getInstance().oldTerrain()) {
+		if (!Game.getInstance().newStone()) {
 			creator.generatorSettings("{\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
 		}
 		
@@ -117,7 +117,8 @@ public class WorldManager {
 			player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
 		}
 		
-		Bukkit.getServer().unloadWorld(world, true);
+		Bukkit.unloadWorld(world, true);
+		
 		settings.getWorlds().set("worlds." + world.getName(), null);
 		settings.saveWorlds();
 		
@@ -144,7 +145,7 @@ public class WorldManager {
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		
-		if (Game.getInstance().oldTerrain()) {
+		if (!Game.getInstance().newStone()) {
 			creator.generatorSettings("{\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
 		}
 		

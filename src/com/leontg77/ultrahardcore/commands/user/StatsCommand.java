@@ -49,8 +49,10 @@ public class StatsCommand extends UHCCommand {
 			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
+		InvGUI gui = InvGUI.getInstance();
 		User user = User.get(target);
-		player.openInventory(InvGUI.getStats().get(user));
+		
+		gui.openStats(player, user);
 		return true;
 	}
 

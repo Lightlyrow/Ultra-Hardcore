@@ -161,15 +161,15 @@ public class LoginListener implements Listener {
 		if (!game.isRecordedRound()) {
 			player.sendMessage("§8» §m----------§8[ §4§lArctic UHC §8]§m----------§8 «");
 			
-			if (GameUtils.getTeamSize().startsWith("No")) {
-				player.sendMessage("§8» §c No games running");
+			if (GameUtils.getTeamSize(false, false).startsWith("No")) {
+				player.sendMessage("§8» §c There are no games running currently.");
 			} 
-			else if (GameUtils.getTeamSize().startsWith("Open")) {
+			else if (GameUtils.getTeamSize(false, false).startsWith("Open")) {
 				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
 			} 
 			else {
 				player.sendMessage("§8» §7 Host: §a" + game.getHost());
-				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize() + game.getScenarios());
+				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize(false, true) + game.getScenarios());
 			}
 			
 			player.sendMessage("§8» §m---------------------------------§8 «");
@@ -265,7 +265,7 @@ public class LoginListener implements Listener {
 				return;
 			}
 			
-			String teamSize = GameUtils.getTeamSize();
+			String teamSize = GameUtils.getTeamSize(false, false);
 			
 			if (teamSize.startsWith("No") || game.isRecordedRound() || game.isPrivateGame()) {
 				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");

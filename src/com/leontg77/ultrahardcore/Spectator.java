@@ -231,7 +231,7 @@ public class Spectator {
 		
 		// if the game isn't an recorded round, leave their team.
 		if (!game.isRecordedRound()) {
-			teams.leaveTeam(player);
+			teams.leaveTeam(player, false);
 		}
 
 		// remove them them as a spectator and disable spec info and commandspy.
@@ -637,15 +637,15 @@ public class Spectator {
 
 			new BukkitRunnable() {
 				public void run() {
-					String name = NameUtils.capitalizeString(cause.name().replace("_TICK", ""), true);
+					String name = NameUtils.capitalizeString(cause.name().replace("_TICK", "").replace("BLOCK_E", "E"), true);
 					double damage = olddamage - player.getHealth();
 					
 					if (damage <= 0) {
 						return;
 					}
 					
-					String health = NumberUtils.convertDouble((player.getHealth() / 2));
-					String taken = NumberUtils.convertDouble((damage / 2));
+					String health = NumberUtils.makePercent(player.getHealth()).substring(2) + "%";
+					String taken = NumberUtils.makePercent(damage).substring(2) + "%";
 					
 					broadcast("§5PvE§f:§c" + player.getName() + "§f<-§d" + name + " §f[§c" + health + "§f] [§6" + taken + "§f]");
 				}
@@ -660,8 +660,8 @@ public class Spectator {
 					double damage = olddamage - player.getHealth();
 					Entity damager = event.getDamager();
 
-					String pHealth = NumberUtils.convertDouble((player.getHealth() / 2));
-					String taken = NumberUtils.convertDouble((damage / 2));
+					String pHealth = NumberUtils.makePercent(player.getHealth()).substring(2) + "%";
+					String taken = NumberUtils.makePercent(damage).substring(2) + "%";
 					
 					if (damager instanceof Player) {
 						Player killer = (Player) damager;
@@ -670,7 +670,7 @@ public class Spectator {
 							return;
 						}
 						
-						String kHealth = NumberUtils.convertDouble((killer.getHealth() / 2));
+						String kHealth = NumberUtils.makePercent(killer.getHealth()).substring(2) + "%";
 						
 						broadcast("§4PvP§f:§a" + killer.getName() + "§f-M>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");
 						return;
@@ -683,7 +683,7 @@ public class Spectator {
 						if (source instanceof Player) {
 							Player shooter = (Player) source;
 
-							String kHealth = NumberUtils.convertDouble((shooter.getHealth() / 2));
+							String kHealth = NumberUtils.makePercent(shooter.getHealth()).substring(2) + "%";
 							
 							if (proj instanceof Arrow) {
 								broadcast("§4PvP§f:§a" + shooter.getName() + "§f-B>§c" + player.getName() + " §f[§a" + kHealth + "§f:§c" + pHealth + "§f] [§6" + taken + "§f]");

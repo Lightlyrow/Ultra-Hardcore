@@ -33,9 +33,11 @@ public class TopCommand extends UHCCommand {
 		if (game.isRecordedRound()) {
 			throw new CommandException("Stats are disabled in Recorded Rounds.");
 		}
-		
+
+		InvGUI gui = InvGUI.getInstance();
 		Player player = (Player) sender;
-		player.openInventory(InvGUI.getTopStats().get());
+		
+		gui.openTopStats(player);
 		return true;
 	}
 

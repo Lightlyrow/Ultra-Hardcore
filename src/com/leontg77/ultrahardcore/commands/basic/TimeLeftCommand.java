@@ -27,7 +27,7 @@ public class TimeLeftCommand implements CommandExecutor {
 				return true;
 			}
 			
-			if (GameUtils.getTeamSize().startsWith("No") || GameUtils.getTeamSize().startsWith("Open")) {
+			if (GameUtils.getTeamSize(false, false).startsWith("No") || GameUtils.getTeamSize(false, false).startsWith("Open")) {
 				sender.sendMessage(Main.PREFIX + "There are no matches running.");
 				return true;
 			}

@@ -100,7 +100,7 @@ public class GameUtils {
 		State current = State.getState();
 		Game game = Game.getInstance();
 
-		if (getTeamSize().startsWith("No") || game.isRecordedRound() || game.isPrivateGame()) {
+		if (getTeamSize(false, false).startsWith("No") || game.isRecordedRound() || game.isPrivateGame()) {
 			return "No games running";
 		}
 		
@@ -113,7 +113,7 @@ public class GameUtils {
 		case CLOSED:
 			return "Whitelist is on";
 		case OPEN:
-			if (getTeamSize().startsWith("Open")) {
+			if (getTeamSize(false, false).startsWith("Open")) {
 				return "Open " + Game.getInstance().getScenarios();
 			} 
 			
@@ -123,31 +123,34 @@ public class GameUtils {
 		}
 	}
 
-	public static String getTeamSize() {
-		return getTeamSize(false);
-	}
-
 	/**
 	 * Get the teamsize in a string format.
 	 * 
 	 * @param advancedFFA Wether to spell it as "FFA" or "Free for all"
+	 * @param seperate Wether to have the returned string end with - or not.
 	 * @return The string format.
 	 */
-	public static String getTeamSize(boolean advancedFFA) {
+	public static String getTeamSize(boolean advancedFFA, boolean seperate) {
 		Game game = Game.getInstance();
 		
+		String seperator = seperate ? " - " : " ";
+		
 		if (game.getTeamSize().startsWith("FFA")) {
-			return advancedFFA ? "Free for all " : "FFA ";
+			return (advancedFFA ? "Free for all" : "FFA") + seperator;
 		} 
 		
 		if (game.getTeamSize().startsWith("rTo")) {
-			return "Random " + game.getTeamSize().substring(1) + " ";
+			return "Random " + game.getTeamSize().substring(1) + seperator;
 		} 
 		
 		if (game.getTeamSize().startsWith("cTo")) {
-			return "Chosen " + game.getTeamSize().substring(1) + " ";
+			return "Chosen " + game.getTeamSize().substring(1) + seperator;
 		} 
 		
-		return game.getTeamSize();
+		if (game.getTeamSize().startsWith("No") || game.getTeamSize().startsWith("Open")) {
+			return game.getTeamSize() + " ";
+		}
+		
+		return game.getTeamSize() + seperator;
 	}
 }

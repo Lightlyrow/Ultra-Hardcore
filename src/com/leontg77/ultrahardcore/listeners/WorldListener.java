@@ -115,7 +115,7 @@ public class WorldListener implements Listener {
 		
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " clear");
 		
-		if (arena.reset) {
+		if (arena.isResetting) {
 			PlayerUtils.broadcast(Arena.PREFIX + "Arena reset complete.");
 			
 			if (arena.wasEnabled) {
@@ -123,7 +123,7 @@ public class WorldListener implements Listener {
 			}
 			
 			arena.wasEnabled = false;
-			arena.reset = false;
+			arena.isResetting = false;
 			return;
 		}
 
