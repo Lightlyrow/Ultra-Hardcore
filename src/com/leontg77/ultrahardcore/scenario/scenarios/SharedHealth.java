@@ -3,8 +3,8 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,6 +18,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 
 /**
@@ -26,11 +27,14 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author dans1988
  */
 public class SharedHealth extends Scenario implements Listener {
+	private TeamManager manager = TeamManager.getInstance();
+	
 	private Map<String, Double> damageBalance;
     private Map<String, Boolean> sharedDamage;
 	
 	public SharedHealth() {
 		super("SharedHealth", "All teammates share their health, does not apply for lava, fire or poison damage");
+		
 		damageBalance = new HashMap<String, Double>();
         sharedDamage = new HashMap<String, Boolean>();
 	}
@@ -42,25 +46,26 @@ public class SharedHealth extends Scenario implements Listener {
 	public void onEnable() {}
 
 	@EventHandler
-    public void onPlayerJoin(final PlayerJoinEvent event) {
+    public void on(PlayerJoinEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
         Player player = event.getPlayer();
-
         double balance = getPlayersDamageBalance(player.getName());
 
-        if (balance != 0.0D) {
-            double newHealth = (player.getHealth() + balance > 0.0D) ? player.getHealth() + balance : 0.0D;
-            
-            if (newHealth > player.getMaxHealth()) {
-                newHealth = player.getMaxHealth();
-            }
-            
-            player.setHealth(newHealth);
-            resetPlayersDamageBalance(player.getName());
+        if (balance == 0.0D) {
+        	return;
         }
+        
+        double newHealth = (player.getHealth() + balance > 0.0D) ? player.getHealth() + balance : 0.0D;
+        
+        if (newHealth > player.getMaxHealth()) {
+            newHealth = player.getMaxHealth();
+        }
+        
+        player.setHealth(newHealth);
+        resetPlayersDamageBalance(player.getName());
     }
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -80,7 +85,7 @@ public class SharedHealth extends Scenario implements Listener {
             return;
         }
 
-        final Team team = player.getScoreboard().getEntryTeam(player.getName());
+        final Team team = manager.getTeam(player);
 
         if (team == null || team.getSize() <= 1) {
             return;
@@ -90,27 +95,28 @@ public class SharedHealth extends Scenario implements Listener {
         double teamSize = team.getSize();
         double sharedDamage = damage / teamSize;
 
-        for (String teammate : team.getEntries()) {
-            final Player onlineTeammate = Bukkit.getServer().getPlayer(teammate);
+        for (OfflinePlayer teammate : manager.getPlayers(team)) {
+            if (!teammate.isOnline()) {
+                setPlayersDamageBalance(teammate.getName(), sharedDamage * -1.0D);
+                setSharedDamage(teammate.getName(), true);
+                continue;
+            }
+                
+            Player onlineTeammate = teammate.getPlayer();
+            
+            double currentHealth = onlineTeammate.getHealth();
+            double finalHealth = currentHealth - sharedDamage;
 
-            if (onlineTeammate != null) {
-                double currentHealth = onlineTeammate.getHealth();
-                double finalHealth = currentHealth - sharedDamage;
+            if (finalHealth < 0.0D) {
+                finalHealth = 0.0D;
+            }
 
-                if (finalHealth < 0.0D) {
-                    finalHealth = 0.0D;
-                }
+            final double finalHealthAsynch = finalHealth;
 
-                final double finalHealthAsynch = finalHealth;
-
-                if (!onlineTeammate.getUniqueId().equals(player.getUniqueId())) {
-                    setSharedDamage(onlineTeammate.getName(), true);
-                    onlineTeammate.damage(0.0D);
-                    onlineTeammate.setHealth(finalHealthAsynch);
-                }
-            } else {
-                setPlayersDamageBalance(teammate, sharedDamage * -1.0D);
-                setSharedDamage(teammate, true);
+            if (!onlineTeammate.getUniqueId().equals(player.getUniqueId())) {
+                setSharedDamage(onlineTeammate.getName(), true);
+                onlineTeammate.damage(0.0D);
+                onlineTeammate.setHealth(finalHealthAsynch);
             }
         }
 
@@ -121,18 +127,19 @@ public class SharedHealth extends Scenario implements Listener {
             finalHealth = 0;
         }
 
-        if (finalHealth > 0) {
-            final double finalHealthAsynch = finalHealth;
-            event.setDamage(0.0D);
-
-            new BukkitRunnable() {
-                public void run() {
-                    player.setHealth(finalHealthAsynch);
-                }
-            }.runTaskLater(Main.plugin, 1);
-        } else {
-            event.setDamage(event.getDamage() * 1000);
+        if (finalHealth == 0) {
+        	event.setDamage(event.getDamage() * 1000);
+        	return;
         }
+        
+        final double finalHealthAsynch = finalHealth;
+        event.setDamage(0.0D);
+
+        new BukkitRunnable() {
+            public void run() {
+                player.setHealth(finalHealthAsynch);
+            }
+        }.runTaskLater(Main.plugin, 1);
     }
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -145,34 +152,36 @@ public class SharedHealth extends Scenario implements Listener {
             return;
         }
         
-        Player p = (Player) event.getEntity();
-        Team team = p.getScoreboard().getEntryTeam(p.getName());
-        
-        if (team != null && team.getSize() > 1) {
-            double divider = team.getSize();
-            double amount = event.getAmount();
-            double gain = amount / divider;
+        Player player = (Player) event.getEntity();
+        Team team = manager.getTeam(player);
 
-            for (String offlinePlayer : team.getEntries()) {
-                Player teammate = Bukkit.getPlayer(offlinePlayer);
-
-                if (teammate != null) {
-                    double teammateHealth = teammate.getHealth();
-                    double finalHealth = teammateHealth + gain;
-                    
-                    if (finalHealth > teammate.getMaxHealth()) {
-                        finalHealth = teammate.getMaxHealth();
-                    }
-                    
-                    teammate.setHealth(finalHealth);
-                } else {
-                	setPlayersDamageBalance(offlinePlayer, gain);
-                }
-            }
-
-            event.setCancelled(true);
-
+        if (team == null || team.getSize() <= 1) {
+            return;
         }
+
+        double divider = team.getSize();
+        double amount = event.getAmount();
+        double gain = amount / divider;
+
+        for (OfflinePlayer offlinePlayer : manager.getPlayers(team)) {
+            Player teammate = offlinePlayer.getPlayer();
+
+            if (teammate == null) {
+            	setPlayersDamageBalance(offlinePlayer.getName(), gain);
+            	continue;
+            }
+        	
+            double teammateHealth = teammate.getHealth();
+            double finalHealth = teammateHealth + gain;
+            
+            if (finalHealth > teammate.getMaxHealth()) {
+                finalHealth = teammate.getMaxHealth();
+            }
+            
+            teammate.setHealth(finalHealth);
+        }
+
+        event.setCancelled(true);
     }
 	
 	@EventHandler
@@ -184,7 +193,7 @@ public class SharedHealth extends Scenario implements Listener {
         String playerName = event.getEntity().getName();
 
         Player player = event.getEntity();
-        Team team = player.getScoreboard().getEntryTeam(player.getName());
+        Team team = manager.getTeam(player);
         
         String playerDisplayName = event.getEntity().getName();
 
