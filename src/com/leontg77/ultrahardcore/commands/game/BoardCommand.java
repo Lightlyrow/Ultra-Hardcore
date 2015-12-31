@@ -57,10 +57,10 @@ public class BoardCommand implements CommandExecutor {
 			score.setScore("§8» §7/a ", 9);
 		}
 		
-		if (!GameUtils.getTeamSize().isEmpty()) {
+		if (!GameUtils.getTeamSize(false, false).isEmpty()) {
 			score.setScore("§b ", 8);
 			score.setScore("§8» §cTeamsize:", 7);
-			score.setScore("§8» §7" + GameUtils.getTeamSize(true), 6);
+			score.setScore("§8» §7" + GameUtils.getTeamSize(true, false), 6);
 		}
 		
 		score.setScore("§c ", 5);
