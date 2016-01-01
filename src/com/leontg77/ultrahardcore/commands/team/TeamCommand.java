@@ -388,7 +388,7 @@ public class TeamCommand extends UHCCommand {
 			sender.sendMessage(Main.PREFIX + "You left your team.");
 			teams.leaveTeam(player, true);
 			
-			teams.sendMessage(team, Main.PREFIX + player.getName() + " left your team.");
+			teams.sendMessage(team, Main.PREFIX + "§a" + player.getName() + "§7 left your team.");
 			return true;
 		}
 		
