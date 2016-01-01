@@ -2,11 +2,15 @@ package com.leontg77.ultrahardcore.listeners;
 
 import java.util.List;
 
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scoreboard.Team;
 
@@ -62,5 +66,25 @@ public class StatsListener implements Listener {
 			killUser.setStat(Stat.KILLSTREAK, board.getScore(killer.getName()));
 		}
 	}
-
+	
+	@EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+    	Player player = event.getPlayer();
+		User user = User.get(player);
+		
+		Block block = event.getBlock();
+    	
+		if (player.getGameMode() == GameMode.CREATIVE) {
+			return;
+		}
+		
+		if (block.getType() == Material.DIAMOND_ORE) {
+			user.increaseStat(Stat.DIAMONDS);
+			return;
+		}
+		
+		if (block.getType() == Material.GOLD_ORE) {
+			user.increaseStat(Stat.GOLD);
+		}
+    }
 }
