@@ -42,7 +42,7 @@ public class TpsCommand extends UHCCommand {
 		ChatColor color;
 		String status;
 		
-		if (((int) tps) == 20) {
+		if (tps == 20.0) {
             status = "Perfect";
             color = ChatColor.GREEN;
         } else if (tps >= 17 && tps <= 23) {
