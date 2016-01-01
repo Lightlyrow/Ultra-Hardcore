@@ -4,6 +4,7 @@ import static com.leontg77.ultrahardcore.Main.plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,6 +26,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.listeners.ArenaListener;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.ScatterManager;
@@ -55,7 +57,7 @@ public class Arena {
 	private List<Player> players = new ArrayList<Player>();
 	
 	// make a list of found seeds that are good for the arena.
-	/* CHRISTMAS SEED!!!! private List<Long> seeds = ImmutableList.of(-4978851967201209985l, -4967553104279076810l, -8429542510557232451l, -3176074841184868038l, -397143620226990283l, -6555102318239067639l, 6776651824076158879l);*/
+	private List<Long> seeds = ImmutableList.of(-4978851967201209985l, -4967553104279076810l, -8429542510557232451l, -3176074841184868038l, -397143620226990283l, -6555102318239067639l, 6776651824076158879l);
 
 	/**
 	 * Gets the instance of the class.
@@ -196,7 +198,7 @@ public class Arena {
 		World world = Bukkit.getServer().getWorld("arena");
 		
 		manager.deleteWorld(world);
-		manager.createWorld("arena", 200, /*seeds.get(new Random().nextInt(seeds.size()))*/ -4296693922760164262l, Environment.NORMAL, WorldType.NORMAL);
+		manager.createWorld("arena", 200, seeds.get(new Random().nextInt(seeds.size())), Environment.NORMAL, WorldType.NORMAL);
 		
 		PlayerUtils.broadcast(PREFIX + "World reset done, setting up world options...");
 
