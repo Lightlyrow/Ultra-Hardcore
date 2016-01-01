@@ -1,12 +1,14 @@
 package com.leontg77.ultrahardcore.commands.game;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.ultrahardcore.Arena;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -16,15 +18,14 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class BoardCommand implements CommandExecutor {	
+public class BoardCommand extends UHCCommand {	
+
+	public BoardCommand() {
+		super("board", "");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.board")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(CommandSender sender, String[] args) {
 		BoardManager score = BoardManager.getInstance();
 		Game game = Game.getInstance();
 		
@@ -56,12 +57,10 @@ public class BoardCommand implements CommandExecutor {
 			score.setScore("§8» §cArena:", 10);
 			score.setScore("§8» §7/a ", 9);
 		}
-		
-		if (!GameUtils.getTeamSize(false, false).isEmpty()) {
-			score.setScore("§b ", 8);
-			score.setScore("§8» §cTeamsize:", 7);
-			score.setScore("§8» §7" + GameUtils.getTeamSize(true, false), 6);
-		}
+
+		score.setScore("§b ", 8);
+		score.setScore("§8» §cTeamsize:", 7);
+		score.setScore("§8» §7" + GameUtils.getTeamSize(true, false), 6);
 		
 		score.setScore("§c ", 5);
 		score.setScore("§8» §cScenarios:", 4);
@@ -75,5 +74,10 @@ public class BoardCommand implements CommandExecutor {
 		score.setScore("§a§o@ArcticUHC", 1);
 		score.setScore("§a§o@ArcticUHC", 0);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return new ArrayList<String>();
 	}
 }
