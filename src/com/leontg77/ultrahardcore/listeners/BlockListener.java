@@ -16,8 +16,6 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.User;
-import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 
 /**
@@ -44,18 +42,6 @@ public class BlockListener implements Listener {
 			return;
 		}
 		
-		if (block.getType() == Material.DIAMOND_ORE) {
-			User user = User.get(player);
-			user.increaseStat(Stat.DIAMONDS);
-			return;
-		}
-		
-		if (block.getType() == Material.GOLD_ORE) {
-			User user = User.get(player);
-			user.increaseStat(Stat.GOLD);
-			return;
-		}
-		
 		if (block.getType() == Material.GLOWSTONE) {
 			if (game.tier2()) {
 				return;
@@ -75,7 +61,7 @@ public class BlockListener implements Listener {
 		if (block.getType() == Material.GRAVEL) {
 			BlockUtils.blockBreak(player, block);
             BlockUtils.degradeDurabiliy(player);
-            BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(rand.nextInt(99) < game.getFlintRates() ? Material.FLINT : Material.GRAVEL));
+            BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(rand.nextDouble() < game.getFlintRates() ? Material.FLINT : Material.GRAVEL));
 			
 			event.setCancelled(true);
             block.setType(Material.AIR);
@@ -95,7 +81,7 @@ public class BlockListener implements Listener {
 		block.setType(Material.AIR);
 		
 		if (block.getType() == Material.LEAVES) {
-			if (rand.nextInt(99) < 5) {
+			if (rand.nextDouble() < 0.05) {
 				BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), BlockUtils.getSaplingFor(Material.LEAVES, damage));
 			}
 			
@@ -106,7 +92,7 @@ public class BlockListener implements Listener {
 			ItemStack hand = player.getItemInHand();
 
 			if (game.shears() && hand != null && hand.getType() == Material.SHEARS) {
-				if (rand.nextInt(99) >= game.getShearRates()) {
+				if (rand.nextDouble() >= game.getShearRates()) {
 					return;
 				}
 
@@ -114,7 +100,7 @@ public class BlockListener implements Listener {
 				return;
 			} 
 			
-			if (rand.nextInt(99) >= game.getAppleRates()) {
+			if (rand.nextDouble() >= game.getAppleRates()) {
 				return;
 			}
 
@@ -123,7 +109,7 @@ public class BlockListener implements Listener {
 		}
 		
 		if (block.getType() == Material.LEAVES_2) {
-			if (rand.nextInt(99) < 5) {
+			if (rand.nextDouble() < 0.05) {
 				BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), BlockUtils.getSaplingFor(Material.LEAVES_2, damage));
 			}
 			
@@ -134,7 +120,7 @@ public class BlockListener implements Listener {
 			ItemStack hand = player.getItemInHand();
 			
 			if (game.shears() && hand != null && hand.getType() == Material.SHEARS) {
-				if (rand.nextInt(99) >= game.getShearRates()) {
+				if (rand.nextDouble() >= game.getShearRates()) {
 					return;
 				}
 
@@ -142,7 +128,7 @@ public class BlockListener implements Listener {
 				return;
 			} 
 				
-			if (rand.nextInt(99) >= game.getAppleRates()) {
+			if (rand.nextDouble() >= game.getAppleRates()) {
 				return;
 			}
 
