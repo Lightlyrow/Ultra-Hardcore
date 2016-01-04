@@ -302,12 +302,6 @@ public class InvGUI {
 		heads.setItemMeta(headsMeta);
 		inv.setItem(1, heads);
 		
-		ItemStack pearl = new ItemStack (Material.ENDER_PEARL);
-		ItemMeta peralMeta = pearl.getItemMeta();
-		peralMeta.setDisplayName((game.pearlDamage() ? "§a" : "§c") + "Pearl Damage");
-		pearl.setItemMeta(peralMeta);
-		inv.setItem(2, pearl);
-		
 		ItemStack notchApples = new ItemStack (Material.GOLDEN_APPLE, 1, (short) 1);
 		ItemMeta notchMeta = notchApples.getItemMeta();
 		notchMeta.setDisplayName((game.notchApples() ? "§a" : "§c") + "Notch Apples");
