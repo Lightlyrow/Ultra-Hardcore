@@ -12,7 +12,14 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.banning.MuteCommand;
+import com.leontg77.ultrahardcore.commands.game.BoardCommand;
+import com.leontg77.ultrahardcore.commands.game.ChatCommand;
 import com.leontg77.ultrahardcore.commands.game.ConfigCommand;
+import com.leontg77.ultrahardcore.commands.game.EndCommand;
+import com.leontg77.ultrahardcore.commands.game.HelpopCommand;
+import com.leontg77.ultrahardcore.commands.game.MatchpostCommand;
+import com.leontg77.ultrahardcore.commands.game.ScenarioCommand;
 import com.leontg77.ultrahardcore.commands.give.GiveCommand;
 import com.leontg77.ultrahardcore.commands.give.GiveallCommand;
 import com.leontg77.ultrahardcore.commands.inventory.HOFCommand;
@@ -63,8 +70,17 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	 * Register all the commands.
 	 */
 	public void registerCommands() {
+		// banning
+		cmds.add(new MuteCommand());
+		
 		// game
+		cmds.add(new BoardCommand());
+		cmds.add(new ChatCommand());
 		cmds.add(new ConfigCommand());
+		cmds.add(new EndCommand());
+		cmds.add(new HelpopCommand());
+		cmds.add(new MatchpostCommand());
+		cmds.add(new ScenarioCommand());
 		
 		// give
 		cmds.add(new GiveallCommand());
@@ -136,7 +152,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		UHCCommand command = getCommandExact(cmd.getName());
+		UHCCommand command = getCommand(cmd.getName());
 		
 		if (command == null) {
 			// this shouldn't happen, it only uses registered commands.
@@ -158,7 +174,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 			sender.sendMessage(ChatColor.RED + ex.getMessage());
 		} catch (Exception ex) {
 			// send them the error message in red if anything failed.
-			sender.sendMessage(ChatColor.RED + ex.getMessage());
+			sender.sendMessage(ChatColor.RED + ex.getClass().getName() + ": " + ex.getMessage());
 			ex.printStackTrace();
 		}
 		return true;
@@ -166,7 +182,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		UHCCommand command = getCommandExact(cmd.getName());
+		UHCCommand command = getCommand(cmd.getName());
 		
 		if (command == null) {
 			// this shouldn't happen, it only uses registered commands.
@@ -219,7 +235,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
      * @param name The name of the uhc command
      * @return The UHCCommand if found, null otherwise.
      */
-    protected UHCCommand getCommandExact(String name) {
+    protected UHCCommand getCommand(String name) {
         for (UHCCommand cmd : cmds) {
             if (cmd.getName().equalsIgnoreCase(name)) {
                 return cmd;

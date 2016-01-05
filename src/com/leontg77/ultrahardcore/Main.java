@@ -50,7 +50,6 @@ import com.leontg77.ultrahardcore.commands.arena.HotbarCommand;
 import com.leontg77.ultrahardcore.commands.banning.BanCommand;
 import com.leontg77.ultrahardcore.commands.banning.BanIPCommand;
 import com.leontg77.ultrahardcore.commands.banning.KickCommand;
-import com.leontg77.ultrahardcore.commands.banning.MuteCommand;
 import com.leontg77.ultrahardcore.commands.banning.TempbanCommand;
 import com.leontg77.ultrahardcore.commands.banning.UnbanCommand;
 import com.leontg77.ultrahardcore.commands.banning.UnbanIPCommand;
@@ -64,12 +63,6 @@ import com.leontg77.ultrahardcore.commands.basic.SkullCommand;
 import com.leontg77.ultrahardcore.commands.basic.StaffChatCommand;
 import com.leontg77.ultrahardcore.commands.basic.TextCommand;
 import com.leontg77.ultrahardcore.commands.basic.TimeLeftCommand;
-import com.leontg77.ultrahardcore.commands.game.BoardCommand;
-import com.leontg77.ultrahardcore.commands.game.ChatCommand;
-import com.leontg77.ultrahardcore.commands.game.EndCommand;
-import com.leontg77.ultrahardcore.commands.game.HelpopCommand;
-import com.leontg77.ultrahardcore.commands.game.MatchpostCommand;
-import com.leontg77.ultrahardcore.commands.game.ScenarioCommand;
 import com.leontg77.ultrahardcore.commands.game.SpreadCommand;
 import com.leontg77.ultrahardcore.commands.game.StartCommand;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
@@ -82,7 +75,6 @@ import com.leontg77.ultrahardcore.inventory.listener.SelectorListener;
 import com.leontg77.ultrahardcore.listeners.BlockListener;
 import com.leontg77.ultrahardcore.listeners.BuildProtectListener;
 import com.leontg77.ultrahardcore.listeners.ChatListener;
-import com.leontg77.ultrahardcore.listeners.ChristmasListener;
 import com.leontg77.ultrahardcore.listeners.DeathListener;
 import com.leontg77.ultrahardcore.listeners.EntityListener;
 import com.leontg77.ultrahardcore.listeners.InventoryListener;
@@ -186,7 +178,6 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new BlockListener(), this);
 		manager.registerEvents(new BuildProtectListener(), this);
 		manager.registerEvents(new ChatListener(), this);
-		manager.registerEvents(new ChristmasListener(), this);
 		manager.registerEvents(new DeathListener(), this);
 		manager.registerEvents(new EntityListener(), this);
 		manager.registerEvents(new InventoryListener(), this);
@@ -211,20 +202,13 @@ public class Main extends JavaPlugin {
 		getCommand("arena").setExecutor(new ArenaCommand());
 		getCommand("ban").setExecutor(new BanCommand());
 		getCommand("banip").setExecutor(new BanIPCommand());
-		getCommand("board").setExecutor(new BoardCommand());
 		getCommand("broadcast").setExecutor(new BroadcastCommand());
 		getCommand("butcher").setExecutor(new ButcherCommand());
-		getCommand("chat").setExecutor(new ChatCommand());
 		getCommand("edit").setExecutor(new EditCommand());
-		getCommand("end").setExecutor(new EndCommand());
 		getCommand("fire").setExecutor(new FireCommand());
-		getCommand("helpop").setExecutor(new HelpopCommand());
 		getCommand("hotbar").setExecutor(new HotbarCommand());
 		getCommand("kick").setExecutor(new KickCommand());
 		getCommand("list").setExecutor(new ListCommand());
-		getCommand("matchpost").setExecutor(new MatchpostCommand());
-		getCommand("mute").setExecutor(new MuteCommand());
-		getCommand("scenario").setExecutor(new ScenarioCommand());
 		getCommand("skull").setExecutor(new SkullCommand());
 		getCommand("setspawn").setExecutor(new SetspawnCommand());
 		getCommand("spread").setExecutor(new SpreadCommand());
@@ -285,7 +269,7 @@ public class Main extends JavaPlugin {
 					String percentString = NumberUtils.makePercent(online.getHealth());
 					Game game = Game.getInstance();
 					
-					if (game.tabShowsHealthColor()) {
+					if (game.tabShowsHealthColor() && !Spectator.getInstance().isSpectating(online)) {
 						String percentColor = percentString.substring(0, 2);
 					    
 					    online.setPlayerListName(percentColor + online.getName());
@@ -435,7 +419,6 @@ public class Main extends JavaPlugin {
 	 */
 	public void recoverData() {
 		Settings settings = Settings.getInstance();
-		
 		State state;
 		
 		try {
