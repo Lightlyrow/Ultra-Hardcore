@@ -84,25 +84,6 @@ public class ConfigListener implements Listener {
 			return;
 		}
 		
-		if (name.equalsIgnoreCase("Pearl Damage")) {
-			if (game.pearlDamage()) {
-				PlayerUtils.broadcast(Main.PREFIX + "Pearl Damage has been disabled.");
-				game.setPearlDamage(false);
-				
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("§c" + name);
-				item.setItemMeta(meta);
-			} else {
-				PlayerUtils.broadcast(Main.PREFIX + "Pearl Damage has been enabled.");
-				game.setPearlDamage(true);
-				
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("§a" + name);
-				item.setItemMeta(meta);
-			}
-			return;
-		}
-		
 		if (name.equalsIgnoreCase("Notch Apples")) {
 			if (game.notchApples()) {
 				PlayerUtils.broadcast(Main.PREFIX + "Notch Apples has been disabled.");
@@ -375,14 +356,14 @@ public class ConfigListener implements Listener {
 		
 		if (name.equalsIgnoreCase("1.8 Stone")) {
 			if (game.newStone()) {
-				PlayerUtils.broadcast(Main.PREFIX + "Caves will no longer have Granite, Diorite and Andesite.");
+				PlayerUtils.broadcast(Main.PREFIX + "The world will no longer have Granite, Diorite and Andesite.");
 				game.setNewStone(false);
 				
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName("§c" + name);
 				item.setItemMeta(meta);
 			} else {
-				PlayerUtils.broadcast(Main.PREFIX + "Caves will now have Granite, Diorite and Andesite.");
+				PlayerUtils.broadcast(Main.PREFIX + "The world will now have Granite, Diorite and Andesite.");
 				game.setNewStone(true);
 				
 				ItemMeta meta = item.getItemMeta();
