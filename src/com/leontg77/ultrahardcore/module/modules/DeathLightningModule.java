@@ -21,7 +21,7 @@ public class DeathLightningModule extends Module implements Listener {
 	    		continue;
 	    	}
 	    	
-	    	online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 2, 1);
+	    	online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 1000000000, 1);
 	    }
 	}
 }
