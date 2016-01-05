@@ -237,8 +237,8 @@ public class EntityListener implements Listener {
 			return;
 		}
 
-		if (game.pearlDamage()) {
-			event.setDamage(2);
+		if (game.pearlDamage() > 0.0) {
+			event.setDamage(game.pearlDamage() * 2);
 			return;
 		}
 		
