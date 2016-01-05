@@ -222,11 +222,13 @@ public class DateUtils {
  
         int diff = 0;
         long savedDate = fromDate.getTimeInMillis();
+        
         while ((future && !fromDate.after(toDate)) || (!future && !fromDate.before(toDate))) {
             savedDate = fromDate.getTimeInMillis();
             fromDate.add(type, future ? 1 : -1);
             diff++;
         }
+        
         diff--;
         fromDate.setTimeInMillis(savedDate);
         return diff;
