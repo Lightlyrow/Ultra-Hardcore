@@ -19,3 +19,4 @@ UHC Plugin designed for LeonTG77's UHC games
 15. Finish seperating listeners so they're easier to find
 16. General code improvement
 17. New way of limiting ores
+18. Add a point system that gives you points each time you kill someone, win a game and for good behaviour in chat (more things to be added)
