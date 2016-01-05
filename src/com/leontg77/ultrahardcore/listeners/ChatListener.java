@@ -51,7 +51,7 @@ public class ChatListener implements Listener {
 		event.setCancelled(true);
     	
     	if (game.isRecordedRound()) {
-    		PlayerUtils.broadcast("§7" + name + "§8 » §f" + message);
+    		PlayerUtils.broadcast("§f" + name + "§8 » " + color + message);
     		return;
     	}
 		
