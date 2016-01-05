@@ -4,15 +4,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -26,6 +24,8 @@ import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -40,38 +40,27 @@ import com.leontg77.ultrahardcore.worlds.WorldManager;
  * 
  * @author LeonTG77
  */
-public class EndCommand implements CommandExecutor {
+public class EndCommand extends UHCCommand {
+
+	public EndCommand() {
+		super("end", "<kills> <winners>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
-		if (!sender.hasPermission("uhc.end")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (args.length < 2) {
-			sender.sendMessage(Main.PREFIX + "Usage: /end <kills> <winners>");
-			return true;
+			return false;
 		}
 		
-		int kills;
-		
-		try {
-			kills = Integer.parseInt(args[0]);
-		} catch (Exception e) {
-			sender.sendMessage(ChatColor.RED + args[0] + " is not a vaild number.");
-			return true;
-		}
+		int kills = parseInt(args[0], "kill amount");
 
 		Spectator spec = Spectator.getInstance();
 		Game game = Game.getInstance();
 		
+		List<String> winners = new ArrayList<String>();
 		Settings settings = Settings.getInstance();
-		ArrayList<String> winners = new ArrayList<String>();
 		
-		PlayerUtils.broadcast(Main.PREFIX + "The game is now over!");
-		PlayerUtils.broadcast(" ");
-		PlayerUtils.broadcast(Main.PREFIX + "The winners are:");
+		PlayerUtils.broadcast(Main.PREFIX + "The game has ended and the winners are:");
 		
 		for (int i = 1; i < args.length; i++) {
 			OfflinePlayer winner = PlayerUtils.getOfflinePlayer(args[i]);
@@ -102,8 +91,8 @@ public class EndCommand implements CommandExecutor {
 		
 		int matchcount = 1;
 		
-		if (settings.getHOF().contains(host)) {
-			matchcount = settings.getHOF().getConfigurationSection(host).getKeys(false).size() + 1;
+		if (settings.getHOF().contains(host) && settings.getHOF().contains(host + ".games")) {
+			matchcount = settings.getHOF().getConfigurationSection(host + ".games").getKeys(false).size() + 1;
 		}
 
 		if (!game.isRecordedRound()) {
@@ -197,7 +186,7 @@ public class EndCommand implements CommandExecutor {
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Deleted used worlds.");
 			}
-		}.runTaskLater(Main.plugin, 500);
+		}.runTaskLater(Main.plugin, 300);
 
 		new BukkitRunnable() {
 			public void run() {
@@ -213,7 +202,7 @@ public class EndCommand implements CommandExecutor {
 				
 				Bukkit.shutdown();
 			}
-		}.runTaskLater(Main.plugin, 800);
+		}.runTaskLater(Main.plugin, 1200);
 		
 		if (Bukkit.getScheduler().isQueued(Timers.taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(Timers.taskMinutes)) {
 			Bukkit.getScheduler().cancelTask(Timers.taskMinutes);
@@ -223,5 +212,10 @@ public class EndCommand implements CommandExecutor {
 			Bukkit.getScheduler().cancelTask(Timers.taskSeconds);
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return new ArrayList<String>();
 	}
 }
