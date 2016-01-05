@@ -49,7 +49,7 @@ public class Announcer {
 		messages.add("The server runs off a custom UHC plugin by §6LeonTG77§7.");
 		messages.add("Wonder if you are lagging? Use §a/ms §7or §a/tps§7.");
 		messages.add("Follow our twitter for games and updates, §a@ArcticUHC§7!");
-		messages.add("You can apply for a rank at §6http://goo.gl/forms/O6tklNcrEu");
+		/*messages.add("You can apply for a rank at §6http://goo.gl/forms/O6tklNcrEu");*/
 		messages.add("You can view your stats by using §a/stats§7.");
 		messages.add("You can view the top stats with §a/top§7.");
 		messages.add("View the border size with §a/border§7.");
