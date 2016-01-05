@@ -22,6 +22,7 @@ import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.GameUtils;
+import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -40,7 +41,7 @@ public class ConfigCommand extends UHCCommand {
 	 * @author LeonTG77
 	 */
 	public enum ConfigValue {
-		APPLERATES, BORDERSHRINK, FLINTRATES, HEADSHEAL, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PVP, RRNAME, SCENARIOS, SHEARRATES, STATE, TEAMSIZE, WORLD;
+		APPLERATES, BORDERSHRINK, FLINTRATES, HEADSHEAL, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PEARLDAMAGE, PVP, RRNAME, SCENARIOS, SHEARRATES, STATE, TEAMSIZE, WORLD;
 	}
 
 	public ConfigCommand() {
@@ -102,7 +103,7 @@ public class ConfigCommand extends UHCCommand {
 				throw new CommandException("Apple rates cannot be higher than 100%");
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + appleRate + "%");
+			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + NumberUtils.convertDouble(appleRate) + "%");
 			game.setAppleRates(appleRate);
 			break;
 		case BORDERSHRINK:
@@ -119,6 +120,7 @@ public class ConfigCommand extends UHCCommand {
 			} else {
 				PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink " + border.getPreText() + border.name().toLowerCase());
 			}
+			
 			game.setBorderShrink(border);
 			break;
 		case STATE:
@@ -144,13 +146,13 @@ public class ConfigCommand extends UHCCommand {
 				throw new CommandException("Flint rates cannot be higher than 100%");
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Flint rates has been changed to §a" + flintRate + "%");
+			PlayerUtils.broadcast(Main.PREFIX + "Flint rates has been changed to §a" + NumberUtils.convertDouble(flintRate) + "%");
 			game.setFlintRates(flintRate);
 			break;
 		case HEADSHEAL:
 			double headheals = parseDouble(args[1], "heal amount");
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + headheals + "§7 hearts.");
+			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + NumberUtils.convertDouble(headheals) + "§7 hearts.");
 			game.setGoldenHeadsHeal(headheals);
 			break;
 		case HOST:
@@ -189,6 +191,17 @@ public class ConfigCommand extends UHCCommand {
 			PlayerUtils.broadcast(Main.PREFIX + "PvP will now be enabled §a" + pvp + " §7minutes in.");
 			game.setPvP(pvp);
 			break;
+		case PEARLDAMAGE:
+			double damage = parseDouble(args[1], "damage amount");
+
+			if (damage == 0.0) {
+				PlayerUtils.broadcast(Main.PREFIX + "Ender pearls will no longer deal damage.");
+			} else {
+				PlayerUtils.broadcast(Main.PREFIX + "Ender pearls will now deal §a" + NumberUtils.convertDouble(damage) + "§7 hearts.");
+			}
+			
+			game.setPearlDamage(damage);
+			break;
 		case RRNAME:
 			String rrname = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
 			
@@ -212,7 +225,7 @@ public class ConfigCommand extends UHCCommand {
 				throw new CommandException("Shear rates cannot be higher than 100%");
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Shear rates has been changed to §a" + shearRate + "%");
+			PlayerUtils.broadcast(Main.PREFIX + "Shear rates has been changed to §a" + NumberUtils.convertDouble(shearRate) + "%");
 			game.setShearRates(shearRate);
 			break;
 		case TEAMSIZE:
