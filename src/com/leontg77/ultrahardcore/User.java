@@ -213,6 +213,7 @@ public class User {
 		config.set("rank", rank.name());
 		saveFile();
 		
+		FileUtils.updateUserFiles();
 		InvGUI.getGameInfo().updateStaff();
 		
 		if (player != null) {
@@ -244,6 +245,10 @@ public class User {
 	 * @return The rank color.
 	 */
 	public String getRankColor() {
+		if (Game.getInstance().isRecordedRound()) {
+			return "§7";
+		}
+		
 		switch (getRank()) {
 		case DONATOR:
 			return "§a";
