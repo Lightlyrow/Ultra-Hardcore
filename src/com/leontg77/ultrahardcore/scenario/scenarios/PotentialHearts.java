@@ -4,8 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.events.GameStartEvent;
+import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -28,17 +27,12 @@ public class PotentialHearts extends Scenario implements Listener {
 	}
 
 	@Override
-	public void onEnable() {
+	public void onEnable() {}
+	
+	@EventHandler
+	public void on(FinalHealEvent event) {
 		for (Player online : PlayerUtils.getPlayers()) {
 			online.setMaxHealth(40);
 		}
-	}
-	
-	@EventHandler
-	public void on(GameStartEvent event) {
-		Game game = Game.getInstance();
-		
-		game.getWorld().setGameRuleValue("doDaylightCycle", "false");
-		game.getWorld().setTime(6000);
 	}
 }
