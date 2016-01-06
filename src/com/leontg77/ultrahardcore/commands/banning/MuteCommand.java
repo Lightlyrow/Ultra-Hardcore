@@ -1,17 +1,19 @@
 package com.leontg77.ultrahardcore.commands.banning;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.TimeZone;
+import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -20,30 +22,27 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class MuteCommand implements CommandExecutor {
+public class MuteCommand extends UHCCommand {
+
+	public MuteCommand() {
+		super("mute", "<player> [time] [reason]");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.mute")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
-			sender.sendMessage(Main.PREFIX + "Usage: /mute <player> [time] [reason]");
-			return true;
+			return false;
 		}
 
-		Player target = Bukkit.getServer().getPlayer(args[0]);
+		OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[0]);
+		Player player = target.getPlayer();
 		
-		if (target == null) {
-			sender.sendMessage(ChatColor.RED + "That player is not online.");
-			return true;
+		if (!User.fileExist(target.getUniqueId())) {
+			throw new CommandException("'" + args[0] + "' has never joined this server.");
 		}
     	
-    	if (target.hasPermission("uhc.staff") && !sender.hasPermission("uhc.mute.bypass")) {
-    		sender.sendMessage(Main.PREFIX + "You cannot mute this player.");
-    		return true;
+    	if (player != null && player.hasPermission("uhc.staff") && !sender.hasPermission("uhc.mute.bypass")) {
+    		throw new CommandException("You cannot mute this player.");
     	}
 		
 		User user = User.get(target);
@@ -54,34 +53,56 @@ public class MuteCommand implements CommandExecutor {
 	    		return true;
 	    	}
 	    	
+			PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been unmuted.");
 			user.unmute();
 			
-			PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been unmuted.");
-			target.sendMessage(Main.PREFIX + "You are no longer muted.");
+			if (player != null) {
+				player.sendMessage(Main.PREFIX + "You are no longer muted.");
+			}
 			return true;
 		} 
 		
 		if (args.length < 3) {
-			sender.sendMessage(Main.PREFIX + "Usage: /mute <player> <time> <reason>");
-			return true;
+			return false;
 		}
-		
-		StringBuilder message = new StringBuilder("");
-		
-    	for (int i = 2; i < args.length; i++) {
-    		message.append(args[i]).append(" ");
-    	}
     	
-    	String reason = message.toString().trim();
-    	
+    	String reason = Joiner.on(' ').join(Arrays.copyOfRange(args, 2, args.length));
 		long time = DateUtils.parseDateDiff(args[1], true);
 		
-		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been " + (time == 0 ? "muted" : "temp-muted") + " for §a" + reason + (time == 0 ? "§7." : "§7. §8(§a" + DateUtils.formatDateDiff(time) + "§8)"));
-		target.sendMessage(Main.PREFIX + "You have been muted for §a" + reason + "§7.");
-		
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		
+		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been muted for §a" + reason + "§7. §8(§a" + (time <= 0 ? "permanent" : DateUtils.formatDateDiff(time)) + "§8)");
 		user.mute(reason, (time <= 0 ? null : new Date(time)));
+		
+		if (player != null) {
+			player.sendMessage(Main.PREFIX + "You have been muted for §a" + reason + "§7.");
+		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		List<String> toReturn = new ArrayList<String>();
+		
+		if (args.length == 1) {
+			return null;
+		}
+		
+		if (args.length == 2 && !args[1].isEmpty()) {
+			toReturn.add(args[1] + "s");
+			toReturn.add(args[1] + "m");
+			toReturn.add(args[1] + "h");
+			toReturn.add(args[1] + "d");
+			toReturn.add(args[1] + "w");
+			toReturn.add(args[1] + "mo");
+			toReturn.add(args[1] + "y");
+		}
+		
+		if (args.length == 3) {
+			toReturn.add("Spoiling");
+			toReturn.add("Spamming");
+			toReturn.add("Death Wishes");
+			toReturn.add("Death Treats");
+		}
+		
+		return toReturn;
 	}
 }
