@@ -143,8 +143,24 @@ public class GameUtils {
 			return "Random " + game.getTeamSize().substring(1) + seperator;
 		} 
 		
-		if (game.getTeamSize().startsWith("cTo")) {
+		if (game.getTeamSize().startsWith("cTo") || game.getTeamSize().startsWith("To")) {
 			return "Chosen " + game.getTeamSize().substring(1) + seperator;
+		} 
+		
+		if (game.getTeamSize().startsWith("mTo")) {
+			return "Mystery " + game.getTeamSize().substring(1) + seperator;
+		} 
+		
+		if (game.getTeamSize().startsWith("pTo")) {
+			return "Picked " + game.getTeamSize().substring(1) + seperator;
+		} 
+		
+		if (game.getTeamSize().startsWith("CapTo")) {
+			return "Captains " + game.getTeamSize().substring(1) + seperator;
+		} 
+		
+		if (game.getTeamSize().startsWith("AucTo")) {
+			return "Auction " + game.getTeamSize().substring(1) + seperator;
 		} 
 		
 		if (game.getTeamSize().startsWith("No") || game.getTeamSize().startsWith("Open")) {
