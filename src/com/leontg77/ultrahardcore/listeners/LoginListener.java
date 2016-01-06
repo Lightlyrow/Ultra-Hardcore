@@ -63,14 +63,15 @@ public class LoginListener implements Listener {
 			
 			if (confUUID.equals(player.getUniqueId().toString()) && !confName.equals(player.getName())) {
 				settings.getHOF().set(path + ".name", player.getName());
+				
+				Object games = settings.getHOF().get(path + ".games");
+				
+				// make sure games are listed last.
+				settings.getHOF().set(path + ".games", null);
+				settings.getHOF().set(path + ".games", games);
 			}
-			
-			Object games = settings.getHOF().get(path + ".games");
-			
-			// make sure games are listed last.
-			settings.getHOF().set(path + ".games", null);
-			settings.getHOF().set(path + ".games", games);
 		}
+		
 		settings.saveHOF();
 		
 		User user = User.get(player);
@@ -112,7 +113,7 @@ public class LoginListener implements Listener {
 				
 				spec.enableSpecmode(player);
 			} else {
-				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName() + " §7has joined.");
+				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName() + " §7joined.");
 				
 				if (user.isNew()) {
 					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
@@ -139,6 +140,7 @@ public class LoginListener implements Listener {
 			scatter.remove(player.getName());
 		}
 		
+		// incase they join with freeze effects.
 		if (!State.isState(State.SCATTER) && player.hasPotionEffect(PotionEffectType.JUMP) && 
 			player.hasPotionEffect(PotionEffectType.BLINDNESS) && 
 			player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE) && 
@@ -295,7 +297,7 @@ public class LoginListener implements Listener {
 				}
 			}
 			
-			if (player.hasPermission("uhc.prelist")) {
+			if (player.hasPermission("uhc.prelist") && !game.isRecordedRound()) {
 				if (!WhitelistCommand.prewls && !State.isState(State.INGAME)) {
 					event.disallow(Result.KICK_WHITELIST, "§4Pre-whitelist has been disabled\n\n" + event.getKickMessage());
 					return;

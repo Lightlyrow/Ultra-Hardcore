@@ -52,7 +52,7 @@ public class LogoutListener implements Listener {
 		}
 		
 		if (!spec.isSpectating(player)) {
-			PlayerUtils.broadcast("§8[§c-§8] " + user.getRankColor() + player.getName() + " §7has left.");
+			PlayerUtils.broadcast("§8[§c-§8] " + user.getRankColor() + player.getName() + " §7left.");
 		}
 		
 		InvGUI inv = InvGUI.getInstance();
