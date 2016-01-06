@@ -57,6 +57,9 @@ public class PermissionsManager {
 		perm.setPermission("uhc.tps", true);
 		perm.setPermission("uhc.uhc", true);
 		perm.setPermission("uhc.hof", true);
+		perm.setPermission("uhc.helpop", true);
+		perm.setPermission("uhc.matchpost", true);
+		perm.setPermission("uhc.scenario", true);
 		
 		// spectator perms, they can only use them if they're spectating.
 		perm.setPermission("uhc.invsee", true);
@@ -116,7 +119,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.heal", true);
 		perm.setPermission("uhc.pregen", true);
 		perm.setPermission("uhc.random", true);
-		perm.setPermission("uhc.scenario", true);
+		perm.setPermission("uhc.scenario.manage", true);
 		perm.setPermission("uhc.sethealth", true);
 		perm.setPermission("uhc.setmaxhealth", true);
 		perm.setPermission("uhc.start", true);
@@ -124,7 +127,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.spectate.other", true);
 		perm.setPermission("uhc.timer", true);
 		perm.setPermission("uhc.vote", true);
-		perm.setPermission("mysteryteams.admin", true);
+		perm.setPermission("uhc.mysteryteams", true);
 		perm.setPermission("uhc.bestbtc", true);
 		perm.setPermission("uhc.bestpve", true);
 		perm.setPermission("uhc.bigcrack", true);
