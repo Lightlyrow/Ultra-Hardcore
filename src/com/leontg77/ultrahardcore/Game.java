@@ -8,6 +8,7 @@ import com.leontg77.ultrahardcore.Main.BorderShrink;
 import com.leontg77.ultrahardcore.Main.HardcoreHearts;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -41,11 +42,21 @@ public class Game {
 	 * @param teamSize the new teamsize.
 	 */
 	public void setTeamSize(String teamSize) {
+		BoardManager score = BoardManager.getInstance();
+		
+		if (pregameBoard()) {
+			score.resetScore("§8» §7" + GameUtils.getTeamSize(true, false));
+		}
+		
 		settings.getConfig().set("teamsize", teamSize);
 		settings.saveConfig();
 		
 		for (Player online : PlayerUtils.getPlayers()) {
 			PacketUtils.setTabList(online);
+		}
+		
+		if (pregameBoard()) {
+			score.setScore("§8» §7" + GameUtils.getTeamSize(true, false), 6);
 		}
 		
 		InvGUI.getGameInfo().update();
@@ -66,6 +77,18 @@ public class Game {
 	 * @param scenarios The new scenarios.
 	 */
 	public void setScenarios(String scenarios) {
+		BoardManager score = BoardManager.getInstance();
+		
+		if (pregameBoard()) {
+			for (String scen : getScenarios().split(", ")) {
+				score.resetScore("§8» §7" + scen);
+			}
+			
+			for (String scen : scenarios.split(", ")) {
+				score.setScore("§8» §7" + scen, 3);
+			}
+		}
+		
 		settings.getConfig().set("scenarios", scenarios);
 		settings.saveConfig();
 		
@@ -164,6 +187,8 @@ public class Game {
 	public void setWorld(String name) {
 		settings.getConfig().set("world", name);
 		settings.saveConfig();
+		
+		InvGUI.getGameInfo().update();
 	}
 
 	/**
@@ -289,6 +314,14 @@ public class Game {
 		for (Player online : PlayerUtils.getPlayers()) {
 			PacketUtils.setTabList(online);
 		}
+		
+		BoardManager board = BoardManager.getInstance();
+		
+		if (enable) {
+			board.kills.setDisplayName("§6" + getRRName());
+		} else {
+			board.kills.setDisplayName("§4§lUHC §r§8- §7§o" + getHost() + "§r");
+		}
 	}
 
 	/**
@@ -319,6 +352,12 @@ public class Game {
 	public void setRRName(String name) {
 		settings.getConfig().set("recordedround.name", name);
 		settings.saveConfig();
+		
+		if (isRecordedRound()) {
+			BoardManager board = BoardManager.getInstance();
+			
+			board.kills.setDisplayName("§6" + name);
+		}
 	}
 
 	/**
@@ -357,9 +396,7 @@ public class Game {
 	 * @param appleRate The apple rate.
 	 */
 	public void setAppleRates(double appleRate) {
-		appleRate /= 100;
-		
-		settings.getConfig().set("rates.apple.rate", appleRate);
+		settings.getConfig().set("rates.apple.rate", (appleRate / 100));
 		settings.saveConfig();
 		
 		InvGUI.getGameInfo().update();
@@ -380,9 +417,7 @@ public class Game {
 	 * @param flintRate The flint rate.
 	 */
 	public void setFlintRates(double flintRate) {
-		flintRate /= 100;
-		
-		settings.getConfig().set("rates.flint.rate", flintRate);
+		settings.getConfig().set("rates.flint.rate", (flintRate / 100));
 		settings.saveConfig();
 		
 		InvGUI.getGameInfo().update();
@@ -424,9 +459,7 @@ public class Game {
 	 * @param shearRate The shears rate.
 	 */
 	public void setShearRates(double shearRate) {
-		shearRate /= 100;
-		
-		settings.getConfig().set("rates.shears.rate", shearRate);
+		settings.getConfig().set("rates.shears.rate", (shearRate / 100));
 		settings.saveConfig();
 	}
 	
@@ -511,20 +544,18 @@ public class Game {
 	}
 	
 	public void setGoldenHeadsHeal(double headheals) {
-		headheals *= 2;
-		
-		settings.getConfig().set("feature.goldenheads.heal", (int) headheals);
+		settings.getConfig().set("feature.goldenheads.heal", (int) (headheals * 2));
 		settings.saveConfig();
 		
 		InvGUI.getGameInfo().update();
 	}
 
-	public boolean pearlDamage() {
-		return settings.getConfig().getBoolean("feature.pearldamage.enabled", false);
+	public double pearlDamage() {
+		return settings.getConfig().getDouble("feature.pearldamage.enabled", 0);
 	}
 	
-	public void setPearlDamage(boolean enable) {
-		settings.getConfig().set("feature.pearldamage.enabled", enable);
+	public void setPearlDamage(double damage) {
+		settings.getConfig().set("feature.pearldamage.enabled", damage);
 		settings.saveConfig();
 		
 		InvGUI.getGameInfo().update();
