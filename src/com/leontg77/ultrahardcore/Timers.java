@@ -476,8 +476,6 @@ public class Timers {
 					PlayerUtils.broadcast(Main.PREFIX + "Final heal has been given.");
 					PlayerUtils.broadcast(Main.PREFIX + "Do not ask for another one.");
 					
-					Bukkit.getPluginManager().callEvent(new FinalHealEvent());
-					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendTitle(online, "§6Final heal!", "§7Do not ask for another one", 5, 10, 5);
 						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
@@ -486,6 +484,8 @@ public class Timers {
 						user.resetHealth();
 						user.resetFood();
 					}
+					
+					Bukkit.getPluginManager().callEvent(new FinalHealEvent());
 				}
 				
 				if (timeSeconds < 20) {
@@ -582,6 +582,8 @@ public class Timers {
 					world.setDifficulty(Difficulty.HARD);
 					world.setPVP(false);
 					world.setTime(0);
+					
+					world.setSpawnFlags(true, true);
 					
 					world.setGameRuleValue("doDaylightCycle", "true");
 					world.setThundering(false);
