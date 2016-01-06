@@ -3,12 +3,11 @@ package com.leontg77.ultrahardcore.commands.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -18,25 +17,27 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class ScenarioCommand implements CommandExecutor, TabCompleter {
+public class ScenarioCommand extends UHCCommand {
+
+	public ScenarioCommand() {
+		super("scenario", "<enable|disable|list|info> [scenario]");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		ScenarioManager manager = ScenarioManager.getInstance();
 		
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("enable")) {
-				if (sender.hasPermission("uhc.scenario")) {
+				if (sender.hasPermission("uhc.scenario.manage")) {
 					if (args.length == 1) {
-						sender.sendMessage(Main.PREFIX + "Usage: /scen enable <scenario>");
-						return true;
+						return false;
 					}
 					
 					Scenario scen = manager.getScenario(args[1]);
 					
 					if (scen == null) {
-						sender.sendMessage(Main.PREFIX + args[1] + " is not a scenario.");
-						return true;
+						throw new CommandException("'" + args[1] + "' is not a scenario.");
 					}
 					
 					if (scen.isEnabled()) {
@@ -51,17 +52,15 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 			} 
 
 			if (args[0].equalsIgnoreCase("disable")) {
-				if (sender.hasPermission("uhc.scenario")) {
+				if (sender.hasPermission("uhc.scenario.manage")) {
 					if (args.length == 1) {
-						sender.sendMessage(Main.PREFIX + "Usage: /scen disable <scenario>");
-						return true;
+						return false;
 					}
 					
 					Scenario scen = manager.getScenario(args[1]);
 					
 					if (scen == null) {
-						sender.sendMessage(Main.PREFIX + args[1] + " is not a scenario.");
-						return true;
+						throw new CommandException("'" + args[1] + "' is not a scenario.");
 					}
 					
 					if (!scen.isEnabled()) {
@@ -99,15 +98,13 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 
 			if (args[0].equalsIgnoreCase("info")) {
 				if (args.length == 1) {
-					sender.sendMessage(Main.PREFIX + "Usage: /scen info <scenario>");
-					return true;
+					return false;
 				}
 
 				Scenario scen = manager.getScenario(args[1]);
 				
 				if (scen == null) {
-					sender.sendMessage(Main.PREFIX + args[1] + " is not a scenario.");
-					return true;
+					throw new CommandException("'" + args[1] + "' is not a scenario.");
 				}
 				
 				sender.sendMessage(Main.PREFIX + "Information about §6" + scen.getName() + "§8:");
@@ -132,79 +129,42 @@ public class ScenarioCommand implements CommandExecutor, TabCompleter {
 	}
 	
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+	public List<String> tabComplete(CommandSender sender, String[] args) {
 		ScenarioManager manager = ScenarioManager.getInstance();
     	ArrayList<String> toReturn = new ArrayList<String>();
     	
 		if (args.length == 1) {
-        	ArrayList<String> types = new ArrayList<String>();
-        	types.add("list");
-        	types.add("info");
+        	toReturn.add("list");
+        	toReturn.add("info");
         	
-        	if (sender.hasPermission("uhc.scenario")) {
-	        	types.add("enable");
-	        	types.add("disable");
-        	}
-        	
-        	if (args[0].equals("")) {
-        		for (String type : types) {
-        			toReturn.add(type);
-        		}
-        	} else {
-        		for (String type : types) {
-        			if (type.startsWith(args[0].toLowerCase())) {
-        				toReturn.add(type);
-        			}
-        		}
+        	if (sender.hasPermission("uhc.scenario.manage")) {
+        		toReturn.add("enable");
+	        	toReturn.add("disable");
         	}
         }
 		
 		if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("info")) {
-	        	if (args[1].equals("")) {
-	        		for (Scenario scen : manager.getScenarios()) {
-        				toReturn.add(scen.getName());
-	        		}
-	        	} else {
-	        		for (Scenario scen : manager.getScenarios()) {
-	        			if (scen.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				toReturn.add(scen.getName());
-	        			}
-	        		}
-	        	}
+        		for (Scenario scen : manager.getScenarios()) {
+    				toReturn.add(scen.getName());
+        		}
         	}
 			
-        	if (!sender.hasPermission("uhc.scenario")) {
+        	if (!sender.hasPermission("uhc.scenario.manage")) {
 	        	return null;
         	}
         	
         	if (args[0].equalsIgnoreCase("enable")) {
-        		if (args[1].equals("")) {
-	        		for (Scenario scen : manager.getDisabledScenarios()) {
-        				toReturn.add(scen.getName());
-	        		}
-	        	} else {
-	        		for (Scenario scen : manager.getDisabledScenarios()) {
-	        			if (scen.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				toReturn.add(scen.getName());
-	        			}
-	        		}
-	        	}
+        		for (Scenario scen : manager.getDisabledScenarios()) {
+    				toReturn.add(scen.getName());
+        		}
         	} else if (args[0].equalsIgnoreCase("disable")) {
-	        	if (args[1].equals("")) {
-	        		for (Scenario scen : manager.getEnabledScenarios()) {
-        				toReturn.add(scen.getName());
-	        		}
-	        	}
-	        	else {
-	        		for (Scenario scen : manager.getEnabledScenarios()) {
-	        			if (scen.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
-	        				toReturn.add(scen.getName());
-	        			}
-	        		}
-	        	}
+        		for (Scenario scen : manager.getEnabledScenarios()) {
+    				toReturn.add(scen.getName());
+        		}
         	}
 		}
+		
     	return toReturn;
 	}
 }
