@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +25,7 @@ import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
+import com.leontg77.ultrahardcore.utils.NumberUtils;
 
 public class GameInfo extends InvGUI implements Listener {
 	private Inventory inv = Bukkit.createInventory(null, 45, "» §7Game Information");
@@ -54,6 +54,9 @@ public class GameInfo extends InvGUI implements Listener {
 		return inv;
 	}
 	
+	/**
+	 * Update the item lores in the inventory.
+	 */
 	public void update() {
 		ArrayList<String> lore = new ArrayList<String>();
 		Game game = Game.getInstance();
@@ -133,9 +136,11 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add("§8» §7Stripmining: §aAllowed.");
 			lore.add("§8» §7Branchmining: §aAllowed.");
 			lore.add("§8» §7Pokeholing: §aAllowed.");
+			lore.add(" ");
 			lore.add("§8» §7Blastmining: §aAllowed.");
 			lore.add("§8» §7Staircasing: §aAllowed.");
 			lore.add("§8» §7Rollercoastering: §aAllowed.");
+			lore.add(" ");
 			lore.add("§8» §7Digging to sounds: §aAllowed.");
 			lore.add("§8» §7Digging to entities: §aAllowed.");
 			lore.add("§8» §7Digging to players: §aAllowed.");
@@ -146,9 +151,11 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add("§8» §7Stripmining: §cNot Allowed.");
 			lore.add("§8» §7Branchmining: §cNot Allowed.");
 			lore.add("§8» §7Pokeholing: §cNot Allowed.");
+			lore.add(" ");
 			lore.add("§8» §7Blastmining: §aAllowed.");
 			lore.add("§8» §7Staircasing: §aAllowed.");
 			lore.add("§8» §7Rollercoastering: §aAllowed.");
+			lore.add(" ");
 			lore.add("§8» §7Digging to sounds: §aAllowed.");
 			lore.add("§8» §7Digging to entities: §aAllowed.");
 			lore.add("§8» §7Digging to players: §cOnly if you see them.");
@@ -277,7 +284,7 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add("§8» §7Absorption: " + (game.absorption() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Golden Heads: " + (game.goldenHeads() ? "§aEnabled." : "§cDisabled."));
 		if (game.goldenHeads()) {
-			lore.add("§8» §7Heads Heal: §6" + game.goldenHeadsHeal() + " hearts.");
+			lore.add("§8» §7Heads Heal: §6" + NumberUtils.convertDouble(((double) game.goldenHeadsHeal()) / 2) + " hearts.");
 		}
 		lore.add("§8» §7Notch Apples: " + (game.notchApples() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
@@ -286,17 +293,19 @@ public class GameInfo extends InvGUI implements Listener {
 		inv.setItem(38, healing);
 		lore.clear();
 		
-		ItemStack rates = new ItemStack (Material.FLINT);
+		ItemStack rates = new ItemStack (Material.SAPLING);
 		ItemMeta ratesMeta = rates.getItemMeta();
 		ratesMeta.setDisplayName("§8» §6Rates Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Apple Rates: §6" + game.getAppleRates() + "%");
-		lore.add("§8» §7Shears: " + (game.shears() ? "§aWork." : "§cDoes not work.") + "");
-		lore.add("§8» §7Flint Rates: §6" + game.getFlintRates() + "%");
+		lore.add("§8» §7Apple Rates: §6" + NumberUtils.convertDouble(game.getAppleRates() * 100) + "%");
+		lore.add("§8» §7Shears: " + (game.shears() ? "§aWork." : "§cDoes not work."));
+		lore.add("§8» §7Flint Rates: §6" + NumberUtils.convertDouble(game.getFlintRates() * 100) + "%");
 		lore.add(" ");
 		lore.add("§8» §7Mob Rates: §6Vanilla.");
 		lore.add("§8» §7Ore Rates: §6Vanilla.");
 		lore.add("§8» §7Cave Rates: §6Vanilla.");
+		lore.add(" ");
+		lore.add("§8» §7Witch Health Pot: §630% (100% when poisoned)");
 		lore.add(" ");
 		ratesMeta.setLore(lore);
 		rates.setItemMeta(ratesMeta);
@@ -325,7 +334,8 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Saturation Fix: §aEnabled.");
 		lore.add(" ");
-		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() ? "§aEnabled, deals 1 heart." : "§cDisabled."));
+		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() != 0 ? "§aDeals " + (game.pearlDamage() == 1 ? "1 heart." : game.pearlDamage() + " hearts."): "§cDisabled."));
+		lore.add("§8» §7Bookshelves: " + (game.bookshelves() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
 		lore.add("§8» §7Border shrinks: §6" + NameUtils.capitalizeString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
 		lore.add("§8» §7The border will kill you if you go outside!");
@@ -340,6 +350,9 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.clear();
 	}
 	
+	/**
+	 * Update the timer item in the inventory.
+	 */
 	public void updateTimer() {
 		ItemStack timer = new ItemStack (Material.WATCH);
 		ItemMeta timerMeta = timer.getItemMeta();
@@ -368,131 +381,11 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.clear();
 	}
 	
+	/**
+	 * Update the staff item in the inventory.
+	 */
 	public void updateStaff() {
-		StringBuilder staffs = new StringBuilder();
-		StringBuilder owners = new StringBuilder();
-		StringBuilder hosts = new StringBuilder();
-		StringBuilder specs = new StringBuilder();
-		
-		List<String> staffL = new ArrayList<String>();
-		List<String> hostL = new ArrayList<String>();
-		List<String> specL = new ArrayList<String>();
-		
-		int i = 1;
-		int j = -1;
-		
-		for (FileConfiguration config : FileUtils.getUserFiles()) {
-			if (config.getString("rank", "USER").equals(Rank.OWNER.name())) {
-				hostL.add(config.getString("username"));
-			}
-
-			if (config.getString("rank", "USER").equals(Rank.HOST.name())) {
-				hostL.add(config.getString("username"));
-			}
-			
-			if (config.getString("rank", "USER").equals(Rank.TRIAL.name())) {
-				hostL.add(config.getString("username"));
-			}
-			
-			if (config.getString("rank", "USER").equals(Rank.STAFF.name())) {
-				staffL.add(config.getString("username"));
-			}
-			
-			if (config.getString("rank", "USER").equals(Rank.SPEC.name())) {
-				specL.add(config.getString("username"));
-			}
-		}
-		
-		for (String sL : hostL) {
-			if (hosts.length() > 0) {
-				if (hostL.size() == i) {
-					hosts.append(" and ");
-				} else {
-					hosts.append(", ");
-				}
-			}
-			
-			if (j == 2) {
-				hosts.append("-");
-				j = 0;
-			} else {
-				j++;
-			}
-			
-			hosts.append(sL);
-			i++;
-		}
-		
-		i = 1;
-		j = -1;
-		
-		for (String sL : staffL) {
-			if (staffs.length() > 0) {
-				if (staffL.size() == i) {
-					staffs.append(" and ");
-				} else {
-					staffs.append(", ");
-				}
-			}
-			
-			if (j == 2) {
-				staffs.append("-");
-				j = 0;
-			} else {
-				j++;
-			}
-			
-			staffs.append(sL);
-			i++;
-		}
-		
-		i = 1;
-		j = -1;
-		
-		for (String pL : specL) {
-			if (specs.length() > 0) {
-				if (specL.size() == i) {
-					specs.append(" and ");
-				} else {
-					specs.append(", ");
-				}
-			}
-			
-			if (j == 2) {
-				specs.append("-");
-				j = 0;
-			} else {
-				j++;
-			}
-			
-			specs.append(pL);
-			i++;
-		}
-		
-		i = 1;
-		j = -1;
-		
-		for (OfflinePlayer ops : Bukkit.getServer().getOperators()) {
-			if (owners.length() > 0) {
-				if (Bukkit.getOperators().size() == i) {
-					owners.append(" and ");
-				} else {
-					owners.append(", ");
-				}
-			}
-			
-			if (j == 2) {
-				hosts.append("-");
-				j = 0;
-			} else {
-				j++;
-			}
-			
-			owners.append(ops.getName());
-			i++;
-		}
-		
-		ArrayList<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<String>();
 
 		ItemStack staff = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta staffMeta = (SkullMeta) staff.getItemMeta();
@@ -501,36 +394,80 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add(" ");
 		lore.add("§8» §4Owners:");
 		
-		for (String split : owners.toString().split("-")) {
-			lore.add("§8» §7" + split);
+		for (String split : getRankList(Rank.OWNER).toString().split("-")) {
+			lore.add("  §7" + split);
 		}
 		
 		lore.add(" ");
 		lore.add("§8» §4Hosts:");
 		
-		for (String split : hosts.toString().split("-")) {
-			lore.add("§8» §7" + split);
+		for (String split : getRankList(Rank.TRIAL, Rank.HOST).toString().split("-")) {
+			lore.add("  §7" + split);
 		}
 		
 		lore.add(" ");
 		lore.add("§8» §cStaff:");
 		
-		for (String split : staffs.toString().split("-")) {
-			lore.add("§8» §7" + split);
+		for (String split : getRankList(Rank.STAFF).toString().split("-")) {
+			lore.add("  §7" + split);
 		}
 		
 		lore.add(" ");
 		lore.add("§8» §9Specs:");
 		
-		for (String split : specs.toString().split("-")) {
-			lore.add("§8» §7" + split);
+		for (String split : getRankList(Rank.SPEC).split("-")) {
+			lore.add("  §7" + split);
 		}
 		
 		lore.add(" ");
 		staffMeta.setLore(lore);
-		staffMeta.setOwner("LeonTG77");
+		staffMeta.setOwner("LeeTG77");
 		staff.setItemMeta(staffMeta);
 		inv.setItem(19, staff);
 		lore.clear();
+	}
+	
+	/**
+	 * Make a list of people having the given rank.
+	 * 
+	 * @param rank The rank to get a list for.
+	 * @return A list of people with the rank.
+	 */
+	private String getRankList(Rank... ranks) {
+		StringBuilder list = new StringBuilder();
+		List<String> peopleWithRank = new ArrayList<String>();
+		
+		int i = 1;
+		int j = -1;
+		
+		for (FileConfiguration config : FileUtils.getUserFiles()) {
+			for (Rank rank : ranks) {
+				if (config.getString("rank", "USER").equals(rank.name())) {
+					peopleWithRank.add(config.getString("username"));
+				}
+			}
+		}
+		
+		for (String loopRanks : peopleWithRank) {
+			if (list.length() > 0) {
+				if (peopleWithRank.size() == i) {
+					list.append(" and ");
+				} else {
+					list.append(", ");
+				}
+			}
+			
+			if (j == 2) {
+				list.append("-");
+				j = 0;
+			} else {
+				j++;
+			}
+			
+			list.append(loopRanks);
+			i++;
+		}
+		
+		return list.toString();
 	}
 }
