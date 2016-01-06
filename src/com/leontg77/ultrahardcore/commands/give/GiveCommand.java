@@ -1,15 +1,16 @@
 package com.leontg77.ultrahardcore.commands.give;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -26,21 +27,15 @@ public class GiveCommand extends UHCCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String[] args) {
-		if (!sender.hasPermission("uhc.give")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (args.length < 2) {
-			sender.sendMessage(Main.PREFIX + "Usage: /give ");
-			return true;
+			return false;
 		}
 		
-		Player target = Bukkit.getServer().getPlayer(args[0]);
+		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
-			sender.sendMessage(ChatColor.RED + args[0] + " is not online.");
+			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
 		Material material = null;
@@ -48,9 +43,8 @@ public class GiveCommand extends UHCCommand {
 		short durability = 0;
 		
 		try {
-			material = Material.getMaterial(Integer.parseInt(args[1]));
-		} 
-		catch (Exception e) {
+			material = Material.getMaterial(parseInt(args[1]));
+		} catch (Exception e) {
 			for (Material types : Material.values()) {
 				if (types.name().startsWith(args[1].toUpperCase())) {
 					material = types;
@@ -60,39 +54,41 @@ public class GiveCommand extends UHCCommand {
 		}
 		
 		if (material == null) {
-			sender.sendMessage(ChatColor.RED + args[1] + " is not a vaild type.");
-			return true;
+			throw new CommandException("'" + args[1] + "' is not a vaild item.");
 		}
 		
 		if (args.length > 2) {
-			try {
-				amount = Integer.parseInt(args[2]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[2] + " is not a vaild number.");
-				return true;
-			}
+			amount = parseInt(args[2], "amount");
 		}
 		
 		if (args.length > 3) {
-			try {
-				durability = Short.parseShort(args[3]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + args[3] + " is not a vaild number.");
-				return true;
-			}
+			durability = (short) parseInt(args[2], "durability");
 		}
 
 		ItemStack item = new ItemStack(material, amount, durability);
 		PlayerUtils.giveItem(target, item);
 		
-		sender.sendMessage(Main.PREFIX + "You gave " + target.getName() + " §a" + amount + " " + item.getType().name().toLowerCase().replaceAll("_", " ") + (amount > 1 ? "s" : "") + "§7.");
-		target.sendMessage(Main.PREFIX + "You recieved §a" + amount + " " + item.getType().name().toLowerCase().replaceAll("_", " ") + (amount > 1 ? "s" : "") + "§7.");
+		String itemName = item.getType().name().toLowerCase().replaceAll("_", " ") + (amount > 1 && !item.getType().name().endsWith("S") ? "s" : "");
+		
+		sender.sendMessage(Main.PREFIX + "You gave " + target.getName() + " §a" + amount + " " + itemName + "§7.");
+		target.sendMessage(Main.PREFIX + "You recieved §a" + amount + " " + itemName + "§7.");
 		return true;
 	}
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> toReturn = new ArrayList<String>();
+		
+		if (args.length == 1) {
+			return null;
+		}
+		
+		if (args.length == 2) {
+			for (Material type : Material.values()) {
+				toReturn.add(type.name().toLowerCase());
+			}
+		}
+		
+		return toReturn;
 	}
 }
