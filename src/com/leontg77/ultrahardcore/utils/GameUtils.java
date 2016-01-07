@@ -133,6 +133,10 @@ public class GameUtils {
 	public static String getTeamSize(boolean advancedFFA, boolean seperate) {
 		Game game = Game.getInstance();
 		
+		if (game.getTeamSize().startsWith("To")) {
+			game.setTeamSize("c" + game.getTeamSize());
+		}
+		
 		String seperator = seperate ? " - " : " ";
 		
 		if (game.getTeamSize().startsWith("FFA")) {
@@ -143,7 +147,7 @@ public class GameUtils {
 			return "Random " + game.getTeamSize().substring(1) + seperator;
 		} 
 		
-		if (game.getTeamSize().startsWith("cTo") || game.getTeamSize().startsWith("To")) {
+		if (game.getTeamSize().startsWith("cTo")) {
 			return "Chosen " + game.getTeamSize().substring(1) + seperator;
 		} 
 		
@@ -156,11 +160,11 @@ public class GameUtils {
 		} 
 		
 		if (game.getTeamSize().startsWith("CapTo")) {
-			return "Captains " + game.getTeamSize().substring(1) + seperator;
+			return "Captains " + game.getTeamSize().substring(3) + seperator;
 		} 
 		
 		if (game.getTeamSize().startsWith("AucTo")) {
-			return "Auction " + game.getTeamSize().substring(1) + seperator;
+			return "Auction " + game.getTeamSize().substring(3) + seperator;
 		} 
 		
 		if (game.getTeamSize().startsWith("No") || game.getTeamSize().startsWith("Open")) {
