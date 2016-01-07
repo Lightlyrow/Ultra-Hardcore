@@ -1,10 +1,16 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,8 +25,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -29,343 +38,444 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
-	
-	private boolean bidProgressing = false;
+	private static final String PREFIX = "§2§lMarket §8» §7";
+
+	private final Set<String> owners = new HashSet<String>(); 
 	private int bidTime = 0, biggestBid = -1;
+	
+	private String currentSlave = null;
 	private String bidWinner = null;
-	private ArrayList<String> traders = new ArrayList<String>(); 
+
+	private boolean bidProgressing = false;
+	private BukkitRunnable task = null;
 	
 	public SlaveMarket() {
-		super("SlaveMarket", "8 slave owners are chosen and they get 30 diamonds to bid on players as they choose. Any spare diamonds will be kept by the slaveowner.");
-		Main main = Main.plugin;
+		super("SlaveMarket", "8 slave owners are chosen and they get 30 diamonds to bid on players as they choose. Any spare diamonds will be kept by the slaveowner for use ingame.");
 		
-		main.getCommand("slavereset").setExecutor(this);
-		main.getCommand("slaveowner").setExecutor(this);
-		main.getCommand("startbid").setExecutor(this);
-		main.getCommand("bid").setExecutor(this);
+		Bukkit.getPluginCommand("market").setExecutor(this);
+		Bukkit.getPluginCommand("bid").setExecutor(this);
 	}
 
 	@Override
-	public void onDisable() {}
+	public void onDisable() {
+		bidProgressing = false;
+		bidWinner = null;
+		
+		biggestBid = -1;
+		bidTime = 0;
+		
+		owners.clear();
+	}
 
 	@Override
 	public void onEnable() {}
 	
-	public String prefix() {
-		return Main.PREFIX.replaceAll("UHC", "Slave");
+	@EventHandler
+    public void on(GameStartEvent event) {	
+        ScenarioManager manager = ScenarioManager.getInstance();
+        manager.getScenario(this.getClass()).setEnabled(false);
 	}
 	
 	@EventHandler
-    public void onPlayerDropItem(PlayerDropItemEvent event) {	
-        event.setCancelled(true);
-	}
-	
-	@EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {	
-        event.setCancelled(true);
-	}
-	
-	public boolean onCommand(final CommandSender sender, Command cmd, String label, final String[] args) {
-		if (cmd.getName().equalsIgnoreCase("slavereset")) {
-			if (!isEnabled()) {
-				sender.sendMessage(Main.PREFIX + "\"SlaveMarket\" is not enabled.");
-				return true;
-			}
-			
-			if (sender.hasPermission("uhc.slavemarket")) {
-				bidProgressing = false;
-				bidWinner = null;
-				traders.clear();
-				biggestBid = -1;
-				bidTime = 0;
-				
-				for (Team teams : TeamManager.getInstance().getTeamsWithPlayers()) {
-					for (String entry : teams.getEntries()) {
-						teams.removeEntry(entry);
-					}
-				}
-				
-				PlayerUtils.broadcast(prefix() + "SlaveMarket has been reset.");
-			} else {
-				sender.sendMessage(Main.PREFIX + "You can't use that command.");
-			}
+    public void on(PlayerDropItemEvent event) {	
+		Player player = event.getPlayer();
+		
+		if (!owners.contains(player.getName())) {
+			return;
 		}
 		
-		if (cmd.getName().equalsIgnoreCase("slaveowner")) {
-			if (!isEnabled()) {
-				sender.sendMessage(Main.PREFIX + "\"SlaveMarket\" is not enabled.");
+		ItemStack item = event.getItemDrop().getItemStack();
+		
+		if (item == null || item.getType() != Material.DIAMOND) {
+			return;
+		}
+		
+		player.sendMessage(PREFIX + "You cannot drop your diamonds.");
+        event.setCancelled(true);
+	}
+	
+	@EventHandler
+    public void on(InventoryClickEvent event) {	
+		Player player = (Player) event.getWhoClicked();
+		
+		if (!owners.contains(player.getName())) {
+			return;
+		}
+		
+		ItemStack item = event.getCurrentItem();
+		
+		if (item == null || item.getType() != Material.DIAMOND) {
+			return;
+		}
+		
+		player.sendMessage(PREFIX + "You cannot move your diamonds around.");
+        event.setCancelled(true);
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!isEnabled()) {
+			sender.sendMessage(PREFIX + "SlaveMarket is not enabled.");
+			return true;
+		}
+		
+		try {
+			if (cmd.getName().equalsIgnoreCase("market")) {
+				return executeMarket(sender, args);
+			}
+			
+			if (cmd.getName().equalsIgnoreCase("bid")) {
+				return executeBid(sender, args);
+			}
+		} catch (CommandException ex) {
+			sender.sendMessage(ChatColor.RED + ex.getMessage());
+		} catch (Exception ex) {
+			// send them the error message in red if anything failed.
+			sender.sendMessage(ChatColor.RED + ex.getClass().getName() + ": " + ex.getMessage());
+			ex.printStackTrace();
+		}
+		return true;
+	}
+
+	private static final String OWNER_USAGE = Main.PREFIX + "Usage: /market owner <add|remove|list> [player] [amountofdias]";
+	private static final String MAIN_USAGE = Main.PREFIX + "Usage: /market <owner|start|stop|reset> [...]";
+	
+	private static final String PERMISSION = "uhc.slavemarket";
+	
+	/**
+	 * Execute the /market command.
+	 * 
+	 * @param sender The sender of the command.
+	 * @param args The argurments after the /[command]
+	 * @return Always true.
+	 * @throws CommandException If any wrong args were given.
+	 */
+	private boolean executeMarket(final CommandSender sender, final String[] args) throws CommandException {
+		if (!sender.hasPermission(PERMISSION)) {
+			sender.sendMessage(Main.NO_PERM_MSG);
+			return true;
+		}
+		
+		if (args.length == 0) {
+			sender.sendMessage(MAIN_USAGE);
+			return true;
+		}
+		
+		final TeamManager teams = TeamManager.getInstance();
+		
+		if (args[0].equalsIgnoreCase("reset")) {
+			bidProgressing = false;
+			bidWinner = null;
+			
+			biggestBid = -1;
+			bidTime = 0;
+			
+			owners.clear();
+			
+			for (Team team : TeamManager.getInstance().getTeamsWithPlayers()) {
+				for (OfflinePlayer entry : teams.getPlayers(team)) {
+					teams.leaveTeam(entry, false);
+				}
+			}
+			
+			PlayerUtils.broadcast(PREFIX + "SlaveMarket has been reset.");
+			return true;
+		}
+		
+		if (args[0].equalsIgnoreCase("owner")) {
+			if (args.length == 1) {
+				sender.sendMessage(OWNER_USAGE);
 				return true;
 			}
 			
-			if (sender.hasPermission("uhc.slavemarket")) {
-				if (args.length == 0) {
-					sender.sendMessage(Main.PREFIX + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
+			if (args[1].equalsIgnoreCase("add")) {
+				if (args.length == 2) { 
+					sender.sendMessage(OWNER_USAGE);
 					return true;
 				}
 				
-				if (args[0].equalsIgnoreCase("add")) {
-					if (args.length >= 2) {
-						Player target = Bukkit.getPlayer(args[1]);
-						
-						if (target == null) {
-							sender.sendMessage(ChatColor.RED + "That player is not online.");
-							return true;
-						}
-						
-						traders.add(target.getName());
-						Team t = TeamManager.getInstance().findAvailableTeam();
-						
-						if (t == null) {
-							sender.sendMessage(ChatColor.RED + "Could not find any open teams.");
-							return true;
-						}
-						
-						t.addEntry(target.getName());
-						PlayerUtils.broadcast(prefix() + ChatColor.GREEN + target.getName() + " §7is now a slave owner.");
-						
-						if (args.length >= 3) {
-							int i;
-							
-							try {
-								i = Integer.parseInt(args[2]);
-							} catch (Exception e) {
-								sender.sendMessage(ChatColor.RED + "Invaild number.");
-								return true;
-							}
-							
-							target.getInventory().addItem(new ItemStack (Material.DIAMOND, i));
+				Player target = Bukkit.getPlayer(args[2]);
+				
+				if (target == null) {
+					throw new CommandException("'" + args[2] + "' is not online.");
+				}
+				
+				Team team = teams.findAvailableTeam();
+				owners.add(target.getName());
+				
+				if (team == null) {
+					throw new CommandException("There are no more available teams.");
+				}
+				
+				PlayerUtils.broadcast(PREFIX + "§a" + target.getName() + " §7has been selected as the slave owner of §6Team " + team.getName().substring(3) + "§7.");
+				teams.joinTeam(team, target);
+				
+				int amount = 30;
+				
+				if (args.length > 3) {
+					amount = parseInt(args[3], "amount");
+				}
+				
+				PlayerUtils.giveItem(target, new ItemStack (Material.DIAMOND, amount));
+				return true;
+			}
+			
+			if (args[1].equalsIgnoreCase("remove")) {
+				if (args.length == 2) { 
+					sender.sendMessage(OWNER_USAGE);
+					return true;
+				}
+				
+				Player target = Bukkit.getPlayer(args[2]);
+				
+				if (target == null) {
+					throw new CommandException("'" + args[2] + "' is not online.");
+				}
+				
+				PlayerUtils.broadcast(PREFIX + "§a" + target.getName() + " §7is no longer a slave owner.");
+				
+				owners.remove(target.getName());
+				teams.leaveTeam(target, true);
+				
+				target.getInventory().clear();
+				return true;
+			}
+			
+			if (args[1].equalsIgnoreCase("list")) {
+				StringBuilder list = new StringBuilder();
+				int index = 1;
+				
+				for (String owner : owners) {
+					if (list.length() > 0) {
+						if (index == owners.size()) {
+							list.append(" §8and §a");
 						} else {
-							target.getInventory().addItem(new ItemStack (Material.DIAMOND, 30));
+							list.append("§8, §a");
 						}
-					} else {
-						sender.sendMessage(Main.PREFIX + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
-					}
-				}
-				else if (args[0].equalsIgnoreCase("remove")) {
-					if (args.length >= 2) {
-						Player target = Bukkit.getPlayer(args[1]);
-						
-						if (target == null) {
-							sender.sendMessage(ChatColor.RED + "That player is not online.");
-							return true;
-						}
-						
-						traders.remove(args[1]);
-						Team t = target.getScoreboard().getEntryTeam(target.getName());
-						
-						if (t != null) {
-							t.removeEntry(target.getName());
-						}
-						
-						PlayerUtils.broadcast(prefix() + ChatColor.GREEN + args[1] + " §7is no longer a slave owner!");
-						target.getInventory().clear();
-					} else {
-						sender.sendMessage(Main.PREFIX + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
-					}
-				}
-				else if (args[0].equalsIgnoreCase("list")) {
-					StringBuilder s = new StringBuilder();
-					
-					for (String l : traders) {
-						if (s.length() > 0) {
-							s.append("§8, §a");
-						}
-						
-						s.append(ChatColor.GREEN + l);
 					}
 					
-					sender.sendMessage(prefix() + "Current slaves: " + s.toString().trim());
+					list.append(ChatColor.GREEN + owner);
+					index++;
 				}
-				else {
-					sender.sendMessage(Main.PREFIX + "Usage: /slaveowner <add|remove|list> [player] [amountofdias]");
-				}
-			} else {
-				sender.sendMessage(Main.PREFIX + "You can't use that command.");
-			}
-		}
-		
-		if (cmd.getName().equalsIgnoreCase("startbid")) {
-			if (!isEnabled()) {
-				sender.sendMessage(Main.PREFIX + "\"SlaveMarket\" is not enabled.");
+				
+				sender.sendMessage(PREFIX + "Current slave owners: §8(§6" + owners.size() + "§8)");
+				sender.sendMessage("§8» §7" + list.toString());
 				return true;
 			}
 			
-			if (sender.hasPermission("uhc.slavemarket")) {
-	    		if (args.length < 2) {
-	    			sender.sendMessage(ChatColor.RED + "Usage: /startbid <player> <time>");
-					return true;
-				}
-
-	    		PlayerUtils.broadcast(prefix() + "The bidding of player §a" + args[0] + "§7 is about to start.");
-	    		
-				for (Player online : PlayerUtils.getPlayers()) {
-		    		online.playSound(online.getLocation(), Sound.FIREWORK_LAUNCH, 1, 0);
-		    	}
+			sender.sendMessage(OWNER_USAGE);
+			return true;
+		}
+		
+		if (args[0].equalsIgnoreCase("start")) {
+			if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+				throw new CommandException("The slave market timer is already running.");
+			}
+			
+			new BukkitRunnable() {
+				int timeLeft = 3;
 				
-				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-					public void run() {
-			    		PlayerUtils.broadcast(prefix() + "Bidding starts in §a3§7.");
-			    		
-				    	for (Player online : PlayerUtils.getPlayers()) {
-				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
-				    	}
-					}
-				}, 20);
-				
-				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-					public void run() {
-			    		PlayerUtils.broadcast(prefix() + "Bidding starts in §a2§7.");
-			    		
-				    	for (Player online : PlayerUtils.getPlayers()) {
-				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
-				    	}
-					}
-				}, 40);
-				
-				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-					public void run() {
-			    		PlayerUtils.broadcast(prefix() + "Bidding starts in §a1§7.");
-			    		
-						for (Player online : PlayerUtils.getPlayers()) {
-				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
-				    	}
-					}
-				}, 60);
-				
-				Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
-					public void run() {
-						int i;
-						
-						try {
-							i = Integer.parseInt(args[1]);
-						} catch (Exception e) {
-							sender.sendMessage(ChatColor.RED + "Invaild number.");
-							return;
-						}
-
-			    		PlayerUtils.broadcast(prefix() + "The bidding of player §a" + args[0] + "§7 has started.");
-			    		
-						for (Player online : PlayerUtils.getPlayers()) {
-				    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-				    	}
-						
-				    	bidProgressing = true;
-				    	bidTime = i;
-				    	biggestBid = -1;
-				    	bidWinner = null;
-				    	
-				    	new BukkitRunnable() {
+				public void run() {
+					bidTime = -1;
+					
+					if (timeLeft == 0) {
+				    	task = new BukkitRunnable() {
 				    		public void run() {
-								bidTime--;
+				    			if (biggestBid >= 0) {
+				    				bidTime--;
+				    			}
+				    			
 								if (bidTime == 0) {
-									cancel();
 									bidProgressing = false;
-							    	if (bidWinner != null) {
-							    		Player target = Bukkit.getPlayer(bidWinner);
-							    		if (target == null) {
-								    		PlayerUtils.broadcast(prefix() + "Bid winner is offline...");
-								    		return;
-							    		}
-							    		PlayerUtils.broadcast(prefix() + ChatColor.GREEN + bidWinner + "§7 has won the bidding on §a" + args[0] + "§7 for §a" + biggestBid + "§7 diamonds.");
 
-										for (Player online : PlayerUtils.getPlayers()) {
-								    		online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
-								    	}
-							    		
-							    		for (ItemStack item : target.getInventory().getContents()) {
-							    			if (item != null && item.getType() == Material.DIAMOND) {
-							    				if (item.getAmount() > biggestBid) {
-							    					item.setAmount(item.getAmount() - biggestBid);
-							    				} else {
-							    					target.getInventory().remove(item);
-							    				}
-							    				break;
-							    			}
-							    		}
-							    		
-							    		Team t = target.getScoreboard().getEntryTeam(target.getName());
-							    		
-							    		if (t == null) {
-							    			sender.sendMessage(ChatColor.RED + "Could not join team.");
-							    		} else {
-							    			t.addEntry(args[0]);
-							    		}
-							    	} else {
-							    		PlayerUtils.broadcast(prefix() + "None of the slave traders bid on §a" + args[0] + "§7.");
+						    		Player winner = Bukkit.getPlayer(bidWinner);
+						    		
+						    		if (winner == null) {
+							    		PlayerUtils.broadcast(PREFIX + "The bid winner is offline, restarting...");
+							    		return;
+						    		}
+
+						    		Player slave = Bukkit.getPlayer(currentSlave);
+						    		
+						    		if (slave == null) {
+							    		PlayerUtils.broadcast(PREFIX + "The current slave is offline, restarting...");
+							    		return;
+						    		}
+						    		
+						    		Team team = teams.getTeam(winner);
+						    		
+						    		if (team == null) {
+						    			sender.sendMessage(ChatColor.RED + "Could not join team.");
+						    			return;
+						    		}
+						    		
+						    		PlayerUtils.broadcast(PREFIX + "§a" + slave.getName() + "§7 was sold to §a" + winner.getName() + "§7 for §a" + (biggestBid == 1 ? "1 diamond" : biggestBid + " diamonds") + "§7.");
+
+									for (Player online : PlayerUtils.getPlayers()) {
+							    		online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 							    	}
+						    		
+						    		for (ItemStack item : winner.getInventory().getContents()) {
+						    			if (item != null && item.getType() == Material.DIAMOND) {
+						    				if (item.getAmount() > biggestBid) {
+						    					item.setAmount(item.getAmount() - biggestBid);
+						    				} else {
+						    					winner.getInventory().remove(item);
+						    				}
+						    				break;
+						    			}
+						    		}
+						    		
+					    			teams.joinTeam(team, slave);
 							    	return;
 								}
+								
+				    			if (bidTime == -1) {
+				    				List<Player> list = new ArrayList<Player>();
+				    				
+				    				for (Player online : PlayerUtils.getPlayers()) {
+				    					if (teams.getTeam(online) == null) {
+				    						list.add(online);
+				    					}
+				    				}
+				    				
+				    				if (list.isEmpty()) {
+				    					task.cancel();
+				    					task = null;
+				    					
+				    					PlayerUtils.broadcast(PREFIX + "§oNo more players to bid on!");
+				    					return;
+				    				}
+				    				
+				    				Collections.shuffle(list);
+				    				
+				    				currentSlave = list.get(new Random().nextInt(list.size())).getName();
+							    	bidWinner = null;
+
+							    	bidProgressing = true;
+							    	biggestBid = -1;
+							    	bidTime = 5;
+							    	
+							    	PlayerUtils.broadcast(PREFIX + "§a" + currentSlave + "§7 is now up for auction! Use §a/bid§7!");
+						    		
+									for (Player online : PlayerUtils.getPlayers()) {
+							    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+							    	}
+									return;
+				    			}
+								
 								if (bidTime < 4) {
-									PlayerUtils.broadcast(prefix() + "Bidding ends in §a" + bidTime + "§7.");
+									PlayerUtils.broadcast(PREFIX + "Bidding ends in §a" + bidTime + "§7.");
 
 									for (Player online : PlayerUtils.getPlayers()) {
 							    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 							    	}
 								}
 				    		}
-				    	}.runTaskTimer(Main.plugin, 0, 20);
+				    	};
+				    	
+				    	task.runTaskTimer(Main.plugin, 0, 20);
+				    	cancel();
+				    	return;
 					}
-				}, 80);
-			} else {
-				sender.sendMessage(Main.PREFIX + "You can't use that command.");
+					
+		    		PlayerUtils.broadcast(PREFIX + "Bidding starts in §a" + timeLeft + "§7.");
+		    		
+			    	for (Player online : PlayerUtils.getPlayers()) {
+			    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
+			    	}
+			    	
+			    	timeLeft--;
+				}
+			}.runTaskTimer(Main.plugin, 0, 20);
+		}
+		
+		if (args[0].equalsIgnoreCase("stop")) {
+			if (task == null || !Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+				throw new CommandException("The are no slave market timers running.");
+			}
+			
+			task.cancel();
+			task = null;
+			
+			PlayerUtils.broadcast(PREFIX + "The slave bidding has been stopped.");
+		}
+		return true;
+	}
+
+	/**
+	 * Execute the /bid command.
+	 * 
+	 * @param sender The sender of the command.
+	 * @param args The argurments after the /[command]
+	 * @return Always true.
+	 * @throws CommandException If any wrong args were given.
+	 */
+	private boolean executeBid(final CommandSender sender, final String[] args) throws CommandException {
+		if (!(sender instanceof Player)) {
+			throw new CommandException("Only players can bid on players.");
+		}
+		
+		Player player = (Player) sender;
+		
+		if (!owners.contains(player.getName())) {
+			throw new CommandException("You are not a slave owner.");
+		} 
+		
+		if (args.length == 0) {
+			player.sendMessage(Main.PREFIX + "Usage: /bid <amount>");
+			return true;
+		}
+		
+		int amount = parseInt(args[0], "amount");
+		
+		if (!bidProgressing) {
+			throw new CommandException("There are no slaves being bid on right now.");
+		}
+		
+		if (amount < 0) {
+			throw new CommandException("Bids cannot be negative.");
+		}
+		
+		if (amount <= biggestBid) {
+			throw new CommandException("Bids must be greater than the previous bid.");
+		}
+		
+		if (!hasEnough(player, Material.DIAMOND, amount)) {
+			throw new CommandException("You can't bid more diamonds than you have.");
+		}
+		
+		PlayerUtils.broadcast(PREFIX + "§a" + player.getName() + "§7 has bid §a" + (amount == 1 ? "1 diamond" : amount + " diamonds") + "§7.");
+
+		bidWinner = player.getName();
+		biggestBid = amount;
+		
+		bidTime = bidTime + 3;
+		return true;
+	}
+
+	/**
+	 * Check if the given player has enough of the given number of the given material.
+	 * 
+	 * @param player the player.
+	 * @param material the material.
+	 * @param entered the number.
+	 * 
+	 * @return <code>True</code> if the player has the given number of the material, <code>false</code> otherwise
+	 */
+	public static boolean hasEnough(Player player, Material material, int entered) {
+		int total = 0;
+		
+		for (ItemStack item : player.getInventory().getContents()) {
+			if (item == null) {
+				continue;
+			}
+			
+			if (item.getType() == material) {
+				total = total + item.getAmount();
 			}
 		}
 		
-		if (cmd.getName().equalsIgnoreCase("bid")) {
-			if (!(sender instanceof Player)) {
-				sender.sendMessage(ChatColor.RED + "Only players can bid on players.");
-				return true;
-			}
-			
-			Player player = (Player) sender;
-			
-			if (!isEnabled()) {
-				sender.sendMessage(Main.PREFIX + "\"SlaveMarket\" is not enabled.");
-				return true;
-			}
-			
-			if (traders.contains(player.getName())) {
-				if (args.length == 0) {
-					player.sendMessage(Main.PREFIX + "Usage: /bid <amount>");
-					return true;
-				}
-				
-				int i;
-				
-				try {
-					i = Integer.parseInt(args[0]);
-				} catch (Exception e) {
-					player.sendMessage(ChatColor.RED + "Invaild number.");
-					return true;
-				}
-				
-				if (i > 0) {
-					if (bidProgressing) {
-						if (!PlayerUtils.hasEnough(player, Material.DIAMOND, i)) {
-							player.sendMessage(prefix() + "You can't bid more diamonds than you have.");
-							return true;
-						}
-						
-						if (i > biggestBid) {
-							biggestBid = i;
-							bidWinner = player.getName();
-							if (bidTime < 3) {
-								bidTime = bidTime + 3;
-							}
-							PlayerUtils.broadcast(prefix() + "§a" + player.getName() + "§7 bid §a" + i + "§7.");
-						} else {
-							player.sendMessage(prefix() + "Bids must be greater than the previous bid.");
-						}
-					} else {
-						player.sendMessage(ChatColor.RED + "There are no slaves being bid on right now.");
-					}
-				} else {
-					player.sendMessage(ChatColor.RED + "Bids cannot be negative.");
-				}
-			} else {
-				player.sendMessage(prefix() + "You are not a slave owner.");
-			}
-		}
-		return true;
+		return total >= entered;
 	}
 }
