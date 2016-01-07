@@ -237,8 +237,6 @@ public class Timers {
 					}
 				}
 				
-				Bukkit.getPluginManager().callEvent(new GameStartEvent());
-				
 				for (Player online : PlayerUtils.getPlayers()) {
 					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
@@ -313,6 +311,8 @@ public class Timers {
 						user.resetInventory();
 					}
 				}
+				
+				Bukkit.getPluginManager().callEvent(new GameStartEvent());
 			}
 		}.runTaskLater(Main.plugin, 600);
 	}
