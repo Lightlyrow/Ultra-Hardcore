@@ -21,3 +21,4 @@ UHC Plugin designed for LeonTG77's UHC games
 17. New way of limiting ores
 18. Add a point system that gives you points each time you kill someone, win a game and for good behaviour in chat (more things to be added)
 19. Fix the arena /hotbar command
+20. Add /back and /respawn <player>
