@@ -41,7 +41,7 @@ public class RandomCommand extends UHCCommand {
 		PlayerUtils.broadcast(Main.PREFIX + "Randomizing §6" + amount + "§7 teams of §6" + size + "§7.");
 		
 		for (int i = 0; i < amount; i++) {
-			ArrayList<Player> list = new ArrayList<Player>();
+			List<Player> list = new ArrayList<Player>();
 			
 			for (Player online : PlayerUtils.getPlayers()) {
 				if (teams.getTeam(online) == null) {
