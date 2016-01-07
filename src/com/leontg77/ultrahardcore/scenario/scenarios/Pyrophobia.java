@@ -107,6 +107,10 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 		Player player = (Player) sender;
 		
 		if (cmd.getName().equalsIgnoreCase("genpyro")) {
+			if (!sender.hasPermission("uhc.pyrophobia")) {
+				return true;
+			}
+			
 			if (args.length == 0) {
 				player.sendMessage(Main.PREFIX.replaceAll("UHC", "Pyrophobia") + "Starting PyroPhobia convertion.");
 				convertToPyro(player.getWorld(), 1100);
