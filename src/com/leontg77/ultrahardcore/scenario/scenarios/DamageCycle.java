@@ -34,7 +34,7 @@ public class DamageCycle extends Scenario implements Listener, CommandExecutor {
 	private BukkitRunnable task;
 	private DamageType current;
 	
-	public static final String PREFIX = "§7§lDamageCycle §8» §7";
+	public static final String PREFIX = "§7[§8DamageCycle§7] ";
 	
 	public DamageCycle() {
 		super("DamageCycle", "Every 10 minutes the damage type changes, during the next 10 minutes if you take damage from that type you die.");
