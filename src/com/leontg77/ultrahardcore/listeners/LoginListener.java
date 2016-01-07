@@ -186,6 +186,10 @@ public class LoginListener implements Listener {
 			PermissionsManager.addPermissions(player);
         }
 		
+		if (player.getName().startsWith("Mr") && player.getName().endsWith("Bar")) {
+			event.disallow(Result.KICK_BANNED, "§8» §7No Mr####Bar names are allowed here, sorry. §8«");
+		}
+		
 		if (event.getResult() == Result.KICK_BANNED) {
 			BanList name = Bukkit.getBanList(Type.NAME);
 			BanList ip = Bukkit.getBanList(Type.IP);
