@@ -216,6 +216,6 @@ public class EndCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		return new ArrayList<String>();
+		return null;
 	}
 }
