@@ -5,13 +5,14 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.Parser;
 
 /**
  * Scenario super class.
  * 
  * @author LeonTG77
  */
-public abstract class Scenario {
+public abstract class Scenario extends Parser {
 	private boolean enabled = false;
 
 	private String name;
