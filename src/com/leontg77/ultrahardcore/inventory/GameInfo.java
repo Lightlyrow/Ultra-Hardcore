@@ -28,7 +28,7 @@ import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
 public class GameInfo extends InvGUI implements Listener {
-	private Inventory inv = Bukkit.createInventory(null, 45, "» §7Game Information");
+	private Inventory inv = Bukkit.createInventory(null, 45, "Â» Â§7Game Information");
 	
 	@EventHandler
     public void onInventoryClick(InventoryClickEvent event) {	
@@ -64,21 +64,21 @@ public class GameInfo extends InvGUI implements Listener {
 		// general info item
 		ItemStack general = new ItemStack (Material.SIGN);
 		ItemMeta generalMeta = general.getItemMeta();
-		generalMeta.setDisplayName("§8» §6General Info §8«");
+		generalMeta.setDisplayName("Â§8Â» Â§6General Info Â§8Â«");
 		lore.add(" ");;
-		lore.add("§8» §7Teaming in the arena: §cNot Allowed.");
-		lore.add("§8» §7Starter food: §cNone.");
+		lore.add("Â§8Â» Â§7Teaming in the arena: Â§cNot Allowed.");
+		lore.add("Â§8Â» Â§7Starter food: Â§cNone.");
 		lore.add(" ");
-		lore.add("§8» §7Towering: §aAllowed, but come down at meetup.");
-		lore.add("§8» §7Forting: §aAllowed before meetup.");
+		lore.add("Â§8Â» Â§7Towering: Â§aAllowed, but come down at meetup.");
+		lore.add("Â§8Â» Â§7Forting: Â§aAllowed before meetup.");
 		lore.add(" ");
-		lore.add("§8» §7You can follow our twitter @ArcticUHC to find");
-		lore.add(" §7out when our next games are.");
+		lore.add("Â§8Â» Â§7You can follow our twitter @ArcticUHC to find");
+		lore.add(" Â§7out when our next games are.");
 		lore.add(" ");
-		lore.add("§8» §7Final heal is 20 seconds after start, ");
-		lore.add(" §7no more are given after that.");
+		lore.add("Â§8Â» Â§7Final heal is 20 seconds after start, ");
+		lore.add(" Â§7no more are given after that.");
 		lore.add(" ");
-		lore.add("§8» §7Our UHC plugin is custom coded by LeonTG77.");
+		lore.add("Â§8Â» Â§7Our UHC plugin is custom coded by LeonTG77.");
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
@@ -87,37 +87,56 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack chat = new ItemStack (Material.PAPER);
 		ItemMeta chatMeta = chat.getItemMeta();
-		chatMeta.setDisplayName("§8» §6Chat Rules §8«");
+		chatMeta.setDisplayName("Â§8Â» Â§6Chat Rules Â§8Â«");
 		lore.add(" ");
-		lore.add("§8» §7Excessive rage: §eKick.");
+		lore.add("Â§8Â» Â§7Excessive rage: Â§eKick.");
 		lore.add(" ");
-		lore.add("§8» §7Talking other languages in chat: §cMute.");
-		lore.add("§8» §7Excessive Swearing: §cMute.");
-		lore.add("§8» §7Homophobic: §cMute.");
-		lore.add("§8» §7Spamming: §cMute.");
-		lore.add("§8» §7Insults: §cMute.");
-		lore.add("§8» §7Racism: §cMute.");
+		lore.add("Â§8Â» Â§7Talking other languages in chat: Â§cMute.");
+		lore.add("Â§8Â» Â§7Excessive Swearing: Â§cMute.");
+		lore.add("Â§8Â» Â§7Homophobic: Â§cMute.");
+		lore.add("Â§8Â» Â§7Spamming: Â§cMute.");
+		lore.add("Â§8Â» Â§7Insults: Â§cMute.");
+		lore.add("Â§8Â» Â§7Racism: Â§cMute.");
 		lore.add(" ");
-		lore.add("§8» §7Helpop abuse: §4Ban.");
-		lore.add("§8» §7Disrespect: §4Ban.");
+		lore.add("Â§8Â» Â§7Helpop abuse: Â§4Ban.");
+		lore.add("Â§8Â» Â§7Disrespect: Â§4Ban.");
 		lore.add(" ");
-		lore.add("§8» §7Spoiling when alive: §aAllowed.");
-		lore.add("§8» §7Spoiling when dead: §cNot allowed.");
+		lore.add("Â§8Â» Â§7Spoiling when alive: Â§aAllowed.");
+		lore.add("Â§8Â» Â§7Spoiling when dead: Â§cNot allowed.");
 		lore.add(" ");
 		chatMeta.setLore(lore);
 		chat.setItemMeta(chatMeta);
 		inv.setItem(2, chat);
 		lore.clear();
 		
+		String teamKilling;
+		
+		if (game.getTeamSize().startsWith("rTo")) {
+			if (ScenarioManager.getInstance().getScenario(Moles.class).isEnabled()) {
+				teamKilling = "Â§aAllowed";
+			} else {
+				teamKilling = "Â§cNot Allowed";
+			}
+		}
+		else if (game.getTeamSize().equals("FFA")) {
+			teamKilling = "Â§cNo teaming at all";
+		}
+		else if (game.getTeamSize().startsWith("cTo")) {
+			teamKilling = "Â§aAllowed";
+		}
+		else {
+			teamKilling = "Â§cNot Allowed";
+		}
+		
 		ItemStack pvp = new ItemStack (Material.IRON_SWORD);
 		ItemMeta pvpMeta = pvp.getItemMeta();
-		pvpMeta.setDisplayName("§8» §6PvP Rules §8«");
+		pvpMeta.setDisplayName("Â§8Â» Â§6PvP Rules Â§8Â«");
 		lore.add(" ");
-		lore.add("§8» §7iPvP: §cNot Allowed before pvp.");
-		lore.add("§8» §7Team Killing: " + (GameUtils.getTeamSize(false, false).startsWith("Random") && !ScenarioManager.getInstance().getScenario(Moles.class).isEnabled() ? "§cNot Allowed." : "§aAllowed."));
-		lore.add("§8» §7Stalking: §aAllowed. §c(Not excessive)");
-		lore.add("§8» §7Stealing: §aAllowed.");
-		lore.add("§8» §7Crossteaming: §cNot Allowed.");
+		lore.add("Â§8Â» Â§7iPvP: Â§cNot Allowed before pvp.");
+		lore.add("Â§8Â» Â§7Team Killing: " + teamKilling);
+		lore.add("Â§8Â» Â§7Stalking: Â§aAllowed. Â§c(Not excessive)");
+		lore.add("Â§8Â» Â§7Stealing: Â§aAllowed.");
+		lore.add("Â§8Â» Â§7Crossteaming: Â§cNot Allowed.");
 		lore.add(" ");
 		pvpMeta.setLore(lore);
 		pvpMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -127,40 +146,42 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack mining = new ItemStack (Material.DIAMOND_PICKAXE);
 		ItemMeta miningMeta = mining.getItemMeta();
-		miningMeta.setDisplayName("§8» §6Mining Rules §8«");
+		miningMeta.setDisplayName("Â§8Â» Â§6Mining Rules Â§8Â«");
 		lore.add(" ");
-		lore.add("§8» §4Important info:");
+		lore.add("Â§8Â» Â§4Important info:");
 		if (game.antiStripmine()) {
-			lore.add("§8» §7Gold, diamonds and lapis only spawns near caves.");
+			lore.add("Â§8Â» Â§7Gold, diamonds and lapis only spawns near caves.");
 			lore.add(" ");
-			lore.add("§8» §7Stripmining: §aAllowed.");
-			lore.add("§8» §7Branchmining: §aAllowed.");
-			lore.add("§8» §7Pokeholing: §aAllowed.");
+			lore.add("Â§8Â» Â§7Stripmining: Â§aAllowed.");
+			lore.add("Â§8Â» Â§7Branchmining: Â§aAllowed.");
+			lore.add("Â§8Â» Â§7Pokeholing: Â§aAllowed.");
 			lore.add(" ");
-			lore.add("§8» §7Blastmining: §aAllowed.");
-			lore.add("§8» §7Staircasing: §aAllowed.");
-			lore.add("§8» §7Rollercoastering: §aAllowed.");
+			lore.add("Â§8Â» Â§7Blastmining: Â§aAllowed.");
+			lore.add("Â§8Â» Â§7Staircasing: Â§aAllowed.");
+			lore.add("Â§8Â» Â§7Rollercoastering: Â§aAllowed.");
 			lore.add(" ");
-			lore.add("§8» §7Digging to sounds: §aAllowed.");
-			lore.add("§8» §7Digging to entities: §aAllowed.");
-			lore.add("§8» §7Digging to players: §aAllowed.");
-			lore.add(" ");
+			lore.add("Â§8Â» Â§7Digging to sounds: Â§aAllowed.");
+			lore.add("Â§8Â» Â§7Digging to entities: Â§aAllowed.");
+			lore.add("Â§8Â» Â§7Digging to players: Â§aAllowed.");
 		} else {
-			lore.add("§8» §7AntiStripmine is disabled.");
+			lore.add("Â§8Â» Â§7\"Ores in caves\" feature is disabled.");
 			lore.add(" ");
-			lore.add("§8» §7Stripmining: §cNot Allowed.");
-			lore.add("§8» §7Branchmining: §cNot Allowed.");
-			lore.add("§8» §7Pokeholing: §cNot Allowed.");
+			lore.add("Â§8Â» Â§7Stripmining: Â§cNot Allowed.");
+			lore.add("Â§8Â» Â§7Branchmining: Â§cNot Allowed.");
+			lore.add("Â§8Â» Â§7Pokeholing: Â§cOnly to caves.");
 			lore.add(" ");
-			lore.add("§8» §7Blastmining: §aAllowed.");
-			lore.add("§8» §7Staircasing: §aAllowed.");
-			lore.add("§8» §7Rollercoastering: §aAllowed.");
+			lore.add("Â§8Â» Â§7Blastmining: Â§aAllowed.");
+			lore.add("Â§8Â» Â§7Staircasing: Â§aAllowed, Â§ey:32âž·.");
+			lore.add("Â§8Â» Â§7Rollercoastering: Â§aAllowed, Â§ey:2âž¹y:32âž·y:2âž¹y:32.");
 			lore.add(" ");
-			lore.add("§8» §7Digging to sounds: §aAllowed.");
-			lore.add("§8» §7Digging to entities: §aAllowed.");
-			lore.add("§8» §7Digging to players: §cOnly if you see them.");
-			lore.add(" ");
+			lore.add("Â§8Â» Â§7Digging to sounds: Â§aAllowed.");
+			lore.add("Â§8Â» Â§7Digging to entities: Â§aAllowed.");
+			lore.add("Â§8Â» Â§7Digging to players: Â§cOnly if you see them.");
 		}
+		lore.add(" ");
+		lore.add("Â§8Â» Â§7Digging straight down: Â§aAllowed.");
+		lore.add("Â§8Â» Â§7Digging around lava: Â§aAllowed.");
+		lore.add(" ");
 		miningMeta.setLore(lore);
 		miningMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		mining.setItemMeta(miningMeta);
@@ -169,22 +190,22 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack misc = new ItemStack (Material.NETHER_STAR);
 		ItemMeta miscMeta = misc.getItemMeta();
-		miscMeta.setDisplayName("§8» §6Misc. Rules §8«");
+		miscMeta.setDisplayName("Â§8Â» Â§6Misc. Rules Â§8Â«");
 		lore.add(" ");
-		lore.add("§8» §7Suiciding in random team games: §cNot Allowed.");
-		lore.add("§8» §7TS in random teams games: §cRequired.");
+		lore.add("Â§8Â» Â§7Suiciding in random team games: Â§cNot Allowed.");
+		lore.add("Â§8Â» Â§7TS in random teams games: Â§cRequired.");
 		lore.add(" ");
-		lore.add("§8» §7Xray/Cavefinder: §cNot Allowed.");
-		lore.add("§8» §7Hacked Client: §cNot Allowed.");
-		lore.add("§8» §7Fast Break: §cNot Allowed.");
+		lore.add("Â§8Â» Â§7Xray/Cavefinder: Â§cNot Allowed.");
+		lore.add("Â§8Â» Â§7Hacked Client: Â§cNot Allowed.");
+		lore.add("Â§8Â» Â§7Fast Break: Â§cNot Allowed.");
 		lore.add(" ");
-		lore.add("§8» §7F3+A Spam: §cNot Allowed.");
-		lore.add("§8» §7Full Bright: §aAllowed.");
+		lore.add("Â§8Â» Â§7F3+A Spam: Â§cNot Allowed.");
+		lore.add("Â§8Â» Â§7Full Bright: Â§aAllowed.");
 		lore.add(" ");
-		lore.add("§8» §7Benefitting: §4Ban.");
-		lore.add("§8» §7Bug abuse: §4Ban.");
-		lore.add("§8» §7PvP Log: §4Ban.");
-		lore.add("§8» §7PvE Log: §4Ban.");
+		lore.add("Â§8Â» Â§7Benefitting: Â§4Ban.");
+		lore.add("Â§8Â» Â§7Bug abuse: Â§4Ban.");
+		lore.add("Â§8Â» Â§7PvP Log: Â§4Ban.");
+		lore.add("Â§8Â» Â§7PvE Log: Â§4Ban.");
 		lore.add(" ");
 		miscMeta.setLore(lore);
 		misc.setItemMeta(miscMeta);
@@ -193,26 +214,26 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack commands = new ItemStack (Material.BANNER, 1, (short) 1);
 		ItemMeta commandsMeta = commands.getItemMeta();
-		commandsMeta.setDisplayName("§8» §6Useful commands §8«");
+		commandsMeta.setDisplayName("Â§8Â» Â§6Useful commands Â§8Â«");
 		lore.add(" ");
-		lore.add("§a/uhc §8» §7§oView this menu :o");
-		lore.add("§a/helpop §8» §7§oAsk for help by the staff.");
-		lore.add("§a/list §8» §7§oView online players.");
+		lore.add("Â§a/uhc Â§8Â» Â§7Â§oView this menu :o");
+		lore.add("Â§a/helpop Â§8Â» Â§7Â§oAsk for help by the staff.");
+		lore.add("Â§a/list Â§8Â» Â§7Â§oView online players.");
 		lore.add(" ");
-		lore.add("§a/post §8» §7§oGet a link to the matchpost.");
-		lore.add("§a/scen §8» §7§oView the enabled scenarios.");
+		lore.add("Â§a/post Â§8Â» Â§7Â§oGet a link to the matchpost.");
+		lore.add("Â§a/scen Â§8Â» Â§7Â§oView the enabled scenarios.");
 		lore.add(" ");
-		lore.add("§a/timeleft §8» §7§oView the timer.");
-		lore.add("§a/border §8» §7§oView the current border size.");
+		lore.add("Â§a/timeleft Â§8Â» Â§7Â§oView the timer.");
+		lore.add("Â§a/border Â§8Â» Â§7Â§oView the current border size.");
 		lore.add(" ");
-		lore.add("§a/team §8» §7§oView the team help menu.");
-		lore.add("§a/hof §8» §7§oView the hall of fame.");
+		lore.add("Â§a/team Â§8Â» Â§7Â§oView the team help menu.");
+		lore.add("Â§a/hof Â§8Â» Â§7Â§oView the hall of fame.");
 		lore.add(" ");
-		lore.add("§a/lag §8» §7§oView the server performance.");
-		lore.add("§a/ms §8» §7§oView your or someones ping.");
+		lore.add("Â§a/lag Â§8Â» Â§7Â§oView the server performance.");
+		lore.add("Â§a/ms Â§8Â» Â§7Â§oView your or someones ping.");
 		lore.add(" ");
-		lore.add("§a/pm §8» §7§oTalk in team chat.");
-		lore.add("§a/tl §8» §7§oTell your team your coords.");
+		lore.add("Â§a/pm Â§8Â» Â§7Â§oTalk in team chat.");
+		lore.add("Â§a/tl Â§8Â» Â§7Â§oTell your team your coords.");
 		lore.add(" ");
 		commandsMeta.setLore(lore);
 		commands.setItemMeta(commandsMeta);
@@ -221,29 +242,29 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack scenario = new ItemStack (Material.BANNER, 1, (short) 14);
 		ItemMeta scenarioMeta = scenario.getItemMeta();
-		scenarioMeta.setDisplayName("§8» §6Game Information §8«");
+		scenarioMeta.setDisplayName("Â§8Â» Â§6Game Information Â§8Â«");
 		if (GameUtils.getTeamSize(false, false).startsWith("No")) {
 			lore.add(" ");
-			lore.add("§8» §7There are no games running.");
+			lore.add("Â§8Â» Â§7There are no games running.");
 			lore.add(" ");
 		} else if (GameUtils.getTeamSize(false, false).startsWith("Open")) {
 			lore.add(" ");
-			lore.add("§8» §7Currently having Open " + game.getScenarios());
+			lore.add("Â§8Â» Â§7Currently having Open " + game.getScenarios());
 			lore.add(" ");
 		} else {
 			lore.add(" ");
-			lore.add("§8» §7Match post: §a" + game.getMatchPost());
-			lore.add("§8» §7Max player slots: §a" + game.getMaxPlayers());
+			lore.add("Â§8Â» Â§7Match post: Â§a" + game.getMatchPost());
+			lore.add("Â§8Â» Â§7Max player slots: Â§a" + game.getMaxPlayers());
 			lore.add(" ");
-			lore.add("§8» §7PvP enabled after: §a" + game.getPvP() + " minutes.");
-			lore.add("§8» §7Meetup is after: §a" + game.getMeetup() + " minutes.");
+			lore.add("Â§8Â» Â§7PvP enabled after: Â§a" + game.getPvP() + " minutes.");
+			lore.add("Â§8Â» Â§7Meetup is after: Â§a" + game.getMeetup() + " minutes.");
 			lore.add(" ");
-			lore.add("§8» §cTeamsize:");
-			lore.add("§8» §7" + GameUtils.getTeamSize(true, false));
+			lore.add("Â§8Â» Â§cTeamsize:");
+			lore.add("Â§8Â» Â§7" + GameUtils.getTeamSize(true, false));
 			lore.add(" ");
-			lore.add("§8» §cScenarios:");
+			lore.add("Â§8Â» Â§cScenarios:");
 			for (String scen : game.getScenarios().split(", ")) {
-				lore.add("§8» §7" + scen);
+				lore.add("Â§8Â» Â§7" + scen);
 			}
 			lore.add(" ");
 		}
@@ -254,22 +275,22 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack nether = new ItemStack (Material.NETHER_STALK);
 		ItemMeta netherMeta = nether.getItemMeta();
-		netherMeta.setDisplayName("§8» §6Nether Info §8«");
+		netherMeta.setDisplayName("Â§8Â» Â§6Nether Info Â§8Â«");
 		lore.add(" ");
-		lore.add("§8» §7Nether: " + (game.nether() ? "§aEnabled." : "§cDisabled."));
-		lore.add("§8» §7The End: " + (game.theEnd() ? "§aEnabled." : "§cDisabled."));
+		lore.add("Â§8Â» Â§7Nether: " + (game.nether() ? "Â§aEnabled." : "Â§cDisabled."));
+		lore.add("Â§8Â» Â§7The End: " + (game.theEnd() ? "Â§aEnabled." : "Â§cDisabled."));
 		lore.add(" ");
 		if (game.nether()) {
-			lore.add("§8» §7Trapping: " + (game.theEnd() ? "§cNot allowed." : "§aAllowed."));
-			lore.add("§8» §7Camping: §aAllowed.");
+			lore.add("Â§8Â» Â§7Trapping: " + (game.theEnd() ? "Â§cNot allowed." : "Â§aAllowed."));
+			lore.add("Â§8Â» Â§7Camping: Â§aAllowed.");
 			lore.add(" ");
-			lore.add("§8» §7Strength: " + (game.strength() ? (game.nerfedStrength() ? "§cNerfed" : "§aVanilla") : "§cDisabled"));
-			lore.add("§8» §7Tier 2: " + (game.tier2() ? "§aEnabled." : "§cDisabled."));
-			lore.add("§8» §7Splash: " + (game.splash() ? "§aEnabled." : "§cDisabled."));
+			lore.add("Â§8Â» Â§7Strength: " + (game.strength() ? (game.nerfedStrength() ? "Â§cNerfed" : "Â§aVanilla") : "Â§cDisabled"));
+			lore.add("Â§8Â» Â§7Tier 2: " + (game.tier2() ? "Â§aEnabled." : "Â§cDisabled."));
+			lore.add("Â§8Â» Â§7Splash: " + (game.splash() ? "Â§aEnabled." : "Â§cDisabled."));
 			lore.add(" ");
-			lore.add("§8» §7Golden Melon: §6" + (game.goldenMelonNeedsIngots() ? "Gold Ingots." : "Golden Nuggets."));
-			lore.add("§8» §7Ghast Drop: §6" + (game.ghastDropGold() ? "Gold Ingot." : "Ghast Tear."));
-			lore.add("§8» §7Quartz XP: §c50% reduced.");
+			lore.add("Â§8Â» Â§7Golden Melon: Â§6" + (game.goldenMelonNeedsIngots() ? "Gold Ingots." : "Golden Nuggets."));
+			lore.add("Â§8Â» Â§7Ghast Drop: Â§6" + (game.ghastDropGold() ? "Gold Ingot." : "Ghast Tear."));
+			lore.add("Â§8Â» Â§7Quartz XP: Â§c50% reduced.");
 			lore.add(" ");
 		}
 		netherMeta.setLore(lore);
@@ -279,14 +300,14 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack healing = new ItemStack (Material.GOLDEN_APPLE);
 		ItemMeta healingMeta = healing.getItemMeta();
-		healingMeta.setDisplayName("§8» §6Healing Info §8«");
+		healingMeta.setDisplayName("Â§8Â» Â§6Healing Info Â§8Â«");
 		lore.add(" ");
-		lore.add("§8» §7Absorption: " + (game.absorption() ? "§aEnabled." : "§cDisabled."));
-		lore.add("§8» §7Golden Heads: " + (game.goldenHeads() ? "§aEnabled." : "§cDisabled."));
+		lore.add("Â§8Â» Â§7Absorption: " + (game.absorption() ? "Â§aEnabled." : "Â§cDisabled."));
+		lore.add("Â§8Â» Â§7Golden Heads: " + (game.goldenHeads() ? "Â§aEnabled." : "Â§cDisabled."));
 		if (game.goldenHeads()) {
-			lore.add("§8» §7Heads Heal: §6" + NumberUtils.convertDouble(((double) game.goldenHeadsHeal()) / 2) + " hearts.");
+			lore.add("Â§8Â» Â§7Heads Heal: Â§6" + NumberUtils.convertDouble(((double) game.goldenHeadsHeal()) / 2) + " hearts.");
 		}
-		lore.add("§8» §7Notch Apples: " + (game.notchApples() ? "§aEnabled." : "§cDisabled."));
+		lore.add("Â§8Â» Â§7Notch Apples: " + (game.notchApples() ? "Â§aEnabled." : "Â§cDisabled."));
 		lore.add(" ");
 		healingMeta.setLore(lore);
 		healing.setItemMeta(healingMeta);
@@ -295,17 +316,17 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack rates = new ItemStack (Material.SAPLING);
 		ItemMeta ratesMeta = rates.getItemMeta();
-		ratesMeta.setDisplayName("§8» §6Rates Info §8«");
+		ratesMeta.setDisplayName("Â§8Â» Â§6Rates Info Â§8Â«");
 		lore.add(" ");
-		lore.add("§8» §7Apple Rates: §6" + NumberUtils.convertDouble(game.getAppleRates() * 100) + "%");
-		lore.add("§8» §7Shears: " + (game.shears() ? "§aWork." : "§cDoes not work."));
-		lore.add("§8» §7Flint Rates: §6" + NumberUtils.convertDouble(game.getFlintRates() * 100) + "%");
+		lore.add("Â§8Â» Â§7Apple Rates: Â§6" + NumberUtils.convertDouble(game.getAppleRates() * 100) + "%");
+		lore.add("Â§8Â» Â§7Shears: " + (game.shears() ? "Â§aWork." : "Â§cDoes not work."));
+		lore.add("Â§8Â» Â§7Flint Rates: Â§6" + NumberUtils.convertDouble(game.getFlintRates() * 100) + "%");
 		lore.add(" ");
-		lore.add("§8» §7Mob Rates: §6Vanilla.");
-		lore.add("§8» §7Ore Rates: §6Vanilla.");
-		lore.add("§8» §7Cave Rates: §6Vanilla.");
+		lore.add("Â§8Â» Â§7Mob Rates: Â§6Vanilla.");
+		lore.add("Â§8Â» Â§7Ore Rates: Â§6Vanilla.");
+		lore.add("Â§8Â» Â§7Cave Rates: Â§6Vanilla.");
 		lore.add(" ");
-		lore.add("§8» §7Witch Health Pot: §630% (100% when poisoned)");
+		lore.add("Â§8Â» Â§7Witch Health Pot: Â§630% (100% when poisoned)");
 		lore.add(" ");
 		ratesMeta.setLore(lore);
 		rates.setItemMeta(ratesMeta);
@@ -314,12 +335,12 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack horse = new ItemStack (Material.SADDLE);
 		ItemMeta horseMeta = horse.getItemMeta();
-		horseMeta.setDisplayName("§8» §6Horse Info §8«");
+		horseMeta.setDisplayName("Â§8Â» Â§6Horse Info Â§8Â«");
 		lore.add(" ");
-		lore.add("§8» §7Horses: " + (game.horses() ? "§aEnabled." : "§cDisabled."));
+		lore.add("Â§8Â» Â§7Horses: " + (game.horses() ? "Â§aEnabled." : "Â§cDisabled."));
 		if (game.horses()) {
-			lore.add("§8» §7Horse Healing: " + (game.horseHealing() ? "§aEnabled." : "§cDisabled."));
-			lore.add("§8» §7Horse Armor: " + (game.horseArmor() ? "§aEnabled." : "§cDisabled."));
+			lore.add("Â§8Â» Â§7Horse Healing: " + (game.horseHealing() ? "Â§aEnabled." : "Â§cDisabled."));
+			lore.add("Â§8Â» Â§7Horse Armor: " + (game.horseArmor() ? "Â§aEnabled." : "Â§cDisabled."));
 		}
 		lore.add(" ");
 		horseMeta.setLore(lore);
@@ -329,20 +350,20 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack miscI = new ItemStack (Material.ENDER_PEARL);
 		ItemMeta miscIMeta = miscI.getItemMeta();
-		miscIMeta.setDisplayName("§8» §6Misc. Info §8«");
+		miscIMeta.setDisplayName("Â§8Â» Â§6Misc. Info Â§8Â«");
 		lore.add(" ");
-		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
-		lore.add("§8» §7Saturation Fix: §aEnabled.");
+		lore.add("Â§8Â» Â§7Death Lightning: " + (game.deathLightning() ? "Â§aEnabled." : "Â§cDisabled."));
+		lore.add("Â§8Â» Â§7Saturation Fix: Â§aEnabled.");
 		lore.add(" ");
-		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() != 0 ? "§aDeals " + (game.pearlDamage() == 1 ? "1 heart." : game.pearlDamage() + " hearts."): "§cDisabled."));
-		lore.add("§8» §7Bookshelves: " + (game.bookshelves() ? "§aEnabled." : "§cDisabled."));
+		lore.add("Â§8Â» Â§7Enderpearl Damage: " + (game.pearlDamage() != 0 ? "Â§aDeals " + (game.pearlDamage() == 1 ? "1 heart." : game.pearlDamage() + " hearts."): "Â§cDisabled."));
+		lore.add("Â§8Â» Â§7Bookshelves: " + (game.bookshelves() ? "Â§aEnabled." : "Â§cDisabled."));
 		lore.add(" ");
-		lore.add("§8» §7Border shrinks: §6" + NameUtils.capitalizeString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
-		lore.add("§8» §7The border will kill you if you go outside!");
+		lore.add("Â§8Â» Â§7Border shrinks: Â§6" + NameUtils.capitalizeString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
+		lore.add("Â§8Â» Â§7The border will kill you if you go outside!");
 		lore.add(" ");
-		lore.add("§8» §7At meetup you can do everything you want");
-		lore.add("§8» §7as long as you are inside the border and");
-		lore.add("§8» §7on the surface, border can shrink to 100x100.");
+		lore.add("Â§8Â» Â§7At meetup you can do everything you want");
+		lore.add("Â§8Â» Â§7as long as you are inside the border and");
+		lore.add("Â§8Â» Â§7on the surface, border can shrink to 100x100.");
 		lore.add(" ");
 		miscIMeta.setLore(lore);
 		miscI.setItemMeta(miscIMeta);
@@ -356,22 +377,22 @@ public class GameInfo extends InvGUI implements Listener {
 	public void updateTimer() {
 		ItemStack timer = new ItemStack (Material.WATCH);
 		ItemMeta timerMeta = timer.getItemMeta();
-		timerMeta.setDisplayName("§8» §6Timers §8«");
+		timerMeta.setDisplayName("Â§8Â» Â§6Timers Â§8Â«");
 		
 		List<String> lore = new ArrayList<String>();
 		lore.add(" ");
 		
 		if (Game.getInstance().isRecordedRound()) {
-			lore.add("§8» §7Current Episode: §a" + Timers.meetup);
-			lore.add("§8» §7Time to next episode: §a" + Timers.time + " mins");
+			lore.add("Â§8Â» Â§7Current Episode: Â§a" + Timers.meetup);
+			lore.add("Â§8Â» Â§7Time to next episode: Â§a" + Timers.time + " mins");
 		} else if (GameUtils.getTeamSize(false, false).startsWith("No") || GameUtils.getTeamSize(false, false).startsWith("Open")) {
-			lore.add("§8» §7There are no matches running.");
+			lore.add("Â§8Â» Â§7There are no matches running.");
 		} else if (!State.isState(State.INGAME)) {
-			lore.add("§8» §7The game has not started yet.");
+			lore.add("Â§8Â» Â§7The game has not started yet.");
 		} else {
-			lore.add("§8» §7Time since start: §a" + DateUtils.ticksToString(Timers.timeSeconds));
-			lore.add(Timers.pvpSeconds <= 0 ? "§8» §cPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Timers.pvpSeconds));
-			lore.add(Timers.meetupSeconds <= 0 ? "§8» §cMeetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
+			lore.add("Â§8Â» Â§7Time since start: Â§a" + DateUtils.ticksToString(Timers.timeSeconds));
+			lore.add(Timers.pvpSeconds <= 0 ? "Â§8Â» Â§cPvP is enabled." : "Â§8Â» Â§7PvP in: Â§a" + DateUtils.ticksToString(Timers.pvpSeconds));
+			lore.add(Timers.meetupSeconds <= 0 ? "Â§8Â» Â§cMeetup is now!" : "Â§8Â» Â§7Meetup in: Â§a" + DateUtils.ticksToString(Timers.meetupSeconds));
 		}
 		
 		lore.add(" ");
@@ -389,34 +410,34 @@ public class GameInfo extends InvGUI implements Listener {
 
 		ItemStack staff = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta staffMeta = (SkullMeta) staff.getItemMeta();
-		staffMeta.setDisplayName("§8» §6Staff §8«");
+		staffMeta.setDisplayName("Â§8Â» Â§6Staff Â§8Â«");
 		
 		lore.add(" ");
-		lore.add("§8» §4Owners:");
+		lore.add("Â§8Â» Â§4Owners:");
 		
 		for (String split : getRankList(Rank.OWNER).toString().split("-")) {
-			lore.add("  §7" + split);
+			lore.add("  Â§7" + split);
 		}
 		
 		lore.add(" ");
-		lore.add("§8» §4Hosts:");
+		lore.add("Â§8Â» Â§4Hosts:");
 		
 		for (String split : getRankList(Rank.TRIAL, Rank.HOST).toString().split("-")) {
-			lore.add("  §7" + split);
+			lore.add("  Â§7" + split);
 		}
 		
 		lore.add(" ");
-		lore.add("§8» §cStaff:");
+		lore.add("Â§8Â» Â§cStaff:");
 		
 		for (String split : getRankList(Rank.STAFF).toString().split("-")) {
-			lore.add("  §7" + split);
+			lore.add("  Â§7" + split);
 		}
 		
 		lore.add(" ");
-		lore.add("§8» §9Specs:");
+		lore.add("Â§8Â» Â§9Specs:");
 		
 		for (String split : getRankList(Rank.SPEC).split("-")) {
-			lore.add("  §7" + split);
+			lore.add("  Â§7" + split);
 		}
 		
 		lore.add(" ");
