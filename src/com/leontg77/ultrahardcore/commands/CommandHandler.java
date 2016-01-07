@@ -255,9 +255,11 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		List<String> list = new ArrayList<String>();
 		
 		for (Player online : PlayerUtils.getPlayers()) {
-			if (!(sender instanceof Player) || ((Player) sender).canSee(online)) {
-				list.add(online.getName());
+			if (sender instanceof Player && !((Player) sender).canSee(online)) {
+				continue;
 			}
+			
+			list.add(online.getName());
 		}
 		
 		return list;
