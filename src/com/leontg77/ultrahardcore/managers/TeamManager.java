@@ -172,6 +172,7 @@ public class TeamManager {
 	 * If the team is null nothing will happen.
 	 * 
 	 * @param player the player thats leaving the team.
+	 * @param unsave Wether to unsave the player from the team.
 	 */
 	public void leaveTeam(final OfflinePlayer player, final boolean unsave) {
 		// wait a tick, incase they got removed after death but other events with higher priority wants to use the team.
