@@ -82,10 +82,9 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
-		inv.setItem(0, general);
 		lore.clear();
 		
-		ItemStack chat = new ItemStack (Material.PAPER);
+		ItemStack chat = new ItemStack (Material.MAP);
 		ItemMeta chatMeta = chat.getItemMeta();
 		chatMeta.setDisplayName("§8» §6Chat Rules §8«");
 		lore.add(" ");
@@ -105,8 +104,8 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add("§8» §7Spoiling when dead: §cNot allowed.");
 		lore.add(" ");
 		chatMeta.setLore(lore);
+		chatMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		chat.setItemMeta(chatMeta);
-		inv.setItem(2, chat);
 		lore.clear();
 		
 		String teamKilling;
@@ -128,7 +127,7 @@ public class GameInfo extends InvGUI implements Listener {
 			teamKilling = "§cNot Allowed";
 		}
 		
-		ItemStack pvp = new ItemStack (Material.IRON_SWORD);
+		ItemStack pvp = new ItemStack (Material.DIAMOND_SWORD);
 		ItemMeta pvpMeta = pvp.getItemMeta();
 		pvpMeta.setDisplayName("§8» §6PvP Rules §8«");
 		lore.add(" ");
@@ -141,10 +140,9 @@ public class GameInfo extends InvGUI implements Listener {
 		pvpMeta.setLore(lore);
 		pvpMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		pvp.setItemMeta(pvpMeta);
-		inv.setItem(4, pvp);
 		lore.clear();
 		
-		ItemStack mining = new ItemStack (Material.DIAMOND_PICKAXE);
+		ItemStack mining = new ItemStack (Material.IRON_PICKAXE);
 		ItemMeta miningMeta = mining.getItemMeta();
 		miningMeta.setDisplayName("§8» §6Mining Rules §8«");
 		lore.add(" ");
@@ -185,11 +183,10 @@ public class GameInfo extends InvGUI implements Listener {
 		miningMeta.setLore(lore);
 		miningMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		mining.setItemMeta(miningMeta);
-		inv.setItem(6, mining);
 		lore.clear();
 		
-		ItemStack misc = new ItemStack (Material.NETHER_STAR);
-		ItemMeta miscMeta = misc.getItemMeta();
+		ItemStack meetup = new ItemStack (Material.EYE_OF_ENDER);
+		ItemMeta miscMeta = meetup.getItemMeta();
 		miscMeta.setDisplayName("§8» §6Misc. Rules §8«");
 		lore.add(" ");
 		lore.add("§8» §7Suiciding in random team games: §cNot Allowed.");
@@ -208,12 +205,12 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add("§8» §7PvE Log: §4Ban.");
 		lore.add(" ");
 		miscMeta.setLore(lore);
-		misc.setItemMeta(miscMeta);
-		inv.setItem(8, misc);
+		meetup.setItemMeta(miscMeta);
 		lore.clear();
 		
-		ItemStack commands = new ItemStack (Material.BANNER, 1, (short) 1);
-		ItemMeta commandsMeta = commands.getItemMeta();
+		ItemStack commands = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
+		SkullMeta commandsMeta = (SkullMeta) commands.getItemMeta();
+		commandsMeta.setOwner("MHF_Exclamation");
 		commandsMeta.setDisplayName("§8» §6Useful commands §8«");
 		lore.add(" ");
 		lore.add("§a/uhc §8» §7§oView this menu :o");
@@ -237,11 +234,11 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add(" ");
 		commandsMeta.setLore(lore);
 		commands.setItemMeta(commandsMeta);
-		inv.setItem(21, commands);
 		lore.clear();
 		
-		ItemStack scenario = new ItemStack (Material.BANNER, 1, (short) 14);
-		ItemMeta scenarioMeta = scenario.getItemMeta();
+		ItemStack scenario = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
+		SkullMeta scenarioMeta = (SkullMeta) commands.getItemMeta();
+		scenarioMeta.setOwner("MHF_Question");
 		scenarioMeta.setDisplayName("§8» §6Game Information §8«");
 		if (GameUtils.getTeamSize(false, false).startsWith("No")) {
 			lore.add(" ");
@@ -270,7 +267,6 @@ public class GameInfo extends InvGUI implements Listener {
 		}
 		scenarioMeta.setLore(lore);
 		scenario.setItemMeta(scenarioMeta);
-		inv.setItem(23, scenario);
 		lore.clear();
 		
 		ItemStack nether = new ItemStack (Material.NETHER_STALK);
@@ -295,7 +291,6 @@ public class GameInfo extends InvGUI implements Listener {
 		}
 		netherMeta.setLore(lore);
 		nether.setItemMeta(netherMeta);
-		inv.setItem(36, nether);
 		lore.clear();
 		
 		ItemStack healing = new ItemStack (Material.GOLDEN_APPLE);
@@ -311,10 +306,9 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add(" ");
 		healingMeta.setLore(lore);
 		healing.setItemMeta(healingMeta);
-		inv.setItem(38, healing);
 		lore.clear();
 		
-		ItemStack rates = new ItemStack (Material.SAPLING);
+		ItemStack rates = new ItemStack (Material.FLINT);
 		ItemMeta ratesMeta = rates.getItemMeta();
 		ratesMeta.setDisplayName("§8» §6Rates Info §8«");
 		lore.add(" ");
@@ -330,7 +324,6 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add(" ");
 		ratesMeta.setLore(lore);
 		rates.setItemMeta(ratesMeta);
-		inv.setItem(40, rates);
 		lore.clear();
 		
 		ItemStack horse = new ItemStack (Material.SADDLE);
@@ -345,11 +338,10 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add(" ");
 		horseMeta.setLore(lore);
 		horse.setItemMeta(horseMeta);
-		inv.setItem(42, horse);
 		lore.clear();
 		
-		ItemStack miscI = new ItemStack (Material.ENDER_PEARL);
-		ItemMeta miscIMeta = miscI.getItemMeta();
+		ItemStack misc = new ItemStack (Material.ENDER_PEARL);
+		ItemMeta miscIMeta = misc.getItemMeta();
 		miscIMeta.setDisplayName("§8» §6Misc. Info §8«");
 		lore.add(" ");
 		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
@@ -366,9 +358,23 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add("§8» §7on the surface, border can shrink to 100x100.");
 		lore.add(" ");
 		miscIMeta.setLore(lore);
-		miscI.setItemMeta(miscIMeta);
-		inv.setItem(44, miscI);
+		misc.setItemMeta(miscIMeta);
 		lore.clear();
+
+		inv.setItem(0, general);
+		inv.setItem(2, chat);
+		inv.setItem(4, pvp);
+		inv.setItem(6, mining);
+		inv.setItem(8, meetup);
+		
+		inv.setItem(21, commands);
+		inv.setItem(23, scenario);
+		
+		inv.setItem(36, healing);
+		inv.setItem(38, nether);
+		inv.setItem(40, rates);
+		inv.setItem(42, horse);
+		inv.setItem(44, misc);
 	}
 	
 	/**
@@ -408,8 +414,8 @@ public class GameInfo extends InvGUI implements Listener {
 	public void updateStaff() {
 		List<String> lore = new ArrayList<String>();
 
-		ItemStack staff = new ItemStack (Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta staffMeta = (SkullMeta) staff.getItemMeta();
+		ItemStack staff = new ItemStack (Material.BOOK, 1);
+		ItemMeta staffMeta = staff.getItemMeta();
 		staffMeta.setDisplayName("§8» §6Staff §8«");
 		
 		lore.add(" ");
@@ -442,7 +448,6 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		lore.add(" ");
 		staffMeta.setLore(lore);
-		staffMeta.setOwner("LeeTG77");
 		staff.setItemMeta(staffMeta);
 		inv.setItem(19, staff);
 		lore.clear();
