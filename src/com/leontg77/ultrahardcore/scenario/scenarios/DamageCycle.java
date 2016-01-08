@@ -1,5 +1,7 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.command.Command;
@@ -20,9 +22,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.scenario.scenarios.PeriodOfResistance.DamageType;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -54,7 +58,10 @@ public class DamageCycle extends Scenario implements Listener, CommandExecutor {
 	
 	@EventHandler
 	public void on(GameStartEvent event) {
-		current = DamageType.values()[new Random().nextInt(DamageType.values().length)];
+		List<DamageType> types = ImmutableList.copyOf(Arrays.asList(DamageType.values()));
+		Random rand = new Random();
+		
+		current = types.get(rand.nextInt(types.size()));
         PlayerUtils.broadcast(PREFIX + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will now instant kill you!");
         
 		task = new BukkitRunnable() {
@@ -102,15 +109,27 @@ public class DamageCycle extends Scenario implements Listener, CommandExecutor {
 		DamageCause cause = event.getCause();
 		
 		if (cause == DamageCause.FALL && current == DamageType.FALLING) {
-			event.setDamage(10000);
+			event.setCancelled(true);
 		}
 		
 		if (cause == DamageCause.POISON && current == DamageType.POISON) {
-			event.setDamage(10000);
+			event.setCancelled(true);
 		}
 		
 		if (cause == DamageCause.SUFFOCATION && current == DamageType.SUFFOCATION) {
-			event.setDamage(10000);
+			event.setCancelled(true);
+		}
+		
+		if (cause == DamageCause.STARVATION && current == DamageType.STARVATION) {
+			event.setCancelled(true);
+		}
+		
+		if (cause == DamageCause.DROWNING && current == DamageType.DROWNING) {
+			event.setCancelled(true);
+		}
+		
+		if (cause == DamageCause.BLOCK_EXPLOSION && current == DamageType.EXPLOSIONS) {
+			event.setCancelled(true);
 		}
 		
 		if ((cause == DamageCause.LAVA || cause == DamageCause.FIRE || cause == DamageCause.FIRE_TICK) && current == DamageType.LAVA_AND_FIRE) {
@@ -130,7 +149,7 @@ public class DamageCycle extends Scenario implements Listener, CommandExecutor {
 			event.setDamage(10000);
 		}
 		
-		if (damager instanceof Creeper && current == DamageType.CREEPERS) {
+		if (damager instanceof Creeper && current == DamageType.EXPLOSIONS) {
 			event.setDamage(10000);
 		}
 		
@@ -152,9 +171,5 @@ public class DamageCycle extends Scenario implements Listener, CommandExecutor {
 		
 		sender.sendMessage(PREFIX + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will instant kill you!");
 		return true;
-	}
-	
-	public enum DamageType {
-		ZOMBIES, SPIDERS, FALLING, SKELETONS, CREEPERS, LAVA_AND_FIRE, SUFFOCATION, POISON;
 	}
 }
