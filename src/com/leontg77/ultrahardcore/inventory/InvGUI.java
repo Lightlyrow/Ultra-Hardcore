@@ -192,7 +192,7 @@ public class InvGUI {
 				int health = (int) target.getHealth();
 				lore.add("§8» §7Hearts: §6" + (((double) health) / 2) + "§4♥");
 				lore.add("§8» §7Percent: §6" + NumberUtils.makePercent(target.getHealth()) + "%");
-				lore.add("§8» §7Hunger: §6" + (target.getFoodLevel() / 2));
+				lore.add("§8» §7Hunger: §6" + (((double) target.getFoodLevel()) / 2));
 				lore.add("§8» §7XP level: §6" + target.getLevel());
 				lore.add("§8» §7Location: §6x:" + target.getLocation().getBlockX() + ", y:" + target.getLocation().getBlockY() + ", z:" + target.getLocation().getBlockZ() + " (" + target.getWorld().getEnvironment().name().replaceAll("_", "").toLowerCase().replaceAll("normal", "overworld") + ")");
 				lore.add(" ");
