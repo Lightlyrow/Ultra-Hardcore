@@ -15,7 +15,6 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -122,7 +121,7 @@ public class iPvPListener implements Listener {
         }
         
         // if pvp is enabled we want them to be able to iPvP
-        if (Timers.pvp <= 0) {
+        if (!player.getWorld().getPVP()) {
         	return;
         }
         
@@ -197,7 +196,7 @@ public class iPvPListener implements Listener {
 			Team nearTeam = manager.getTeam(nearby);
 			
 			if (playerTeam == null || !playerTeam.equals(nearTeam)) {
-				PlayerUtils.broadcast(Main.PREFIX + "§c" + iPvPer.getName() + " §7attempted to iPvP �c" + near.getName(), "uhc.staff");
+				PlayerUtils.broadcast(Main.PREFIX + "§c" + iPvPer.getName() + " §7attempted to iPvP §c" + near.getName(), "uhc.staff");
 				return true;
 			}
 		}
