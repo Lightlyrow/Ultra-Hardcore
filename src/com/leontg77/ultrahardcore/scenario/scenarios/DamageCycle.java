@@ -4,29 +4,27 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.CaveSpider;
-import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Spider;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.scenarios.PeriodOfResistance.DamageType;
+import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -35,37 +33,47 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class DamageCycle extends Scenario implements Listener, CommandExecutor {
+	private static final String PREFIX = "§7[§8DamageCycle§7] ";
+	private static final int DAMAGE_AMOUNT = 10000;
+	
 	private BukkitRunnable task;
 	private DamageType current;
 	
-	public static final String PREFIX = "§7[§8DamageCycle§7] ";
+	private int seconds = 600;
 	
 	public DamageCycle() {
 		super("DamageCycle", "Every 10 minutes the damage type changes, during the next 10 minutes if you take damage from that type you die.");
-		Main main = Main.plugin;
 		
-		main.getCommand("current").setExecutor(this);
+		Bukkit.getPluginCommand("current").setExecutor(this);
 	}
 
 	@Override
 	public void onDisable() {
-		task.cancel();
-		task = null;
+		if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+			task.cancel();
+			task = null;
+		}
+		
+		current = null;
+		seconds = 600;
 	}
 
 	@Override
-	public void onEnable() {}
+	public void onEnable() {
+		seconds = 1;
+		
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+
+		on(new GameStartEvent());
+	}
 	
 	@EventHandler
 	public void on(GameStartEvent event) {
-		List<DamageType> types = ImmutableList.copyOf(Arrays.asList(DamageType.values()));
-		Random rand = new Random();
-		
-		current = types.get(rand.nextInt(types.size()));
-        PlayerUtils.broadcast(PREFIX + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will now instant kill you!");
-        
 		task = new BukkitRunnable() {
-			int seconds = 600;
+			private List<DamageType> types = ImmutableList.copyOf(Arrays.asList(DamageType.values()));
+			private Random rand = new Random();
 			
 			public void run() {
 				seconds--;
@@ -89,76 +97,100 @@ public class DamageCycle extends Scenario implements Listener, CommandExecutor {
 	                PlayerUtils.broadcast(PREFIX + "Changing damage type in 1 second!");
 	                break;
 	            case 0:
-	                current = DamageType.values()[new Random().nextInt(DamageType.values().length)];
+	        		current = types.get(rand.nextInt(types.size()));
 	                PlayerUtils.broadcast(PREFIX + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will now instant kill you!");
 
 	                seconds = 600;
+	                break;
 				}
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 20, 20);
+		task.runTaskTimer(Main.plugin, 0, 20);
 	}
 	
-	@EventHandler
-	public void onEntityDamage(EntityDamageEvent event) {
+	@EventHandler(ignoreCancelled = true)
+	public void on(EntityDamageEvent event) {
+		// should only work for players.
 		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
 		
-		DamageCause cause = event.getCause();
-		
-		if (cause == DamageCause.FALL && current == DamageType.FALLING) {
-			event.setCancelled(true);
+		if (event instanceof EntityDamageByEntityEvent) {
+			on((EntityDamageByEntityEvent) event);
 		}
 		
-		if (cause == DamageCause.POISON && current == DamageType.POISON) {
-			event.setCancelled(true);
-		}
-		
-		if (cause == DamageCause.SUFFOCATION && current == DamageType.SUFFOCATION) {
-			event.setCancelled(true);
-		}
-		
-		if (cause == DamageCause.STARVATION && current == DamageType.STARVATION) {
-			event.setCancelled(true);
-		}
-		
-		if (cause == DamageCause.DROWNING && current == DamageType.DROWNING) {
-			event.setCancelled(true);
-		}
-		
-		if (cause == DamageCause.BLOCK_EXPLOSION && current == DamageType.EXPLOSIONS) {
-			event.setCancelled(true);
-		}
-		
-		if ((cause == DamageCause.LAVA || cause == DamageCause.FIRE || cause == DamageCause.FIRE_TICK) && current == DamageType.LAVA_AND_FIRE) {
-			event.setDamage(10000);
+		switch (event.getCause()) {
+		case BLOCK_EXPLOSION:
+		case ENTITY_EXPLOSION:
+			if (current == DamageType.EXPLOSIONS) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		case DROWNING:
+			if (current == DamageType.DROWNING) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		case FALL:
+			if (current == DamageType.FALLING) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		case FIRE:
+		case FIRE_TICK:
+		case LAVA:
+			if (current == DamageType.LAVA_AND_FIRE) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		case POISON:
+			if (current == DamageType.POISON) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		case STARVATION:
+			if (current == DamageType.STARVATION) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		case SUFFOCATION:
+			if (current == DamageType.SUFFOCATION) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		default:
+			break;
 		}
 	}
 	
-	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+	private void on(EntityDamageByEntityEvent event) {
+		// again, only players.
 		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
 		
 		Entity damager = event.getDamager();
 		
-		if (damager instanceof Zombie && current == DamageType.ZOMBIES) {
-			event.setDamage(10000);
-		}
-		
-		if (damager instanceof Creeper && current == DamageType.EXPLOSIONS) {
-			event.setDamage(10000);
-		}
-		
-		if (damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Skeleton && current == DamageType.SKELETONS) {
-			event.setDamage(10000);
-		}
-		
-		if ((damager instanceof Spider || damager instanceof CaveSpider) && current == DamageType.SPIDERS) {
-			event.setDamage(10000);
+		switch (damager.getType()) {
+		case ZOMBIE:
+			if (current == DamageType.ZOMBIES) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		case SPIDER:
+		case CAVE_SPIDER:
+			if (current == DamageType.SPIDERS) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		case ARROW:
+			if (((Arrow) damager).getShooter() instanceof Skeleton && current == DamageType.SKELETONS) {
+				event.setDamage(DAMAGE_AMOUNT);
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -169,7 +201,13 @@ public class DamageCycle extends Scenario implements Listener, CommandExecutor {
 			return true;
 		}
 		
+		if (current == null) {
+			sender.sendMessage(PREFIX + "§6No damage type has been set yet.");
+			return true;
+		}
+		
 		sender.sendMessage(PREFIX + "§6All damage from §7" + current.name().toLowerCase().replaceAll("_", " ") + "§6 will instant kill you!");
+		sender.sendMessage(PREFIX + "§6The damage type changes in §7" + DateUtils.ticksToString(seconds) + "§6.");
 		return true;
 	}
 }
