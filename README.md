@@ -22,3 +22,4 @@ UHC Plugin designed for LeonTG77's UHC games
 18. Add a point system that gives you points each time you kill someone, win a game and for good behaviour in chat (more things to be added)
 19. Fix the arena /hotbar command
 20. Add /back and /respawn <player>
+21. Make a custom /help command for a better help menu for players and staff
