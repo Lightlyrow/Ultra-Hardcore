@@ -54,7 +54,7 @@ public class RewardingLongshots extends Scenario implements Listener {
 			return;
 		}
 
-		PlayerUtils.broadcast("§7[§9RewardingLongshots§7] §r" + killer.getName() + " just got a longshot of " + NumberUtils.convertDouble(distance) + " meters!");
+		PlayerUtils.broadcast("§9RewardingLongshots §8» §6" + killer.getName() + " &7got a longshot of &6" + NumberUtils.convertDouble(distance) + " §7blocks!");
 
 		if (distance <= 99) {
 			PlayerUtils.giveItem(killer, new ItemStack(Material.GOLD_INGOT));
