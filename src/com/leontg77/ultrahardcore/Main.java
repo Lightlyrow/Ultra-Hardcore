@@ -44,6 +44,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
+import com.leontg77.ultrahardcore.bot.ArcticBot;
 import com.leontg77.ultrahardcore.commands.CommandHandler;
 import com.leontg77.ultrahardcore.commands.arena.ArenaCommand;
 import com.leontg77.ultrahardcore.commands.arena.HotbarCommand;
@@ -143,6 +144,7 @@ public class Main extends JavaPlugin {
 		Settings.getInstance().setup();
 	    
 		WorldManager.getInstance().loadWorlds();
+		ArcticBot.getBot().setup();
 		
 		AntiStripmine.getInstance().setup();
 		BiomeSwap.getInstance().setup();
