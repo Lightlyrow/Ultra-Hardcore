@@ -85,6 +85,8 @@ public class InvGUI {
 		gameInfo.updateStaff();
 		gameInfo.update();
 		
+		topStats.update();
+		
 		for (String host : settings.getHOF().getKeys(false)) {
 			getHOF().update(host);
 		}
