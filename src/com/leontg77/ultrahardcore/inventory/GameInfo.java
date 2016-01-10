@@ -300,7 +300,7 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add("§8» §7Absorption: " + (game.absorption() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Golden Heads: " + (game.goldenHeads() ? "§aEnabled." : "§cDisabled."));
 		if (game.goldenHeads()) {
-			lore.add("§8» §7Heads Heal: §6" + NumberUtils.convertDouble(((double) game.goldenHeadsHeal()) / 2) + " hearts.");
+			lore.add("§8» §7Heads Heal: §6" + NumberUtils.formatDouble(((double) game.goldenHeadsHeal()) / 2) + " hearts.");
 		}
 		lore.add("§8» §7Notch Apples: " + (game.notchApples() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
@@ -312,9 +312,9 @@ public class GameInfo extends InvGUI implements Listener {
 		ItemMeta ratesMeta = rates.getItemMeta();
 		ratesMeta.setDisplayName("§8» §6Rates Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Apple Rates: §6" + NumberUtils.convertDouble(game.getAppleRates() * 100) + "%");
+		lore.add("§8» §7Apple Rates: §6" + NumberUtils.formatDouble(game.getAppleRates() * 100) + "%");
 		lore.add("§8» §7Shears: " + (game.shears() ? "§aWork." : "§cDoes not work."));
-		lore.add("§8» §7Flint Rates: §6" + NumberUtils.convertDouble(game.getFlintRates() * 100) + "%");
+		lore.add("§8» §7Flint Rates: §6" + NumberUtils.formatDouble(game.getFlintRates() * 100) + "%");
 		lore.add(" ");
 		lore.add("§8» §7Mob Rates: §6Vanilla.");
 		lore.add("§8» §7Ore Rates: §6Vanilla.");
