@@ -50,9 +50,6 @@ public class TopStats extends InvGUI implements Listener {
 	 * @return The inventory.
 	 */
 	public Inventory get() {
-		// This isn't that laggy so updating it is fine.
-		update();
-		
 		return inv;
 	}
 
@@ -63,8 +60,8 @@ public class TopStats extends InvGUI implements Listener {
 		List<String> data = new ArrayList<String>();
 		int slot = 0;
 
-		Map<String, Integer> deaths = new HashMap<String, Integer>();
-		Map<String, Integer> kills = new HashMap<String, Integer>();
+		Map<String, Double> deaths = new HashMap<String, Double>();
+		Map<String, Double> kills = new HashMap<String, Double>();
 		
 		List<FileConfiguration> files = FileUtils.getUserFiles();
 		
@@ -73,7 +70,7 @@ public class TopStats extends InvGUI implements Listener {
 			
 			for (FileConfiguration config : files) {
 				String name = config.getString("username");
-				int number = config.getInt("stats." + stat.name().toLowerCase());
+				double number = config.getDouble("stats." + stat.name().toLowerCase());
 				
 				data.add(number + " " + name);
 
@@ -88,10 +85,10 @@ public class TopStats extends InvGUI implements Listener {
 
 			Collections.sort(data, new Comparator<String>() {
 			    public int compare(String a, String b) {
-			       	int aVal = Integer.parseInt(a.split(" ")[0]);
-			       	int bVal = Integer.parseInt(b.split(" ")[0]);
+			    	double aVal = Double.parseDouble(a.split(" ")[0]);
+			       	double bVal = Double.parseDouble(b.split(" ")[0]);
 			       	
-			       	return Integer.compare(aVal, bVal);
+			       	return Double.compare(aVal, bVal);
 			    }
 			});
 			
@@ -105,8 +102,8 @@ public class TopStats extends InvGUI implements Listener {
 		data.clear();
 		
 		for (String name : kills.keySet()) {
-			int d = deaths.get(name);
-			int k = kills.get(name);
+			int d = (int) deaths.get(name).doubleValue();
+			int k = (int) kills.get(name).doubleValue();
 			
 			double kdr;
 			
@@ -116,7 +113,7 @@ public class TopStats extends InvGUI implements Listener {
 			
 			kdr = ((double) k) / ((double) d);
 			
-			data.add(NumberUtils.convertDouble(kdr) + " " + name);
+			data.add(NumberUtils.formatDouble(kdr) + " " + name);
 		}
 
 		Collections.sort(data, new Comparator<String>() {
@@ -130,20 +127,6 @@ public class TopStats extends InvGUI implements Listener {
 		
 		addItem(data, "KDR", slot);
 		slot++;
-		
-		for (int i = 0; i < 2; i++) {
-			inv.setItem(slot, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
-			slot++;
-			
-			ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-			SkullMeta meta = (SkullMeta) item.getItemMeta();
-			meta.setDisplayName("§8» §cComing soon §8«");
-			meta.setOwner("MHF_Question");
-			item.setItemMeta(meta);
-			
-			inv.setItem(slot, item);
-			slot++;
-		}
 	}
 	
 	/**
@@ -171,17 +154,22 @@ public class TopStats extends InvGUI implements Listener {
 			
 			String line = data.get(i);
 			
-			String value = line.split(" ")[0];
+			double value = Double.parseDouble(line.split(" ")[0]);
 			String name = line.split(" ")[1];
 
+			boolean isDamage = statName.equalsIgnoreCase("damage taken");
+
+			String sDamage = NumberUtils.makePercent(value);
+			int iDamage = Integer.parseInt(sDamage.substring(2));
+			
 			if (number == 10) {
-				lore.add("§6#" + number + "§8 | §7" + name + " §8» §a" + value);
+				lore.add("§6#" + number + "§8 | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
 			} else {
 				if (number == 1) {
 					meta.setOwner(name);
 				}
 				
-				lore.add(" §6#" + number + "§8  | §7" + name + " §8» §a" + value);
+				lore.add(" §6#" + number + "§8  | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
 			}
 
 			number++;
