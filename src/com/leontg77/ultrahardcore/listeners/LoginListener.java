@@ -3,10 +3,8 @@ package com.leontg77.ultrahardcore.listeners;
 import static com.leontg77.ultrahardcore.Main.plugin;
 
 import java.io.File;
-import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import org.bukkit.BanEntry;
@@ -36,6 +34,7 @@ import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
+import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -63,12 +62,6 @@ public class LoginListener implements Listener {
 			
 			if (confUUID.equals(player.getUniqueId().toString()) && !confName.equals(player.getName())) {
 				settings.getHOF().set(path + ".name", player.getName());
-				
-				Object games = settings.getHOF().get(path + ".games");
-				
-				// make sure games are listed last.
-				settings.getHOF().set(path + ".games", null);
-				settings.getHOF().set(path + ".games", games);
 			}
 		}
 		
@@ -118,7 +111,7 @@ public class LoginListener implements Listener {
 				if (user.isNew()) {
 					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 					
-					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! §8[§a#" + NumberFormat.getInstance(Locale.UK).format(f.listFiles().length) + "§8]");
+					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! §8[§a#" + NumberUtils.formatInt(f.listFiles().length) + "§8]");
 				}
 			}
 		}
@@ -188,6 +181,7 @@ public class LoginListener implements Listener {
 		
 		if (player.getName().startsWith("Mr") && player.getName().endsWith("Bar")) {
 			event.disallow(Result.KICK_BANNED, "§8» §7No Mr####Bar names are allowed here, sorry. §8«");
+			return;
 		}
 		
 		if (event.getResult() == Result.KICK_BANNED) {
