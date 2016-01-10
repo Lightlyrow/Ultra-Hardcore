@@ -26,6 +26,7 @@ import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -88,6 +89,8 @@ public class EndCommand extends UHCCommand {
 
 		Fireworks firework = Fireworks.getInstance();
 		FileUtils.updateUserFiles();
+		
+		InvGUI.getInstance().setup();
 		
 		int matchcount = 1;
 		
