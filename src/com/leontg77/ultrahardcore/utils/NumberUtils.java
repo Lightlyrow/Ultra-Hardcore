@@ -2,8 +2,7 @@ package com.leontg77.ultrahardcore.utils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -21,14 +20,25 @@ public class NumberUtils {
 	public static final int TICKS_IN_999_DAYS = TICKS_PER_DAY * 999;
 	
 	/**
-	 * Convert endless decimal health to a 2 lengthed one.
+	 * Format the given double to a less lengthed one.
 	 * 
-	 * @param damage the amount of damage to convert.
-	 * @return The new damage amount with 2 lenghted decimal.
+	 * @param number the double to format.
+	 * @return The formated double.
 	 */
-	public static String convertDouble(double damage) {
-		NumberFormat nf = new DecimalFormat("##.##");
-		return nf.format(damage);
+	public static String formatDouble(double number) {
+		NumberFormat formater = new DecimalFormat("##.##");
+		return formater.format(number);
+	}
+
+	/**
+	 * Format the given int to a int with ,'s in it.
+	 * 
+	 * @param number the int to format.
+	 * @return The formated integer.
+	 */
+	public static String formatInt(int number) {
+		NumberFormat formater = NumberFormat.getInstance(Locale.UK);
+		return formater.format(number);
 	}
 	
 	/**
@@ -68,25 +78,5 @@ public class NumberUtils {
 	    int randomNum = rand.nextInt((max - min) + 1) + min;
 
 	    return randomNum;
-	}
-	
-	/**
-	 * This does something with splitting things.
-	 * @author EXSolo
-	 */
-	public static <T> List<List<T>> split(List<T> toSplit, int howOften) {
-		List<List<T>> list = new ArrayList<List<T>>(howOften);
-		
-		for (int i = 0; i < howOften; i++) {
-			list.add(new ArrayList<T>());
-		}
-		
-		int i = 0;
-		
-	    for (T t : toSplit) {
-	 	    list.get(i).add(t);
-	 	    i = (i + 1) % howOften;
-	    }
-	    return list;
 	}
 }
