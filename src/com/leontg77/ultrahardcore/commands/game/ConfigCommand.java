@@ -103,7 +103,7 @@ public class ConfigCommand extends UHCCommand {
 				throw new CommandException("Apple rates cannot be higher than 100%");
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + NumberUtils.convertDouble(appleRate) + "%");
+			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + NumberUtils.formatDouble(appleRate) + "%");
 			game.setAppleRates(appleRate);
 			break;
 		case BORDERSHRINK:
@@ -146,13 +146,13 @@ public class ConfigCommand extends UHCCommand {
 				throw new CommandException("Flint rates cannot be higher than 100%");
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Flint rates has been changed to §a" + NumberUtils.convertDouble(flintRate) + "%");
+			PlayerUtils.broadcast(Main.PREFIX + "Flint rates has been changed to §a" + NumberUtils.formatDouble(flintRate) + "%");
 			game.setFlintRates(flintRate);
 			break;
 		case HEADSHEAL:
 			double headheals = parseDouble(args[1], "heal amount");
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + NumberUtils.convertDouble(headheals) + "§7 hearts.");
+			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + NumberUtils.formatDouble(headheals) + "§7 hearts.");
 			game.setGoldenHeadsHeal(headheals);
 			break;
 		case HOST:
@@ -197,7 +197,7 @@ public class ConfigCommand extends UHCCommand {
 			if (damage == 0.0) {
 				PlayerUtils.broadcast(Main.PREFIX + "Ender pearls will no longer deal damage.");
 			} else {
-				PlayerUtils.broadcast(Main.PREFIX + "Ender pearls will now deal §a" + NumberUtils.convertDouble(damage) + "§7 hearts.");
+				PlayerUtils.broadcast(Main.PREFIX + "Ender pearls will now deal §a" + NumberUtils.formatDouble(damage) + "§7 hearts.");
 			}
 			
 			game.setPearlDamage(damage);
@@ -225,7 +225,7 @@ public class ConfigCommand extends UHCCommand {
 				throw new CommandException("Shear rates cannot be higher than 100%");
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Shear rates has been changed to §a" + NumberUtils.convertDouble(shearRate) + "%");
+			PlayerUtils.broadcast(Main.PREFIX + "Shear rates has been changed to §a" + NumberUtils.formatDouble(shearRate) + "%");
 			game.setShearRates(shearRate);
 			break;
 		case TEAMSIZE:
