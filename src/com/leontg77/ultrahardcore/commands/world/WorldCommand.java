@@ -16,6 +16,7 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.worlds.WorldManager;
 
 /**
@@ -125,9 +126,23 @@ public class WorldCommand extends UHCCommand {
 			}
 			
 			if (args[0].equalsIgnoreCase("list")) {
-				sender.sendMessage(Main.PREFIX + "List of all worlds: §8(§6" + Bukkit.getWorlds().size() + "§8)");
+				sender.sendMessage(Main.PREFIX + "Default worlds: §8(§62§8)");
+				sender.sendMessage("§8» §7lobby §8- §aNORMAL §8(§7Spawn World§8)");
+				sender.sendMessage("§8» §7arena §8- §aNORMAL §8(§7Arena World§8)");
+				sender.sendMessage(Main.PREFIX + "Game worlds: §8(§6" + (Bukkit.getWorlds().size() - 2) + "§8)");
+				
+				if ((Bukkit.getWorlds().size() - 2) == 0) {
+					sender.sendMessage("§8» §7There are no game worlds.");
+					return true;
+				}
 				
 				for (World world : Bukkit.getWorlds()) {
+					switch (world.getName().toLowerCase()) {
+					case "lobby":
+					case "arena":
+						continue;
+					}
+					
 					ChatColor color;
 					
 					switch (world.getEnvironment()) {
@@ -144,7 +159,7 @@ public class WorldCommand extends UHCCommand {
 						return true;
 					}
 					
-					sender.sendMessage("§8» §7" + world.getName() + " §8- " + color + world.getEnvironment().name());
+					sender.sendMessage("§8» §7" + world.getName() + " §8- " + color + world.getEnvironment().name() + " §8(§7" + (GameUtils.getGameWorlds().contains(world) ? "In use" : "Not used")+ "§8)");
 				}
 				return true;
 			}
