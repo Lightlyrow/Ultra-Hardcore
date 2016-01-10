@@ -12,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.msg.MsgCommand;
@@ -59,8 +58,6 @@ public class LogoutListener implements Listener {
 
 		// clear ALL data from the player, incase of a memory leak.
 		
-		System.gc();
-		
 		if (InvGUI.invsee.containsKey(inv)) {
 			InvGUI.invsee.get(inv).cancel();
 			InvGUI.invsee.remove(inv);
@@ -72,10 +69,6 @@ public class LogoutListener implements Listener {
 		
 		if (inv.currentPage.containsKey(player)) {
 			inv.currentPage.remove(player);
-		}
-		
-		if (Main.rainbow.containsKey(player)) {
-			Main.rainbow.remove(player);
 		}
 		
 		if (MsgCommand.msg.containsKey(player)) {
@@ -97,10 +90,14 @@ public class LogoutListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
-		if (!event.getReason().equals("disconnect.spam")) {
+		if (event.getReason().equals("disconnect.spam")) {
+			event.setReason("Kicked for spamming");
+		}
+		
+		if (event.getReason().startsWith("§8»")) {
 			return;
 		}
 		
-		event.setReason("§8» §7Kicked for spamming §8«");
+		event.setReason("§8» §7" + event.getReason() + " §8«");
 	}
 }
