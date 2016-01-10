@@ -459,7 +459,7 @@ public class Spectator {
 			}
 			
 			Player player = event.getPlayer();
-			broadcast("§5Pearl: §a" + player.getName() + " §f<-> D:§d" + NumberUtils.convertDouble(event.getFrom().distance(event.getTo())) + "m.");
+			broadcast("§5Pearl: §a" + player.getName() + " §f<-> D:§d" + NumberUtils.formatDouble(event.getFrom().distance(event.getTo())) + "m.");
 		}
 
 		@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
