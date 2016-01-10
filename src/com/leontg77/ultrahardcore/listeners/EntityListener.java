@@ -318,19 +318,25 @@ public class EntityListener implements Listener {
 			return;
 		}
     	
-		if (attacked instanceof Player && attacker instanceof Arrow) {
-			Player player = (Player) attacked;
-			Arrow arrow = (Arrow) attacker;
-			
-			if (arrow.getShooter() instanceof Player) {
-				Player killer = (Player) arrow.getShooter();
-				double distance = killer.getLocation().distance(player.getLocation());
-				
-				if (distance >= 50) {
-					PlayerUtils.broadcast(Main.PREFIX + "§6" + killer.getName() + " §7got a longshot of §6" + NumberUtils.convertDouble(distance) + " §7blocks.");
-				}
-			}
+    	if (!(attacked instanceof Player) || !(attacker instanceof Arrow)) {
+			return;
 		}
+		
+		Player player = (Player) attacked;
+		Arrow arrow = (Arrow) attacker;
+		
+		if (!(arrow.getShooter() instanceof Player)) {
+			return;
+		}
+		
+		Player killer = (Player) arrow.getShooter();
+		double distance = killer.getLocation().distance(player.getLocation());
+		
+		if (distance < 50) {
+			return;
+		}
+		
+		PlayerUtils.broadcast(Main.PREFIX + "§6" + killer.getName() + " §7got a longshot of §6" + NumberUtils.formatDouble(distance) + " §7blocks.");
 	}
 
 	/**
