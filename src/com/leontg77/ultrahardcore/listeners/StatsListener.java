@@ -6,12 +6,16 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Arena;
@@ -87,4 +91,48 @@ public class StatsListener implements Listener {
 			user.increaseStat(Stat.GOLD);
 		}
     }
+	
+	@EventHandler(ignoreCancelled = true)
+	public void onLongshot(EntityDamageByEntityEvent event) {
+		Entity attacked = event.getEntity();
+		Entity attacker = event.getDamager();
+    	
+		if (!(attacked instanceof Player) || !(attacker instanceof Arrow)) {
+			return;
+		}
+		
+		Player player = (Player) attacked;
+		Arrow arrow = (Arrow) attacker;
+		
+		if (!(arrow.getShooter() instanceof Player)) {
+			return;
+		}
+		
+		Player killer = (Player) arrow.getShooter();
+		double distance = killer.getLocation().distance(player.getLocation());
+		
+		TeamManager manager = TeamManager.getInstance();
+
+		Team kTeam = manager.getTeam(killer);
+		Team pTeam = manager.getTeam(player);
+		
+		// no stats boosting for teammates.
+		if (kTeam != null && kTeam.equals(pTeam)) {
+			return;
+		}
+		
+		User user = User.get(killer);
+		
+		if (user.getStatDouble(Stat.LONGESTSHOT) <= distance) {
+			user.setStat(Stat.LONGESTSHOT, distance);
+		}
+	}
+	
+	@EventHandler
+	public void on(PlayerExpChangeEvent event) {
+    	Player player = event.getPlayer();
+		User user = User.get(player);
+		
+		user.setStat(Stat.EXP, user.getStat(Stat.EXP) + event.getAmount());
+	}
 }
