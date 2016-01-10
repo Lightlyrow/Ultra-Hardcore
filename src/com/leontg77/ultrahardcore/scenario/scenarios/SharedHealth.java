@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
@@ -81,8 +82,8 @@ public class SharedHealth extends Scenario implements Listener {
         final Player player = (Player) event.getEntity();
         setSharedDamage(player.getName(), false);
 
-        if ((event.getCause() == EntityDamageEvent.DamageCause.LAVA) || (event.getCause() == EntityDamageEvent.DamageCause.FIRE) || (event.getCause() == EntityDamageEvent.DamageCause.POISON)) {
-            return;
+        if (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.POISON) {
+        	return;
         }
 
         final Team team = manager.getTeam(player);
@@ -203,7 +204,7 @@ public class SharedHealth extends Scenario implements Listener {
         }
         
         if (getSharedDamage().get(playerName) != null && getSharedDamage().get(playerName) == true) {
-            event.setDeathMessage("§8» §f" + playerDisplayName + ChatColor.WHITE + " died from sharing health");
+            event.setDeathMessage(playerDisplayName + ChatColor.WHITE + " died from sharing health");
         }
     }
 	
