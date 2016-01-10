@@ -23,3 +23,6 @@ UHC Plugin designed for LeonTG77's UHC games
 19. Fix the arena /hotbar command
 20. Add /back and /respawn <player>
 21. Make a custom /help command for a better help menu for players and staff
+22. Add an option to disable the sidebar from resetting scores
+23. Add an anvil toggle option
+24. Add an toggle to xp nerfing and 1 for quartz xp
