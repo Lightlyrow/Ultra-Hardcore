@@ -529,7 +529,9 @@ public class User {
     	DIAMONDS("Mined diamonds"),
     	GOLD("Mined gold"),
     	HOSTILEMOBKILLS("Killed a monster"),
-    	ANIMALKILLS("Killed an animal");
+    	ANIMALKILLS("Killed an animal"),
+    	LONGESTSHOT("Longest Shot"),
+    	EXP("XP Earned");
     	
     	private String name;
     	
