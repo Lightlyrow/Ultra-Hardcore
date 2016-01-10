@@ -92,6 +92,8 @@ public class BlockListener implements Listener {
 			ItemStack hand = player.getItemInHand();
 
 			if (game.shears() && hand != null && hand.getType() == Material.SHEARS) {
+	            BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack(Material.LEAVES, 1));
+	            
 				if (rand.nextDouble() >= game.getShearRates()) {
 					return;
 				}
