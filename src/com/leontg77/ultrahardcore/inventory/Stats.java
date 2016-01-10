@@ -78,7 +78,14 @@ public class Stats extends InvGUI implements Listener {
 		lore.add(" ");
 		lore.add("§8» §7Hostile kills: §a" + user.getStat(Stat.HOSTILEMOBKILLS));
 		lore.add("§8» §7Animal kills: §a" + user.getStat(Stat.ANIMALKILLS));
-		lore.add("§8» §7Damage taken: §a" + NumberUtils.convertDouble(user.getStatDouble(Stat.DAMAGETAKEN) / 2));
+		
+		String sDamage = NumberUtils.makePercent(user.getStatDouble(Stat.DAMAGETAKEN));
+		int iDamage = Integer.parseInt(sDamage.substring(2));
+		
+		lore.add("§8» §7Damage taken: §a" + NumberUtils.formatInt(iDamage) + "%");
+		lore.add(" ");
+		lore.add("§8» §7Longest Shot: §a" + NumberUtils.formatDouble(user.getStatDouble(Stat.LONGESTSHOT)));
+		lore.add("§8» §7XP Earned: §a" + user.getStat(Stat.EXP));
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
@@ -102,7 +109,7 @@ public class Stats extends InvGUI implements Listener {
 			kdr = ((double) user.getStat(Stat.KILLS)) / ((double) user.getStat(Stat.DEATHS));
 		}
 		
-		lore.add("§8» §7KDR: §a" + NumberUtils.convertDouble(kdr));
+		lore.add("§8» §7KDR: §a" + NumberUtils.formatDouble(kdr));
 		lore.add(" ");
 		lore.add("§8» §7Diamonds mined: §a" + user.getStat(Stat.DIAMONDS));
 		lore.add("§8» §7Gold mined: §a" + user.getStat(Stat.GOLD));
@@ -117,7 +124,7 @@ public class Stats extends InvGUI implements Listener {
 			arenakdr = ((double) user.getStat(Stat.ARENAKILLS)) / ((double) user.getStat(Stat.ARENADEATHS));
 		}
 		
-		lore.add("§8» §7Arena KDR: §a" + NumberUtils.convertDouble(arenakdr));
+		lore.add("§8» §7Arena KDR: §a" + NumberUtils.formatDouble(arenakdr));
 		lore.add(" ");
 		pvpminingMeta.setLore(lore); 
 		pvpminingMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
