@@ -114,7 +114,7 @@ public class Main extends JavaPlugin {
 	public static final String NO_PERM_MSG = "§cYou don't have permission.";
 	public static final String PREFIX = "§4§lUHC §8» §7";
 	
-	public static Map<Player, int[]> rainbow = new HashMap<Player, int[]>();
+	public static Map<String, int[]> rainbow = new HashMap<String, int[]>();
 	
 	public static Map<String, Integer> teamKills = new HashMap<String, Integer>();
 	public static Map<String, Integer> kills = new HashMap<String, Integer>();
@@ -332,7 +332,7 @@ public class Main extends JavaPlugin {
 	 */
 	public static double getTps() {
 		double tps = MinecraftServer.getServer().recentTps[0];
-		String converted = NumberUtils.convertDouble(tps);
+		String converted = NumberUtils.formatDouble(tps);
 		
 		return Double.parseDouble(converted);
 	}
@@ -474,11 +474,11 @@ public class Main extends JavaPlugin {
 	 * @return The new colored leather armor.
 	 */
 	public ItemStack rainbowArmor(Player player, ItemStack item) {
-		if (!rainbow.containsKey(player)) {
-			rainbow.put(player, new int[] { 0, 0, 255 });
+		if (!rainbow.containsKey(player.getName())) {
+			rainbow.put(player.getName(), new int[] { 0, 0, 255 });
 		}
 		
-		int[] rain = rainbow.get(player);
+		int[] rain = rainbow.get(player.getName());
 			
 		int blue = rain[0];
 		int green = rain[1];
@@ -508,7 +508,7 @@ public class Main extends JavaPlugin {
 			blue--;
 		}
 			
-		rainbow.put(player, new int[] { blue, green, red });
+		rainbow.put(player.getName(), new int[] { blue, green, red });
 
     	ItemStack armor = new ItemStack (item.getType(), item.getAmount(), item.getDurability());
 		LeatherArmorMeta meta = (LeatherArmorMeta) armor.getItemMeta();
