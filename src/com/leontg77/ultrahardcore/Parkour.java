@@ -2,6 +2,8 @@ package com.leontg77.ultrahardcore;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,9 +34,9 @@ public class Parkour implements Listener {
 	private Location point2 = new Location(Bukkit.getWorld("lobby"), -135.5, 36.5, -12.5, 90, 0);
 	private Location point3 = new Location(Bukkit.getWorld("lobby"), -159.5, 29.5, 8.5, 0, 0);
 	
-	private HashSet<Player> players = new HashSet<Player>();
-	private HashMap<Player, Integer> checkpoint = new HashMap<Player, Integer>();
-	private HashMap<Player, Integer> time = new HashMap<Player, Integer>();
+	private Set<Player> players = new HashSet<Player>();
+	private Map<Player, Integer> checkpoint = new HashMap<Player, Integer>();
+	private Map<Player, Integer> time = new HashMap<Player, Integer>();
 
 	/**
 	 * Gets the instance of this class
