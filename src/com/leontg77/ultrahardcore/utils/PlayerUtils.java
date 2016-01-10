@@ -85,7 +85,7 @@ public class PlayerUtils {
 
 		consoleMsg = consoleMsg.replaceAll("§l", "");
 		consoleMsg = consoleMsg.replaceAll("§o", "");
-		consoleMsg = consoleMsg.replaceAll("§r", "");
+		consoleMsg = consoleMsg.replaceAll("§r", "§f");
 		consoleMsg = consoleMsg.replaceAll("§m", "");
 		consoleMsg = consoleMsg.replaceAll("§n", "");
 		
