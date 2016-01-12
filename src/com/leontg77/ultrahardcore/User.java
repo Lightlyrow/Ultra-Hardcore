@@ -219,7 +219,6 @@ public class User {
 		try {
 			rank = Rank.valueOf(config.getString("rank"));
 		} catch (Exception e) {
-			Bukkit.getLogger().warning("Setting the rank to DEFAULT as it can't find the saved one!");
 			rank = Rank.DEFAULT;
 		}
 		
