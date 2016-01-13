@@ -26,3 +26,4 @@ UHC Plugin designed for LeonTG77's UHC games
 22. Add an option to disable the sidebar from resetting scores
 23. Add an anvil toggle option
 24. Add an toggle to xp nerfing and 1 for quartz xp
+25. Fix Anti iPvP
