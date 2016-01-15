@@ -4,9 +4,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -23,30 +25,34 @@ import com.leontg77.ultrahardcore.utils.DateUtils;
  * @author LeonTG77
  */
 public class MsgCommand extends UHCCommand {
+	public static Map<String, String> msg = new HashMap<String, String>();
 	
 	public MsgCommand() {
 		super("msg", "<player> <message>");
 	}
 
-	public static HashMap<CommandSender, CommandSender> msg = new HashMap<CommandSender, CommandSender>();
-
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "Only players can ignore other players.");
+			return true;
+		}
+		
+		Player player = (Player) sender;
+		
     	if (args.length < 2) {
         	return false;
         }
 		
-    	if (isMuted(sender)) {
-    		// this cast is safe, isMuted returns false if its not a player.
-    		Player player = (Player) sender;
+    	if (isMuted(player)) {
     		User user = User.get(player);
     		
-			sender.sendMessage(Main.PREFIX + "You have been muted for: §a" + user.getMutedReason());
+    		player.sendMessage(Main.PREFIX + "You have been muted for: §a" + user.getMutedReason());
 			
 			if (user.getMuteExpiration() == null) {
-				sender.sendMessage(Main.PREFIX + "Your mute is permanent.");
+				player.sendMessage(Main.PREFIX + "Your mute is permanent.");
 			} else {
-				sender.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getMuteExpiration().getTime()));
+				player.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getMuteExpiration().getTime()));
 			}
 			return true;
     	}
@@ -57,13 +63,23 @@ public class MsgCommand extends UHCCommand {
         	throw new CommandException("'" + args[0] + "' is not online.");
         }
         
+		User user = User.get(target);
+		
+		if (user.isIgnoring(player)) {
+			throw new CommandException("'" + player.getName() + "' have you ignored.");
+		}
+		
+    	if (isMuted(target)) {
+    		player.sendMessage(ChatColor.RED + "'" + target.getName() + "' is muted and won't be able to respond.");
+    	}
+        
         String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
                
-        sender.sendMessage("§8[§a§ome §8-> §a§o" + target.getName() + "§8] §7" + message);
-    	target.sendMessage("§8[§a§o" + sender.getName() + " §8-> §a§ome§8] §7" + message);
+        player.sendMessage("§8[§a§ome §8-> §a§o" + target.getName() + "§8] §7" + message);
+    	target.sendMessage("§8[§a§o" + player.getName() + " §8-> §a§ome§8] §7" + message);
     	
-    	msg.put(target, sender);
-		msg.put(sender, target);
+    	msg.put(target.getName(), player.getName());
+		msg.put(player.getName(), target.getName());
 		return true;
     }
 
@@ -80,12 +96,7 @@ public class MsgCommand extends UHCCommand {
 	 * @param sender The sender checking for.
 	 * @return True if they are, false otherwise.
 	 */
-	protected static boolean isMuted(CommandSender sender) {
-		if (!(sender instanceof Player)) {
-			return false;
-		}
-		
-		Player player = (Player) sender;
+	protected static boolean isMuted(Player player) {
 		User user = User.get(player);
     	
 		if (!user.isMuted()) {
