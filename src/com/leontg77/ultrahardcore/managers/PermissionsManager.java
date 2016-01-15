@@ -60,6 +60,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.helpop", true);
 		perm.setPermission("uhc.matchpost", true);
 		perm.setPermission("uhc.scenario", true);
+		perm.setPermission("uhc.ignore", true);
 		
 		// spectator perms, they can only use them if they're spectating.
 		perm.setPermission("uhc.invsee", true);
@@ -84,7 +85,8 @@ public class PermissionsManager {
 		if (rank == Rank.DONATOR) {
 			return;
 		}
-		
+
+		perm.setPermission("uhc.cantignore", true);
 		perm.setPermission("uhc.ban", true);
 		perm.setPermission("uhc.broadcast", true);
 		perm.setPermission("uhc.fly", true);
