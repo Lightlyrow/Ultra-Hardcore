@@ -1,12 +1,11 @@
 package com.leontg77.ultrahardcore.listeners;
 
 import java.util.Date;
-import java.util.TimeZone;
+import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +22,7 @@ import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.game.VoteCommand;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.DateUtils;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -36,66 +36,60 @@ public class ChatListener implements Listener {
 	private Game game = Game.getInstance();
 	
 	@EventHandler
-    public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-		Player player = event.getPlayer();
-		User user = User.get(player);
+    public void on(final AsyncPlayerChatEvent event) {
+		final Player player = event.getPlayer();
+		final User user = User.get(player);
 
-		TeamManager teams = TeamManager.getInstance();
-		Team team = teams.getTeam(player);
-		
-		String message = event.getMessage();
-		
-		String name = (team == null || team.getName().equals("spec") ? player.getName() : team.getPrefix() + player.getName());
-		String color = name.startsWith("§") ? "§f" : "§7";
-		
-		event.setCancelled(true);
+		final TeamManager teams = TeamManager.getInstance();
+		final Spectator spec = Spectator.getInstance();
+
+		final String message = event.getMessage();
+		final Team team = teams.getTeam(player);
+	
+		final String name = (team == null || spec.isSpectating(player) ? "§f%s" : team.getPrefix() + "%s");
+		final String messageAndColor = name.startsWith("§f") ? "§7%s" : "§f%s";
     	
     	if (game.isRecordedRound()) {
-    		PlayerUtils.broadcast("§f" + name + "§8 » " + color + message);
+    		event.setFormat(name + " §8» " + messageAndColor);
     		return;
     	}
 		
-		if (VoteCommand.running && (message.equalsIgnoreCase("y") || message.equalsIgnoreCase("n"))) {
-			World world = player.getWorld();
-			
-			if (State.isState(State.INGAME) && world.getName().equals("lobby")) {
-				player.sendMessage(ChatColor.RED + "You cannot vote when you are dead.");
+		if (VoteCommand.isRunning() && (message.equalsIgnoreCase("y") || message.equalsIgnoreCase("n"))) {
+			if (!GameUtils.getGamePlayers().contains(player)) {
+				player.sendMessage(ChatColor.RED + "You can only vote while playing the game.");
+				event.setCancelled(true);
 				return;
 			}
 			
-			Spectator spec = Spectator.getInstance();
-			
-			if (spec.isSpectating(player)) {
-				player.sendMessage(ChatColor.RED + "You cannot vote as a spectator.");
+			if (VoteCommand.hasVoted(player)) {
+				player.sendMessage(ChatColor.RED + "You can only vote once.");
+				event.setCancelled(true);
 				return;
 			}
 			
-			if (VoteCommand.voted.contains(player.getName())) {
-				player.sendMessage(ChatColor.RED + "You have already voted.");
+			if (message.equalsIgnoreCase("y")) {
+				player.sendMessage(Main.PREFIX + "You voted §ayes§7.");
+				event.setCancelled(true);
+				
+				VoteCommand.addVote(player, true);
 				return;
 			}
 			
-			if (event.getMessage().equalsIgnoreCase("y")) {
-				player.sendMessage(Main.PREFIX + "You voted yes.");
-				VoteCommand.voted.add(player.getName());
-				VoteCommand.yes++;
-				return;
-			}
-			
-			if (event.getMessage().equalsIgnoreCase("n")) {
-				player.sendMessage(Main.PREFIX + "You voted no.");
-				VoteCommand.voted.add(player.getName());
-				VoteCommand.no++;
+			if (message.equalsIgnoreCase("n")) {
+				player.sendMessage(Main.PREFIX + "You voted §cno§7.");
+				event.setCancelled(true);
+				
+				VoteCommand.addVote(player, false);
 			}
 			return;
 		}
     	
 		if (user.isMuted()) {
-			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 			Date date = new Date();
 			
 			if (user.getMuteExpiration() == null || user.getMuteExpiration().getTime() > date.getTime()) {
 				player.sendMessage(Main.PREFIX + "You have been muted for: §a" + user.getMutedReason());
+				event.setCancelled(true);
 				
 				if (user.getMuteExpiration() == null) {
 					player.sendMessage(Main.PREFIX + "Your mute is permanent.");
@@ -103,12 +97,27 @@ public class ChatListener implements Listener {
 					player.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getMuteExpiration().getTime()));
 				}
 				return;
-			} else {
-				user.unmute();
+			}
+			
+			event.setCancelled(false);
+			user.unmute();
+		}
+		
+		Iterator<Player> it = event.getRecipients().iterator();
+		
+		// remove all people who ignore this player to see his message.
+		while (it.hasNext()) {
+			Player next = it.next();
+			User nextUser = User.get(next);
+			
+			if (nextUser.isIgnoring(player)) {
+				it.remove();
 			}
 		}
-
-		Spectator spec = Spectator.getInstance();
+		
+		if (user.getRank().getLevel() > 3) {
+			event.setMessage(ChatColor.translateAlternateColorCodes('&', message));
+		}
 
 		if (user.getRank() == Rank.OWNER) {
 			String uuid = player.getUniqueId().toString();
@@ -119,56 +128,59 @@ public class ChatListener implements Listener {
 			} else {
 				prefix = "§4§oOwner";
 			}
-			
-			PlayerUtils.broadcast("§8[" + prefix + "§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
+
+    		event.setFormat("§8[" + prefix + "§8] " + name + " §8» " + messageAndColor);
 			return;
 		}
 		
 		if (user.getRank() == Rank.HOST) {
-			PlayerUtils.broadcast("§8[§4Host§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
+    		event.setFormat("§8[§4Host§8] " + name + " §8» " + messageAndColor);
 			return;
 		}
 		
 		if (user.getRank() == Rank.TRIAL) {
-			PlayerUtils.broadcast("§8[§4Trial§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
+    		event.setFormat("§8[§4Trial Host§8] " + name + " §8» " + messageAndColor);
 			return;
 		}
 		
 		if (user.getRank() == Rank.STAFF) {
-			PlayerUtils.broadcast("§8[§cStaff§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
+    		event.setFormat("§8[§cStaff§8] " + name + " §8» " + messageAndColor);
 			return;
 		}
 		
 		if (user.getRank() == Rank.DONATOR) {
 			if (game.isMuted()) {
 				player.sendMessage(Main.PREFIX + "The chat is currently muted.");
+				event.setCancelled(true);
 				return;
 			}
 
-			PlayerUtils.broadcast("§8[§aDonator§8] §f" + name + "§8 » " + color + ChatColor.translateAlternateColorCodes('&', message));
+    		event.setFormat("§8[§a$$§8] " + name + " §8» " + messageAndColor);
 			return;
 		} 
 		
 		if (spec.isSpectating(player)) {
 			if (game.isMuted()) {
 				player.sendMessage(Main.PREFIX + "The chat is currently muted.");
+				event.setCancelled(true);
 				return;
 			}
 
-			PlayerUtils.broadcast("§8[§9Spec§8] §f" + name + "§8 » " + color + message);
+    		event.setFormat("§8[§9Spec§8] " + name + " §8» " + messageAndColor);
 			return;
 		} 
 			
 		if (game.isMuted()) {
 			player.sendMessage(Main.PREFIX + "The chat is currently muted.");
+			event.setCancelled(true);
 			return;
 		}
 
-		PlayerUtils.broadcast("§f" + name + "§8 » §7" + message);
+		event.setFormat(name + " §8» " + messageAndColor);
 	}
 	
   	@EventHandler
-  	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+  	public void on(PlayerCommandPreprocessEvent event) {
   		String message = event.getMessage();
   		Player player = event.getPlayer();
   		
