@@ -5,6 +5,7 @@ import static com.leontg77.ultrahardcore.Main.plugin;
 import java.io.File;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -266,6 +267,48 @@ public class User {
 		default:
 			return "§7";
 		}
+	}
+	
+	private static final String IGNORE_PATH = "ignoreList";
+	
+	/**
+	 * Start ignoring the given player.
+	 * 
+	 * @param player The player to ignore
+	 */
+	public void ignore(Player player) {
+		List<String> ignoreList = config.getStringList(IGNORE_PATH);
+		ignoreList.add(player.getUniqueId().toString());
+		
+		config.set(IGNORE_PATH, ignoreList);
+		saveFile();
+	}
+
+	/**
+	 * Stop ignoring the given player.
+	 * 
+	 * @param player The player to stop ignoring
+	 */
+	public void unIgnore(Player player) {
+		List<String> ignoreList = config.getStringList(IGNORE_PATH);
+		ignoreList.remove(player.getUniqueId().toString());
+		
+		config.set(IGNORE_PATH, ignoreList);
+		saveFile();
+	}
+	
+	/**
+	 * Check if the this User is ignoring the given player.
+	 * 
+	 * @param player The player checking.
+	 * @return True if he is, false otherwise.
+	 */
+	public boolean isIgnoring(Player player) {
+		if (getRank().getLevel() >= Rank.STAFF.getLevel()) {
+			return false;
+		}
+		
+		return config.getStringList(IGNORE_PATH).contains(player.getUniqueId().toString());
 	}
 	
 	/**
