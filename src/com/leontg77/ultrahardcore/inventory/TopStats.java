@@ -147,32 +147,36 @@ public class TopStats extends InvGUI implements Listener {
 		
 		int number = 1;
 		
-		for (int i = data.size() - 1; i >= data.size() - 10; i--) {
-			if (i >= data.size()) {
-				continue;
-			}
-			
-			String line = data.get(i);
-			
-			double value = Double.parseDouble(line.split(" ")[0]);
-			String name = line.split(" ")[1];
-
-			boolean isDamage = statName.equalsIgnoreCase("damage taken");
-
-			String sDamage = NumberUtils.makePercent(value);
-			int iDamage = Integer.parseInt(sDamage.substring(2));
-			
-			if (number == 10) {
-				lore.add("§6#" + number + "§8 | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
-			} else {
-				if (number == 1) {
-					meta.setOwner(name);
+		if (data.size() < 10) {
+			lore.add("§cLess than 10 players has joined the server");
+		} else {
+			for (int i = data.size() - 1; i >= data.size() - 10; i--) {
+				if (i >= data.size()) {
+					continue;
 				}
 				
-				lore.add(" §6#" + number + "§8  | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
-			}
+				String line = data.get(i);
+				
+				double value = Double.parseDouble(line.split(" ")[0]);
+				String name = line.split(" ")[1];
 
-			number++;
+				boolean isDamage = statName.equalsIgnoreCase("damage taken");
+
+				String sDamage = NumberUtils.makePercent(value);
+				int iDamage = Integer.parseInt(sDamage.substring(2));
+				
+				if (number == 10) {
+					lore.add("§6#" + number + "§8 | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
+				} else {
+					if (number == 1) {
+						meta.setOwner(name);
+					}
+					
+					lore.add(" §6#" + number + "§8  | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
+				}
+
+				number++;
+			}
 		}
 		
 		lore.add(" ");
