@@ -12,10 +12,10 @@ import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.Main.BorderShrink;
-import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
