@@ -1,11 +1,14 @@
 package com.leontg77.ultrahardcore.commands.game;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -16,11 +19,29 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class VoteCommand implements CommandExecutor {
-	public static ArrayList<String> voted = new ArrayList<String>();
+	private static List<UUID> voted = new ArrayList<UUID>();
 	
-	public static boolean running = false;
-	public static int yes = 0;
-	public static int no = 0;
+	private static boolean running = false;
+	private static int yes = 0;
+	private static int no = 0;
+	
+	public static boolean isRunning() {
+		return running;
+	}
+	
+	public static boolean hasVoted(Player player) {
+		return voted.contains(player.getUniqueId());
+	}
+	
+	public static void addVote(Player player, boolean votedYes) {
+		voted.add(player.getUniqueId());
+		
+		if (votedYes) {
+			yes++;
+		} else {
+			no++;
+		}
+	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
