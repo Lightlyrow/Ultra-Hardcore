@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.banning.MuteCommand;
+import com.leontg77.ultrahardcore.commands.basic.IgnoreCommand;
 import com.leontg77.ultrahardcore.commands.game.BoardCommand;
 import com.leontg77.ultrahardcore.commands.game.ChatCommand;
 import com.leontg77.ultrahardcore.commands.game.ConfigCommand;
@@ -72,6 +73,9 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	public void registerCommands() {
 		// banning
 		cmds.add(new MuteCommand());
+		
+		// basic
+		cmds.add(new IgnoreCommand());
 		
 		// game
 		cmds.add(new BoardCommand());
