@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -75,14 +74,10 @@ public class LogoutListener implements Listener {
 			MsgCommand.msg.remove(player);
 		}
 		
-		Set<CommandSender> temp = new HashSet<CommandSender>();
+		Set<String> temp = new HashSet<String>(MsgCommand.msg.keySet());
 		
-		for (CommandSender key : MsgCommand.msg.keySet()) {
-			temp.add(key);
-		}
-		
-		for (CommandSender key : temp) {
-			if (MsgCommand.msg.get(key).equals(player)) {
+		for (String key : temp) {
+			if (MsgCommand.msg.get(key).equals(player.getName())) {
 				MsgCommand.msg.remove(key);
 			}
 		}
