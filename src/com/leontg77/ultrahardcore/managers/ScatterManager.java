@@ -3,24 +3,48 @@ package com.leontg77.ultrahardcore.managers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
+import com.google.common.collect.ImmutableSet;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
- * Scatter utilities class.
- * <p>
- * Contains scatter related methods.
+ * Scatter manager class.
  * 
  * @author LeonTG77
  */
 public class ScatterManager {
-	private static final Material[] nospawn = { Material.STATIONARY_WATER, Material.WATER, Material.STATIONARY_LAVA, Material.LAVA, Material.CACTUS };
+	private static final Set<Material> INVAILD_SPAWN_BLOCKS = ImmutableSet.of(Material.STATIONARY_WATER, Material.WATER, Material.STATIONARY_LAVA, Material.LAVA, Material.CACTUS);
+	private static final ScatterManager INSTANCE = new ScatterManager();
+	
+	private boolean scatterTeams;
+	private World world;
+	private int radius;
+	
+	public static ScatterManager getInstance() {
+		return INSTANCE;
+	}
+	
+	public void setTeamScatter(boolean enable) {
+		this.scatterTeams = enable;
+	}
+	
+	public void setWorld(World world) {
+		this.world = world;
+		
+		this.radius = ((((int) world.getWorldBorder().getSize()) / 2) - 1);
+	}
+	
+	public void scatter(List<Player> toScatter) {
+		
+	}
 	
 	/**
 	 * Get a list of available scatter locations.
@@ -79,15 +103,15 @@ public class ScatterManager {
 	private static boolean isVaild(Location loc) {
 		loc.setY(loc.getWorld().getHighestBlockYAt(loc));
 		
-		Material m = loc.add(0, -1, 0).getBlock().getType();
+		Material type = loc.add(0, -1, 0).getBlock().getType();
 		boolean vaild = true;
 		
 		if (loc.getBlockY() < 60) {
 			vaild = false;
 		}	
 		
-		for (Material no : nospawn) {
-			if (m == no) {
+		for (Material no : INVAILD_SPAWN_BLOCKS) {
+			if (type == no) {
 				vaild = false;
 			}
 		}
