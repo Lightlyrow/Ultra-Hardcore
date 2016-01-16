@@ -38,6 +38,16 @@ public class iPvPListener implements Listener {
     	
     	Block block = clicked.getRelative(face);
     	Player player = event.getPlayer();
+        
+        // silly, no spectators should trigger this (since they have a lava bucket in their inv)
+        if (spec.isSpectating(player)) {
+        	return;
+        }
+        
+        // if pvp is enabled we want them to be able to iPvP
+        if (player.getWorld().getPVP()) {
+        	return;
+        }
     
 		if (event.getBucket() != Material.LAVA_BUCKET) {
 			return;
