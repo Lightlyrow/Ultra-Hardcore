@@ -52,11 +52,11 @@ public class ReplyCommand extends UHCCommand {
 			return true;
     	}
 
-    	if (!MsgCommand.msg.containsKey(sender.getName())) {
+    	if (!MsgCommand.msg.containsKey(player.getName())) {
     		throw new CommandException("You have no one to reply to.");
     	}
     	
-    	Player target = Bukkit.getPlayer(args[0]);
+    	Player target = Bukkit.getPlayer(MsgCommand.msg.get(player.getName()));
                
         if (target == null) {
         	throw new CommandException("You have no one to reply to.");
