@@ -35,6 +35,9 @@ public class TeamHealth extends Scenario implements Listener {
 	
 	public TeamHealth() {
 		super("TeamHealth", "The percent health shown in tab/bellow the name is all the teammates health combined.");
+		
+		teamHealthName = board.getObjective("teamHealthName");
+		teamHealth = board.getObjective("teamHealth");
 	}
 
 	@Override
@@ -56,6 +59,13 @@ public class TeamHealth extends Scenario implements Listener {
 
 	@Override
 	public void onEnable() {
+		if (State.isState(State.INGAME)) {
+			on(new GameStartEvent());
+		}
+	}
+	
+	@EventHandler
+    public void on(GameStartEvent event) {
 		if (teamHealthName == null) {
 			teamHealthName = board.registerNewObjective("teamHealthName", "dummy");
 		}
@@ -64,13 +74,6 @@ public class TeamHealth extends Scenario implements Listener {
 			teamHealth = board.registerNewObjective("teamHealth", "dummy");
 		}
 		
-		if (State.isState(State.INGAME)) {
-			on(new GameStartEvent());
-		}
-	}
-	
-	@EventHandler
-    public void on(GameStartEvent event) {
 		teamHealthName.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		teamHealthName.setDisplayName("§4♥");
 		
