@@ -1,7 +1,6 @@
 package com.leontg77.ultrahardcore.commands.game;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -11,8 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -21,10 +18,14 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.ultrahardcore.Arena;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Parkour;
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
@@ -37,108 +38,116 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class SpreadCommand implements CommandExecutor {
-	public static final HashMap<String, Location> scatterLocs = new HashMap<String, Location>();
-	public static boolean isReady = true;
+public class SpreadCommand extends UHCCommand {
+
+	public SpreadCommand() {
+		super("spread", "<teamspread> <player|*>");
+	}
 
 	@Override
-	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		if (!sender.hasPermission("uhc.spread")) {
 			sender.sendMessage(Main.NO_PERM_MSG);
 			return true;
 		}
 		
-		if (args.length < 3) {
-			sender.sendMessage(Main.PREFIX + "Usage: /spread <radius> <teamspread> <player|*>");
-			return true;
+		if (args.length < 2) {
+			sender.sendMessage(Main.PREFIX + "Usage: /spread ");
+			return false;
 		}
 
-		Game game = Game.getInstance();
-		final String name = game.getWorld().getName();
+		final Settings settings = Settings.getInstance();
+		final Game game = Game.getInstance();
 		
-		if (Bukkit.getWorld(name) == null) {
-			sender.sendMessage(ChatColor.RED + "There are no worlds called " + name + ".");
-			return true;
+		final ScatterManager manager = ScatterManager.getInstance();
+		final World world = game.getWorld();
+		
+		if (world == null) {
+			throw new CommandException("There are no worlds called '" + settings.getConfig().getString("world", "girhgqeruiogh") + "'.");
 		}
 		
-		final boolean teams;
-		final int radius;
-		
-		try {
-			radius = Integer.parseInt(args[0]);
-		} catch (Exception e) {
-			sender.sendMessage(ChatColor.RED + "Invaild radius.");
-			return true;
-		}
-		
-		if (args[1].equalsIgnoreCase("true")) {
-			teams = true;
-		}
-		else if (args[1].equalsIgnoreCase("false")) {
-			teams = false;
-		} 
-		else {
-			sender.sendMessage(ChatColor.RED + "Teamspread must be true of false"); 
-			return true;
-		}
+		final boolean teamSpread = parseBoolean(args[0], "Team Spread");
 		
 		if (args[2].equalsIgnoreCase("*")) {
-			if (!State.isState(State.CLOSED)) {
-				sender.sendMessage(Main.PREFIX + "You cannot scatter when whitelist is off, no games are running or the game has started.");
-				return true;
+			switch (State.getState()) {
+			case NOT_RUNNING:
+				throw new CommandException("You can't scatter when no games are running.");
+			case OPEN:
+				throw new CommandException("You can't scatter when the server isn't whitelisted.");
+			case SCATTER:
+				throw new CommandException("You can't scatter while a scatter is currently running.");
+			case INGAME:
+				throw new CommandException("You can't scatter when the game has started.");
+			default:
+				break;
 			}
 			
-			State.setState(State.SCATTER);
-			Parkour.getInstance().reset();
-			isReady = false;
+			if (!Bukkit.hasWhitelist()) {
+				throw new CommandException("You can't scatter when the server isn't whitelisted.");
+			}
 			
-			int t = 0;
-			int s = 0;
+			if (game.teamManagement()) {
+				throw new CommandException("You can't scatter without disabling team management.");
+			}
+			
+			if (Arena.getInstance().isEnabled()) {
+				throw new CommandException("You can't scatter without disabling the arena.");
+			}
+			
+			Parkour.getInstance().reset();
+			State.setState(State.SCATTER);
+			
+			int teams = 0;
+			int solo = 0;
+			
+			final BoardManager boardMan = BoardManager.getInstance();
+			final TeamManager teamMan = TeamManager.getInstance();
 			
 			if (game.getTeamSize().toLowerCase().startsWith("cto")) {
-				for (OfflinePlayer whitelisted : Bukkit.getServer().getWhitelistedPlayers()) {
-					if (BoardManager.getInstance().board.getEntryTeam(whitelisted.getName()) == null) {
-						Team team = TeamManager.getInstance().findAvailableTeam();
-						
-						if (team != null) {
-							team.addEntry(whitelisted.getName());
-						}
+				for (OfflinePlayer whitelisted : Bukkit.getWhitelistedPlayers()) {
+					if (teamMan.getTeam(whitelisted) != null) {
+						continue;
+					}
+					
+					Team team = teamMan.findAvailableTeam();
+					
+					if (team != null) {
+						teamMan.joinTeam(team, whitelisted);
 					}
 				}
 			}
 			
-			for (Team te : TeamManager.getInstance().getTeams()) {
-				if (te.getSize() > 0) {
-					if (te.getSize() > 1) {
-						t++;
-					} else {
-						s++;
-					}
+			for (Team loopTeam : teamMan.getTeams()) {
+				if (loopTeam.getSize() == 0) {
+					continue;
+				}
+				
+				if (loopTeam.getSize() > 1) {
+					teams++;
+				} else {
+					solo++;
 				}
 			}
 			
-			for (World world : GameUtils.getGameWorlds()) {
-				world.setTime(0);
-				world.setDifficulty(Difficulty.HARD);
-				world.setPVP(false);
+			for (World worlds : GameUtils.getGameWorlds()) {
+				worlds.setTime(0);
+				worlds.setDifficulty(Difficulty.HARD);
+				worlds.setPVP(false);
 				
-				world.setGameRuleValue("doDaylightCycle", "true");
-				world.setSpawnFlags(false, true);
-				world.setThundering(false);
-				world.setStorm(false);
+				worlds.setGameRuleValue("doDaylightCycle", "true");
+				worlds.setSpawnFlags(false, true);
+				worlds.setThundering(false);
+				worlds.setStorm(false);
 				
-				for (Entity mob : world.getEntities()) {
+				for (Entity mob : worlds.getEntities()) {
 					if (EntityUtils.isButcherable(mob.getType())) {
 						mob.remove();
 					}
 				}
 			}
 			
-			final int te = t;
-			final int so = s;
-			
-			if (teams) {
-				PlayerUtils.broadcast(Main.PREFIX + "Scattering §a" + t + " §7teams and §a" + s + " §7solos...");
+			if (teamSpread) {
+				PlayerUtils.broadcast(Main.PREFIX + "Scattering §a" + teams + " §7teams and §a" + solo + " §7solos...");
 			} else {
 				PlayerUtils.broadcast(Main.PREFIX + "Scattering §a" + Bukkit.getServer().getWhitelistedPlayers().size() + " §7players...");
 			}
@@ -156,7 +165,7 @@ public class SpreadCommand implements CommandExecutor {
 					}
 					
 					if (teams) {
-						List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(name), radius, te + so);
+						List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(world), radius, te + so);
 						
 						int index = 0;
 						
@@ -176,7 +185,7 @@ public class SpreadCommand implements CommandExecutor {
 							}
 						}
 					} else {
-						List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(name), radius, Bukkit.getServer().getWhitelistedPlayers().size());
+						List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(world), radius, Bukkit.getServer().getWhitelistedPlayers().size());
 					
 						int index = 0;
 						
@@ -286,9 +295,9 @@ public class SpreadCommand implements CommandExecutor {
 				public void run() {
 					PlayerUtils.broadcast(Main.PREFIX + "Finding scatter location...");
 					
-					if (teams) {
+					if (teamSpread) {
 						if (target.getScoreboard().getEntryTeam(target.getName()) == null) {
-							List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(name), radius, 1);
+							List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(world), radius, 1);
 							scatterLocs.put(target.getName(), loc.get(0));
 							return;
 						}
@@ -304,7 +313,7 @@ public class SpreadCommand implements CommandExecutor {
 							}
 						}
 					} else {
-						List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(name), radius, 1);
+						List<Location> loc = ScatterManager.findScatterLocations(Bukkit.getWorld(world), radius, 1);
 						scatterLocs.put(target.getName(), loc.get(0));
 					}
 				}
@@ -335,5 +344,11 @@ public class SpreadCommand implements CommandExecutor {
 			}.runTaskLater(Main.plugin, 60);
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
