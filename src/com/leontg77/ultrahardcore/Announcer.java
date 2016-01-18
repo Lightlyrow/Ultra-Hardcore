@@ -44,7 +44,7 @@ public class Announcer {
 		
 		messages.add("Remember to use §a/uhc §7for all game information.");
 		messages.add("You can view the hall of fame with §a/hof§7.");
-		messages.add("If you have an questions, use §a/helpop§7.");
+		messages.add("If you have any questions, use §a/helpop§7.");
 		messages.add("You can find the match post by doing §a/post§7.");
 		messages.add("The server runs off a custom UHC plugin by §6LeonTG77§7.");
 		messages.add("Wonder if you are lagging? Use §a/ms §7or §a/tps§7.");
