@@ -9,6 +9,8 @@ commands:
   arena:
     description: Join the arena.
     aliases: [a, p]
+  back:
+    description: Teleport to your last location.
   ban:
     description: Ban a player.
     aliases: [dq]
@@ -96,6 +98,8 @@ commands:
     description: Pregen a world.
   pvp:
     description: Toggle pvp in a specific world.
+  respawn:
+    description: Respawn a player.
   random:
     description: Create random teams.
   rank:
