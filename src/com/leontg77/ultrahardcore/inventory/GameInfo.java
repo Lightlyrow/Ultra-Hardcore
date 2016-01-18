@@ -316,7 +316,7 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add("§8» §7Shears: " + (game.shears() ? "§aWork." : "§cDoes not work."));
 		lore.add("§8» §7Flint Rates: §6" + NumberUtils.formatDouble(game.getFlintRates() * 100) + "%");
 		lore.add(" ");
-		lore.add("§8» §7Mob Rates: §6Vanilla.");
+		lore.add("§8» §7Mob Rates: §6Vanilla, §eDifficulty Hard");
 		lore.add("§8» §7Ore Rates: §6Vanilla.");
 		lore.add("§8» §7Cave Rates: §6Vanilla.");
 		lore.add(" ");
