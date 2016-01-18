@@ -33,3 +33,4 @@ UHC Plugin designed for LeonTG77's UHC games
 29. Clicking items in the /uhc menu opens up the info in the chat
 30. add /uhc [rule]
 31. Custom /help command
+32. For tab completing, add some places where to tab complete everyone online and another for everyone visible.
