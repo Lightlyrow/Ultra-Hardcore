@@ -4,7 +4,6 @@ import static com.leontg77.ultrahardcore.Main.plugin;
 
 import java.io.File;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.TimeZone;
 
 import org.bukkit.BanEntry;
@@ -12,7 +11,6 @@ import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,9 +27,8 @@ import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
-import com.leontg77.ultrahardcore.commands.game.SpreadCommand;
-import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
+import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -116,9 +113,9 @@ public class LoginListener implements Listener {
 			}
 		}
 		
-		HashMap<String, Location> scatter = SpreadCommand.scatterLocs;
+		ScatterManager scatter = ScatterManager.getInstance();
 		
-		if (scatter.containsKey(player.getName()) && SpreadCommand.isReady) {
+		if (scatter.needsLateScatter(player) && !scatter.isScattering()) {
 			if (State.isState(State.SCATTER)) {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, 128));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1726272000, 6));
@@ -128,9 +125,9 @@ public class LoginListener implements Listener {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1726272000, 2));
 			}
 			
+
 			PlayerUtils.broadcast(Main.PREFIX + "- §a" + player.getName() + " §7scheduled scatter.");
-			player.teleport(scatter.get(player.getName()));
-			scatter.remove(player.getName());
+			scatter.handleLateScatter(player);
 		}
 		
 		// incase they join with freeze effects.
@@ -296,7 +293,7 @@ public class LoginListener implements Listener {
 			}
 			
 			if (player.hasPermission("uhc.prelist") && !game.isRecordedRound()) {
-				if (!WhitelistCommand.prewls && !State.isState(State.INGAME)) {
+				if (!game.preWhitelists() && !State.isState(State.INGAME)) {
 					event.disallow(Result.KICK_WHITELIST, "§4Pre-whitelist has been disabled\n\n" + event.getKickMessage());
 					return;
 				}
