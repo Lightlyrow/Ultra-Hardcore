@@ -26,6 +26,7 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.ultrahardcore.Main.BorderShrink;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.User.Stat;
+import com.leontg77.ultrahardcore.commands.game.TimerCommand;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.events.MeetupEvent;
@@ -238,7 +239,10 @@ public class Timers {
 				}
 				
 				for (Player online : PlayerUtils.getPlayers()) {
-					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
+					if (!TimerCommand.isRunning()) {
+						PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
+					}
+					
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 					
 					for (Achievement a : Achievement.values()) {
@@ -477,7 +481,10 @@ public class Timers {
 					PlayerUtils.broadcast(Main.PREFIX + "Do not ask for another one.");
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.sendTitle(online, "§6Final heal!", "§7Do not ask for another one", 5, 10, 5);
+						if (!TimerCommand.isRunning()) {
+							PacketUtils.sendTitle(online, "§6Final heal!", "§7Do not ask for another one", 5, 10, 5);
+						}
+						
 						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 						
 						User user = User.get(online);
@@ -491,20 +498,34 @@ public class Timers {
 				if (timeSeconds < 20) {
 					finalHeal--;
 					
+					if (TimerCommand.isRunning()) {
+						return;
+					}
+					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(finalHeal));
 					}
 				} else if (pvpSeconds > 0) {
+					if (TimerCommand.isRunning()) {
+						return;
+					}
+					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendAction(online, "§7PvP is enabled in §8» §a" + DateUtils.ticksToString(pvpSeconds));
 					}
 				} else if (meetupSeconds > 0) {
+					if (TimerCommand.isRunning()) {
+						return;
+					}
+					
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendAction(online, "§7Meetup is in §8» §a" + DateUtils.ticksToString(meetupSeconds));
 					}
 				} else {
-					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.sendAction(online, "§8» §6Meetup is now! §8«");
+					if (!TimerCommand.isRunning()) {
+						for (Player online : PlayerUtils.getPlayers()) {
+							PacketUtils.sendAction(online, "§8» §6Meetup is now! §8«");
+						}
 					}
 					
 					timeToBorder--;
