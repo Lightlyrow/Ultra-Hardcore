@@ -3,7 +3,7 @@ UHC Plugin designed for LeonTG77's UHC games
 
 # Todo list:
 1. Add a clickable name in the chat and if you click you get 3 options, ban/kick/mute clicking one of them will give you different reasons to do that action
-2. Finish converting all commands to using the new command handler
+2. ~~Finish converting all commands to using the new command handler~~
 3. Scenario code cleanup and fixing.
 4. Finish util classes
 5. Add docs to Game.java
