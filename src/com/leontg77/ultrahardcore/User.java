@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -43,6 +44,7 @@ public class User {
 	private File file;
     
     private boolean creating = false;
+    private Location deathLoc;
 	
 	/**
 	 * Gets the data of the given player.
@@ -267,6 +269,24 @@ public class User {
 		default:
 			return "§7";
 		}
+	}
+	
+	/**
+	 * Set the death location of the player.
+	 * 
+	 * @param location The death loc.
+	 */
+	public void setDeathLoc(Location location) {
+		deathLoc = location;
+	}
+	
+	/**
+	 * Get the death location of the player.
+	 * 
+	 * @return The death location.
+	 */
+	public Location getDeathLocation() {
+		return deathLoc;
 	}
 	
 	private static final String IGNORE_PATH = "ignoreList";
