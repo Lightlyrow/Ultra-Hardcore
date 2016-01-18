@@ -1,74 +1,52 @@
 package com.leontg77.ultrahardcore.commands.game;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 
 /**
  * Start command class.
  * 
  * @author LeonTG77
  */
-public class StartCommand implements CommandExecutor {
+public class StartCommand extends UHCCommand {
+
+	public StartCommand() {
+		super("start", "<timefromstart> <timeuntilpvp> <timeuntilmeetup>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd,	String label, String[] args) {
-		if (!sender.hasPermission("uhc.start")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
+		final Timers timers = Timers.getInstance();
+		final Game game = Game.getInstance();
 		
-		Timers timers = Timers.getInstance();
-		
-		if (State.isState(State.NOT_RUNNING) || State.isState(State.CLOSED)) {
-			sender.sendMessage(ChatColor.RED + "You cannot start the game without scattering first.");
-		}
-		else if (State.isState(State.OPEN)) {
-			sender.sendMessage(ChatColor.RED + "You cannot start the game when whitelist is off.");
-		}
-		else if (State.isState(State.SCATTER)) {
-			if (Game.getInstance().isRecordedRound()) {
+		switch (State.getState()) {
+		case NOT_RUNNING:
+		case OPEN:
+		case CLOSED:
+			throw new CommandException("You can't start the game without scattering first.");
+		case SCATTER:
+			if (game.isRecordedRound()) {
 				timers.startRR();
 			} else {
 				timers.start();
 			}
-		}
-		else if (State.isState(State.INGAME)) {
+			break;
+		case INGAME:
 			if (args.length < 3) {
-				sender.sendMessage(ChatColor.RED + "Usage: /start <timepassed> <timetopvp> <timetomeetup>");
-				return true;
+				return false;
 			}
 			
-			int timePassed;
-			int pvp;
-			int meetup;
-			
-			try {
-				timePassed = Integer.parseInt(args[0]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + "Invaild number.");
-				return true;
-			}
-			
-			try {
-				pvp = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + "Invaild number.");
-				return true;
-			}
-			
-			try {
-				meetup = Integer.parseInt(args[2]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + "Invaild number.");
-				return true;
-			}
+			int timePassed = parseInt(args[0], "time from start");
+			int pvp = parseInt(args[1], "time until pvp");
+			int meetup = parseInt(args[2], "time until meetup");
 			
 			Timers.time = timePassed;
 			Timers.pvp = pvp;
@@ -78,12 +56,19 @@ public class StartCommand implements CommandExecutor {
 			Timers.pvpSeconds = (pvp > 0 ? (pvp * 60) : 0);
 			Timers.meetupSeconds = (meetup > 0 ? (meetup * 60) : 0);
 
-			if (Game.getInstance().isRecordedRound()) {
+			if (game.isRecordedRound()) {
 				timers.timerRR();
 			} else {
 				timers.timer();
 			}
+			break;
 		}
+		
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+		return new ArrayList<String>();
 	}
 }
