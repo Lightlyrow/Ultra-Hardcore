@@ -44,7 +44,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
-import com.leontg77.ultrahardcore.bot.ArcticBot;
 import com.leontg77.ultrahardcore.commands.CommandHandler;
 import com.leontg77.ultrahardcore.commands.arena.ArenaCommand;
 import com.leontg77.ultrahardcore.commands.arena.HotbarCommand;
@@ -63,12 +62,6 @@ import com.leontg77.ultrahardcore.commands.basic.SetspawnCommand;
 import com.leontg77.ultrahardcore.commands.basic.SkullCommand;
 import com.leontg77.ultrahardcore.commands.basic.StaffChatCommand;
 import com.leontg77.ultrahardcore.commands.basic.TextCommand;
-import com.leontg77.ultrahardcore.commands.basic.TimeLeftCommand;
-import com.leontg77.ultrahardcore.commands.game.SpreadCommand;
-import com.leontg77.ultrahardcore.commands.game.StartCommand;
-import com.leontg77.ultrahardcore.commands.game.TimerCommand;
-import com.leontg77.ultrahardcore.commands.game.VoteCommand;
-import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.InvseeListener;
@@ -144,7 +137,6 @@ public class Main extends JavaPlugin {
 		Settings.getInstance().setup();
 	    
 		WorldManager.getInstance().loadWorlds();
-		ArcticBot.getBot().setup();
 		
 		AntiStripmine.getInstance().setup();
 		BiomeSwap.getInstance().setup();
@@ -213,17 +205,11 @@ public class Main extends JavaPlugin {
 		getCommand("list").setExecutor(new ListCommand());
 		getCommand("skull").setExecutor(new SkullCommand());
 		getCommand("setspawn").setExecutor(new SetspawnCommand());
-		getCommand("spread").setExecutor(new SpreadCommand());
 		getCommand("ac").setExecutor(new StaffChatCommand());
-		getCommand("start").setExecutor(new StartCommand());
 		getCommand("tempban").setExecutor(new TempbanCommand());
 		getCommand("text").setExecutor(new TextCommand());
-		getCommand("timeleft").setExecutor(new TimeLeftCommand());
-		getCommand("timer").setExecutor(new TimerCommand());
 		getCommand("unban").setExecutor(new UnbanCommand());
-		getCommand("unbanip").setExecutor(new UnbanIPCommand());
-		getCommand("vote").setExecutor(new VoteCommand());
-		getCommand("whitelist").setExecutor(new WhitelistCommand());
+		getCommand("unbanip").setExecutor(new UnbanIPCommand());	
 		
 		switch (State.getState()) {
 		case NOT_RUNNING:
