@@ -32,3 +32,4 @@ UHC Plugin designed for LeonTG77's UHC games
 28. *Make mute time only go down when they're online?*
 29. Clicking items in the /uhc menu opens up the info in the chat
 30. add /uhc [rule]
+31. Custom /help command
