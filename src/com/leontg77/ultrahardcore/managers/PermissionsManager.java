@@ -61,6 +61,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.matchpost", true);
 		perm.setPermission("uhc.scenario", true);
 		perm.setPermission("uhc.ignore", true);
+		perm.setPermission("uhc.timeleft", true);
 		
 		// spectator perms, they can only use them if they're spectating.
 		perm.setPermission("uhc.invsee", true);
