@@ -35,6 +35,25 @@ public class Game {
 	
 	// ############################ BASIC ############################
 	// TODO: <-- just for the marker.
+
+	/**
+	 * Enable or disable pre whitelists.
+	 * 
+	 * @param enable True to enable, false to disable.
+	 */
+	public void setPreWhitelists(boolean enable) {
+		settings.getConfig().set("misc.prewl", enable);
+		settings.saveConfig();
+	}
+
+	/**
+	 * Check if pre whitelists are enabled.
+	 * 
+	 * @return True if it is, false otherwise.
+	 */
+	public boolean preWhitelists() {
+		return settings.getConfig().getBoolean("misc.prewl", true);
+	}
 	
 	/**
 	 * Set the team size of the game.
