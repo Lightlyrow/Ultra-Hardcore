@@ -1,17 +1,18 @@
 package com.leontg77.ultrahardcore.commands.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -21,136 +22,96 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class TimerCommand implements CommandExecutor, TabCompleter {
-	private BukkitRunnable run = null;
+public class TimerCommand extends UHCCommand {
+	private static BukkitRunnable run = null;
 	private boolean countdown = true;
-	private String message;
-	private int ticks;
+	
+	public TimerCommand() {
+		super("timer", "<duration|cancel> [message...]");
+	}
 	
 	@Override
-	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.timer")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		if (args.length == 0) {
-			sender.sendMessage(Main.PREFIX + "Usage: /timer <duration> <message>");
-			return true;
-		}
-		
-		if (args.length == 1 && !args[0].equalsIgnoreCase("cancel")) {
-			sender.sendMessage(Main.PREFIX + "Usage: /timer <duration> <message>");
-			return true;
+			return false;
 		}
 
-		if (args.length >= 1 && args[0].equalsIgnoreCase("cancel")) {
-			if (run != null) {
+		if (args.length >= 1) {
+			if (args[0].equalsIgnoreCase("cancel")) {
+				if (run == null) {
+					throw new CommandException("There are no timers running.");
+				}
+
+				sender.sendMessage(Main.PREFIX + "The timer has been stopped.");
+					
 				run.cancel();
 				run = null;
-				sender.sendMessage(Main.PREFIX + "Timer cancelled.");
-			} else {
-				sender.sendMessage(ChatColor.RED + "Timer is not running.");
+				return true;
 			}
-			return true;
+		
+			if (args.length == 1) {
+				return false;
+			}
 		}
 		
 		if (run != null) {
-			sender.sendMessage(ChatColor.RED + "Timer is already running.");
-			return true;
+			throw new CommandException("The timer is already running.");
 		}
 
-		int millis;
+		final int time = parseInt(args[0], "time");
+		countdown = time > 0;
 
-		try {
-			millis = Integer.parseInt(args[0]);
-		} catch (Exception e) {
-			sender.sendMessage(ChatColor.RED + args[0] + " is not a vaild number.");
-			return true;
-		}
-		
-		if (millis <= 0) {
-			countdown = false;
-		} else {
-			countdown = true;
-		}
-
-		StringBuilder msg = new StringBuilder();
-		
-		for (int i = 1; i < args.length; i++) {
-			msg.append(args[i]).append(" ");
-		}
+		final String message = ChatColor.translateAlternateColorCodes('&', Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length)));
 		
 		run = new BukkitRunnable() {
+			private int ticks = time;
+			
 			public void run() {
-				if (countdown) {
-					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
-					}
-					ticks--;
-					
-					if (ticks < 0) {
-						cancel();
-						run = null;
-					}
-				} else {
+				if (!countdown) {
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendAction(online, message); 
 					}
+					return;
+				}
+					
+				for (Player online : PlayerUtils.getPlayers()) {
+					PacketUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
+				}
+				ticks--;
+				
+				if (ticks < 0) {
+					cancel();
+					run = null;
 				}
 			}
 		};
 
-		sender.sendMessage(Main.PREFIX + "Timer started.");
+		sender.sendMessage(Main.PREFIX + "The timer has started.");
 		run.runTaskTimer(Main.plugin, 0, 20);
-		
-		this.message = ChatColor.translateAlternateColorCodes('&', msg.toString().trim());
-		this.ticks = millis;
 		return true;
 	}
 	
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.timer")) {
-			return null;
-		}
-		
-    	ArrayList<String> toReturn = new ArrayList<String>();
+	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+		List<String> toReturn = new ArrayList<String>();
     	
     	if (args.length == 1) {
-        	ArrayList<String> types = new ArrayList<String>();
-        	types.add("cancel");
-        	
-        	if (args[0].equals("")) {
-        		for (String type : types) {
-        			toReturn.add(type);
-        		}
-        	} else {
-        		for (String type : types) {
-        			if (type.startsWith(args[0].toLowerCase())) {
-        				toReturn.add(type);
-        			}
-        		}
-        	}
+        	toReturn.add("cancel");
         }
     	
     	if (args.length == 2) {
-        	ArrayList<String> types = new ArrayList<String>();
-        	types.add("&7The game is starting in &8»&a");
-        	
-        	if (args[1].equals("")) {
-        		for (String type : types) {
-        			toReturn.add(type);
-        		}
-        	} else {
-        		for (String type : types) {
-        			if (type.startsWith(args[1].toLowerCase())) {
-        				toReturn.add(type);
-        			}
-        		}
-        	}
+        	toReturn.add("&7The game is starting in &8»&a");
     	}
 
     	return toReturn;
+	}
+	
+	/**
+	 * Check if the timer is currently running.
+	 * 
+	 * @return True if it is, false otherwise.
+	 */
+	public static boolean isRunning() {
+		return run != null;
 	}
 }
