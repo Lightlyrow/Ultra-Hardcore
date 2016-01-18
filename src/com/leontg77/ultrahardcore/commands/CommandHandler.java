@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.banning.MuteCommand;
+import com.leontg77.ultrahardcore.commands.basic.BackCommand;
 import com.leontg77.ultrahardcore.commands.basic.IgnoreCommand;
 import com.leontg77.ultrahardcore.commands.game.BoardCommand;
 import com.leontg77.ultrahardcore.commands.game.ChatCommand;
@@ -21,6 +22,12 @@ import com.leontg77.ultrahardcore.commands.game.EndCommand;
 import com.leontg77.ultrahardcore.commands.game.HelpopCommand;
 import com.leontg77.ultrahardcore.commands.game.MatchpostCommand;
 import com.leontg77.ultrahardcore.commands.game.ScenarioCommand;
+import com.leontg77.ultrahardcore.commands.game.SpreadCommand;
+import com.leontg77.ultrahardcore.commands.game.StartCommand;
+import com.leontg77.ultrahardcore.commands.game.TimeLeftCommand;
+import com.leontg77.ultrahardcore.commands.game.TimerCommand;
+import com.leontg77.ultrahardcore.commands.game.VoteCommand;
+import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
 import com.leontg77.ultrahardcore.commands.give.GiveCommand;
 import com.leontg77.ultrahardcore.commands.give.GiveallCommand;
 import com.leontg77.ultrahardcore.commands.inventory.HOFCommand;
@@ -66,93 +73,6 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class CommandHandler implements CommandExecutor, TabCompleter {
 	private List<UHCCommand> cmds = new ArrayList<UHCCommand>();
-	
-	/**
-	 * Register all the commands.
-	 */
-	public void registerCommands() {
-		// banning
-		cmds.add(new MuteCommand());
-		
-		// basic
-		cmds.add(new IgnoreCommand());
-		
-		// game
-		cmds.add(new BoardCommand());
-		cmds.add(new ChatCommand());
-		cmds.add(new ConfigCommand());
-		cmds.add(new EndCommand());
-		cmds.add(new HelpopCommand());
-		cmds.add(new MatchpostCommand());
-		cmds.add(new ScenarioCommand());
-		
-		// give
-		cmds.add(new GiveallCommand());
-		cmds.add(new GiveCommand());
-		
-		// inventory
-		cmds.add(new HOFCommand());
-		cmds.add(new UHCCmd());
-		
-		// lag
-		cmds.add(new MsCommand());
-		cmds.add(new TpsCommand());
-		
-		// msg
-		cmds.add(new MsgCommand());
-		cmds.add(new ReplyCommand());
-		
-		// player
-		cmds.add(new ClearInvCommand());
-		cmds.add(new ClearXPCommand());
-		cmds.add(new FeedCommand());
-		cmds.add(new FlyCommand());
-		cmds.add(new GamemodeCommand());
-		cmds.add(new HealCommand());
-		cmds.add(new HealthCommand());
-		cmds.add(new SethealthCommand());
-		cmds.add(new SetmaxhealthCommand());
-
-		// spectate
-		cmds.add(new InvseeCommand());
-		cmds.add(new NearCommand());
-		cmds.add(new SpectateCommand());
-		cmds.add(new SpecChatCommand());
-		cmds.add(new SpeedCommand());
-		cmds.add(new TpCommand());
-		
-		// team
-		cmds.add(new PmCommand());
-		cmds.add(new PmoresCommand());
-		cmds.add(new RandomCommand());
-		cmds.add(new TeamCommand());
-		cmds.add(new TlCommand());
-
-		// user
-		cmds.add(new InfoCommand());
-		cmds.add(new RankCommand());
-		cmds.add(new StatsCommand());
-		cmds.add(new TopCommand());
-		
-		// world
-		cmds.add(new BorderCommand());
-		cmds.add(new PregenCommand());
-		cmds.add(new PvPCommand());
-		cmds.add(new WorldCommand());
-		
-		for (UHCCommand cmd : cmds) {
-			PluginCommand pCmd = Main.plugin.getCommand(cmd.getName());
-			
-			// if its null, broadcast the command name so I know which one it is (so I can fix it).
-			if (pCmd == null) {
-				PlayerUtils.broadcast(cmd.getName());
-				continue;
-			}
-			
-			pCmd.setExecutor(this);
-			pCmd.setTabCompleter(this);
-		}
-	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -267,5 +187,99 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		}
 		
 		return list;
+	}
+	
+	/**
+	 * Register all the commands.
+	 */
+	public void registerCommands() {
+		// banning
+		cmds.add(new MuteCommand());
+		
+		// basic
+		cmds.add(new BackCommand());
+		cmds.add(new IgnoreCommand());
+		
+		// game
+		cmds.add(new BoardCommand());
+		cmds.add(new ChatCommand());
+		cmds.add(new ConfigCommand());
+		cmds.add(new EndCommand());
+		cmds.add(new HelpopCommand());
+		cmds.add(new MatchpostCommand());
+		cmds.add(new ScenarioCommand());
+		cmds.add(new SpreadCommand());
+		cmds.add(new StartCommand());
+		cmds.add(new TimeLeftCommand());
+		cmds.add(new TimerCommand());
+		cmds.add(new VoteCommand());
+		cmds.add(new WhitelistCommand());
+		
+		// give
+		cmds.add(new GiveallCommand());
+		cmds.add(new GiveCommand());
+		
+		// inventory
+		cmds.add(new HOFCommand());
+		cmds.add(new UHCCmd());
+		
+		// lag
+		cmds.add(new MsCommand());
+		cmds.add(new TpsCommand());
+		
+		// msg
+		cmds.add(new MsgCommand());
+		cmds.add(new ReplyCommand());
+		
+		// player
+		cmds.add(new ClearInvCommand());
+		cmds.add(new ClearXPCommand());
+		cmds.add(new FeedCommand());
+		cmds.add(new FlyCommand());
+		cmds.add(new GamemodeCommand());
+		cmds.add(new HealCommand());
+		cmds.add(new HealthCommand());
+		cmds.add(new SethealthCommand());
+		cmds.add(new SetmaxhealthCommand());
+
+		// spectate
+		cmds.add(new InvseeCommand());
+		cmds.add(new NearCommand());
+		cmds.add(new SpectateCommand());
+		cmds.add(new SpecChatCommand());
+		cmds.add(new SpeedCommand());
+		cmds.add(new TpCommand());
+		
+		// team
+		cmds.add(new PmCommand());
+		cmds.add(new PmoresCommand());
+		cmds.add(new RandomCommand());
+		cmds.add(new TeamCommand());
+		cmds.add(new TlCommand());
+
+		// user
+		cmds.add(new InfoCommand());
+		cmds.add(new RankCommand());
+		cmds.add(new StatsCommand());
+		cmds.add(new TopCommand());
+		
+		// world
+		cmds.add(new BorderCommand());
+		cmds.add(new PregenCommand());
+		cmds.add(new PvPCommand());
+		cmds.add(new WorldCommand());
+		
+		for (UHCCommand cmd : cmds) {
+			PluginCommand pCmd = Main.plugin.getCommand(cmd.getName());
+			
+			// if its null, broadcast the command name so I know which one it is (so I can fix it).
+			if (pCmd == null) {
+				PlayerUtils.broadcast(cmd.getName());
+				continue;
+			}
+			
+			pCmd.setExecutor(this);
+			pCmd.setTabCompleter(this);
+		}
 	}
 }
