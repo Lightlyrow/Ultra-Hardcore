@@ -34,3 +34,4 @@ UHC Plugin designed for LeonTG77's UHC games
 30. add /uhc [rule]
 31. Custom /help command
 32. For tab completing, add some places where to tab complete everyone online and another for everyone visible.
+33. Limit mob spawning by how many players are on (Do test games)
