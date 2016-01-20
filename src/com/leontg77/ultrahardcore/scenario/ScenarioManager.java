@@ -1,9 +1,10 @@
 package com.leontg77.ultrahardcore.scenario;
 
+import static com.leontg77.ultrahardcore.Main.plugin;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.scenario.scenarios.AchievementParanoia;
 import com.leontg77.ultrahardcore.scenario.scenarios.AppleFamine;
 import com.leontg77.ultrahardcore.scenario.scenarios.Armageddon;
@@ -111,7 +112,81 @@ public class ScenarioManager {
 	}
 	
 	/**
-	 * Setup all the scenarios.
+	 * Get a scenario by a name.
+	 * 
+	 * @param name the name.
+	 * @return The scenario, null if not found.
+	 */
+	public Scenario getScenario(String name) {
+		for (Scenario s : scenarios) {
+			if (s.getName().equalsIgnoreCase(name)) {
+				return s;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get a scenario by the class.
+	 * 
+	 * @param scenarioClass The class.
+	 * @return The scenario, null if not found.
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getScenario(Class<T> scenarioClass) {
+		for (Scenario s : scenarios) {
+			if (s.getClass().equals(scenarioClass)) {
+				return (T) s;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get a list of all scenarios.
+	 * 
+	 * @return the list of scenarios.
+	 */
+	public List<Scenario> getScenarios() {
+		return new ArrayList<Scenario>(scenarios);
+	}
+
+	/**
+	 * Get a list of all enabled scenarios.
+	 * 
+	 * @return the list of enabled scenarios.
+	 */
+	public List<Scenario> getEnabledScenarios() {
+		List<Scenario> list = new ArrayList<Scenario>();
+		
+		for (Scenario s : scenarios) {
+			if (s.isEnabled()) {
+				list.add(s);
+			}
+		}
+		
+		return list;
+	}
+
+	/**
+	 * Get a list of all enabled scenarios.
+	 * 
+	 * @return the list of enabled scenarios.
+	 */
+	public List<Scenario> getDisabledScenarios() {
+		List<Scenario> list = new ArrayList<Scenario>();
+		
+		for (Scenario s : scenarios) {
+			if (!s.isEnabled()) {
+				list.add(s);
+			}
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * Setup all the scenario classes.
 	 */
 	public void setup() {
 		scenarios.add(new AchievementParanoia());
@@ -202,80 +277,6 @@ public class ScenarioManager {
 		scenarios.add(new VengefulSpirits());
 		scenarios.add(new Voidscape());
 		
-		Main.plugin.getLogger().info("All scenarios has been setup.");
-	}
-	
-	/**
-	 * Get a scenario by a name.
-	 * 
-	 * @param name the name.
-	 * @return The scenario, null if not found.
-	 */
-	public Scenario getScenario(String name) {
-		for (Scenario s : scenarios) {
-			if (s.getName().equalsIgnoreCase(name)) {
-				return s;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Get a scenario by the class.
-	 * 
-	 * @param scenarioClass The class.
-	 * @return The scenario, null if not found.
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> T getScenario(Class<T> scenarioClass) {
-		for (Scenario s : scenarios) {
-			if (s.getClass().equals(scenarioClass)) {
-				return (T) s;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Get a list of all scenarios.
-	 * 
-	 * @return the list of scenarios.
-	 */
-	public List<Scenario> getScenarios() {
-		return new ArrayList<Scenario>(scenarios);
-	}
-
-	/**
-	 * Get a list of all enabled scenarios.
-	 * 
-	 * @return the list of enabled scenarios.
-	 */
-	public List<Scenario> getEnabledScenarios() {
-		List<Scenario> list = new ArrayList<Scenario>();
-		
-		for (Scenario s : scenarios) {
-			if (s.isEnabled()) {
-				list.add(s);
-			}
-		}
-		
-		return list;
-	}
-
-	/**
-	 * Get a list of all enabled scenarios.
-	 * 
-	 * @return the list of enabled scenarios.
-	 */
-	public List<Scenario> getDisabledScenarios() {
-		List<Scenario> list = new ArrayList<Scenario>();
-		
-		for (Scenario s : scenarios) {
-			if (!s.isEnabled()) {
-				list.add(s);
-			}
-		}
-		
-		return list;
+		plugin.getLogger().info("All scenarios has been setup.");
 	}
 }
