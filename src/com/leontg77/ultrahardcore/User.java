@@ -44,7 +44,9 @@ public class User {
 	private File file;
     
     private boolean creating = false;
+    
     private Location deathLoc;
+    private Location lastLoc;
 	
 	/**
 	 * Gets the data of the given player.
@@ -276,7 +278,7 @@ public class User {
 	 * 
 	 * @param location The death loc.
 	 */
-	public void setDeathLoc(Location location) {
+	public void setDeathLocation(Location location) {
 		deathLoc = location;
 	}
 	
@@ -287,6 +289,24 @@ public class User {
 	 */
 	public Location getDeathLocation() {
 		return deathLoc;
+	}
+	
+	/**
+	 * Set the death location of the player.
+	 * 
+	 * @param location The death loc.
+	 */
+	public void setLastLocation(Location location) {
+		lastLoc = location;
+	}
+	
+	/**
+	 * Get the death location of the player.
+	 * 
+	 * @return The death location.
+	 */
+	public Location getLastLocation() {
+		return lastLoc;
 	}
 	
 	private static final String IGNORE_PATH = "ignoreList";
