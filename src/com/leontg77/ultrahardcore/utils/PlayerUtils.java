@@ -10,6 +10,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -22,6 +24,7 @@ import com.leontg77.ultrahardcore.Main;
  * 
  * @author LeonTG77
  */
+@SuppressWarnings("deprecation")
 public class PlayerUtils {
 	
 	/**
@@ -52,7 +55,6 @@ public class PlayerUtils {
 	 * @param name The name.
 	 * @return the offline player.
 	 */
-	@SuppressWarnings("deprecation")
 	public static OfflinePlayer getOfflinePlayer(String name) {
 		return Bukkit.getOfflinePlayer(name);
 	}
@@ -90,6 +92,21 @@ public class PlayerUtils {
 		consoleMsg = consoleMsg.replaceAll("§n", "");
 		
 		Bukkit.getLogger().info(consoleMsg);
+	}
+
+	/**
+	 * Damage the given player by the given amount
+	 * <p>
+	 * This will also call the damage event.
+	 * 
+	 * @param player The player to damage.
+	 * @param amount The amount of damage.
+	 */
+	public static void damage(Player player, double amount) {
+		final EntityDamageEvent event = new EntityDamageEvent(player, DamageCause.CUSTOM, amount);
+		
+		Bukkit.getPluginManager().callEvent(event);
+		player.damage(amount);
 	}
 	
 	/**
