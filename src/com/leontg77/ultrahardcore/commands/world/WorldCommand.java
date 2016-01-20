@@ -17,7 +17,7 @@ import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.GameUtils;
-import com.leontg77.ultrahardcore.worlds.WorldManager;
+import com.leontg77.ultrahardcore.world.WorldManager;
 
 /**
  * World command class.
