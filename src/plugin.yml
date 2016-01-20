@@ -7,15 +7,14 @@ softdepend: [ProtocolLib, Pregenner]
 
 commands:
   arena:
-    description: Join the arena.
+    description: Join the pvp arena.
     aliases: [a, p]
   back:
     description: Teleport to your last location.
   ban:
     description: Ban a player.
-    aliases: [dq]
   banip:
-    description: Ban a ip adress.
+    description: Ban an ip adress.
     aliases: [ipban]
   board:
     description: Toggle the pregame board.
@@ -37,6 +36,8 @@ commands:
   clearxp:
     description: Clear someones xp levels.
     aliases: [cxp]
+  dq:
+    description: Ban someone for 1 game.
   edit:
     description: Edit the sign you are looking at.
   end:
@@ -69,6 +70,8 @@ commands:
     description: Ignore a player.
   info:
     description: View information on a player.
+  infoip:
+    description: View which players who has the given ip.
   invsee:
     description: Opens the targets inventoty.
   kick:
