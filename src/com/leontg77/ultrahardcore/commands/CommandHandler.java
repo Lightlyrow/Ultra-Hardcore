@@ -12,9 +12,26 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.arena.ArenaCommand;
+import com.leontg77.ultrahardcore.commands.arena.HotbarCommand;
+import com.leontg77.ultrahardcore.commands.banning.BanCommand;
+import com.leontg77.ultrahardcore.commands.banning.BanIPCommand;
+import com.leontg77.ultrahardcore.commands.banning.DQCommand;
+import com.leontg77.ultrahardcore.commands.banning.KickCommand;
 import com.leontg77.ultrahardcore.commands.banning.MuteCommand;
-import com.leontg77.ultrahardcore.commands.basic.BackCommand;
+import com.leontg77.ultrahardcore.commands.banning.TempbanCommand;
+import com.leontg77.ultrahardcore.commands.banning.UnbanCommand;
+import com.leontg77.ultrahardcore.commands.banning.UnbanIPCommand;
+import com.leontg77.ultrahardcore.commands.basic.BroadcastCommand;
+import com.leontg77.ultrahardcore.commands.basic.ButcherCommand;
+import com.leontg77.ultrahardcore.commands.basic.EditCommand;
+import com.leontg77.ultrahardcore.commands.basic.FireCommand;
 import com.leontg77.ultrahardcore.commands.basic.IgnoreCommand;
+import com.leontg77.ultrahardcore.commands.basic.ListCommand;
+import com.leontg77.ultrahardcore.commands.basic.SetspawnCommand;
+import com.leontg77.ultrahardcore.commands.basic.SkullCommand;
+import com.leontg77.ultrahardcore.commands.basic.StaffChatCommand;
+import com.leontg77.ultrahardcore.commands.basic.TextCommand;
 import com.leontg77.ultrahardcore.commands.game.BoardCommand;
 import com.leontg77.ultrahardcore.commands.game.ChatCommand;
 import com.leontg77.ultrahardcore.commands.game.ConfigCommand;
@@ -45,6 +62,7 @@ import com.leontg77.ultrahardcore.commands.player.HealCommand;
 import com.leontg77.ultrahardcore.commands.player.HealthCommand;
 import com.leontg77.ultrahardcore.commands.player.SethealthCommand;
 import com.leontg77.ultrahardcore.commands.player.SetmaxhealthCommand;
+import com.leontg77.ultrahardcore.commands.spectate.BackCommand;
 import com.leontg77.ultrahardcore.commands.spectate.InvseeCommand;
 import com.leontg77.ultrahardcore.commands.spectate.NearCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpecChatCommand;
@@ -57,6 +75,7 @@ import com.leontg77.ultrahardcore.commands.team.RandomCommand;
 import com.leontg77.ultrahardcore.commands.team.TeamCommand;
 import com.leontg77.ultrahardcore.commands.team.TlCommand;
 import com.leontg77.ultrahardcore.commands.user.InfoCommand;
+import com.leontg77.ultrahardcore.commands.user.InfoIPCommand;
 import com.leontg77.ultrahardcore.commands.user.RankCommand;
 import com.leontg77.ultrahardcore.commands.user.StatsCommand;
 import com.leontg77.ultrahardcore.commands.user.TopCommand;
@@ -193,12 +212,31 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	 * Register all the commands.
 	 */
 	public void registerCommands() {
+		// arena
+		cmds.add(new ArenaCommand());
+		cmds.add(new HotbarCommand());
+		
 		// banning
+		cmds.add(new BanCommand());
+		cmds.add(new BanIPCommand());
+		cmds.add(new DQCommand());
+		cmds.add(new KickCommand());
 		cmds.add(new MuteCommand());
+		cmds.add(new TempbanCommand());
+		cmds.add(new UnbanCommand());
+		cmds.add(new UnbanIPCommand());
 		
 		// basic
-		cmds.add(new BackCommand());
+		cmds.add(new BroadcastCommand());
+		cmds.add(new ButcherCommand());
+		cmds.add(new EditCommand());
+		cmds.add(new FireCommand());
 		cmds.add(new IgnoreCommand());
+		cmds.add(new ListCommand());
+		cmds.add(new SetspawnCommand());
+		cmds.add(new SkullCommand());
+		cmds.add(new StaffChatCommand());
+		cmds.add(new TextCommand());
 		
 		// game
 		cmds.add(new BoardCommand());
@@ -243,6 +281,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new SetmaxhealthCommand());
 
 		// spectate
+		cmds.add(new BackCommand());
 		cmds.add(new InvseeCommand());
 		cmds.add(new NearCommand());
 		cmds.add(new SpectateCommand());
@@ -259,6 +298,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
 		// user
 		cmds.add(new InfoCommand());
+		cmds.add(new InfoIPCommand());
 		cmds.add(new RankCommand());
 		cmds.add(new StatsCommand());
 		cmds.add(new TopCommand());
