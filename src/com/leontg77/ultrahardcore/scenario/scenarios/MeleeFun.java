@@ -29,7 +29,7 @@ public class MeleeFun extends Scenario implements Listener {
 	public void onEnable() {}
 	
 	@EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+    public void on(EntityDamageByEntityEvent event) {
 		Entity damager = event.getDamager();
 		Entity entity = event.getEntity();
 		
