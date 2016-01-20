@@ -206,7 +206,7 @@ public class ChatListener implements Listener {
   			online.sendMessage("§e" + player.getName() + ": §7" + message);
   		}
   		
-  		String command = message.split(" ")[0].substring(1);
+  		String command = message.split(" ")[0].substring(1).toLowerCase();
   		
   		if (command.equalsIgnoreCase("me") || command.equalsIgnoreCase("kill")) {
   			player.sendMessage(Main.NO_PERM_MSG);
