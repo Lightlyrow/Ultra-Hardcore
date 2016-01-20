@@ -244,12 +244,9 @@ public class Timers {
 					}
 					
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-					
-					for (Achievement a : Achievement.values()) {
-						if (online.hasAchievement(a)) {
-							online.removeAchievement(a);
-						}
-					}
+
+					online.awardAchievement(Achievement.OPEN_INVENTORY);
+					online.removeAchievement(Achievement.MINE_WOOD);
 					
 					SpecInfo.getTotal(online).clear();
 					
