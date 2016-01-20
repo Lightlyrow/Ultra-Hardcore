@@ -62,6 +62,8 @@ public class PermissionsManager {
 		perm.setPermission("uhc.scenario", true);
 		perm.setPermission("uhc.ignore", true);
 		perm.setPermission("uhc.timeleft", true);
+		perm.setPermission("uhc.list", true);
+		perm.setPermission("uhc.arena", true);
 		
 		// spectator perms, they can only use them if they're spectating.
 		perm.setPermission("uhc.invsee", true);
@@ -88,7 +90,9 @@ public class PermissionsManager {
 		}
 
 		perm.setPermission("uhc.cantignore", true);
+		perm.setPermission("uhc.ac", true);
 		perm.setPermission("uhc.ban", true);
+		perm.setPermission("uhc.dq", true);
 		perm.setPermission("uhc.broadcast", true);
 		perm.setPermission("uhc.fly", true);
 		perm.setPermission("uhc.info", true);
@@ -109,7 +113,7 @@ public class PermissionsManager {
 
 		perm.setPermission("uhc.give", true);
 		perm.setPermission("uhc.tp.other", true);
-		perm.setPermission("uhc.arena", true);
+		perm.setPermission("uhc.arena.admin", true);
 		perm.setPermission("uhc.board", true);
 		perm.setPermission("uhc.butcher", true);
 		perm.setPermission("uhc.clearinv", true);
