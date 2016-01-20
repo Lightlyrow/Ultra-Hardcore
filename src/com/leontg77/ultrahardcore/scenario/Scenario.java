@@ -15,18 +15,18 @@ import com.leontg77.ultrahardcore.commands.Parser;
 public abstract class Scenario extends Parser {
 	private boolean enabled = false;
 
+	private String description;
 	private String name;
-	private String desc;
 	
 	/**
-	 * Scenario constructor
+	 * The scenario class constructor
 	 * 
-	 * @param name scenario name
-	 * @param desc description of the scenario
+	 * @param name The name of the scenario.
+	 * @param description The description of the scenario.
 	 */
-	protected Scenario(String name, String desc) {
+	protected Scenario(String name, String description) {
+		this.description = description;
 		this.name = name;
-		this.desc = desc;
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public abstract class Scenario extends Parser {
 	 * @return the description.
 	 */
 	public String getDescription() {
-		return desc;
+		return description;
 	}
 	
 	/**
@@ -53,7 +53,7 @@ public abstract class Scenario extends Parser {
 	 * @param enable true to enable, false to disable.
 	 */
 	public void setEnabled(boolean enable) {
-		enabled = enable;
+		this.enabled = enable;
 		
 		if (enable) {
 			if (this instanceof Listener) {
@@ -61,13 +61,14 @@ public abstract class Scenario extends Parser {
 			}
 			
 			onEnable();
-		} else {
-			if (this instanceof Listener) {
-				HandlerList.unregisterAll((Listener) this);
-			}
-			
-			onDisable();
+			return;
 		}
+		
+		if (this instanceof Listener) {
+			HandlerList.unregisterAll((Listener) this);
+		}
+		
+		onDisable();
 	}
 	
 	/**
