@@ -28,7 +28,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,31 +36,8 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
-import com.comphenix.protocol.PacketType.Play;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.commands.CommandHandler;
-import com.leontg77.ultrahardcore.commands.arena.ArenaCommand;
-import com.leontg77.ultrahardcore.commands.arena.HotbarCommand;
-import com.leontg77.ultrahardcore.commands.banning.BanCommand;
-import com.leontg77.ultrahardcore.commands.banning.BanIPCommand;
-import com.leontg77.ultrahardcore.commands.banning.KickCommand;
-import com.leontg77.ultrahardcore.commands.banning.TempbanCommand;
-import com.leontg77.ultrahardcore.commands.banning.UnbanCommand;
-import com.leontg77.ultrahardcore.commands.banning.UnbanIPCommand;
-import com.leontg77.ultrahardcore.commands.basic.BroadcastCommand;
-import com.leontg77.ultrahardcore.commands.basic.ButcherCommand;
-import com.leontg77.ultrahardcore.commands.basic.EditCommand;
-import com.leontg77.ultrahardcore.commands.basic.FireCommand;
-import com.leontg77.ultrahardcore.commands.basic.ListCommand;
-import com.leontg77.ultrahardcore.commands.basic.SetspawnCommand;
-import com.leontg77.ultrahardcore.commands.basic.SkullCommand;
-import com.leontg77.ultrahardcore.commands.basic.StaffChatCommand;
-import com.leontg77.ultrahardcore.commands.basic.TextCommand;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.InvseeListener;
@@ -83,6 +59,7 @@ import com.leontg77.ultrahardcore.listeners.iPvPListener;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
+import com.leontg77.ultrahardcore.protocol.HardcoreHearts;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.ubl.UBL;
@@ -90,9 +67,9 @@ import com.leontg77.ultrahardcore.ubl.UBLListener;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
-import com.leontg77.ultrahardcore.worlds.AntiStripmine;
-import com.leontg77.ultrahardcore.worlds.BiomeSwap;
-import com.leontg77.ultrahardcore.worlds.WorldManager;
+import com.leontg77.ultrahardcore.world.AntiStripmine;
+import com.leontg77.ultrahardcore.world.BiomeSwap;
+import com.leontg77.ultrahardcore.world.WorldManager;
 
 /**
  * Main class of the UHC plugin.
@@ -193,28 +170,10 @@ public class Main extends JavaPlugin {
 		// register all commands.
 		new CommandHandler().registerCommands();
 		
-		getCommand("arena").setExecutor(new ArenaCommand());
-		getCommand("ban").setExecutor(new BanCommand());
-		getCommand("banip").setExecutor(new BanIPCommand());
-		getCommand("broadcast").setExecutor(new BroadcastCommand());
-		getCommand("butcher").setExecutor(new ButcherCommand());
-		getCommand("edit").setExecutor(new EditCommand());
-		getCommand("fire").setExecutor(new FireCommand());
-		getCommand("hotbar").setExecutor(new HotbarCommand());
-		getCommand("kick").setExecutor(new KickCommand());
-		getCommand("list").setExecutor(new ListCommand());
-		getCommand("skull").setExecutor(new SkullCommand());
-		getCommand("setspawn").setExecutor(new SetspawnCommand());
-		getCommand("ac").setExecutor(new StaffChatCommand());
-		getCommand("tempban").setExecutor(new TempbanCommand());
-		getCommand("text").setExecutor(new TextCommand());
-		getCommand("unban").setExecutor(new UnbanCommand());
-		getCommand("unbanip").setExecutor(new UnbanIPCommand());	
-		
 		switch (State.getState()) {
 		case NOT_RUNNING:
-			Bukkit.setIdleTimeout(60);
 			FileUtils.deletePlayerDataAndStats();
+			Bukkit.setIdleTimeout(60);
 			break;
 		case INGAME:
 			manager.registerEvents(new SpecInfo(), this);
@@ -539,43 +498,5 @@ public class Main extends JavaPlugin {
 		public String getPreText() {
 			return preText;
 		}
-	}
-	
-	/**
-	 * Hardcore hearts class.
-	 * <p> 
-	 * This class manages the hardcore hearts feature.
-	 *
-	 * @author ghowden
-	 */
-	public static class HardcoreHearts extends PacketAdapter {
-		private static ProtocolManager protocol = ProtocolLibrary.getProtocolManager();
-		private static HardcoreHearts heart = new HardcoreHearts(Main.plugin);
-
-		/**
-		 * Constructor for HardcoreHearts.
-		 * 
-		 * @param plugin The main class of the plugin.
-		 */
-		public HardcoreHearts(Plugin plugin) {
-			super(plugin, ListenerPriority.NORMAL, Play.Server.LOGIN);
-		}
-
-	    @Override
-	    public void onPacketSending(PacketEvent event) {
-	        if (!event.getPacketType().equals(Play.Server.LOGIN)) {
-	        	return;
-	        }
-	        
-	        event.getPacket().getBooleans().write(0, true);
-	    }
-	    
-	    public static void enable() {
-		    protocol.addPacketListener(heart);
-	    }
-	    
-	    public static void disable() {
-		    protocol.removePacketListener(heart);
-	    }
 	}
 }
