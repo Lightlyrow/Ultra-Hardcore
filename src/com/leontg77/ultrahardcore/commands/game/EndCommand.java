@@ -34,7 +34,7 @@ import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
-import com.leontg77.ultrahardcore.worlds.WorldManager;
+import com.leontg77.ultrahardcore.world.WorldManager;
 
 /**
  * End command class.
