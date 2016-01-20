@@ -1,14 +1,16 @@
 package com.leontg77.ultrahardcore.commands.arena;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 
 import com.leontg77.ultrahardcore.Arena;
 import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -17,19 +19,22 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class ArenaCommand implements CommandExecutor {
+public class ArenaCommand extends UHCCommand {	
+
+	public ArenaCommand() {
+		super("arena", "[enable|disable|reset|board|leave]");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		Arena arena = Arena.getInstance();
 		Game game = Game.getInstance();
 		
-		if (sender.hasPermission("uhc.arena")) {
+		if (sender.hasPermission("uhc.arena.admin")) {
 			if (args.length > 0) {
 				if (args[0].equalsIgnoreCase("enable")) {
 					if (arena.isEnabled()) {
-						sender.sendMessage(Arena.PREFIX + "Arena is already enabled.");
-						return true;
+						throw new CommandException("The arena is already enabled.");
 					}
 					
 					PlayerUtils.broadcast(Arena.PREFIX + "The arena has been enabled, use §a/a §7to join it.");
@@ -39,8 +44,7 @@ public class ArenaCommand implements CommandExecutor {
 
 				if (args[0].equalsIgnoreCase("disable")) {
 					if (!arena.isEnabled()) {
-						sender.sendMessage(Arena.PREFIX + "Arena is not enabled.");
-						return true;
+						throw new CommandException("The arena is not enabled.");
 					}
 
 					PlayerUtils.broadcast(Arena.PREFIX + "The arena has been disabled.");
@@ -80,36 +84,51 @@ public class ArenaCommand implements CommandExecutor {
 		}
 		
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can use the arena.");
-			return true;
+			throw new CommandException("Only players can use the arena.");
 		}
 		
 		Player player = (Player) sender;
 		
 		if (args.length > 0 && args[0].equalsIgnoreCase("leave")) {
-			if (arena.isEnabled()) {
-				if (!arena.hasPlayer(player)) {
-					player.sendMessage(Arena.PREFIX + "You are not in the arena.");
-					return true;
-				}
-				
-				arena.removePlayer(player, false);;
-			} else {
-				player.sendMessage(Arena.PREFIX + "The arena is currently disabled.");
+			if (!arena.isEnabled()) {
+				throw new CommandException("The arena is currently disabled.");
 			}
+			
+			if (!arena.hasPlayer(player)) {
+				throw new CommandException("You are not in the arena.");
+			}
+			
+			arena.removePlayer(player, false);;
 			return true;
 		}
 		
-		if (arena.isEnabled()) {
-			if (arena.hasPlayer(player)) {
-				player.sendMessage(Arena.PREFIX + "You are already in the arena.");
-				return true;
-			}
-			
-			arena.addPlayer(player);
-		} else {
-			player.sendMessage(Arena.PREFIX + "The arena is currently disabled.");
+		if (!arena.isEnabled()) {
+			throw new CommandException("The arena is currently disabled.");
 		}
+
+		if (arena.hasPlayer(player)) {
+			throw new CommandException("You are already in the arena.");
+		}
+		
+		arena.addPlayer(player);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+		List<String> toReturn = new ArrayList<String>();
+		
+		if (args.length == 1) {
+			toReturn.add("leave");
+			
+			if (sender.hasPermission("uhc.arena.admin")) {
+				toReturn.add("enable");
+				toReturn.add("disable");
+				toReturn.add("reset");
+				toReturn.add("board");
+			}
+		}
+		
+		return toReturn;
 	}
 }

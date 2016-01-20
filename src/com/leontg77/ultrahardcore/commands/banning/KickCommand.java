@@ -1,13 +1,17 @@
 package com.leontg77.ultrahardcore.commands.banning;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -15,59 +19,70 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class KickCommand implements CommandExecutor {	
+public class KickCommand extends UHCCommand {	
+
+	public KickCommand() {
+		super("kick", "<player> <reason>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.kick")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		if (args.length < 2) {
-			sender.sendMessage(Main.PREFIX + "Usage: /kick <player> <reason>");
-			return true;
+			return false;
 		}
-					
-		StringBuilder reason = new StringBuilder("");
-			
-		for (int i = 1; i < args.length; i++) {
-			reason.append(args[i]).append(" ");
-		}
-				
-		String msg = reason.toString().trim();
+
+		final String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
 
 		if (args[0].equals("*")) {
 			for (Player online : PlayerUtils.getPlayers()) {
-				if (!online.hasPermission("uhc.prelist")) {
-			    	online.kickPlayer("§8» §7" + msg + " §8«");
+				if (online.hasPermission("uhc.prelist")) {
+					continue;
 				}
+				
+		    	online.kickPlayer(message);
 			}
 			
-	    	PlayerUtils.broadcast(Main.PREFIX + "§7All normal players has been kicked for §6" + msg);
+	    	PlayerUtils.broadcast(Main.PREFIX + "All normal players has been kicked for §6" + message);
 			return true;
 		}
 
 		if (args[0].equals("**")) {
 			for (Player online : PlayerUtils.getPlayers()) {
-				if (!online.isOp()) {
-			    	online.kickPlayer("§8» §7" + msg + " §8«");
+				if (online.isOp()) {
+					continue;
 				}
+				
+		    	online.kickPlayer(message);
 			}
 			
-	    	PlayerUtils.broadcast(Main.PREFIX + "§7All players has been kicked for §6" + msg);
+	    	PlayerUtils.broadcast(Main.PREFIX + "All players has been kicked for §6" + message);
 			return true;
 		}
     	
     	Player target = Bukkit.getServer().getPlayer(args[0]);
 		
     	if (target == null) {
-    		sender.sendMessage(ChatColor.RED + "That player is not online.");
-            return true;
+    		throw new CommandException("'" + args[0] + "' is not online.");
 		}
     	
-    	PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been kicked for §a" + msg, "uhc.kick");
-    	target.kickPlayer("§8» §7" + msg + " §8«");
+    	PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been kicked for §a" + message, "uhc.kick");
+    	target.kickPlayer(message);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+		List<String> toReturn = new ArrayList<String>();
+		
+		if (args.length == 1) {
+			toReturn.add("*");
+			toReturn.add("**");
+			
+			for (Player online : PlayerUtils.getPlayers()) {
+				toReturn.add(online.getName());
+			}
+		}
+		
+		return toReturn;
 	}
 }

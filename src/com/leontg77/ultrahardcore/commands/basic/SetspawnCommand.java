@@ -1,45 +1,53 @@
 package com.leontg77.ultrahardcore.commands.basic;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 
 /**
  * Setspawn command class.
  * 
  * @author LeonTG77
  */
-public class SetspawnCommand implements CommandExecutor {
+public class SetspawnCommand extends UHCCommand {
 	
+	public SetspawnCommand() {
+		super("setspawn", "");
+	}
+
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can set the spawn point.");
-			return true;
+			throw new CommandException("Only players can set the spawn point.");
 		}
 
-		Settings settings = Settings.getInstance();
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
+
+		final Settings settings = Settings.getInstance();
+		final Location loc = player.getLocation();
 		
-		if (!player.hasPermission("uhc.setspawn")) {
-			player.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
-		settings.getData().set("spawn.world", player.getLocation().getWorld().getName());
-		settings.getData().set("spawn.x", player.getLocation().getX());
-		settings.getData().set("spawn.y", player.getLocation().getY());
-		settings.getData().set("spawn.z", player.getLocation().getZ());
-		settings.getData().set("spawn.yaw", player.getLocation().getYaw());
-		settings.getData().set("spawn.pitch", player.getLocation().getPitch());
+		settings.getData().set("spawn.world", loc.getWorld().getName());
+		settings.getData().set("spawn.x", loc.getX());
+		settings.getData().set("spawn.y", loc.getY());
+		settings.getData().set("spawn.z", loc.getZ());
+		settings.getData().set("spawn.yaw", loc.getYaw());
+		settings.getData().set("spawn.pitch", loc.getPitch());
         settings.saveData();
         
         player.sendMessage(Main.PREFIX + "You have set the spawnpoint.");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+		return new ArrayList<String>();
 	}
 }

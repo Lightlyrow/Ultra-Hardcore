@@ -1,52 +1,55 @@
 package com.leontg77.ultrahardcore.commands.basic;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 
-import com.leontg77.ultrahardcore.Main;
+import com.google.common.base.Joiner;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 
 /**
  * Text command class.
  * 
  * @author LeonTG77
  */
-public class TextCommand implements CommandExecutor {	
+public class TextCommand extends UHCCommand {	
+
+	public TextCommand() {
+		super("text", "<message>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can spawn texts.");
-			return true;
-		}
-		
-		Player player = (Player) sender;
-		
-		if (!player.hasPermission("uhc.text")) {
-			player.sendMessage(Main.NO_PERM_MSG);
-			return true;
+			throw new CommandException("Only players can spawn floating texts.");
 		}
 		
 		if (args.length == 0) {
-			player.sendMessage(Main.PREFIX + "Usage: /text <message>");
-			return true;
+			return false;
 		}
 		
-		StringBuilder name = new StringBuilder();
+		final Player player = (Player) sender;
+
+		final String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
+		final ArmorStand stand = player.getWorld().spawn(player.getLocation(), ArmorStand.class);
 		
-		for (int i = 0; i < args.length; i++) {
-			name.append(args[i]).append(" ");
-		}
+		stand.setCustomName(ChatColor.translateAlternateColorCodes('&', message));
 		
-		ArmorStand stand = player.getWorld().spawn(player.getLocation(), ArmorStand.class);
-		stand.setCustomName(ChatColor.translateAlternateColorCodes('&', name.toString().trim()));
 		stand.setCustomNameVisible(true);
+		stand.setSmall(true);
+		
 		stand.setGravity(false);
 		stand.setVisible(false);
-		stand.setSmall(true);
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+		return null;
 	}
 }

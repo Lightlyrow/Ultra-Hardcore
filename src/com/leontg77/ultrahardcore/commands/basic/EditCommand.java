@@ -1,65 +1,60 @@
 package com.leontg77.ultrahardcore.commands.basic;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 
 /**
  * Edit command class.
  * 
  * @author LeonTG77
  */
-public class EditCommand implements CommandExecutor {
+public class EditCommand extends UHCCommand {
+	private static final int BLOCK_REACH = 5;
+
+	public EditCommand() {
+		super("edit", "<line> <message>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can change sign lines.");
-			return true;
+			throw new CommandException("Only players can change sign lines.");
 		}
 		
-		Player player = (Player) sender;
-		
-		if (!player.hasPermission("uhc.edit")) {
-			player.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
+		final Player player = (Player) sender;
 		
 		if (args.length < 2) {
-			player.sendMessage(Main.PREFIX + "Usage: /edit <line> <message>");
-			return true;
+			return false;
 		}
 		
-		Block block = player.getTargetBlock((Set<Material>) null, 100);
+		final Block block = player.getTargetBlock((Set<Material>) null, BLOCK_REACH);
 		
 		if (block == null) {
-			player.sendMessage(ChatColor.RED + "You are not looking at a block.");
-			return true;
+			throw new CommandException("You are not looking at a block.");
 		}
 		
-		if (!(block.getState() instanceof Sign)) {
-			player.sendMessage(ChatColor.RED + "You are not looking at a sign.");
-			return true;
+		final BlockState state = block.getState();
+		
+		if (!(state instanceof Sign)) {
+			throw new CommandException("You are not looking at a sign.");
 		}
 		
-		Sign sign = (Sign) block.getState();
-		int line;
-		
-		try {
-			line = Integer.parseInt(args[0]);
-		} catch (Exception e) {
-			player.sendMessage(ChatColor.RED + " is not a vaild number.");
-			return true;
-		}
+		final Sign sign = (Sign) state;
+		int line = parseInt(args[0], "line number");
 		
 		if (line < 1) {
 			line = 1;
@@ -69,19 +64,18 @@ public class EditCommand implements CommandExecutor {
 			line = 4;
 		}
 		
-		StringBuilder sb = new StringBuilder("");
-			
-		for (int i = 1; i < args.length; i++){
-		    sb.append(args[i]).append(" ");
-		}
-		               
-		String msg = sb.toString().trim();
+		final String message = ChatColor.translateAlternateColorCodes('&', Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length)));
 		
-		player.sendMessage(Main.PREFIX + "You set the sign's §a" + line + " §7line to: §6" + msg);
+		player.sendMessage(Main.PREFIX + "You set the sign's §a" + line + " §7line to: §6" + message);
 		line--;
 		
-		sign.setLine(line, msg);
+		sign.setLine(line, message);
 		sign.update();
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return null;
 	}
 }

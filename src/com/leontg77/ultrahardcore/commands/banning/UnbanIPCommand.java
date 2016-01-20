@@ -7,12 +7,11 @@ import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -20,60 +19,45 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class UnbanIPCommand implements CommandExecutor, TabCompleter {
+public class UnbanIPCommand extends UHCCommand {	
+	private static final Type BANLIST_TYPE = Type.IP;
+
+	public UnbanIPCommand() {
+		super("unbanip", "<ip>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.unbanip")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		if (args.length == 0) {
-			sender.sendMessage(Main.PREFIX + "Usage: /unbanip <player>");
-			return true;
+			return false;
 		}
 
-		BanList list = Bukkit.getBanList(Type.IP);
+		BanList list = Bukkit.getBanList(BANLIST_TYPE);
 		String ip = args[0];
     	
-		if (list.isBanned(ip)) {
-			PlayerUtils.broadcast(Main.PREFIX + "An IP has been unbanned.");
-			list.pardon(ip);
-		} else {
-			sender.sendMessage(Main.PREFIX + "That IP is not banned.");
+		if (!list.isBanned(ip)) {
+			throw new CommandException("That IP is not banned.");
 		}
+		
+		PlayerUtils.broadcast(Main.PREFIX + "An IP has been unbanned.");
+		list.pardon(ip);
 		return true;
 	}
 	
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.unbanip")) {
-			return null;
-		}
-		
-    	ArrayList<String> toReturn = new ArrayList<String>();
+	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+		List<String> toReturn = new ArrayList<String>();
     	
 		if (args.length == 1) {
-        	BanList list = Bukkit.getBanList(Type.IP);
+        	BanList list = Bukkit.getBanList(BANLIST_TYPE);
         	
-        	if (args[0].isEmpty()) {
-        		for (BanEntry entry : list.getBanEntries()) {
-        			String ip = entry.getTarget();
-        			
-        			toReturn.add(ip);
-        		}
-        	}
-        	else {
-        		for (BanEntry entry : list.getBanEntries()) {
-        			String ip = entry.getTarget();
-        			
-        			if (ip.toLowerCase().startsWith(args[0].toLowerCase())) {
-        				toReturn.add(ip);
-        			}
-        		}
-        	}
+    		for (BanEntry entry : list.getBanEntries()) {
+    			String ip = entry.getTarget();
+    			
+    			toReturn.add(ip);
+    		}
         }
+		
 		return toReturn;
 	}
 }

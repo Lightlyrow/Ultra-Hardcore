@@ -1,10 +1,12 @@
 package com.leontg77.ultrahardcore.commands.basic;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 
-import com.leontg77.ultrahardcore.Main;
+import com.google.common.base.Joiner;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -12,29 +14,25 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class StaffChatCommand implements CommandExecutor {
+public class StaffChatCommand extends UHCCommand {
+
+	public StaffChatCommand() {
+		super("ac", "<message>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission("uhc.staff")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(final CommandSender sender, final String[] args) {
 		if (args.length == 0) {
-    		sender.sendMessage(Main.PREFIX + "Usage: /ac <message>");
-        	return true;
+        	return false;
         } 
         
-    	StringBuilder message = new StringBuilder("");
-		
-		for (int i = 0; i < args.length; i++) {
-			message.append(args[i]).append(" ");
-		}
-		
-        String msg = message.toString().trim();
-
-		PlayerUtils.broadcast("§8[§4StaffChat§8] §c" + sender.getName() + "§8 » §f" + msg, "uhc.staff");
+    	String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
+		PlayerUtils.broadcast("§8[§4StaffChat§8] §c" + sender.getName() + "§8 » §f" + message, "uhc.staff");
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return null;
 	}
 }

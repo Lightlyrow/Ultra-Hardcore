@@ -1,15 +1,16 @@
 package com.leontg77.ultrahardcore.commands.basic;
 
 import java.util.Arrays;
+import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -17,27 +18,29 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class BroadcastCommand implements CommandExecutor {
-	private static final String PERMISSION = "uhc.broadcast";
+public class BroadcastCommand extends UHCCommand {
+
+	public BroadcastCommand() {
+		super("broadcast", "<message>");
+	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.hasPermission(PERMISSION)) {
-			sender.sendMessage(Main.NO_PERM_MSG);
-			return true;
-		}
-		
+	public boolean execute(final CommandSender sender, final String[] args) {
 		if (args.length == 0) {
-			sender.sendMessage(Main.PREFIX + "Usage: /broadcast <message>");
-			return true;
+			return false;
 		}
 		
 		String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
-		PlayerUtils.broadcast(Main.PREFIX + "§a§l" + message);
+		PlayerUtils.broadcast(Main.PREFIX + "§a§l" + ChatColor.translateAlternateColorCodes('&', message));
 		
 		for (Player online : PlayerUtils.getPlayers()) {
 			online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return null;
 	}
 }
