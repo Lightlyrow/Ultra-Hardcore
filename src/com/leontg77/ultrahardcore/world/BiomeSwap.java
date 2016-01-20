@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.worlds;
+package com.leontg77.ultrahardcore.world;
 
 import static com.leontg77.ultrahardcore.Main.plugin;
 
