@@ -43,8 +43,8 @@ public class Cloud9 extends Scenario implements Listener {
 					if (online.getLocation().getY() > 200) {
 						continue;
 					}
-					
-					online.damage(1);
+
+					PlayerUtils.damage(online, 1);
 				}
 			}
 		};

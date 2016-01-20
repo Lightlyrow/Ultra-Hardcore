@@ -45,8 +45,8 @@ public class GoToHell extends Scenario implements Listener {
 					if (env == Environment.NETHER) {
 						continue;
 					}
-					
-					online.damage(1.0);
+
+					PlayerUtils.damage(online, 1);
 				}
 			}
 		};

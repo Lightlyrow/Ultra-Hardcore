@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * BloodEnchants scenario class
@@ -24,10 +25,10 @@ public class BloodEnchants extends Scenario implements Listener {
 	@Override
 	public void onEnable() {}
 
-
 	@EventHandler
 	public void onEnchantItem(EnchantItemEvent event) {
 		Player player = event.getEnchanter();
-		player.damage(1);
+    	
+		PlayerUtils.damage(player, 1);
 	}
 }

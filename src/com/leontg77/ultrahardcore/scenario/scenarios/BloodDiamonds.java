@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * BloodDiamonds scenario class
@@ -34,7 +35,7 @@ public class BloodDiamonds extends Scenario implements Listener {
     	if (block.getType() != Material.DIAMOND_ORE) {
     		return;
     	}
-    	
-		player.damage(1);
+
+		PlayerUtils.damage(player, 1);
     }
 }

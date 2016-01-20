@@ -43,8 +43,8 @@ public class Fallout extends Scenario {
 					if (online.getLocation().getBlockY() <= 60) {
 						continue;
 					}
-					
-					online.damage(1.0);
+
+					PlayerUtils.damage(online, 1);
 				}
 			}
 		};

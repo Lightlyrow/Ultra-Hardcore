@@ -21,6 +21,7 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * SharedHealth scenario class
@@ -116,7 +117,7 @@ public class SharedHealth extends Scenario implements Listener {
 
             if (!onlineTeammate.getUniqueId().equals(player.getUniqueId())) {
                 setSharedDamage(onlineTeammate.getName(), true);
-                onlineTeammate.damage(0.0D);
+        		PlayerUtils.damage(onlineTeammate, 0);
                 onlineTeammate.setHealth(finalHealthAsynch);
             }
         }

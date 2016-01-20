@@ -64,7 +64,7 @@ public class Skyhigh extends Scenario implements Listener {
 					}
 					
 					online.sendMessage(PREFIX + "Ouch, You need to be above y:101 in skyhigh.");
-					online.damage(1);
+					PlayerUtils.damage(online, 1);
 				}
 			}
 		};
