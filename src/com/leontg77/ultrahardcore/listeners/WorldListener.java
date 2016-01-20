@@ -22,9 +22,9 @@ import com.leontg77.ultrahardcore.scenario.scenarios.ChunkApocalypse;
 import com.leontg77.ultrahardcore.scenario.scenarios.Voidscape;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
-import com.leontg77.ultrahardcore.worlds.AntiStripmine;
-import com.leontg77.ultrahardcore.worlds.AntiStripmine.ChunkOreRemover;
-import com.leontg77.ultrahardcore.worlds.AntiStripmine.WorldData;
+import com.leontg77.ultrahardcore.world.AntiStripmine;
+import com.leontg77.ultrahardcore.world.AntiStripmine.ChunkOreRemover;
+import com.leontg77.ultrahardcore.world.AntiStripmine.WorldData;
 
 /**
  * World listener class.
