@@ -1,11 +1,13 @@
-package com.leontg77.ultrahardcore.scenario.scenarios;
+ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -21,8 +23,11 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BlockRush extends Scenario implements Listener {
-	private HashSet<String> mined = new HashSet<String>();
-
+	private final Set<String> minedBlocks = new HashSet<String>();
+	
+	private static final ItemStack ITEM_TO_DROP = new ItemStack(Material.GOLD_INGOT);
+	private static final String PREFIX = "§6§lBlockRush §8» §e";
+	
 	public BlockRush() {
 		super("BlockRush", "Mining a specific block type for the first time drops 1 gold ingot.");
 	}
@@ -33,27 +38,24 @@ public class BlockRush extends Scenario implements Listener {
 	@Override
 	public void onEnable() {}
 	
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
+	@EventHandler(priority = EventPriority.LOW)
+	public void on(final BlockBreakEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
 		
-		short durability = block.getState().getData().toItemStack().getDurability();
-		String name = block.getType().name();
+		final String name = block.getState().getData().toString();
 		
-		String combined = name + durability;
-		
-		if (mined.contains(combined)) {
+		if (minedBlocks.contains(name)) {
 			return;
 		}
 		
-		PlayerUtils.broadcast("§6" + player.getName() + " §7was the first player to break " + name.toLowerCase().replaceAll("_", " ") + (durability > 0 ? ":" + durability : ""));
-		mined.add(combined);
+		PlayerUtils.broadcast(PREFIX + player.getName() + "§7 was the first to break §e" + name.toLowerCase().replaceAll("_", " ") + "§7.");
+		minedBlocks.add(name);
 		
-		BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), new ItemStack (Material.GOLD_INGOT));
+		BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), ITEM_TO_DROP);
 	}
 }
