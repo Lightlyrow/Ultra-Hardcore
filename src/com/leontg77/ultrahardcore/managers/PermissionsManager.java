@@ -64,6 +64,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.timeleft", true);
 		perm.setPermission("uhc.list", true);
 		perm.setPermission("uhc.arena", true);
+		perm.setPermission("uhc.hotbar", true);
 		
 		// spectator perms, they can only use them if they're spectating.
 		perm.setPermission("uhc.invsee", true);
@@ -71,6 +72,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.specchat", true);
 		perm.setPermission("uhc.speed", true);
 		perm.setPermission("uhc.tp", true);
+		perm.setPermission("uhc.back", true);
 		
 		if (rank == Rank.DEFAULT) {
 			return;
@@ -97,6 +99,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.fly", true);
 		perm.setPermission("uhc.info", true);
 		perm.setPermission("uhc.chat", true);
+		perm.setPermission("uhc.respawn", true);
 		perm.setPermission("uhc.kick", true);
 		perm.setPermission("uhc.mute", true);
 		perm.setPermission("uhc.cmdspy", true);
