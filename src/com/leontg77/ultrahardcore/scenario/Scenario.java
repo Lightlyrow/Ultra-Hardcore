@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.Parser;
 
@@ -14,6 +15,8 @@ import com.leontg77.ultrahardcore.commands.Parser;
  */
 public abstract class Scenario extends Parser {
 	private boolean enabled = false;
+	
+	protected final Game game = Game.getInstance();
 
 	private String description;
 	private String name;
