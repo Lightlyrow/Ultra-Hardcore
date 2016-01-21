@@ -31,7 +31,7 @@ public class UBLListener implements Listener {
 		
         BanEntry banEntry = ubl.banlistByUUID.get(uuid);
     	
-    	PlayerUtils.broadcast(Main.PREFIX + "§c" + event.getName() + " §7tried to join while being UBL'ed for: §c" + banEntry.getData("Ban Reason"), "uhc.staff");
+    	PlayerUtils.broadcast(Main.PREFIX + "§c" + event.getName() + " §7tried to join while being UBL'ed for: §c" + banEntry.getData("Reason"), "uhc.staff");
         event.disallow(Result.KICK_BANNED, ubl.getBanMessage(uuid));
     }
 }
