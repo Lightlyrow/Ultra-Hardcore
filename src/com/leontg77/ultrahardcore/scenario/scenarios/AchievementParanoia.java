@@ -12,12 +12,12 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
- * Achievement Paranoia scenario class.
+ * AchievementParanoia scenario class.
  * 
  * @author LeonTG77
  */
 public class AchievementParanoia extends Scenario implements Listener {
-	public static final String PREFIX = "§7[§cAchParanoia§7] §f";
+	private static final String PREFIX = "§7[§cAchParanoia§7] §a";
 
 	public AchievementParanoia() {
 		super("AchievementParanoia", "Achievements show up in chat like in vanilla minecraft but at the end off each achievement it shows the coordinates of the player who earned that achievement");
@@ -27,14 +27,7 @@ public class AchievementParanoia extends Scenario implements Listener {
 	public void onDisable() {}
 
 	@Override
-	public void onEnable() {
-		// remove all achievements for all players.
-		for (Player online : PlayerUtils.getPlayers()) {
-			// add only open inventory, to make sure they don't cheat the system.
-			online.awardAchievement(Achievement.OPEN_INVENTORY);
-			online.removeAchievement(Achievement.MINE_WOOD);
-		}
-	}
+	public void onEnable() {}
 
 	@EventHandler
 	public void on(PlayerAchievementAwardedEvent event) {
@@ -45,7 +38,7 @@ public class AchievementParanoia extends Scenario implements Listener {
 		Achievement ach = event.getAchievement();
 		Player player = event.getPlayer();
 
-		PlayerUtils.broadcast(PREFIX + "§a" + player.getName() + "§f has earned §e" + achievementName(ach) + "§f at " + locToString(player.getLocation()));
+		PlayerUtils.broadcast(PREFIX + player.getName() + "§f has earned §e" + achievementName(ach) + "§f at " + locToString(player.getLocation()));
 	}
 
 	/**
@@ -58,6 +51,12 @@ public class AchievementParanoia extends Scenario implements Listener {
 		return loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + ".";
 	}
 	
+	/**
+	 * Get the MC achievement name for the given achievement.
+	 * 
+	 * @param ach The achievement to use.
+	 * @return The MC achievement name.
+	 */
 	private String achievementName(Achievement ach) {
 		switch (ach) {
 		case ACQUIRE_IRON:
