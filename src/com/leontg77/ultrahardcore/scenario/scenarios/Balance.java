@@ -44,7 +44,7 @@ public class Balance extends Scenario implements Listener {
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		
-		if (block.getType() != Material.DIAMOND) {
+		if (block.getType() != Material.DIAMOND_ORE) {
 			return;
 		}
 		
