@@ -67,11 +67,11 @@ public class LocationUtils {
 	public static boolean isOutsideOfBorder(Location loc) {
         WorldBorder border = loc.getWorld().getWorldBorder();
 
-        double size = border.getSize();
-        double x = loc.getX() - border.getCenter().getX();
-        double z = loc.getZ() - border.getCenter().getZ();
+        double size = border.getSize() / 2;
+        double x = (loc.getX() - border.getCenter().getX());
+        double z = (loc.getZ() - border.getCenter().getZ());
         
-        return Math.abs(x) < size && Math.abs(z) < size;
+        return Math.abs(x) > size || Math.abs(z) > size;
     }
 	
 	/**
