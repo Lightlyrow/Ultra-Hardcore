@@ -80,6 +80,10 @@ public class SpreadCommand extends UHCCommand {
 				throw new CommandException("You can't scatter without disabling team management.");
 			}
 			
+			if (!game.isMuted()) {
+				throw new CommandException("You can't scatter without muting the chat.");
+			}
+			
 			if (Arena.getInstance().isEnabled()) {
 				throw new CommandException("You can't scatter without disabling the arena.");
 			}
