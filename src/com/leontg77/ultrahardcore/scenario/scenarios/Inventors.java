@@ -1,10 +1,11 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.HashSet;
+import java.util.Set;
 
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +20,8 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Inventors extends Scenario implements Listener {
-	private HashSet<String> crafted = new HashSet<String>();
+	private final Set<String> craftedItems = new HashSet<String>();
+	private static final String PREFIX = "§a§lInventors §8» §f";
 
 	public Inventors() {
 		super("Inventors", "The first person to craft any item will be broadcasted in chat.");
@@ -31,24 +33,22 @@ public class Inventors extends Scenario implements Listener {
 	@Override
 	public void onEnable() {}
 	
-	@EventHandler
-	public void onCraftItem(CraftItemEvent event) {
+	@EventHandler(priority = EventPriority.LOW)
+	public void on(final CraftItemEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
+
+		final ItemStack item = event.getRecipe().getResult();
+		final Player player = (Player) event.getWhoClicked();
 		
-		Player player = (Player) event.getWhoClicked();
-		ItemStack item = event.getRecipe().getResult();
+		final String name = item.getData().toString();
 		
-		if (crafted.contains(item.getType().name() + item.getDurability())) {
+		if (craftedItems.contains(name)) {
 			return;
 		}
 		
-		crafted.add(item.getType().name() + item.getDurability());
-		PlayerUtils.broadcast("§f§l[Inventors] §7§l" + player.getName() + ": §a§l" + item.getType().name().toLowerCase().replaceAll("_", " ") + (item.getDurability() > 0 ? ":" + item.getDurability() : "") + "!");
-		
-		for (Player online : PlayerUtils.getPlayers()) {
-			online.playSound(online.getLocation(), Sound.ITEM_PICKUP, 1, 2);
-		}
+		PlayerUtils.broadcast(PREFIX + player.getName() + "§7 was the first to craft §f" + name.toLowerCase().replaceAll("_", " ") + "§7.");
+		craftedItems.add(name);
 	}
 }
