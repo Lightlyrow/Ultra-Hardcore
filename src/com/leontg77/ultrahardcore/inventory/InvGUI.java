@@ -18,6 +18,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.ImmutableList;
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.User;
@@ -35,6 +36,8 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  */
 public class InvGUI {
 	private static InvGUI manager = new InvGUI();
+	
+	protected final Game game = Game.getInstance();
 	
 	public HashMap<Player, HashMap<Integer, Inventory>> pagesForPlayer = new HashMap<Player, HashMap<Integer, Inventory>>();
 	public HashMap<Player, Integer> currentPage = new HashMap<Player, Integer>();
