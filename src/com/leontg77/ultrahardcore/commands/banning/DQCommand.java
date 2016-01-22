@@ -63,7 +63,7 @@ public class DQCommand extends UHCCommand {
     		    	return;
     			}
     				
-    			PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been disqualified for §a" + message + "§8(§afor this game§8)");
+    			PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been disqualified for §a" + message + " §8(§afor this game§8)");
 				
 		    	for (Player online : PlayerUtils.getPlayers()) {
 		    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
