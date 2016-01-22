@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Difficulty;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -65,6 +66,7 @@ import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.ubl.UBL;
 import com.leontg77.ultrahardcore.ubl.UBLListener;
 import com.leontg77.ultrahardcore.utils.FileUtils;
+import com.leontg77.ultrahardcore.utils.LocationUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 import com.leontg77.ultrahardcore.world.AntiStripmine;
@@ -220,6 +222,15 @@ public class Main extends JavaPlugin {
 						String percentColor = percentString.substring(0, 2);
 					    
 					    online.setPlayerListName(percentColor + online.getName());
+					}
+					
+					final Location loc = online.getLocation().clone();
+					
+					if (online.getGameMode() == GameMode.SPECTATOR && LocationUtils.isOutsideOfBorder(loc)) {
+						Location toTeleport = LocationUtils.findSafeLocationInsideBorder(loc.clone(), 0, null);
+						toTeleport.setY(loc.getY());
+						
+						online.teleport(toTeleport);
 					}
 
 					int percent = Integer.parseInt(percentString.substring(2));
