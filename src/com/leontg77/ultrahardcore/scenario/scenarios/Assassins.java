@@ -1,8 +1,8 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -19,6 +19,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -29,8 +31,8 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author audicymc
  */
 public class Assassins extends Scenario implements Listener, CommandExecutor {
-	private static HashMap<String, String> assassins = new HashMap<String, String>();
-	public static final String PREFIX = "§4[§6Assassins§4] §c";
+	private final Map<String, String> assassins = new HashMap<String, String>();
+	private static final String PREFIX = "§c§lAssassins §8» §7";
 
 	public Assassins() {
 		super("Assassins", "Each player has a target that they must kill. Killing anyone that is not your target or assassin will result in no items dropping. When your target dies, you get their target.");
@@ -44,90 +46,114 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	
 	@Override
 	public void onEnable() {
-		PlayerUtils.broadcast(PREFIX + "Targets will be assigned when pvp enables.");
+		if (!State.isState(State.INGAME) || Timers.pvp > 0) {
+			return;
+		}
+		
+		on(new PvPEnableEvent());
 	}
 	
 	@EventHandler
-	public void on(PvPEnableEvent event) {
+	public void on(final PvPEnableEvent event) {
 		PlayerUtils.broadcast(PREFIX + "Assigning targets...");
 		
-		ArrayList<Player> players = new ArrayList<Player>(PlayerUtils.getPlayers());
+		final List<Player> players = PlayerUtils.getPlayers();
 		Collections.shuffle(players);
 
 		for (int i = 0; i < players.size(); i++) {
-			Player assassin = players.get(i);
-			Player target = players.get(i < players.size() - 1 ? i + 1 : 0);
+			final Player assassin = players.get(i);
+			final Player target = players.get(i < players.size() - 1 ? i + 1 : 0);
 
 			setTarget(assassin.getName(), target.getName());
 		}
 	}
 
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
-		Player player = event.getEntity();
-		Player killer = player.getKiller();
+	public void on(final PlayerDeathEvent event) {
+		final Player player = event.getEntity();
+		final Player killer = player.getKiller();
 
 		if (!assassins.containsKey(player.getName())) {
 			return;
 		}
 		
-		String assassin = getAssassin(player.getName());
-		String target = getTarget(player.getName());
+		final String assassin = getAssassin(player.getName());
+		final String target = getTarget(player.getName());
 
-		if (killer != null && !killer.getName().equals(assassin) && !killer.getName().equals(target)) {
+		if (killer != null && !killer.getName().equals(assassin) && !player.getName().equals(target)) {
 			event.getDrops().clear();
 		}
 
 		setTarget(assassin, target);
 		assassins.remove(player.getName());
 		
-		PlayerUtils.broadcast(PREFIX + "§6" + player.getName() + " §cwas eliminated!");
+		PlayerUtils.broadcast(PREFIX + "§a" + player.getName() + " §7was eliminated!");
 		event.setDeathMessage(null);
 	}
 
 	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event) {
-		Player player = event.getPlayer();
-		String target = getAssassin(player.getName());
+	public void on(PlayerMoveEvent event) {
+		final Player player = event.getPlayer();
+		final String target = getAssassin(player.getName());
 
 		if (target == null) {
 			return;
 		}
 		
-		Player targetP = Bukkit.getPlayer(target);
+		final Player assassin = Bukkit.getPlayer(target);
 
-		if (targetP == null) {
+		if (assassin == null) {
 			return;
 		}
 		
-		targetP.setCompassTarget(player.getLocation());
+		assassin.setCompassTarget(player.getLocation());
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can have targets.");
+			sender.sendMessage(ChatColor.RED + "Only players can have assassins targets.");
 			return true;
 		}
 
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 
 		if (!isEnabled()) {
 			player.sendMessage(PREFIX + "Assassins is not enabled.");
 			return true;
 		}
+		
+		final String target = getTarget(player.getName());
+		
+		if (target == null) {
+			player.sendMessage(PREFIX + "Could not find your target.");
+			return true;
+		}
 
-		player.sendMessage(PREFIX + "Target: §6" + getTarget(player.getName()));
+		player.sendMessage(PREFIX + "Your target: §a" + getTarget(player.getName()));
 		return true;
 	}
 
 	/**
-	 * Get the assassins map
+	 * Set a new target for the assassin.
 	 * 
-	 * @return the Assassins map
+	 * @param assassin the assassin.
+	 * @param target the new target.
 	 */
-	public static Map<String, String> getAssassins() {
-		return assassins;
+	private void setTarget(final String assassin, final String target) {
+		assassins.put(assassin, target);
+
+		new BukkitRunnable() {
+			public void run() {
+				final Player player = Bukkit.getPlayer(assassin);
+				
+				if (player == null) {
+					return;
+				}
+				
+				player.sendMessage(PREFIX + "Your new target: §a" + target);
+			}
+		}.runTaskLater(Main.plugin, 1L);
 	}
 
 	/**
@@ -137,9 +163,9 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	 * @return the assassin.
 	 */
 	private String getAssassin(String target) {
-		for (Entry<String, String> e : assassins.entrySet()) {
-			if (e.getValue().equalsIgnoreCase(target)) {
-				return e.getKey();
+		for (Entry<String, String> entry : assassins.entrySet()) {
+			if (entry.getValue().equalsIgnoreCase(target)) {
+				return entry.getKey();
 			}
 		}
 		
@@ -163,22 +189,11 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	}
 
 	/**
-	 * Set a new target for the assassin.
+	 * Get the assassins map
 	 * 
-	 * @param assassin the assassin.
-	 * @param target the new target.
+	 * @return the Assassins map
 	 */
-	private void setTarget(final String assassin, final String target) {
-		assassins.put(assassin, target);
-
-		new BukkitRunnable() {
-			public void run() {
-				Player player = Bukkit.getPlayer(assassin);
-				
-				if (player != null) {
-					player.sendMessage(PREFIX + "New Target: §6" + target);
-				}
-			}
-		}.runTaskLater(Main.plugin, 1L);
+	public Map<String, String> getAssassinsMap() {
+		return assassins;
 	}
 }
