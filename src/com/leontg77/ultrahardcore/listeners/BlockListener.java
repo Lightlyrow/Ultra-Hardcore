@@ -213,6 +213,7 @@ public class BlockListener implements Listener {
 		case JUNGLE_DOOR:
 		case SPRUCE_DOOR:
 		case WOODEN_DOOR:
+		case IRON_DOOR:
 			return true;
 		default:
 			return false;
