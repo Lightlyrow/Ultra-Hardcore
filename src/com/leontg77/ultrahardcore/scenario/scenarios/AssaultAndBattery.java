@@ -2,6 +2,8 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +20,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -28,8 +32,9 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class AssaultAndBattery extends Scenario implements Listener, CommandExecutor {
-	private HashMap<String, Type> types = new HashMap<String, Type>();
-	public static final String PREFIX = "§8[§aAB§8] §b";
+	private final Map<String, Type> types = new HashMap<String, Type>();
+	
+	private static final String PREFIX = "§b§lA&B §8» §7";
 
 	public AssaultAndBattery() {
 		super("AssaultAndBattery", "To2 Where one person can only do meelee damage to players, while the other one can only do ranged attacks. If a teammate dies, you can do both meelee and ranged attacks.");
@@ -45,27 +50,36 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 	
 	@Override
 	public void onEnable() {
-		PlayerUtils.broadcast(PREFIX + "Setting classes!");
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
 		
-		TeamManager teams = TeamManager.getInstance();
+		on(new GameStartEvent());
+	}
+	
+	@EventHandler
+	public void on(GameStartEvent event) {
+		final TeamManager teams = TeamManager.getInstance();
+		
+		PlayerUtils.broadcast(PREFIX + "Setting classes...");
 		
 		for (Team team : teams.getTeamsWithPlayers()) {
 			if (team.getSize() < 2) {
 				continue;
 			}
 				
-			ArrayList<String> entry = new ArrayList<String>(team.getEntries());
+			final List<String> entry = new ArrayList<String>(team.getEntries());
 			
 			types.put(entry.get(0), Type.ASSAULT);
 			types.put(entry.get(1), Type.BATTERY);
-			
-			teams.sendMessage(team, PREFIX + "Assaulter: §e" + entry.get(0));
-			teams.sendMessage(team, PREFIX + "Battery: §e" + entry.get(1));
+
+			teams.sendMessage(team, PREFIX + "Assaulter (Melee): §e" + entry.get(0));
+			teams.sendMessage(team, PREFIX + "Battery (Bow): §e" + entry.get(1));
 		}
 	}
 	
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
+	public void on(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		types.remove(player.getName());
 		
@@ -82,47 +96,47 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			types.remove(entry);
 		}
 		
-		teams.sendMessage(team, PREFIX + "§cYour teammate, " + player.getName() + ", has died! You can now damage with both melee and ranged attacks!");
+		teams.sendMessage(team, PREFIX + "Your teammate died, You can now damage with both melee and ranged attacks.");
 		
 	}
 
 	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		Entity damager = event.getDamager();
-		Entity entity = event.getEntity();
+	public void on(EntityDamageByEntityEvent event) {
+		final Entity damager = event.getDamager();
+		final Entity entity = event.getEntity();
 		
 		if (!(entity instanceof Player)) {
 			return;
 		}
 		
 		if (damager instanceof Player) {
-			Player player = (Player) damager;
-			Type type = types.get(player.getName());
+			final Player player = (Player) damager;
+			final Type type = types.get(player.getName());
 			
 			if (!type.equals(Type.BATTERY)) {
 				return;
 			}
 			
-			player.sendMessage(PREFIX + "You cannot do melee damage.");
+			player.sendMessage(ChatColor.RED + "You can't do melee damage.");
 			event.setCancelled(true);
 			return;
 		}
 
 		if (damager instanceof Projectile) {
-			Projectile proj = (Projectile) damager;
+			final Projectile proj = (Projectile) damager;
 			
 			if (!(proj.getShooter() instanceof Player)) {
 				return;
 			}
 			
-			Player player = (Player) proj.getShooter();
-			Type type = types.get(player.getName());
+			final Player player = (Player) proj.getShooter();
+			final Type type = types.get(player.getName());
 			
 			if (!type.equals(Type.ASSAULT)) {
 				return;
 			}
 			
-			player.sendMessage(PREFIX + "You cannot do projectile damage.");
+			player.sendMessage(ChatColor.RED + "You can't do projectile damage.");
 			event.setCancelled(true);
 		}
 	}
@@ -137,28 +151,28 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 		Player player = (Player) sender;
 
 		if (!isEnabled()) {
-			player.sendMessage(PREFIX + "AssaultAndBattery is not enabled.");
+			player.sendMessage(PREFIX + "Assault & Battery is not enabled.");
 			return true;
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("class")) {
 			if (!types.containsKey(player.getName())) {
-				player.sendMessage(PREFIX + "You are the §eassaulter §band §ebattery§b! You can both melee and sword!");
+				player.sendMessage(PREFIX + "You are the §eassaulter §7and §ebattery§7! You can both melee and sword!");
 				return true;
 			}
 			
 			switch (types.get(player.getName())) {
 			case ASSAULT:
-				player.sendMessage(PREFIX + "You are the §eassaulter§b! You can only use your sword!");
+				player.sendMessage(PREFIX + "You are the §eassaulter§7! You can only use your sword!");
 				break;
 			case BATTERY:
-				player.sendMessage(PREFIX + "You are the §ebattery§b! You can only use your bow!");
+				player.sendMessage(PREFIX + "You are the §ebattery§7! You can only use your bow!");
 				break;
 			}
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("listclass")) {
-			player.sendMessage(PREFIX + "§e====§bAssaulters§e====");
+			player.sendMessage(PREFIX + "§8====§7 Assaulters §8====");
 			
 			for (String key : types.keySet()) {
 				Type type = types.get(key);
@@ -167,10 +181,10 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 					continue;
 				} 
 				
-				player.sendMessage(PREFIX + "- §e" + key);
+				player.sendMessage(PREFIX + "§8- §7" + key);
 			}
 			
-			player.sendMessage(PREFIX + "§e====§bBatteries§e====");
+			player.sendMessage(PREFIX + "§8====§7 Batteries §8====");
 			
 			for (String key : types.keySet()) {
 				Type type = types.get(key);
@@ -179,17 +193,17 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 					continue;
 				} 
 				
-				player.sendMessage(PREFIX + "- §e" + key);
+				player.sendMessage(PREFIX + "§8- §7" + key);
 			}
 			
-			player.sendMessage(PREFIX + "§e====§bBoth§e====");
+			player.sendMessage(PREFIX + "§8====§7 Both §8====");
 			
 			for (OfflinePlayer wld : Bukkit.getWhitelistedPlayers()) {
 				if (types.containsKey(wld.getName())) {
 					continue;
 				} 
 				
-				player.sendMessage(PREFIX + "- §e" + wld.getName());
+				player.sendMessage(PREFIX + "§8- §7" + wld.getName());
 			}
 		}
 		return true;
