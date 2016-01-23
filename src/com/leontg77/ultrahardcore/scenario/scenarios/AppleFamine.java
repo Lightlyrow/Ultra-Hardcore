@@ -1,6 +1,5 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 
 /**
@@ -19,6 +18,6 @@ public class AppleFamine extends Scenario {
 
 	@Override
 	public void onEnable() {
-		Game.getInstance().setAppleRates(0);
+		game.setAppleRates(0);
 	}
 }
