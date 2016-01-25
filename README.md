@@ -8,8 +8,8 @@ UHC Plugin designed for LeonTG77's UHC games
 4. Finish util classes
 5. Add docs to Game.java
 6. Redo stats inventory
-7. Make the config inventory to its own class
-8. Add more option to the config (Trapping/Camping/Stalking)
+7. ~~Make the config inventory to its own class~~
+8. ~~Add more option to the config (Trapping/Camping/Stalking)~~
 9. Automatic win detection with an END state
 10. Add parkour stats
 11. ~~Add longshot stats~~
@@ -23,9 +23,9 @@ UHC Plugin designed for LeonTG77's UHC games
 19. Fix the arena /hotbar command
 20. ~~Add /back and /respawn <player>~~
 21. Make a custom /help command for a better help menu for players and staff
-22. Add an option to disable the sidebar from resetting scores
-23. Add an anvil toggle option
-24. Add an toggle to xp nerfing and 1 for quartz xp
+22. ~~Add an option to disable the sidebar from resetting scores~~
+23. ~~Add an anvil toggle option~~
+24. ~~Add an toggle to xp nerfing and 1 for quartz xp~~
 25. ~~Fix Anti iPvP~~
 26. Arena block decay (30s for placing, 15s for breaking and 3-5 mins for ores)
 27. Add retired rank with a few staff perms
