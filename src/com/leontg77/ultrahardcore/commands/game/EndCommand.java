@@ -90,8 +90,6 @@ public class EndCommand extends UHCCommand {
 		Fireworks firework = Fireworks.getInstance();
 		FileUtils.updateUserFiles();
 		
-		InvGUI.getInstance().setup();
-		
 		int matchcount = 1;
 		
 		if (settings.getHOF().contains(host) && settings.getHOF().contains(host + ".games")) {
@@ -106,6 +104,8 @@ public class EndCommand extends UHCCommand {
 			settings.getHOF().set(host + ".games." + matchcount + ".scenarios", game.getScenarios());
 			settings.saveHOF();
 		}
+		
+		InvGUI.getInstance().setup();
 		
 		for (Scenario scen : ScenarioManager.getInstance().getEnabledScenarios()) {
 			scen.setEnabled(false);
