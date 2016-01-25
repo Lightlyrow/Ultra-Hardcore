@@ -11,8 +11,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Balance scenario class
@@ -20,8 +22,10 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  * @author LeonTG77
  */
 public class Balance extends Scenario implements Listener {
-	private Map<String, Integer> minedAmount = new HashMap<String, Integer>();
-	private Map<String, Integer> chance = new HashMap<String, Integer>();
+	private static final String PREFIX = "§3§lBalance §8» §7";
+	
+	private final Map<String, Integer> minedAmount = new HashMap<String, Integer>();
+	private final Map<String, Integer> chance = new HashMap<String, Integer>();
 	
 	public Balance() {
 		super("Balance", "After the 5th diamond, it gets progressively harder to obtain diamonds.");
@@ -35,14 +39,21 @@ public class Balance extends Scenario implements Listener {
 
 	@Override
 	public void onEnable() {
-		minedAmount.clear();
-		chance.clear();
+		onDisable();
 	}
 	
 	@EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
+		
+		if (!GameUtils.getGameWorlds().contains(block.getWorld())) {
+			return;
+		}
 		
 		if (block.getType() != Material.DIAMOND_ORE) {
 			return;
@@ -62,18 +73,18 @@ public class Balance extends Scenario implements Listener {
 		}
 		
 		if (amount == 5) {
-			player.sendMessage("§6Uh oh! Diamonds might disappear when mined now!");
+			player.sendMessage(PREFIX + "Uh oh! Diamonds might disappear when mined now!");
 			return;
 		}
 		
 		chance.put(player.getName(), amount - 3);
 		
-		int rand = new Random().nextInt(chance.get(player.getName()));
+		final int rand = new Random().nextInt(chance.get(player.getName()));
 		
 		if (rand == 1) {
 			chance.put(player.getName(), chance.get(player.getName()) + 1);
 			
-			player.sendMessage("§6Diamonds now have a 1/" + chance.get(player.getName()) + " chance to drop!");
+			player.sendMessage(PREFIX + "Diamonds now have a §a1/" + chance.get(player.getName()) + " §7chance to drop!");
 		} else {
 			BlockUtils.blockBreak(player, block);
 			BlockUtils.degradeDurabiliy(player);
