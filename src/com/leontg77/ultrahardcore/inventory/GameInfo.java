@@ -62,7 +62,7 @@ public class GameInfo extends InvGUI implements Listener {
 		Game game = Game.getInstance();
 		
 		// general info item
-		ItemStack general = new ItemStack (Material.SIGN);
+		ItemStack general = new ItemStack(Material.SIGN);
 		ItemMeta generalMeta = general.getItemMeta();
 		generalMeta.setDisplayName("§8» §6General Info §8«");
 		lore.add(" ");;
@@ -84,7 +84,7 @@ public class GameInfo extends InvGUI implements Listener {
 		general.setItemMeta(generalMeta);
 		lore.clear();
 		
-		ItemStack chat = new ItemStack (Material.MAP);
+		ItemStack chat = new ItemStack(Material.PAPER);
 		ItemMeta chatMeta = chat.getItemMeta();
 		chatMeta.setDisplayName("§8» §6Chat Rules §8«");
 		lore.add(" ");
@@ -104,7 +104,6 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add("§8» §7Spoiling when dead: §cNot allowed.");
 		lore.add(" ");
 		chatMeta.setLore(lore);
-		chatMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		chat.setItemMeta(chatMeta);
 		lore.clear();
 		
@@ -132,9 +131,11 @@ public class GameInfo extends InvGUI implements Listener {
 		pvpMeta.setDisplayName("§8» §6PvP Rules §8«");
 		lore.add(" ");
 		lore.add("§8» §7iPvP: §cNot Allowed before pvp.");
-		lore.add("§8» §7Team Killing: " + teamKilling);
+		lore.add(" ");
 		lore.add("§8» §7Stalking: §aAllowed. §c(Not excessive)");
 		lore.add("§8» §7Stealing: §aAllowed.");
+		lore.add(" ");
+		lore.add("§8» §7Team Killing: " + teamKilling);
 		lore.add("§8» §7Crossteaming: §cNot Allowed.");
 		lore.add(" ");
 		pvpMeta.setLore(lore);
@@ -375,6 +376,42 @@ public class GameInfo extends InvGUI implements Listener {
 		inv.setItem(40, rates);
 		inv.setItem(42, horse);
 		inv.setItem(44, misc);
+		
+		final ItemStack black = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
+		final ItemStack gray = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+		
+		inv.setItem(1, gray);
+		inv.setItem(3, gray);
+		inv.setItem(5, gray);
+		inv.setItem(7, gray);
+		inv.setItem(9, gray);
+		inv.setItem(11, gray);
+		inv.setItem(13, gray);
+		inv.setItem(15, gray);
+		inv.setItem(17, gray);
+		inv.setItem(27, gray);
+		inv.setItem(29, gray);
+		inv.setItem(31, gray);
+		inv.setItem(33, gray);
+		inv.setItem(35, gray);
+		inv.setItem(37, gray);
+		inv.setItem(39, gray);
+		inv.setItem(41, gray);
+		inv.setItem(43, gray);
+		
+		inv.setItem(10, black);
+		inv.setItem(12, black);
+		inv.setItem(14, black);
+		inv.setItem(16, black);
+		inv.setItem(18, black);
+		inv.setItem(20, black);
+		inv.setItem(22, black);
+		inv.setItem(24, black);
+		inv.setItem(26, black);
+		inv.setItem(28, black);
+		inv.setItem(30, black);
+		inv.setItem(32, black);
+		inv.setItem(34, black);
 	}
 	
 	/**
