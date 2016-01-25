@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,13 +11,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Barebones scenario class
@@ -36,48 +38,83 @@ public class Barebones extends Scenario implements Listener {
 	public void onEnable() {}
 
 	@EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+    public void on(BlockBreakEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
+		
+		if (!GameUtils.getGameWorlds().contains(block.getWorld())) {
+			return;
+		}
 		
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			return;
 		}
 		
-		boolean cutclean = ScenarioManager.getInstance().getScenario(CutClean.class).isEnabled();
-		ItemStack replaced = new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE);
-    	
-		if (block.getType() != Material.EMERALD_ORE && block.getType() != Material.REDSTONE_ORE && block.getType() != Material.LAPIS_ORE && block.getType() != Material.GOLD_ORE && block.getType() != Material.DIAMOND_ORE) {
+		final boolean cutclean = ScenarioManager.getInstance().getScenario(CutClean.class).isEnabled();
+		final ItemStack replaced = new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE);
+		
+		switch (block.getType()) {
+		case EMERALD_ORE:
+		case REDSTONE_BLOCK:
+		case LAPIS_ORE:
+		case GOLD_ORE:
+		case DIAMOND_ORE:
+			break;
+		default:
 			return;
-    	}
+		}
 		
         BlockUtils.blockBreak(player, block);
         BlockUtils.degradeDurabiliy(player);
-        BlockUtils.dropItem(block.getLocation(), replaced);
+        BlockUtils.dropItem(block.getLocation().add(0.5, 0.7, 0.5), replaced);
         
         event.setCancelled(true);
         block.setType(Material.AIR);
     }
 	
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
-		List<ItemStack> drops = event.getDrops();
-		
-		drops.add(new ItemStack (Material.STRING, 2));
-		drops.add(new ItemStack (Material.DIAMOND, 1));
-		drops.add(new ItemStack (Material.GOLDEN_APPLE, 1));
-		drops.add(new ItemStack (Material.ARROW, 32));
-	}
-	
-	@EventHandler
-	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
-		ItemStack item = event.getRecipe().getResult();
-		CraftingInventory inv = event.getInventory();
-		
-		if (item.getType() != Material.ANVIL && item.getType() != Material.GOLDEN_APPLE && item.getType() != Material.ENCHANTMENT_TABLE) {
+	public void on(PlayerDeathEvent event) {
+		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
-		inv.setResult(new ItemStack(Material.AIR));
+		final Player player = event.getEntity();
+		
+		if (!GameUtils.getGameWorlds().contains(player.getWorld())) {
+			return;
+		}
+		
+		final List<ItemStack> drops = event.getDrops();
+
+		drops.add(new ItemStack(Material.GOLDEN_APPLE, 1));
+		drops.add(new ItemStack(Material.DIAMOND, 1));
+		drops.add(new ItemStack(Material.STRING, 2));
+		drops.add(new ItemStack(Material.ARROW, 32));
+	}
+	
+	@EventHandler
+	public void on(CraftItemEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		final Player player = (Player) event.getWhoClicked();
+		
+		if (!GameUtils.getGameWorlds().contains(player.getWorld())) {
+			return;
+		}
+		
+		final ItemStack item = event.getCurrentItem();
+		
+		if (item != null && item.getType() != Material.ANVIL && item.getType() != Material.GOLDEN_APPLE && item.getType() != Material.ENCHANTMENT_TABLE) {
+			return;
+		}
+		
+		player.sendMessage(ChatColor.RED + "You can't craft " + item.getType().name().toLowerCase().replace("_", " ") + "s.");
+		event.setCancelled(true);
 	}
 }
