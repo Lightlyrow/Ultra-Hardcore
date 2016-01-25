@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -31,7 +32,11 @@ public class BedBombs extends Scenario implements Listener {
 	
 	@EventHandler
 	public void on(PlayerInteractEvent event) {
-		Block block = event.getClickedBlock();
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+
+		final Block block = event.getClickedBlock();
 		
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
@@ -51,7 +56,7 @@ public class BedBombs extends Scenario implements Listener {
 		
 		event.setCancelled(true);
 		
-		Location loc = block.getLocation();
-		block.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), NumberUtils.randInt(4, 6), false, true);
+		final Location loc = block.getLocation();
+		block.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), NumberUtils.randomIntBetween(4, 6), false, true);
 	}
 }
