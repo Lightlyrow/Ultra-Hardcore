@@ -33,7 +33,7 @@ public class Inventors extends Scenario implements Listener {
 	@Override
 	public void onEnable() {}
 	
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void on(final CraftItemEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
