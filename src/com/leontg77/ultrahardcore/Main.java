@@ -40,7 +40,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.commands.CommandHandler;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
-import com.leontg77.ultrahardcore.inventory.listener.ConfigListener;
 import com.leontg77.ultrahardcore.inventory.listener.InvseeListener;
 import com.leontg77.ultrahardcore.inventory.listener.SelectorListener;
 import com.leontg77.ultrahardcore.listeners.BlockListener;
@@ -164,7 +163,6 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new UBLListener(), this);
 
 		// register all inventory listeners.
-		manager.registerEvents(new ConfigListener(), this);
 		manager.registerEvents(new InvseeListener(), this);
 		manager.registerEvents(new SelectorListener(), this);
 		manager.registerEvents(new SpectatorListener(), this);
