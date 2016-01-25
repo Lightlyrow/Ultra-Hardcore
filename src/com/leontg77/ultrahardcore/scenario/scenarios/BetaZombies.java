@@ -18,7 +18,7 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
 public class BetaZombies extends Scenario implements Listener {
 	
 	public BetaZombies() {
-		super("BetaZombies", "Zombies drop feathers.");
+		super("BetaZombies", "Zombies drop feathers");
 	}
 	
 	@Override
@@ -28,8 +28,8 @@ public class BetaZombies extends Scenario implements Listener {
 	public void onEnable() {}
 	
 	@EventHandler
-	public void onEntityDeath(EntityDeathEvent event) {
-		Entity entity = event.getEntity();
+	public void on(EntityDeathEvent event) {
+		final Entity entity = event.getEntity();
 		
 		if (!(entity instanceof Zombie)) {
 			return;
