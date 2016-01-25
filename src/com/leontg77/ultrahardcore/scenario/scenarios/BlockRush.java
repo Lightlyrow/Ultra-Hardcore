@@ -38,7 +38,7 @@ public class BlockRush extends Scenario implements Listener {
 	@Override
 	public void onEnable() {}
 	
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void on(final BlockBreakEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
