@@ -36,7 +36,8 @@ public class Birds extends Scenario implements Listener {
 	
 	@EventHandler
 	public void on(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
+		
 		player.setAllowFlight(true);
 	}
 }
