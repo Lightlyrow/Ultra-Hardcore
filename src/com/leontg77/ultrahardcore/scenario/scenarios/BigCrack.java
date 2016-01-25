@@ -30,7 +30,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
 	private static final int CHUNK_HEIGHT_LIMIT = 128;
     private static final int BLOCKS_PER_CHUNK = 16;
 
-    public static final String PREFIX = "§7[§bBigcrack§7] §f";
+    public static final String PREFIX = "§b§lBigCrack §8» §7";
 	private boolean generation = false;
 
 	public BigCrack() {
@@ -45,7 +45,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
 	public void onEnable() {}
 
 	@EventHandler
-    public void onFlow(BlockFromToEvent event) {
+    public void on(BlockFromToEvent event) {
         if (!generation) {
         	return;
         }
@@ -60,7 +60,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
 			return true;
 		}
 		
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 		
 		if (!isEnabled()) {
 			sender.sendMessage(PREFIX + "Bigcrack is not enabled.");
@@ -80,27 +80,27 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
         int width;
         
         try {
-            width = Integer.parseInt(args[0]);
+            width = parseInt(args[0], "width");
         } catch (Exception e) {
-        	player.sendMessage(ChatColor.RED + args[0] + " is not an vaild width.");
+        	player.sendMessage(ChatColor.RED + e.getMessage());
             return true;
         }
 
         int length;
         
         try {
-            length = Integer.parseInt(args[1]);
+            length = parseInt(args[1], "length");
         } catch (Exception e) {
-        	player.sendMessage(ChatColor.RED + args[1] + " is not an vaild length.");
+        	player.sendMessage(ChatColor.RED + e.getMessage());
             return true;
         }
 
         int speed;
         
         try {
-            speed = Integer.parseInt(args[2]);
+            speed = parseInt(args[2], "speed");
         } catch (Exception e) {
-        	player.sendMessage(ChatColor.RED + args[2] + " is not an vaild speed.");
+        	player.sendMessage(ChatColor.RED + e.getMessage());
             return true;
         }
         
@@ -118,8 +118,8 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
 	 */
 	public void generate(final World world, final int length, final int width, int speed) {
 		generation = true;
-        
         int xChunk;
+        
         if (length % BLOCKS_PER_CHUNK == 0) {
             xChunk = length / BLOCKS_PER_CHUNK;
         } else {
@@ -130,6 +130,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
         xChunk = xChunk * -1;
         
         int zChunk;
+        
         if (width % BLOCKS_PER_CHUNK == 0) {
             zChunk = (width) / BLOCKS_PER_CHUNK;
         } else {
@@ -140,6 +141,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
         zChunk = zChunk * -1;
         
         int delayMultiplier = 0;
+        
         for (int x = xChunk; x <= xMaxChunk; x++) {
             for (int z = zChunk; z <= zMaxChunk; z++) {
                 final Chunk chunk = world.getChunkAt(x, z);
