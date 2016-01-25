@@ -27,6 +27,10 @@ public class UHCCmd extends UHCCommand {
 			throw new CommandException("Only players can view the game info inventory.");
 		}
 		
+		if (game.getTeamSize().startsWith("No") || game.getTeamSize().startsWith("Open")) {
+			throw new CommandException("There are no games running.");
+		}
+		
 		Player player = (Player) sender;
 		InvGUI inv = InvGUI.getInstance();
 		
