@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 
@@ -21,7 +22,7 @@ import com.leontg77.ultrahardcore.utils.NameUtils;
  * @author LeonTG77
  */
 public class BiomeParanoia extends Scenario implements Listener, CommandExecutor {
-	public static final String PREFIX = "§7[§6BP§7] §f";
+	public static final String PREFIX = "§5§lBiomeParanoia §8» §7";
 
 	public BiomeParanoia() {
 		super("BiomeParanoia", "Your tab name color is the color of the biome you are in, /bl for biome colors.");
@@ -36,7 +37,11 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 	public void onEnable() {}
 	
 	@EventHandler(ignoreCancelled = true)
-	public void onPlayerMove(PlayerMoveEvent event) {
+	public void on(PlayerMoveEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		Player player = event.getPlayer();
 		Biome biome = player.getLocation().getBlock().getBiome();
 		
@@ -55,10 +60,10 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 			return true;
 		}
 		
-		StringBuilder biomes = new StringBuilder();
+		final StringBuilder biomes = new StringBuilder();
 		
-		for (Biome b : Biome.values()) {
-			if (!isSendable(b)) {
+		for (Biome biome : Biome.values()) {
+			if (!isSendable(biome)) {
 				continue;
 			}
 			
@@ -66,7 +71,7 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 				biomes.append("§f, ");
 			}
 			
-			biomes.append(biomeColor(b) + NameUtils.capitalizeString(b.name(), true));
+			biomes.append(biomeColor(biome) + NameUtils.capitalizeString(biome.name(), true));
 		}
 
 		sender.sendMessage(PREFIX + "List of all biome colors:");
