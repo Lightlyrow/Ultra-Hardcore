@@ -23,6 +23,7 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  */
 public class Blocked extends Scenario implements Listener {
 	private Map<String, List<Location>> mined = new HashMap<String, List<Location>>();
+    public static final String PREFIX = "§9§lBlocked §8» §7";
 	
 	public Blocked() {
 		super("Blocked", "You can't break the blocks that you place. Other players can break blocks that you place, and you can break blocks that other players place.");
@@ -44,8 +45,8 @@ public class Blocked extends Scenario implements Listener {
 			return;
 		}
 		
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
 		
 		if (!mined.containsKey(player.getName())) {
 			mined.put(player.getName(), new ArrayList<Location>());
@@ -60,14 +61,15 @@ public class Blocked extends Scenario implements Listener {
 			return;
 		}
 		
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
 		
 		if (!mined.containsKey(player.getName())) {
 			mined.put(player.getName(), new ArrayList<Location>());
 		}
 		
 		if (mined.get(player.getName()).contains(block.getLocation())) {
+			player.sendMessage(PREFIX + "You can't break blocks you placed, silly dilly.");
 			event.setCancelled(true);
 		}
 	}
