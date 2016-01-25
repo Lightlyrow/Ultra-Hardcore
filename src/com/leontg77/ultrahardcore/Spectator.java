@@ -99,7 +99,7 @@ public class Spectator {
 	 * 
 	 * @return List of players with commandspy.
 	 */
-	public Set<String> getCommandSpyers() {
+	public Set<String> getCommandSpies() {
 		return cmdspy;
 	}
 	
@@ -178,6 +178,8 @@ public class Spectator {
 		player.setGameMode(GameMode.SPECTATOR);
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
+		
+		player.setPlayerListName(null);
 
 		TeamManager teams = TeamManager.getInstance();
 		Game game = Game.getInstance();
