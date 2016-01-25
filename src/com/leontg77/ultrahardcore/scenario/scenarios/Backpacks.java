@@ -15,6 +15,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Backpacks scenario class
@@ -22,6 +23,7 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author LeonTG77
  */
 public class Backpacks extends Scenario implements Listener, CommandExecutor {
+	private static final String PREFIX = "§6§lBackpacks §8» §7";
 	
 	public Backpacks() {
 		super("Backpacks", "Players can type /bp to open up a backpack inventory.");
@@ -37,34 +39,46 @@ public class Backpacks extends Scenario implements Listener, CommandExecutor {
 	
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		Player player = event.getEntity();
-		Block block = player.getLocation().add(0, -1, 0).getBlock();
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		final Player player = event.getEntity();
+		final Block block = player.getLocation().subtract(0, 1, 0).getBlock();
+		
+		if (!GameUtils.getGamePlayers().contains(player)) {
+			return;
+		}
 		
 		block.setType(Material.CHEST);
-		block.getState().update();
 		
-		Chest chest = (Chest) block.getState();
+		final Chest chest = (Chest) block.getState();
+		
 		chest.getInventory().setContents(player.getEnderChest().getContents());
-		
 		player.getEnderChest().clear();
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can use backpacks.");
+			sender.sendMessage(ChatColor.RED + "Only players can have backpacks.");
 			return true;
 		}
 		
 		Player player = (Player) sender;
 		
 		if (!isEnabled()) {
-			player.sendMessage(ChatColor.GOLD + "Backbacks is not enabled.");
+			player.sendMessage(PREFIX + "Backbacks are not enabled.");
 			return true;
 		}
 		
 		if (!State.isState(State.INGAME)) {
-			player.sendMessage(ChatColor.RED + "The game hasn't started!");
+			player.sendMessage(ChatColor.RED + "The game hasn't started yet.");
+			return true;
+		}
+		
+		if (!GameUtils.getGamePlayers().contains(player)) {
+			player.sendMessage(ChatColor.RED + "You can only use your backpack while playing.");
 			return true;
 		}
 
