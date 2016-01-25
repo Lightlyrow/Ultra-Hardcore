@@ -23,6 +23,7 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -72,6 +73,10 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	public void on(final PlayerDeathEvent event) {
 		final Player player = event.getEntity();
 		final Player killer = player.getKiller();
+		
+		if (!GameUtils.getGamePlayers().contains(player) || !GameUtils.getGamePlayers().contains(killer)) {
+			return;
+		}
 
 		if (!assassins.containsKey(player.getName())) {
 			return;
@@ -95,6 +100,10 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	public void on(PlayerMoveEvent event) {
 		final Player player = event.getPlayer();
 		final String target = getAssassin(player.getName());
+		
+		if (!GameUtils.getGamePlayers().contains(player)) {
+			return;
+		}
 
 		if (target == null) {
 			return;
