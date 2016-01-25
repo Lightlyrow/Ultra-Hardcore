@@ -13,8 +13,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Aurophobia scenario class
@@ -34,13 +36,21 @@ public class Aurophobia extends Scenario implements Listener {
 	public void onEnable() {}
 
 	@EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
+    public void on(BlockBreakEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
     	
 		if (block.getType() != Material.GOLD_ORE) {
 			return;
     	}
+		
+		if (!GameUtils.getGamePlayers().contains(player)) {
+			return;
+		}
 		
 		Random rand = new Random();
 		
