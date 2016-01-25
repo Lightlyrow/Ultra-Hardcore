@@ -59,6 +59,10 @@ public class Armageddon extends Scenario implements Listener {
 		
 		task = new BukkitRunnable() {
 			public void run() {
+				if (world == null) {
+					return;
+				}
+				
 				for (int i = 0; i < FREQUENCY; i++) {
 					dropArmageddonItem();
 				}
