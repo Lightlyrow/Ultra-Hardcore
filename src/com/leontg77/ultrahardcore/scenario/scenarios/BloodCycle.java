@@ -1,11 +1,23 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import java.util.List;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.collect.ImmutableList;
+import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -14,29 +26,150 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BloodCycle extends Scenario implements Listener {
+	private static final List<Material> ORES = ImmutableList.of(Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.LAPIS_ORE, Material.REDSTONE_ORE, Material.DIAMOND_ORE, Material.EMERALD_ORE);
+	private static final String PREFIX = "§4§lBloodCycle §8» §7";
 	
+	private BukkitRunnable task;
+	private Material current;
+	
+	private int seconds = 600;
+
 	public BloodCycle() {
-		super("Birds", "All players can fly!");
+		super("BloodCycle", "Every 10 minutes it will cycle to a new ore, these ores consist of Emerald, Diamond, Gold, Iron, Coal, Lapis, and Redstone. If it cycles to one of these ores, when you mine it; it has a chance of damaging you by half-a-heart, but you could it lucky and it will cycle to no ore.");
 	}
-	
+
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
-			online.setAllowFlight(false);
-			online.setFlying(false);
+		if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+			task.cancel();
 		}
+
+		task = null;
+		current = null;
+		seconds = 600;
 	}
 
 	@Override
 	public void onEnable() {
-		for (Player online : PlayerUtils.getPlayers()) {
-			online.setAllowFlight(true);
+		seconds = 1;
+		
+		if (!State.isState(State.INGAME)) {
+			return;
 		}
+
+		on(new GameStartEvent());
 	}
 	
 	@EventHandler
-	public void on(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		player.setAllowFlight(true);
+	public void on(GameStartEvent event) {
+		task = new BukkitRunnable() {
+			private Random rand = new Random();
+			
+			public void run() {
+				seconds--;
+				
+				switch (seconds) {
+	            case 300:
+	                PlayerUtils.broadcast(PREFIX + "Changing damaging ore in §a5§7 minutes!");
+	                break;
+	            case 60:
+	                PlayerUtils.broadcast(PREFIX + "Changing damaging ore in §a1§7 minute!");
+	                break;
+	            case 30:
+	            case 10:
+	            case 5:
+	            case 4:
+	            case 3:
+	            case 2:
+	                PlayerUtils.broadcast(PREFIX + "Changing damaging ore in §a" + seconds + "§7 seconds!");
+	                break;
+	            case 1:
+	                PlayerUtils.broadcast(PREFIX + "Changing damaging ore in §a1§7 second!");
+	                break;
+	            case 0:
+	        		current = ORES.get(rand.nextInt(ORES.size()));
+	                PlayerUtils.broadcast(PREFIX + "§a" + NameUtils.capitalizeString(current.name(), true) + "§7 now has a chance of damaging you!");
+
+	                seconds = 600;
+	                break;
+				}
+			}
+		};
+		
+		task.runTaskTimer(Main.plugin, 0, 20);
+	}
+	
+	@EventHandler
+	public void on(BlockBreakEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
+		
+		if (!ORES.contains(block.getType())) {
+			return;
+		}
+		
+		if (current != null && block.getType() != current) {
+			return;
+		}
+		
+		final Random rand = new Random();
+		
+		switch (block.getType()) {
+		case COAL_ORE:
+			if (rand.nextDouble() > 0.15) {
+				return;
+			}
+			
+			PlayerUtils.damage(player, 1);
+			break;
+		case IRON_ORE:
+			if (rand.nextDouble() > 0.15) {
+				return;
+			}
+			
+			PlayerUtils.damage(player, 1);
+			break;
+		case GOLD_ORE:
+			if (rand.nextDouble() > 0.5) {
+				return;
+			}
+			
+			PlayerUtils.damage(player, 1);
+			break;
+		case REDSTONE_ORE:
+			if (rand.nextDouble() > 0.35) {
+				return;
+			}
+			
+			PlayerUtils.damage(player, 1);
+			break;
+		case LAPIS_ORE:
+			if (rand.nextDouble() > 0.3) {
+				return;
+			}
+			
+			PlayerUtils.damage(player, 1);
+			break;
+		case DIAMOND_ORE:
+			if (rand.nextDouble() > 0.75) {
+				return;
+			}
+			
+			PlayerUtils.damage(player, 1);
+			break;
+		case EMERALD_ORE:
+			if (rand.nextDouble() > 0.4) {
+				return;
+			}
+		
+			PlayerUtils.damage(player, 1);
+			break;
+		default:
+			break;
+		}
 	}
 }
