@@ -24,6 +24,7 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -80,11 +81,16 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 	
 	@EventHandler
 	public void on(PlayerDeathEvent event) {
-		Player player = event.getEntity();
+		final Player player = event.getEntity();
+		
+		if (!GameUtils.getGamePlayers().contains(player)) {
+			return;
+		}
+		
 		types.remove(player.getName());
 		
-		TeamManager teams = TeamManager.getInstance();
-		Team team = teams.getTeam(player);
+		final TeamManager teams = TeamManager.getInstance();
+		final Team team = teams.getTeam(player);
 		
 		if (team == null) {
 			return;
@@ -109,8 +115,17 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			return;
 		}
 		
+		if (!GameUtils.getGamePlayers().contains(entity)) {
+			return;
+		}
+		
 		if (damager instanceof Player) {
 			final Player player = (Player) damager;
+			
+			if (!GameUtils.getGamePlayers().contains(player)) {
+				return;
+			}
+			
 			final Type type = types.get(player.getName());
 			
 			if (!type.equals(Type.BATTERY)) {
@@ -130,6 +145,11 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			}
 			
 			final Player player = (Player) proj.getShooter();
+			
+			if (!GameUtils.getGamePlayers().contains(player)) {
+				return;
+			}
+			
 			final Type type = types.get(player.getName());
 			
 			if (!type.equals(Type.ASSAULT)) {
@@ -144,11 +164,11 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can use AssaultAndBattery commands.");
+			sender.sendMessage(ChatColor.RED + "Only players can use Assault & Battery commands.");
 			return true;
 		}
 		
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 
 		if (!isEnabled()) {
 			player.sendMessage(PREFIX + "Assault & Battery is not enabled.");
@@ -172,39 +192,53 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("listclass")) {
-			player.sendMessage(PREFIX + "§8====§7 Assaulters §8====");
+			StringBuilder assault = new StringBuilder();
+			StringBuilder battery = new StringBuilder();
+			StringBuilder both = new StringBuilder();
 			
 			for (String key : types.keySet()) {
 				Type type = types.get(key);
 				
-				if (type != Type.ASSAULT) {
-					continue;
-				} 
-				
-				player.sendMessage(PREFIX + "§8- §7" + key);
+				switch (type) {
+				case ASSAULT:
+					if (assault.length() > 0) {
+						assault.append("§8, §7");
+					}
+					
+					assault.append(key);
+					break;
+				case BATTERY:
+					if (battery.length() > 0) {
+						battery.append("§8, §7");
+					}
+					
+					battery.append(key);
+					break;
+				default:
+					break;
+				}
 			}
-			
-			player.sendMessage(PREFIX + "§8====§7 Batteries §8====");
-			
-			for (String key : types.keySet()) {
-				Type type = types.get(key);
-				
-				if (type != Type.BATTERY) {
-					continue;
-				} 
-				
-				player.sendMessage(PREFIX + "§8- §7" + key);
-			}
-			
-			player.sendMessage(PREFIX + "§8====§7 Both §8====");
 			
 			for (OfflinePlayer wld : Bukkit.getWhitelistedPlayers()) {
 				if (types.containsKey(wld.getName())) {
 					continue;
 				} 
+
+				if (both.length() > 0) {
+					both.append("§8, §7");
+				}
 				
-				player.sendMessage(PREFIX + "§8- §7" + wld.getName());
+				both.append(wld.getName());
 			}
+			
+			player.sendMessage(PREFIX + "§8====§e Assaulters §8====");
+			player.sendMessage("§8» §7" + (assault.length() == 0 ? "None" : assault.toString()) + "§8.");
+			
+			player.sendMessage(PREFIX + "§8====§e Batteries §8====");
+			player.sendMessage("§8» §7" + (battery.length() == 0 ? "None" : battery.toString()) + "§8.");
+			
+			player.sendMessage(PREFIX + "§8====§e Both §8====");
+			player.sendMessage("§8» §7" + (both.length() == 0 ? "None" : both.toString()) + "§8.");
 		}
 		return true;
 	}
