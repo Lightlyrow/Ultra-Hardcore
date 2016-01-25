@@ -1,15 +1,15 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Skeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
 /**
@@ -31,25 +31,35 @@ public class BaldChicken extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		Entity entity = event.getEntity();
 		
-		if (entity instanceof Chicken) {
+		if (!GameUtils.getGameWorlds().contains(entity.getWorld())) {
+			return;
+		}
+		
+		switch (entity.getType()) {
+		case CHICKEN:
 			for (ItemStack drop : event.getDrops()) {
 				if (drop.getType() == Material.FEATHER) {
 					drop.setType(Material.AIR);
 				}
 			}
-			return;
-		}
-		
-		if (entity instanceof Skeleton) {
+			break;
+		case SKELETON:
 			for (ItemStack drop : event.getDrops()) {
 				if (drop.getType() == Material.ARROW) {
 					drop.setType(Material.AIR);
 				}
 			}
 			
-			event.getDrops().add(new ItemStack(Material.ARROW, NumberUtils.randInt(3, 5)));
+			event.getDrops().add(new ItemStack(Material.ARROW, NumberUtils.randomIntBetween(3, 5)));
+			break;
+		default:
+			break;
 		}
 	}
 }
