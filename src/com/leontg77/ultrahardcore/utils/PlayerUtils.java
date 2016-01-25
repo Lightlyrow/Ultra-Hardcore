@@ -1,8 +1,8 @@
 package com.leontg77.ultrahardcore.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -152,10 +152,10 @@ public class PlayerUtils {
 	 * @param player the player giving to.
 	 * @param stack the item giving.
 	 */
-	public static void giveItem(Player player, ItemStack stack) {
+	public static void giveItem(Player player, ItemStack... stacks) {
 		PlayerInventory inv = player.getInventory();
 		
-		HashMap<Integer, ItemStack> leftOvers = inv.addItem(stack);
+		Map<Integer, ItemStack> leftOvers = inv.addItem(stacks);
 		
 		if (leftOvers.isEmpty()) {
 			return;
