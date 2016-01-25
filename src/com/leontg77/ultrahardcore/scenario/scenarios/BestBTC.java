@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -29,7 +30,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BestBTC extends Scenario implements Listener, CommandExecutor {
-	private static HashSet<String> list = new HashSet<String>();
+	private final Set<String> list = new HashSet<String>();
 	private BukkitRunnable task = null;
 
 	public BestBTC() {
@@ -41,14 +42,21 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 	
 	@Override
 	public void onDisable() {
+		if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+			task.cancel();
+		}
+		
 		list.clear();
-		task.cancel();
 		task = null;
 	}
 	
 	@Override
 	public void onEnable() {
-		list.clear();
+		if (!State.isState(State.INGAME) || Timers.pvp > 0) {
+			return;
+		}
+		
+		on(new PvPEnableEvent());
 	}
 	
 	@EventHandler
@@ -81,16 +89,20 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 	 * 
 	 * @return The list.
 	 */
-	public static Set<String> getList() {
+	public Set<String> getList() {
 		return list;
 	}
 	
 	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+	public void on(BlockBreakEvent event) {
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
 
 		if (list.contains(player.getName())) {
+			return;
+		}
+		
+		if (Timers.time < 20) {
 			return;
 		}
 
@@ -103,18 +115,14 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 	}
 
 	@EventHandler(ignoreCancelled = true)
-	public void onPlayerMove(PlayerMoveEvent event) {
-		Player player = event.getPlayer();
+	public void on(PlayerMoveEvent event) {
+		final Player player = event.getPlayer();
 
 		if (event.getTo().getBlockY() <= 50) {
 			return;
 		}
 
 		if (!list.contains(player.getName())) {
-			return;
-		}
-		
-		if (Timers.time < 20) {
 			return;
 		}
 		

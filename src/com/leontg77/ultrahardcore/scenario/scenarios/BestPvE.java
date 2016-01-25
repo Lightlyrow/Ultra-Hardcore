@@ -18,6 +18,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
@@ -30,7 +31,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BestPvE extends Scenario implements Listener, CommandExecutor {
-	private static HashSet<String> list = new HashSet<String>();
+	private final Set<String> list = new HashSet<String>();
 	private BukkitRunnable task;
 
 	public BestPvE() {
@@ -49,7 +50,17 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 	
 	@Override
 	public void onEnable() {
-		list.clear();
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+
+		on(new GameStartEvent());
+		
+		if (Timers.timeSeconds < 20) {
+			return;
+		}
+		
+		on(new FinalHealEvent());
 	}
 	
 	@EventHandler
@@ -85,13 +96,13 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 	 * 
 	 * @return The list.
 	 */
-	public static Set<String> getList() {
+	public Set<String> getList() {
 		return list;
 	}
 	
 	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerDeath(PlayerDeathEvent event) {
-		Player killer = event.getEntity().getKiller();
+	public void on(PlayerDeathEvent event) {
+		final Player killer = event.getEntity().getKiller();
 		
 		if (killer == null) {
 			return;
@@ -113,7 +124,7 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 	}
 
 	@EventHandler(ignoreCancelled = true)
-	public void onEntityDamage(EntityDamageEvent event) {
+	public void on(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
@@ -122,7 +133,7 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 			return;
 		}
 
-		Player player = (Player) event.getEntity();
+		final Player player = (Player) event.getEntity();
 
 		if (!list.contains(player.getName())) {
 			return;
