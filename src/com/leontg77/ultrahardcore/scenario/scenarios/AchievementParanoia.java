@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -17,7 +18,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class AchievementParanoia extends Scenario implements Listener {
-	private static final String PREFIX = "§7[§cAchParanoia§7] §a";
+	private static final String PREFIX = "§c§lAchParanoia §8» §7";
 
 	public AchievementParanoia() {
 		super("AchievementParanoia", "Achievements show up in chat like in vanilla minecraft but at the end off each achievement it shows the coordinates of the player who earned that achievement");
@@ -35,8 +36,12 @@ public class AchievementParanoia extends Scenario implements Listener {
 			return;
 		}
 		
-		Achievement ach = event.getAchievement();
-		Player player = event.getPlayer();
+		final Achievement ach = event.getAchievement();
+		final Player player = event.getPlayer();
+	
+		if (!GameUtils.getGamePlayers().contains(player)) {
+			return;
+		}
 
 		PlayerUtils.broadcast(PREFIX + player.getName() + "§f has earned §e" + achievementName(ach) + "§f at " + locToString(player.getLocation()));
 	}
