@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -28,9 +29,13 @@ public class BloodDiamonds extends Scenario implements Listener {
 	public void onEnable() {}
 
 	@EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+    public void on(BlockBreakEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
     	
     	if (block.getType() != Material.DIAMOND_ORE) {
     		return;
