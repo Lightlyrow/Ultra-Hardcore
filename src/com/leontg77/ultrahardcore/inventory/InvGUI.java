@@ -83,11 +83,14 @@ public class InvGUI {
 		manager.registerEvents(topStats, Main.plugin);
 		manager.registerEvents(stats, Main.plugin);
 		manager.registerEvents(hof, Main.plugin);
+		manager.registerEvents(config, Main.plugin);
 		
 		gameInfo.updateStaff();
 		gameInfo.update();
 		
 		topStats.update();
+		
+		config.update();
 		
 		for (String host : settings.getHOF().getKeys(false)) {
 			getHOF().update(host);
