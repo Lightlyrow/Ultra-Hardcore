@@ -1,6 +1,8 @@
-package com.leontg77.ultrahardcore.events;
+package com.leontg77.ultrahardcore.events.uhc;
 
 import org.bukkit.event.HandlerList;
+
+import com.leontg77.ultrahardcore.events.UHCEvent;
 
 /**
  * Final heal event.

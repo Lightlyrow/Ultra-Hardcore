@@ -1,17 +1,19 @@
-package com.leontg77.ultrahardcore.events;
+package com.leontg77.ultrahardcore.events.uhc;
 
 import org.bukkit.event.HandlerList;
 
+import com.leontg77.ultrahardcore.events.UHCEvent;
+
 /**
- * Meetup event.
+ * Game start event.
  * <p>
- * Called when meetup occurs.
+ * Called when the game starts.
  * 
  * @author LeonTG77
  */
-public class MeetupEvent extends UHCEvent {
+public class GameStartEvent extends UHCEvent {
    
-    public MeetupEvent() {}
+    public GameStartEvent() {}
    
     private static final HandlerList handlers = new HandlerList();
      
