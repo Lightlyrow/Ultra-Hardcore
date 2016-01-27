@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.ImmutableList;
@@ -123,6 +124,10 @@ public class SpreadCommand extends UHCCommand {
 				} else {
 					solo++;
 				}
+				
+				for (OfflinePlayer teammate : teamMan.getPlayers(loopTeam)) {
+					teammate.setWhitelisted(true);
+				}
 			}
 			
 			if (!teamSpread) {
@@ -171,6 +176,7 @@ public class SpreadCommand extends UHCCommand {
 			}
 
 			PlayerUtils.broadcast(Main.PREFIX + "Scattering §a" + target.getName() + "§7...");
+			target.setWhitelisted(true);
 
 			if (teamSpread) {
 				Team team = teamMan.getTeam(target);
@@ -179,6 +185,20 @@ public class SpreadCommand extends UHCCommand {
 					for (OfflinePlayer teammate : teamMan.getPlayers(team)) {
 						if (teammate.getPlayer() == null) {
 							continue;
+						}
+						
+						if (teammate == target) {
+							continue;
+						}
+
+						if (State.isState(State.SCATTER)) {
+							for (PotionEffect effect : ScatterManager.FREEZE_EFFECTS) {
+								if (target.hasPotionEffect(effect.getType())) {
+									target.removePotionEffect(effect.getType());
+								}
+								
+								target.addPotionEffect(effect);
+							}
 						}
 						
 						PlayerUtils.broadcast(Main.PREFIX + "Scattered §a" + target.getName() + "§7.");
