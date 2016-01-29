@@ -1,5 +1,7 @@
 package com.leontg77.ultrahardcore.inventory;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -9,11 +11,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scoreboard.DisplaySlot;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 public class Config extends InvGUI implements Listener {
@@ -32,50 +32,41 @@ public class Config extends InvGUI implements Listener {
 	 * Update the top stats inventory.
 	 */
 	public void update() {
-		Game game = Game.getInstance();
-
 		ItemStack absorption = new ItemStack(Material.GOLDEN_APPLE);
 		ItemMeta absorptionMeta = absorption.getItemMeta();
-		absorptionMeta.setDisplayName((game.absorption() ? "§a" : "§c")
-				+ "Absorption");
+		absorptionMeta.setDisplayName((game.absorption() ? "§a" : "§c") + "Absorption");
+		absorptionMeta.setLore(Arrays.asList(" ", "§8» §7Game configuration", " "));
 		absorption.setItemMeta(absorptionMeta);
 
 		ItemStack heads = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 		ItemMeta headsMeta = heads.getItemMeta();
-		headsMeta.setDisplayName((game.goldenHeads() ? "§a" : "§c")
-				+ "Golden Heads");
+		headsMeta.setDisplayName((game.goldenHeads() ? "§a" : "§c") + "Golden Heads");
 		heads.setItemMeta(headsMeta);
 		
-		ItemStack notchApples = new ItemStack(Material.GOLDEN_APPLE, 1,
-				(short) 1);
+		ItemStack notchApples = new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1);
 		ItemMeta notchMeta = notchApples.getItemMeta();
-		notchMeta.setDisplayName((game.notchApples() ? "§a" : "§c")
-				+ "Notch Apples");
+		notchMeta.setDisplayName((game.notchApples() ? "§a" : "§c") + "Notch Apples");
 		notchApples.setItemMeta(notchMeta);
 
 		ItemStack hearts = new ItemStack(Material.INK_SACK, 1, (short) 1);
 		ItemMeta heartsMeta = hearts.getItemMeta();
-		heartsMeta.setDisplayName((game.heartsOnTab() ? "§a" : "§c")
-				+ "Hearts on tab");
+		heartsMeta.setDisplayName((game.heartsOnTab() ? "§a" : "§c") + "Hearts on tab");
 		hearts.setItemMeta(heartsMeta);
 
 		ItemStack hardcore = new ItemStack(Material.REDSTONE);
 		ItemMeta hardcoreMeta = hardcore.getItemMeta();
-		hardcoreMeta.setDisplayName((game.hardcoreHearts() ? "§a" : "§c")
-				+ "Hardcore Hearts");
+		hardcoreMeta.setDisplayName((game.hardcoreHearts() ? "§a" : "§c") + "Hardcore Hearts");
 		hardcore.setItemMeta(hardcoreMeta);
 
 		ItemStack tab = new ItemStack(Material.SIGN);
 		ItemMeta tabMeta = tab.getItemMeta();
-		tabMeta.setDisplayName((game.tabShowsHealthColor() ? "§a" : "§c")
-				+ "Tab health color");
+		tabMeta.setDisplayName((game.tabShowsHealthColor() ? "§a" : "§c") + "Tab health color");
 		tab.setItemMeta(tabMeta);
 
-		ItemStack rr = new ItemStack(Material.PAINTING);
-		ItemMeta rrMeta = rr.getItemMeta();
-		rrMeta.setDisplayName((game.isRecordedRound() ? "§a" : "§c")
-				+ "Recorded Round");
-		rr.setItemMeta(rrMeta);
+		ItemStack board = new ItemStack(Material.PAINTING);
+		ItemMeta rrMeta = board.getItemMeta();
+		rrMeta.setDisplayName((game.isRecordedRound() ? "§a" : "§c") + "Recorded Round");
+		board.setItemMeta(rrMeta);
 
 		ItemStack nether = new ItemStack(Material.NETHER_STALK);
 		ItemMeta netherMeta = nether.getItemMeta();
@@ -89,15 +80,13 @@ public class Config extends InvGUI implements Listener {
 
 		ItemStack strip = new ItemStack(Material.DIAMOND_PICKAXE);
 		ItemMeta stripMeta = strip.getItemMeta();
-		stripMeta.setDisplayName((game.antiStripmine() ? "§a" : "§c")
-				+ "Anti Stripmine");
+		stripMeta.setDisplayName((game.antiStripmine() ? "§a" : "§c") + "Anti Stripmine");
 		stripMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		strip.setItemMeta(stripMeta);
 
 		ItemStack death = new ItemStack(Material.BLAZE_ROD);
 		ItemMeta deathMeta = death.getItemMeta();
-		deathMeta.setDisplayName((game.deathLightning() ? "§a" : "§c")
-				+ "Death Lightning");
+		deathMeta.setDisplayName((game.deathLightning() ? "§a" : "§c") + "Death Lightning");
 		death.setItemMeta(deathMeta);
 
 		ItemStack horse = new ItemStack(Material.SADDLE);
@@ -107,26 +96,22 @@ public class Config extends InvGUI implements Listener {
 
 		ItemStack armor = new ItemStack(Material.IRON_BARDING);
 		ItemMeta armorMeta = armor.getItemMeta();
-		armorMeta.setDisplayName((game.horseArmor() ? "§a" : "§c")
-				+ "Horse Armor");
+		armorMeta.setDisplayName((game.horseArmor() ? "§a" : "§c") + "Horse Armor");
 		armor.setItemMeta(armorMeta);
 
 		ItemStack healing = new ItemStack(Material.BREAD);
 		ItemMeta healingMeta = healing.getItemMeta();
-		healingMeta.setDisplayName((game.horseHealing() ? "§a" : "§c")
-				+ "Horse Healing");
+		healingMeta.setDisplayName((game.horseHealing() ? "§a" : "§c") + "Horse Healing");
 		healing.setItemMeta(healingMeta);
 
 		ItemStack ghast = new ItemStack(Material.GHAST_TEAR);
 		ItemMeta ghastMeta = ghast.getItemMeta();
-		ghastMeta.setDisplayName((game.ghastDropGold() ? "§a" : "§c")
-				+ "Ghast drop gold");
+		ghastMeta.setDisplayName(null);
 		ghast.setItemMeta(ghastMeta);
 
 		ItemStack melon = new ItemStack(Material.SPECKLED_MELON);
 		ItemMeta melonMeta = melon.getItemMeta();
-		melonMeta.setDisplayName((game.goldenMelonNeedsIngots() ? "§a" : "§c")
-				+ "Golden Melon needs ingots");
+		melonMeta.setDisplayName(null);
 		melon.setItemMeta(melonMeta);
 
 		ItemStack shears = new ItemStack(Material.SHEARS);
@@ -136,14 +121,12 @@ public class Config extends InvGUI implements Listener {
 
 		ItemStack terrain = new ItemStack(Material.STONE, 1, (short) 1);
 		ItemMeta terrainMeta = terrain.getItemMeta();
-		terrainMeta.setDisplayName((game.newStone() ? "§a" : "§c")
-				+ "1.8 Stone");
+		terrainMeta.setDisplayName((game.newStone() ? "§a" : "§c") + "1.8 Stone");
 		terrain.setItemMeta(terrainMeta);
 
 		ItemStack bookshelves = new ItemStack(Material.BOOKSHELF);
 		ItemMeta bookMeta = bookshelves.getItemMeta();
-		bookMeta.setDisplayName((game.bookshelves() ? "§a" : "§c")
-				+ "Bookshelves");
+		bookMeta.setDisplayName((game.bookshelves() ? "§a" : "§c") + "Bookshelves");
 		bookshelves.setItemMeta(bookMeta);
 
 		ItemStack tier2 = new ItemStack(Material.GLOWSTONE_DUST);
@@ -163,28 +146,31 @@ public class Config extends InvGUI implements Listener {
 
 		ItemStack nerf = new ItemStack(Material.POTION, 1, (short) 8233);
 		ItemMeta nerfMeta = nerf.getItemMeta();
-		nerfMeta.setDisplayName((game.nerfedStrength() ? "§a" : "§c")
-				+ "Nerfed Strength");
+		nerfMeta.setDisplayName(null);
 		nerf.setItemMeta(nerfMeta);
 		
-
 		inv.setItem(0, absorption);
 		inv.setItem(1, heads);
-		inv.setItem(3, notchApples);
-		inv.setItem(5, hearts);
-		inv.setItem(6, hardcore);
-		inv.setItem(7, tab);
-		inv.setItem(8, rr);
+		inv.setItem(2, notchApples);
+		inv.setItem(3, shears);
+
+		inv.setItem(5, board);
+		inv.setItem(6, hearts);
+		inv.setItem(7, hardcore);
+		inv.setItem(8, tab);
+		
 		inv.setItem(18, nether);
 		inv.setItem(19, end);
+		
 		inv.setItem(21, strip);
 		inv.setItem(22, death);
+		
 		inv.setItem(24, horse);
 		inv.setItem(25, armor);
 		inv.setItem(26, healing);
+		
 		inv.setItem(43, ghast);
 		inv.setItem(44, melon);
-		inv.setItem(45, shears);
 		inv.setItem(46, terrain);
 		inv.setItem(47, bookshelves);
 		inv.setItem(50, tier2);
@@ -200,7 +186,6 @@ public class Config extends InvGUI implements Listener {
 			return;
 		}
 
-		BoardManager board = BoardManager.getInstance();
 		Game game = Game.getInstance();
 
 		Inventory inv = event.getInventory();
@@ -287,7 +272,6 @@ public class Config extends InvGUI implements Listener {
 						+ "Tab will now show % health.");
 				game.setHeartsOnTab(false);
 
-				board.tabHealth.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName("§c" + name);
@@ -296,8 +280,6 @@ public class Config extends InvGUI implements Listener {
 				PlayerUtils
 						.broadcast(Main.PREFIX + "Tab will now show hearts.");
 				game.setHeartsOnTab(true);
-
-				board.hearts.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
 				ItemMeta meta = item.getItemMeta();
 				meta.setDisplayName("§a" + name);
@@ -580,48 +562,6 @@ public class Config extends InvGUI implements Listener {
 			return;
 		}
 
-		if (name.equalsIgnoreCase("Ghast drop gold")) {
-			if (game.ghastDropGold()) {
-				PlayerUtils.broadcast(Main.PREFIX
-						+ "Ghasts will now drop ghast tears.");
-				game.setGhastDropGold(false);
-
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("§c" + name);
-				item.setItemMeta(meta);
-			} else {
-				PlayerUtils.broadcast(Main.PREFIX
-						+ "Ghasts will now drop gold ingots.");
-				game.setGhastDropGold(true);
-
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("§a" + name);
-				item.setItemMeta(meta);
-			}
-			return;
-		}
-
-		if (name.equalsIgnoreCase("Golden Melon needs ingots")) {
-			if (game.goldenMelonNeedsIngots()) {
-				PlayerUtils.broadcast(Main.PREFIX
-						+ "Golden Melons now require nuggets.");
-				game.setGoldenMelonNeedsIngots(false);
-
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("§c" + name);
-				item.setItemMeta(meta);
-			} else {
-				PlayerUtils.broadcast(Main.PREFIX
-						+ "Golden Melons now require ingots.");
-				game.setGoldenMelonNeedsIngots(true);
-
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("§a" + name);
-				item.setItemMeta(meta);
-			}
-			return;
-		}
-
 		if (name.equalsIgnoreCase("Tier 2")) {
 			if (game.tier2()) {
 				PlayerUtils
@@ -681,25 +621,6 @@ public class Config extends InvGUI implements Listener {
 				item.setItemMeta(meta);
 			}
 			return;
-		}
-
-		if (name.equalsIgnoreCase("Nerfed Strength")) {
-			if (game.nerfedStrength()) {
-				PlayerUtils.broadcast(Main.PREFIX
-						+ "Strength is no longer nerfed.");
-				game.setNerfedStrength(false);
-
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("§c" + name);
-				item.setItemMeta(meta);
-			} else {
-				PlayerUtils.broadcast(Main.PREFIX + "Strength is now nerfed.");
-				game.setNerfedStrength(true);
-
-				ItemMeta meta = item.getItemMeta();
-				meta.setDisplayName("§a" + name);
-				item.setItemMeta(meta);
-			}
 		}
 	}
 }
