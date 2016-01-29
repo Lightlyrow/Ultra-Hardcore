@@ -42,7 +42,7 @@ public class ScatterManager {
 	/**
 	 * List of all freeze effects.
 	 */
-	private static final Set<PotionEffect> FREEZE_EFFECTS = ImmutableSet.of(
+	public static final Set<PotionEffect> FREEZE_EFFECTS = ImmutableSet.of(
 			new PotionEffect(PotionEffectType.JUMP, EFFECT_TICKS, 128), 
 			new PotionEffect(PotionEffectType.BLINDNESS, EFFECT_TICKS, 6),
 			new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, EFFECT_TICKS, 6),
