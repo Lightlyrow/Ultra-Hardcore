@@ -29,7 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 
 import com.google.common.collect.ImmutableSet;
-import com.leontg77.ultrahardcore.events.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;

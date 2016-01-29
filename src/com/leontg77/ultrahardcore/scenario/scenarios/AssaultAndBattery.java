@@ -21,7 +21,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.GameStartEvent;
+import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.GameUtils;

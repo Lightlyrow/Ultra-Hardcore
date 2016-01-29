@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
-import com.leontg77.ultrahardcore.events.MeetupEvent;
+import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;

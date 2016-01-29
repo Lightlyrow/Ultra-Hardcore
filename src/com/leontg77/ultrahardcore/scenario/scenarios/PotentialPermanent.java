@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.events.FinalHealEvent;
+import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 

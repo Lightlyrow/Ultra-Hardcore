@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.events.GameStartEvent;
+import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 
 /**

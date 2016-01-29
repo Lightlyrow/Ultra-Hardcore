@@ -20,7 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timers;
-import com.leontg77.ultrahardcore.events.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
