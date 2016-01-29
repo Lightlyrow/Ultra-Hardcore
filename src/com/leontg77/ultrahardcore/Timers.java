@@ -27,10 +27,10 @@ import com.leontg77.ultrahardcore.Main.BorderShrink;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
-import com.leontg77.ultrahardcore.events.FinalHealEvent;
-import com.leontg77.ultrahardcore.events.GameStartEvent;
-import com.leontg77.ultrahardcore.events.MeetupEvent;
-import com.leontg77.ultrahardcore.events.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
+import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
+import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
@@ -41,6 +41,7 @@ import com.leontg77.ultrahardcore.scenario.scenarios.SlaveMarket;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.EntityUtils;
 import com.leontg77.ultrahardcore.utils.GameUtils;
+import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -273,10 +274,10 @@ public class Timers {
 					Kings kings = scen.getScenario(Kings.class);
 
 					if (kings.isEnabled() && kings.getKings().contains(online.getName())) {
-		        		online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 0)); 
-		            	online.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1726272000, 0)); 
-		            	online.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 1726272000, 0)); 
-		            	online.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1726272000, 0));
+		        		online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, NumberUtils.get999DaysInTicks(), 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, NumberUtils.get999DaysInTicks(), 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, NumberUtils.get999DaysInTicks(), 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, NumberUtils.get999DaysInTicks(), 0));
 					} else {
 						online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100));
 					}
