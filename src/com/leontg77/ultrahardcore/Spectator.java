@@ -383,14 +383,15 @@ public class Spectator {
 		 */
 		private static boolean isOre(Material ore) {
 			switch (ore) {
+			case GLOWING_REDSTONE_ORE:
 			case REDSTONE_ORE:
-			case COAL_ORE:
 			case DIAMOND_ORE:
 			case EMERALD_ORE:
-			case GOLD_ORE:
-			case IRON_ORE:
-			case LAPIS_ORE:
 			case QUARTZ_ORE:
+			case LAPIS_ORE:
+			case GOLD_ORE:
+			case COAL_ORE:
+			case IRON_ORE:
 				return true;
 			default:
 				return false;
