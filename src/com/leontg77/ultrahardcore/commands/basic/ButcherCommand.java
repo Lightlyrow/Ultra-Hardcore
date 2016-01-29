@@ -33,7 +33,13 @@ public class ButcherCommand extends UHCCommand {
 		if (args.length == 0) {
 			for (World world : GameUtils.getGameWorlds()) {
 	    		for (Entity mob : world.getEntities()) {
-					if (!EntityUtils.isButcherable(mob.getType())) {
+	    			EntityType type = mob.getType();
+	    			
+	    			if (type == EntityType.DROPPED_ITEM || type == EntityType.EXPERIENCE_ORB) {
+	    				continue;
+	    			}
+	    			
+					if (!EntityUtils.isButcherable(type)) {
 						continue;
 					}
 					
