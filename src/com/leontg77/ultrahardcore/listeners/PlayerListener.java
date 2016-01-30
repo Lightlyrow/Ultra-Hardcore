@@ -229,15 +229,9 @@ public class PlayerListener implements Listener {
 		if (item.getType() == Material.SPECKLED_MELON) {
 			if (recipe instanceof ShapedRecipe) {
 				ShapedRecipe shaped = (ShapedRecipe) event.getRecipe();
-				
-				if (game.goldenMelonNeedsIngots()) {
-					if (shaped.getIngredientMap().values().contains(new ItemStack (Material.GOLD_NUGGET))) {
-						inv.setResult(new ItemStack(Material.AIR));
-					}
-				} else {
-					if (shaped.getIngredientMap().values().contains(new ItemStack (Material.GOLD_INGOT))) {
-						inv.setResult(new ItemStack(Material.AIR));
-					}
+
+				if (shaped.getIngredientMap().values().contains(new ItemStack (Material.GOLD_NUGGET))) {
+					inv.setResult(new ItemStack(Material.AIR));
 				}
 			}
 			return;
