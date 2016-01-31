@@ -24,10 +24,10 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.feature.toggleable.DeathLightningModule;
+import com.leontg77.ultrahardcore.feature.toggleable.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
-import com.leontg77.ultrahardcore.module.modules.DeathLightningModule;
-import com.leontg77.ultrahardcore.module.modules.GoldenHeadModule;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -82,7 +82,7 @@ public class DeathListener implements Listener {
 
 	    if (game.goldenHeads()) {
 	    	// for now, until I add a listener register for it.
-			new GoldenHeadModule().on(event);
+			new GoldenHeadsFeature().on(event);
 	    }
 
 		final Player killer = player.getKiller();
