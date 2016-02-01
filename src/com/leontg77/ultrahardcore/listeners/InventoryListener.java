@@ -58,7 +58,7 @@ public class InventoryListener implements Listener {
                     event.setCancelled(true);
                 }
                 
-                if (game.ghastDropGold() && event.getOldCursor().getType() == Material.GHAST_TEAR) {
+                if (event.getOldCursor().getType() == Material.GHAST_TEAR) {
                     event.getWhoClicked().sendMessage(Main.PREFIX + "Regen potions are disabled.");
                     event.setCursor(new ItemStack(Material.GOLD_INGOT, event.getOldCursor().getAmount()));
                     event.setCancelled(true);
@@ -86,7 +86,7 @@ public class InventoryListener implements Listener {
             event.setCancelled(true);
         }
         
-        if (game.ghastDropGold() && event.getItem().getType() == Material.GHAST_TEAR) {
+        if (event.getItem().getType() == Material.GHAST_TEAR) {
             event.setCancelled(true);
         }
         
@@ -182,7 +182,7 @@ public class InventoryListener implements Listener {
                     event.setCancelled(true);
                 }
                 
-                if (game.ghastDropGold() && relevant.get().getType() == Material.GHAST_TEAR) {
+                if (relevant.get().getType() == Material.GHAST_TEAR) {
                     event.getWhoClicked().sendMessage(Main.PREFIX + "Regen potions are disabled.");
                     event.setCurrentItem(new ItemStack(Material.GOLD_INGOT, relevant.get().getAmount()));
                     event.setCancelled(true);
