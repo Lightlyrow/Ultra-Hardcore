@@ -33,6 +33,40 @@ public class PermissionsManager {
 
 		PermissionAttachment perm = permissions.get(player.getName());
 		
+		if (!User.fileExist(player.getUniqueId())) {
+			perm.setPermission("uhc.border", true);
+			perm.setPermission("uhc.stats", true);
+			perm.setPermission("uhc.top", true);
+			perm.setPermission("uhc.team", true);
+			perm.setPermission("uhc.msg", true);
+			perm.setPermission("uhc.reply", true);
+			perm.setPermission("uhc.tl", true);
+			perm.setPermission("uhc.pm", true);
+			perm.setPermission("uhc.pmores", true);
+			perm.setPermission("uhc.health", true);
+			perm.setPermission("uhc.ms", true);
+			perm.setPermission("uhc.tps", true);
+			perm.setPermission("uhc.uhc", true);
+			perm.setPermission("uhc.hof", true);
+			perm.setPermission("uhc.helpop", true);
+			perm.setPermission("uhc.matchpost", true);
+			perm.setPermission("uhc.scenario", true);
+			perm.setPermission("uhc.ignore", true);
+			perm.setPermission("uhc.timeleft", true);
+			perm.setPermission("uhc.list", true);
+			perm.setPermission("uhc.arena", true);
+			perm.setPermission("uhc.hotbar", true);
+			
+			// spectator perms, they can only use them if they're spectating.
+			perm.setPermission("uhc.invsee", true);
+			perm.setPermission("uhc.near", true);
+			perm.setPermission("uhc.specchat", true);
+			perm.setPermission("uhc.speed", true);
+			perm.setPermission("uhc.tp", true);
+			perm.setPermission("uhc.back", true);
+			return;
+        }
+		
 		User user = User.get(player);
 		Rank rank = user.getRank();
 		
