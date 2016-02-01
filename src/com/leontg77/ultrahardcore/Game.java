@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
 
 import com.leontg77.ultrahardcore.Main.BorderShrink;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
@@ -624,34 +625,12 @@ public class Game {
 		InvGUI.getGameInfo().update();
 	}
 
-	public boolean ghastDropGold() {
-		return settings.getConfig().getBoolean("feature.ghastdrops.enabled", true);
-	}
-	
-	public void setGhastDropGold(boolean enable) {
-		settings.getConfig().set("feature.ghastdrops.enabled", enable);
-		settings.saveConfig();
-		
-		InvGUI.getGameInfo().update();
-	}
-
 	public boolean strength() {
 		return settings.getConfig().getBoolean("feature.strength.enabled", true);
 	}
 	
 	public void setStrength(boolean enable) {
 		settings.getConfig().set("feature.strength.enabled", enable);
-		settings.saveConfig();
-		
-		InvGUI.getGameInfo().update();
-	}
-
-	public boolean nerfedStrength() {
-		return settings.getConfig().getBoolean("feature.strength.nerfed", true);
-	}
-	
-	public void setNerfedStrength(boolean enable) {
-		settings.getConfig().set("feature.strength.nerfed", enable);
 		settings.saveConfig();
 		
 		InvGUI.getGameInfo().update();
@@ -670,17 +649,6 @@ public class Game {
 		for (Player online : PlayerUtils.getPlayers()) {
 			online.setPlayerListName(null);
 		}
-	}
-
-	public boolean goldenMelonNeedsIngots() {
-		return settings.getConfig().getBoolean("feature.goldenMelonNeedsIngots.enabled", true);
-	}
-	
-	public void setGoldenMelonNeedsIngots(boolean enable) {
-		settings.getConfig().set("feature.goldenMelonNeedsIngots.enabled", enable);
-		settings.saveConfig();
-		
-		InvGUI.getGameInfo().update();
 	}
 	
 	public void setTier2(boolean enable) {
@@ -743,6 +711,14 @@ public class Game {
 		settings.saveConfig();
 		
 		InvGUI.getGameInfo().update();
+		
+		BoardManager board = BoardManager.getInstance();
+	
+		if (enable) {
+			board.tabHealth.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+		} else {
+			board.hearts.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+		}
 	}
 
 	public boolean heartsOnTab() {
@@ -780,5 +756,77 @@ public class Game {
 
 	public boolean bookshelves() {
 		return settings.getConfig().getBoolean("feature.bookshelves.enabled", true);
+	}
+
+	public void setAnvils(boolean enable) {
+		settings.getConfig().set("feature.anvils.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean anvils() {
+		return settings.getConfig().getBoolean("feature.anvils.enabled", true);
+	}
+
+	public void setTrapping(boolean enable) {
+		settings.getConfig().set("feature.trapping.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean trapping() {
+		return settings.getConfig().getBoolean("feature.trapping.enabled", true);
+	}
+
+	public void setCamping(boolean enable) {
+		settings.getConfig().set("feature.camping.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean camping() {
+		return settings.getConfig().getBoolean("feature.camping.enabled", true);
+	}
+
+	public void setGeneralXPNerf(boolean enable) {
+		settings.getConfig().set("feature.generalXPNerf.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean generalXPNerf() {
+		return settings.getConfig().getBoolean("feature.generalXPNerf.enabled", true);
+	}
+
+	public void setQuartzXPNerf(boolean enable) {
+		settings.getConfig().set("feature.quartzXPNerf.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean quartzXPNerf() {
+		return settings.getConfig().getBoolean("feature.quartzXPNerf.enabled", true);
+	}
+
+	public void setEnchantPreview(boolean enable) {
+		settings.getConfig().set("feature.enchantPreview.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean enchantPreview() {
+		return settings.getConfig().getBoolean("feature.enchantPreview.enabled", true);
+	}
+
+	public void setOreLimiter(boolean enable) {
+		settings.getConfig().set("feature.oreLimiter.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean oreLimiter() {
+		return settings.getConfig().getBoolean("feature.oreLimiter.enabled", true);
+	}
+
+	public void setSidebarReset(boolean enable) {
+		settings.getConfig().set("feature.sidebarReset.enabled", enable);
+		settings.saveConfig();
+	}
+
+	public boolean sidebarReset() {
+		return settings.getConfig().getBoolean("feature.sidebarReset.enabled", true);
 	}
 }
