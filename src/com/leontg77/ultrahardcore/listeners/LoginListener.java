@@ -4,7 +4,6 @@ import static com.leontg77.ultrahardcore.Main.plugin;
 
 import java.io.File;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -43,14 +42,14 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class LoginListener implements Listener {
-	private Game game = Game.getInstance();
+	private final Game game = Game.getInstance();
 	
 	@EventHandler
 	public void on(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		
-		Settings settings = Settings.getInstance();
-		Spectator spec = Spectator.getInstance();
+		final Settings settings = Settings.getInstance();
+		final Spectator spec = Spectator.getInstance();
 		
 		// update names (name changes)
 		for (String path : settings.getHOF().getKeys(false)) {
@@ -59,23 +58,16 @@ public class LoginListener implements Listener {
 			
 			if (confUUID.equals(player.getUniqueId().toString()) && !confName.equals(player.getName())) {
 				settings.getHOF().set(path + ".name", player.getName());
+				settings.saveHOF();
 			}
 		}
 		
-		settings.saveHOF();
+		final User user = User.get(player);
+		final Date date = new Date();
 		
-		User user = User.get(player);
-		user.getFile().set("username", player.getName());
-		user.getFile().set("uuid", player.getUniqueId().toString());
 		user.getFile().set("ip", player.getAddress().getAddress().getHostAddress());
-		
-		if (!player.hasPermission("uhc.border")) {
-			PermissionsManager.addPermissions(player);
-        }
-		
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-		Date date = new Date();
-		
+		user.getFile().set("uuid", player.getUniqueId().toString());
+		user.getFile().set("username", player.getName());
 		user.getFile().set("lastlogin", date.getTime());
 		user.saveFile();
 		
@@ -103,29 +95,29 @@ public class LoginListener implements Listener {
 				
 				spec.enableSpecmode(player);
 			} else {
-				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName() + " §7joined.");
+				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName());
 				
 				if (user.isNew()) {
-					File f = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+					File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 					
-					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! §8[§a#" + NumberUtils.formatInt(f.listFiles().length) + "§8]");
+					PlayerUtils.broadcast(Main.PREFIX + "Welcome §6" + player.getName() + " §7to the server! §8[§a#" + NumberUtils.formatInt(folder.listFiles().length) + "§8]");
 				}
 			}
 		}
 		
-		ScatterManager scatter = ScatterManager.getInstance();
+		final ScatterManager scatter = ScatterManager.getInstance();
 		
 		if (scatter.needsLateScatter(player) && !scatter.isScattering()) {
-			if (State.isState(State.SCATTER)) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, 128));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1726272000, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 1726272000, 10));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1726272000, 6));
-				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1726272000, 2));
+			if (State.isState(State.INGAME)) {
+				for (PotionEffect effect : ScatterManager.FREEZE_EFFECTS) {
+					if (player.hasPotionEffect(effect.getType())) {
+						player.removePotionEffect(effect.getType());
+					}
+					
+					player.addPotionEffect(effect);
+				}
 			}
 			
-
 			PlayerUtils.broadcast(Main.PREFIX + "- §a" + player.getName() + " §7scheduled scatter.");
 			scatter.handleLateScatter(player);
 		}
@@ -171,15 +163,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
-		
-		if (User.fileExist(player.getUniqueId())) {
-			PermissionsManager.addPermissions(player);
-        }
-		
-		if (player.getName().startsWith("Mr") && player.getName().endsWith("Bar")) {
-			event.disallow(Result.KICK_BANNED, "§8» §7No Mr####Bar names are allowed here, sorry. §8«");
-			return;
-		}
+		PermissionsManager.addPermissions(player);
 		
 		if (event.getResult() == Result.KICK_BANNED) {
 			BanList name = Bukkit.getBanList(Type.NAME);
@@ -187,7 +171,26 @@ public class LoginListener implements Listener {
 			
 			String adress = event.getAddress().getHostAddress();
 			
-			if (name.getBanEntry(player.getName()) != null) {
+			if (ip.getBanEntry(adress) != null) {
+				if (player.hasPermission("uhc.staff")) {
+					ip.pardon(adress);
+					event.allow();
+					return;
+				}
+
+				BanEntry ban = ip.getBanEntry(adress);
+				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
+				
+				event.setKickMessage(
+				"§8» §7You have been §4IP banned §7from §6Arctic UHC §8«" +
+				"\n" + 
+				"\n§cReason §8» §7" + ban.getReason() +
+				"\n§cBanned by §8» §7" + ban.getSource() + 
+				"\n" +
+				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
+				);
+			}
+			else if (name.getBanEntry(player.getName()) != null) {
 				if (player.hasPermission("uhc.staff")) {
 					name.pardon(player.getName());
 					event.allow();
@@ -203,25 +206,6 @@ public class LoginListener implements Listener {
 				"\n§cReason §8» §7" + ban.getReason() +
 				"\n§cBanned by §8» §7" + ban.getSource() + (ban.getExpiration() == null ? "" : "" +
 				"\n§cExpires in §8» §7" + DateUtils.formatDateDiff(ban.getExpiration().getTime())) +
-				"\n" +
-				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
-				);
-			}
-			else if (ip.getBanEntry(adress) != null) {
-				if (player.hasPermission("uhc.staff")) {
-					ip.pardon(adress);
-					event.allow();
-					return;
-				}
-
-				BanEntry ban = ip.getBanEntry(adress);
-				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
-				
-				event.setKickMessage(
-				"§8» §7You have been §4IP banned §7from §6Arctic UHC §8«" +
-				"\n" + 
-				"\n§cReason §8» §7" + ban.getReason() +
-				"\n§cBanned by §8» §7" + ban.getSource() + 
 				"\n" +
 				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
 				);
