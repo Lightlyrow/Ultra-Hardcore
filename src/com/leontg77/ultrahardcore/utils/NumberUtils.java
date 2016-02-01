@@ -13,11 +13,11 @@ import java.util.Random;
  * @author LeonTG77
  */
 public class NumberUtils {
-	public static final int TICKS_PER_SECOND = 20;
-	public static final int TICKS_PER_MIN = TICKS_PER_SECOND * 60;
-	public static final int TICKS_PER_HOUR = TICKS_PER_MIN * 60;
-	public static final int TICKS_PER_DAY = TICKS_PER_HOUR * 24;
-	public static final int TICKS_IN_999_DAYS = TICKS_PER_DAY * 999;
+	private static final int TICKS_PER_SECOND = 20;
+	private static final int TICKS_PER_MIN = TICKS_PER_SECOND * 60;
+	private static final int TICKS_PER_HOUR = TICKS_PER_MIN * 60;
+	private static final int TICKS_PER_DAY = TICKS_PER_HOUR * 24;
+	private static final int TICKS_IN_999_DAYS = TICKS_PER_DAY * 999;
 	
 	/**
 	 * Format the given double to a less lengthed one.
@@ -62,6 +62,11 @@ public class NumberUtils {
 		}
 	}
 	
+	/**
+	 * Get how many ticks there are in 999 days.
+	 * 
+	 * @return 999 days in ticks.
+	 */
 	public static int get999DaysInTicks() {
 		return TICKS_IN_999_DAYS;
 	}
