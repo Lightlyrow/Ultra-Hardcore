@@ -281,12 +281,12 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add("§8» §7Trapping: " + (game.theEnd() ? "§cNot allowed." : "§aAllowed."));
 			lore.add("§8» §7Camping: §aAllowed.");
 			lore.add(" ");
-			lore.add("§8» §7Strength: " + (game.strength() ? (game.nerfedStrength() ? "§cNerfed" : "§aVanilla") : "§cDisabled"));
+			lore.add("§8» §7Strength: " + (game.strength() ? "§cNerfed" : "§cDisabled"));
 			lore.add("§8» §7Tier 2: " + (game.tier2() ? "§aEnabled." : "§cDisabled."));
 			lore.add("§8» §7Splash: " + (game.splash() ? "§aEnabled." : "§cDisabled."));
 			lore.add(" ");
-			lore.add("§8» §7Golden Melon: §6" + (game.goldenMelonNeedsIngots() ? "Gold Ingots." : "Golden Nuggets."));
-			lore.add("§8» §7Ghast Drop: §6" + (game.ghastDropGold() ? "Gold Ingot." : "Ghast Tear."));
+			lore.add("§8» §7Golden Melon: §6Gold Ingots.");
+			lore.add("§8» §7Ghast Drop: §6Gold Ingot.");
 			lore.add("§8» §7Quartz XP: §c50% reduced.");
 			lore.add(" ");
 		}
