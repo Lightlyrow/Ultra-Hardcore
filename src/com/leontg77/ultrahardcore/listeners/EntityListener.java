@@ -125,7 +125,7 @@ public class EntityListener implements Listener {
     		}
     	}
     	
-    	if (entity instanceof Ghast && game.ghastDropGold()) {
+    	if (entity instanceof Ghast) {
     		for (ItemStack drop : event.getDrops()) {
     			if (drop.getType() == Material.GHAST_TEAR) {
     				drop.setType(Material.GOLD_INGOT);
@@ -255,22 +255,20 @@ public class EntityListener implements Listener {
         if (attacker instanceof Player) {
         	Player damager = (Player) attacker;
         	
-        	if (game.nerfedStrength()) {
-		        if (damager.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
-			        int amplifier = 0;
-			        
-		        	for (PotionEffect effect : damager.getActivePotionEffects()) {
-			            if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
-			                amplifier = effect.getAmplifier() + 1;
-			                break;
-			            }
-			        }
-
-			        double damageWOS = event.getDamage() / (1 + (amplifier * 1.3));
-			        double damageWNS = damageWOS + amplifier * 3;
-
-			        event.setDamage(damageWNS);
+        	if (damager.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
+		        int amplifier = 0;
+		        
+	        	for (PotionEffect effect : damager.getActivePotionEffects()) {
+		            if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
+		                amplifier = effect.getAmplifier() + 1;
+		                break;
+		            }
 		        }
+
+		        double damageWOS = event.getDamage() / (1 + (amplifier * 1.3));
+		        double damageWNS = damageWOS + amplifier * 3;
+
+		        event.setDamage(damageWNS);
 	        }
 		}
     }
