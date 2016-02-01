@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -17,7 +16,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Fireworks;
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Spectator;
@@ -53,35 +51,51 @@ public class EndCommand extends UHCCommand {
 			return false;
 		}
 		
-		int kills = parseInt(args[0], "kill amount");
+		int totalKills = parseInt(args[0], "kill amount");
 
+		final BoardManager board = BoardManager.getInstance();
+		TeamManager teams = TeamManager.getInstance();
+		
 		Spectator spec = Spectator.getInstance();
-		Game game = Game.getInstance();
 		
 		List<String> winners = new ArrayList<String>();
 		Settings settings = Settings.getInstance();
 		
-		PlayerUtils.broadcast(Main.PREFIX + "The game has ended and the winners are:");
+		PlayerUtils.broadcast(Main.PREFIX + "The game has ended!");
+		PlayerUtils.broadcast(" ");
+		PlayerUtils.broadcast(Main.PREFIX + "The winners are:");
 		
 		for (int i = 1; i < args.length; i++) {
-			OfflinePlayer winner = PlayerUtils.getOfflinePlayer(args[i]);
-			
-			User user = User.get(winner);
+			final OfflinePlayer winner = PlayerUtils.getOfflinePlayer(args[i]);
+			final User user = User.get(winner);
 
 			if (!game.isRecordedRound() && !game.isPrivateGame()) {
 				user.getFile().set("stats.wins", user.getFile().getInt("stats.wins") + 1);
 				user.saveFile();
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + args[i]);
-			winners.add(args[i]);
+			int pKills;
+
+			Integer savedKills = Main.kills.get(winner.getName());
+			int boardKills = board.getScore(winner.getName());
+			
+			if (savedKills == null || savedKills < boardKills) {
+				pKills = boardKills;
+			} else {
+				pKills = savedKills;
+			}
+			
+			String color = teams.getTeam(winner) == null ? "§7" : teams.getTeam(winner).getPrefix();
+			
+			PlayerUtils.broadcast(Main.PREFIX + "§8- " + color + winner.getName() + " §8(§a" + pKills + " §7 " + (pKills == 1 ? "kill" : "kills") + "§8)");
+			winners.add(winner.getName());
 		}
 		
+		PlayerUtils.broadcast(Main.PREFIX + "With a total of §a" + totalKills + "§7 kills.");
 		PlayerUtils.broadcast(" ");
-		PlayerUtils.broadcast(Main.PREFIX + "With §a" + kills + "§7 kills.");
-		PlayerUtils.broadcast(Main.PREFIX + "View the hall of fame with §a/hof");
+		PlayerUtils.broadcast(Main.PREFIX + "Thanks for playing and congrats to the winners!");
+		PlayerUtils.broadcast(Main.PREFIX + "Remember to check out the hall of fame by using §6/hof§7.");
 		
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		String host = GameUtils.getHostName(game.getHost());
 		
 		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -99,7 +113,7 @@ public class EndCommand extends UHCCommand {
 		if (!game.isRecordedRound()) {
 			settings.getHOF().set(host + ".games." + matchcount + ".date", dateFormat.format(date));
 			settings.getHOF().set(host + ".games." + matchcount + ".winners", winners);
-			settings.getHOF().set(host + ".games." + matchcount + ".kills", kills);
+			settings.getHOF().set(host + ".games." + matchcount + ".kills", totalKills);
 			settings.getHOF().set(host + ".games." + matchcount + ".teamsize", GameUtils.getTeamSize(true, false).trim());
 			settings.getHOF().set(host + ".games." + matchcount + ".scenarios", game.getScenarios());
 			settings.saveHOF();
@@ -151,7 +165,6 @@ public class EndCommand extends UHCCommand {
 		game.setMaxPlayers(150);
 		game.setTeamSize("No");
 		
-		TeamManager teams = TeamManager.getInstance();
 		teams.getSavedTeams().clear();
 		Team team = teams.getTeam("spec");
 		
@@ -165,8 +178,6 @@ public class EndCommand extends UHCCommand {
 
 		new BukkitRunnable() {
 			public void run() {
-				BoardManager board = BoardManager.getInstance();
-				
 				for (String entry : board.board.getEntries()) {
 					board.resetScore(entry);
 				}
