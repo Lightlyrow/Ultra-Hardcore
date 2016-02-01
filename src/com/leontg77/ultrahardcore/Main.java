@@ -93,7 +93,6 @@ public class Main extends JavaPlugin {
 	public static Recipe melonRecipe;
 	public static Recipe headRecipe;
 	
-	
 	@Override
 	public void onDisable() {
 		PluginDescriptionFile file = getDescription();
