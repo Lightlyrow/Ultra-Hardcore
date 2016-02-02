@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.feature.toggleable;
+package com.leontg77.ultrahardcore.feature.health;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,7 +20,11 @@ import com.leontg77.ultrahardcore.feature.ToggleableFeature;
 public class AbsorptionFeature extends ToggleableFeature implements Listener {
 
 	public AbsorptionFeature() {
-		super("Absorption", "Golden apples gives absorption when consumed.", new ItemStack(Material.GOLDEN_APPLE), 1);
+		super("Absorption", "Golden apples gives absorption when consumed.");
+		
+		icon.setType(Material.GOLDEN_APPLE);
+		
+		slot = 0;
 	}
 	
 	@EventHandler
