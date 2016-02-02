@@ -61,10 +61,10 @@ public class AntiStripmine {
 	}
 
 	public void queue(ChunkOreRemover remover) {
-		this.queue.add(remover);
+		queue.add(remover);
 		
-		if (this.tick == null) {
-			this.tick = Bukkit.getScheduler().runTask(Main.plugin, new Runnable() {
+		if (tick == null) {
+			tick = Bukkit.getScheduler().runTask(Main.plugin, new Runnable() {
 				public void run() {
 					long started = System.nanoTime();
 					
@@ -81,15 +81,15 @@ public class AntiStripmine {
 			});
 		}
 		
-		this.checked.add(remover);
+		checked.add(remover);
 	}
 
 	public int getDefaultMaxHeight() {
-		return this.maxHeight;
+		return maxHeight;
 	}
 
 	public int getDefaultRemovalFactor() {
-		return this.removalFactor;
+		return removalFactor;
 	}
 
 	public Material getDefaultOreReplacer() {
