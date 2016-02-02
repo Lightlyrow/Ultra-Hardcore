@@ -52,7 +52,7 @@ public class TempbanCommand extends UHCCommand {
 		final String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 2, args.length));
 
     	if (target == null) {
-			PlayerUtils.broadcast(Main.PREFIX + "§6" + args[0] + " §7has been temp-banned for §a" + message);
+			PlayerUtils.broadcast(Main.PREFIX + "§6" + args[0] + " §7has been temp-banned for §a" + message + "§7. §8(§a" + DateUtils.formatDateDiff(time) + "§8)");
 			
     		list.addBan(args[0], message, date, sender.getName());
 			board.resetScore(args[0]);
