@@ -17,13 +17,15 @@ import com.leontg77.ultrahardcore.Main;
  * @author LeonTG77
  */
 public class BoardManager {
-	private static BoardManager manager = new BoardManager();
+	private static final BoardManager INSTANCE = new BoardManager();
+	
+	private final Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 
-	public Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-	public Objective nameHealth = board.getObjective("nameHealth");
-	public Objective tabHealth = board.getObjective("tabHealth");
-	public Objective hearts = board.getObjective("hearts");
-	public Objective kills = board.getObjective("kills");
+	private Objective nameHealth = board.getObjective("nameHealth");
+	private Objective tabHealth = board.getObjective("tabHealth");
+	
+	private Objective hearts = board.getObjective("hearts");
+	private Objective kills = board.getObjective("kills");
 	
 	/**
 	 * Gets the instance of the class.
@@ -31,7 +33,52 @@ public class BoardManager {
 	 * @return the instance.
 	 */
 	public static BoardManager getInstance() {
-		return manager;
+		return INSTANCE;
+	}
+
+	/**
+	 * Get the main scoreboard.
+	 * 
+	 * @return The scoreboard.
+	 */
+	public Scoreboard getBoard() {
+		return board;
+	}
+
+	/**
+	 * Get the health below the name objective.
+	 * 
+	 * @return The objective.
+	 */
+	public Objective getNameHealObjective() {
+		return nameHealth;
+	}
+
+	/**
+	 * Get the percent health in tab objective.
+	 * 
+	 * @return The objective.
+	 */
+	public Objective getTabHealthObjective() {
+		return tabHealth;
+	}
+
+	/**
+	 * Get the tab hearts objective.
+	 * 
+	 * @return The objective.
+	 */
+	public Objective getTabHeartsObjective() {
+		return hearts;
+	}
+	
+	/**
+	 * Get the sidebar kills objective.
+	 * 
+	 * @return The objective.
+	 */
+	public Objective getKillsObjective() {
+		return kills;
 	}
 	
 	/**
@@ -57,9 +104,9 @@ public class BoardManager {
 		Game game = Game.getInstance();
 		
 		if (game.isRecordedRound()) {
-			kills.setDisplayName("§6" + game.getRRName());
+			kills.setDisplayName("Kills");
 		} else {
-			kills.setDisplayName("§4§lUHC §r§8- §7§o" + game.getHost() + "§r");
+			kills.setDisplayName("§4Arctic §8» §7§o" + game.getHost().substring(0, Math.min(game.getHost().length(), 13)) + "§r");
 		}
 		
 		if (!game.arenaBoard()) {
@@ -68,12 +115,6 @@ public class BoardManager {
 		
 		nameHealth.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		nameHealth.setDisplayName("§4♥");
-		
-		if (game.heartsOnTab()) {
-			hearts.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-		} else {
-			tabHealth.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-		}
 		
 		Main.plugin.getLogger().info("Scoreboards has been setup.");
 	}
