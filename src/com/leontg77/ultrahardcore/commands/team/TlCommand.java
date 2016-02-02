@@ -32,20 +32,24 @@ public class TlCommand extends UHCCommand {
 			throw new CommandException("Only players can display their location to their team.");
 		}
 		
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 
-		TeamManager teams = TeamManager.getInstance(); 
-		Spectator spec = Spectator.getInstance();
+		if (!GameUtils.getGamePlayers().contains(player)) {
+			throw new CommandException("You are not playing a match.");
+		}
 		
-		Team team = teams.getTeam(player);
+		final TeamManager teams = TeamManager.getInstance(); 
+		final Spectator spec = Spectator.getInstance();
+		
+		final Team team = teams.getTeam(player);
 		
 		if (team == null || spec.isSpectating(player)) { 
 			throw new CommandException("You are not on a team.");
 		} 
 		
-		Location loc = player.getLocation();
+		final Location loc = player.getLocation();
 		
-        teams.sendMessage(team, "§8[§9TeamLoc§8] §7" + player.getName() + " §8» §fx: " + loc.getBlockX() + ", y: " + loc.getBlockY() + ", z: " + loc.getBlockZ() + " (" + environment(loc.getWorld()) + ")");
+		teams.sendMessage(team, "§4§lTeam §8» §6§o" + player.getName() + "§8§o: §7X: §a" + loc.getBlockX() + " §7Y: §a" + loc.getBlockY() + " §7Z: §a" + loc.getBlockZ() + " §8(§c" + environment(loc.getWorld()) + "§8)");
 		return true;
 	}
 
@@ -61,10 +65,6 @@ public class TlCommand extends UHCCommand {
 	 * @return The string version of the type.
 	 */
 	private String environment(World world) {
-		if (!GameUtils.getGameWorlds().contains(world)) {
-			return "Unknown";
-		}
-		
 		switch (world.getEnvironment()) {
 		case NORMAL:
 			return "Overworld";

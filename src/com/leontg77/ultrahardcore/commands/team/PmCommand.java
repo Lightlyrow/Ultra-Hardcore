@@ -30,12 +30,12 @@ public class PmCommand extends UHCCommand {
 			throw new CommandException("Only players can talk in team chat.");
 		}
 		
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 		
-		Spectator spec = Spectator.getInstance();
-		TeamManager teams = TeamManager.getInstance();
+		final Spectator spec = Spectator.getInstance();
+		final TeamManager teams = TeamManager.getInstance();
 		
-		Team team = teams.getTeam(player);
+		final Team team = teams.getTeam(player);
 		
 		if (team == null || spec.isSpectating(player)) { 
 			throw new CommandException("You are not on a team.");
@@ -45,8 +45,8 @@ public class PmCommand extends UHCCommand {
 			return false;
 		}
 		
-		String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
-        teams.sendMessage(team, "§8[§9TeamChat§8] §7" + player.getName() + " §8» §f" + msg);
+		final String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
+        teams.sendMessage(team, "§4§lTeam §8» §6§o" + player.getName() + "§8§o: §f" + msg);
 		return true;
 	}
 
