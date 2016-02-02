@@ -85,7 +85,7 @@ public class Stats extends InvGUI implements Listener {
 		lore.add("§8» §7Damage taken: §a" + NumberUtils.formatInt(iDamage) + "%");
 		lore.add(" ");
 		lore.add("§8» §7Longest Shot: §a" + NumberUtils.formatDouble(user.getStatDouble(Stat.LONGESTSHOT)));
-		lore.add("§8» §7XP Earned: §a" + user.getStat(Stat.EXP));
+		lore.add("§8» §7XP Earned: §a" + user.getStat(Stat.LEVELS));
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);

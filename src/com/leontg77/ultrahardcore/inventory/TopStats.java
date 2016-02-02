@@ -166,13 +166,13 @@ public class TopStats extends InvGUI implements Listener {
 				int iDamage = Integer.parseInt(sDamage.substring(2));
 				
 				if (number == 10) {
-					lore.add("§6#" + number + "§8 | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
+					lore.add("§6#" + number + "§8 | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatInt(Integer.parseInt(NumberUtils.formatDouble(value)))));
 				} else {
 					if (number == 1) {
 						meta.setOwner(name);
 					}
 					
-					lore.add(" §6#" + number + "§8  | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
+					lore.add(" §6#" + number + "§8  | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatInt(Integer.parseInt(NumberUtils.formatDouble(value)))));
 				}
 
 				number++;
