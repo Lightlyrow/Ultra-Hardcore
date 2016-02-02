@@ -13,22 +13,22 @@ import com.comphenix.protocol.reflect.StructureModifier;
 import com.leontg77.ultrahardcore.Main;
 
 /**
- * Old Enchants class.
+ * Enchant Preview class.
  * <p> 
  * This disables the enchantment preview.
  *
  * @author LeonTG77
  */
-public class OldEnchants extends PacketAdapter {
+public class EnchantPreview extends PacketAdapter {
 	private static final ProtocolManager PROTOCOL_MANAGER = ProtocolLibrary.getProtocolManager();
-	private static final OldEnchants INSTANCE = new OldEnchants(Main.plugin);
+	private static final EnchantPreview INSTANCE = new EnchantPreview(Main.plugin);
 
 	/**
 	 * Constructor for OldEnchants.
 	 * 
 	 * @param plugin The main class of the plugin.
 	 */
-	public OldEnchants(Plugin plugin) {
+	public EnchantPreview(Plugin plugin) {
 		super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.CRAFT_PROGRESS_BAR);
 	}
 
