@@ -23,7 +23,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.ultrahardcore.Main.BorderShrink;
 import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
@@ -46,26 +45,26 @@ import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
- * The runnable class for all the runnables
+ * The timer class for all the runnables
  * <p>
  * This class contains methods for starting countdowns, timers, RR timer and RR countdown.
  * 
  * @author LeonTG77
  */
 public class Timers {
-	private static Timers instance = new Timers();
-	private Game game = Game.getInstance();
+	private static final Timers INSTANCE = new Timers();
+	private final Game game = Game.getInstance();
 
-	public static int taskSeconds;
-	public static int taskMinutes;
+	private int taskSeconds;
+	private int taskMinutes;
 
-	public static int time;
-	public static int pvp;
-	public static int meetup;
+	private int time;
+	private int pvp;
+	private int meetup;
 	
-	public static int timeSeconds;
-	public static int pvpSeconds;
-	public static int meetupSeconds;
+	private int timeInSeconds;
+	private int pvpInSeconds;
+	private int meetupInSeconds;
 	
 	/**
 	 * Get the instance of the class.
@@ -73,7 +72,91 @@ public class Timers {
 	 * @return The instance.
 	 */
 	public static Timers getInstance() {
-		return instance;
+		return INSTANCE;
+	}
+	
+	/**
+	 * Set the time since the game started.
+	 * 
+	 * @param time The new time.
+	 */
+	public void setTimeSinceStart(int time) {
+		this.timeInSeconds = (time * 60);
+		this.time = time;
+	}
+
+	/**
+	 * Get the time since the game started.
+	 * 
+	 * @return The time.
+	 */
+	public int getTimeSinceStart() {
+		return time;
+	}
+	
+	/**
+	 * Get the time in seconds since the game started.
+	 * 
+	 * @return The time in seconds.
+	 */
+	public int getTimeSinceStartInSeconds() {
+		return timeInSeconds;
+	}
+	
+	/**
+	 * Set the time until pvp enables.
+	 * 
+	 * @param pvp The new time.
+	 */
+	public void setPvP(int pvp) {
+		this.pvpInSeconds = (pvp * 60);
+		this.pvp = pvp;
+	}
+
+	/**
+	 * Get the time until pvp enables.
+	 * 
+	 * @return The time.
+	 */
+	public int getPvP() {
+		return pvp;
+	}
+	
+	/**
+	 * Get the time in seconds until pvp enables.
+	 * 
+	 * @return The time in seconds.
+	 */
+	public int getPvPInSeconds() {
+		return pvpInSeconds;
+	}
+	
+	/**
+	 * Set the time until meetup.
+	 * 
+	 * @param meetup The new time.
+	 */
+	public void setMeetup(int meetup) {
+		this.meetupInSeconds = (meetup * 60);
+		this.meetup = meetup;
+	}
+
+	/**
+	 * Get the time until meetup.
+	 * 
+	 * @return The time.
+	 */
+	public int getMeetup() {
+		return meetup;
+	}
+	
+	/**
+	 * Get the time in seconds until meetup.
+	 * 
+	 * @return The time in seconds.
+	 */
+	public int getMeetupInSeconds() {
+		return meetupInSeconds;
 	}
 	
 	/**
@@ -199,8 +282,8 @@ public class Timers {
 				pvp = game.getPvP();
 				meetup = game.getMeetup();
 				
-				pvpSeconds = (pvp * 60);
-				meetupSeconds = (meetup * 60);
+				pvpInSeconds = (pvp * 60);
+				meetupInSeconds = (meetup * 60);
 				
 				Bukkit.getServer().setIdleTimeout(10);
 				timer();
@@ -212,7 +295,7 @@ public class Timers {
 					teams.getSavedTeams().put(team.getName(), players);
 				}
 				
-				for (String entry : sb.board.getEntries()) {
+				for (String entry : sb.getBoard().getEntries()) {
 					if (entry.equals("§a§o@ArcticUHC") || sb.getScore(entry) > 0) {
 						sb.setScore(entry, sb.getScore(entry) - 9);
 					}
@@ -227,10 +310,6 @@ public class Timers {
 					world.setSpawnFlags(false, true);
 					world.setThundering(false);
 					world.setStorm(false);
-					
-					if (game.getBorderShrink() == BorderShrink.START) {
-						world.getWorldBorder().setSize(300, meetupSeconds);
-					}
 					
 					for (Entity mob : world.getEntities()) {
 						if (EntityUtils.isButcherable(mob.getType())) {
@@ -323,13 +402,7 @@ public class Timers {
 	 * Start the timers.
 	 */
 	public void timer() {
-		if (Bukkit.getScheduler().isQueued(taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(taskMinutes)) {
-			Bukkit.getScheduler().cancelTask(taskMinutes);
-		}
-		
-		if (Bukkit.getScheduler().isQueued(taskSeconds) || Bukkit.getScheduler().isCurrentlyRunning(taskSeconds)) {
-			Bukkit.getScheduler().cancelTask(taskSeconds);
-		}
+		stopTimers();
 		
 		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
@@ -364,15 +437,11 @@ public class Timers {
 					
 					for (World world : GameUtils.getGameWorlds()) {
 						world.setPVP(true);
-						
-						if (game.getBorderShrink() == BorderShrink.PVP) {
-							world.getWorldBorder().setSize(300, meetup * 60);
-						}
 					}
 					
 					game.setPregameBoard(false);
 					
-					for (String entry : sb.board.getEntries()) {
+					for (String entry : sb.getBoard().getEntries()) {
 						if (sb.getScore(entry) != 0 && !entry.equals("§8» §a§lPvE")) {
 							sb.resetScore(entry);
 						}
@@ -387,11 +456,6 @@ public class Timers {
 					PlayerUtils.broadcast(ChatColor.RED + " You may be do anything you want as long");
 					PlayerUtils.broadcast(ChatColor.RED + " as your inside 300x300 on the surface!");
 					PlayerUtils.broadcast(" ");
-					
-					if (game.getBorderShrink() == BorderShrink.MEETUP) {
-						PlayerUtils.broadcast(ChatColor.RED + " Borders will shrink in 2 minutes.");
-						PlayerUtils.broadcast(" ");
-					}
 					
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					
@@ -408,28 +472,6 @@ public class Timers {
 						if (!scen.getScenario(Astrophobia.class).isEnabled()) {
 							world.setGameRuleValue("doDaylightCycle", "false");
 							world.setTime(6000);
-						}
-					}
-				}
-				
-				if (game.getBorderShrink() == BorderShrink.MEETUP) {
-					if (meetup == -2) {
-						PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink to §6300x300 §7over §a10 §7minutes.");
-						
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
-						}
-
-						for (World world : GameUtils.getGameWorlds()) {
-							world.getWorldBorder().setSize(300, 600);
-						}
-					}
-					
-					if (meetup == -12) {
-						PlayerUtils.broadcast(Main.PREFIX + "Border has stopped shrinking.");
-						
-						for (Player online : PlayerUtils.getPlayers()) {
-							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 						}
 					}
 				}
@@ -467,14 +509,13 @@ public class Timers {
 		
 		taskSeconds = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			int finalHeal = 20;
-			int timeToBorder = 121;
 			
 			public void run() {
-				timeSeconds++;
-				pvpSeconds--;
-				meetupSeconds--;
+				timeInSeconds++;
+				pvpInSeconds--;
+				meetupInSeconds--;
 				
-				if (timeSeconds == 20) {
+				if (timeInSeconds == 20) {
 					PlayerUtils.broadcast(Main.PREFIX + "Final heal has been given.");
 					PlayerUtils.broadcast(Main.PREFIX + "Do not ask for another one.");
 					
@@ -488,12 +529,14 @@ public class Timers {
 						User user = User.get(online);
 						user.resetHealth();
 						user.resetFood();
+						
+						online.setFireTicks(0);
 					}
 					
 					Bukkit.getPluginManager().callEvent(new FinalHealEvent());
 				}
 				
-				if (timeSeconds < 20) {
+				if (timeInSeconds < 20) {
 					finalHeal--;
 					
 					if (TimerCommand.isRunning()) {
@@ -503,42 +546,29 @@ public class Timers {
 					for (Player online : PlayerUtils.getPlayers()) {
 						PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(finalHeal));
 					}
-				} else if (pvpSeconds > 0) {
+				} else if (pvpInSeconds > 0) {
 					if (TimerCommand.isRunning()) {
 						return;
 					}
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.sendAction(online, "§7PvP is enabled in §8» §a" + DateUtils.ticksToString(pvpSeconds));
+						PacketUtils.sendAction(online, "§7PvP is enabled in §8» §a" + DateUtils.ticksToString(pvpInSeconds));
 					}
-				} else if (meetupSeconds > 0) {
+				} else if (meetupInSeconds > 0) {
 					if (TimerCommand.isRunning()) {
 						return;
 					}
 					
 					for (Player online : PlayerUtils.getPlayers()) {
-						PacketUtils.sendAction(online, "§7Meetup is in §8» §a" + DateUtils.ticksToString(meetupSeconds));
+						PacketUtils.sendAction(online, "§7Meetup is in §8» §a" + DateUtils.ticksToString(meetupInSeconds));
 					}
 				} else {
-					if (!TimerCommand.isRunning()) {
-						for (Player online : PlayerUtils.getPlayers()) {
-							PacketUtils.sendAction(online, "§8» §6Meetup is now! §8«");
-						}
+					if (TimerCommand.isRunning()) {
+						return;
 					}
 					
-					timeToBorder--;
-					
-					switch (timeToBorder) {
-					case 60:
-					case 30:
-					case 10:
-					case 5:
-					case 4:
-					case 3:
-					case 2:
-					case 1:
-						PlayerUtils.broadcast(Main.PREFIX + "The border starts shrinking in §a" + DateUtils.advancedTicksToString(timeToBorder) + "§7.");
-						break;
+					for (Player online : PlayerUtils.getPlayers()) {
+						PacketUtils.sendAction(online, "§8» §6Meetup is now! §8«");
 					}
 				}
 			}
@@ -595,8 +625,6 @@ public class Timers {
 				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				
-				Bukkit.getPluginManager().callEvent(new GameStartEvent());
-				
 				for (World world : GameUtils.getGameWorlds()) {
 					world.setDifficulty(Difficulty.HARD);
 					world.setPVP(false);
@@ -607,10 +635,6 @@ public class Timers {
 					world.setGameRuleValue("doDaylightCycle", "true");
 					world.setThundering(false);
 					world.setStorm(false);
-					
-					if (game.getBorderShrink() == BorderShrink.START) {
-						world.getWorldBorder().setSize(300, meetupSeconds);
-					}
 					
 					for (Entity mob : world.getEntities()) {
 						if (EntityUtils.isButcherable(mob.getType())) {
@@ -689,6 +713,8 @@ public class Timers {
 						user.resetInventory();
 					}
 				}
+				
+				Bukkit.getPluginManager().callEvent(new GameStartEvent());
 			}
 		}.runTaskLater(Main.plugin, 60);
 		
@@ -713,9 +739,7 @@ public class Timers {
 	 * Start the recorded round timers.
 	 */
 	public void timerRR() {
-		if (Bukkit.getScheduler().isQueued(taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(taskMinutes)) {
-			Bukkit.getScheduler().cancelTask(taskMinutes);
-		}
+		stopTimers();
 		
 		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
 			public void run() {
@@ -760,5 +784,18 @@ public class Timers {
 				}
 			}
 		}, 1200, 1200);
+	}
+ 
+	/**
+	 * Stop all the running timers.
+	 */
+	public void stopTimers() {
+		if (Bukkit.getScheduler().isQueued(taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(taskMinutes)) {
+			Bukkit.getScheduler().cancelTask(taskMinutes);
+		}
+		
+		if (Bukkit.getScheduler().isQueued(taskSeconds) || Bukkit.getScheduler().isCurrentlyRunning(taskSeconds)) {
+			Bukkit.getScheduler().cancelTask(taskSeconds);
+		}
 	}
 }
