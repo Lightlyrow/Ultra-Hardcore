@@ -29,6 +29,7 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  * 
  * @author LeonTG77
  */
+@SuppressWarnings("deprecation")
 public class CutClean extends Scenario implements Listener {
 	
 	public CutClean() {
@@ -42,9 +43,9 @@ public class CutClean extends Scenario implements Listener {
 	public void onEnable() {}
 	
 	@EventHandler
-	public void onEntityDeath(EntityDeathEvent event) {
-		List<ItemStack> drops = event.getDrops();
-		Entity entity = event.getEntity();
+	public void on(EntityDeathEvent event) {
+		final List<ItemStack> drops = event.getDrops();
+		final Entity entity = event.getEntity();
 		
 		if (entity instanceof Cow) {
 			drops.clear();
@@ -67,7 +68,10 @@ public class CutClean extends Scenario implements Listener {
 		}
 		
 		if (entity instanceof Sheep) {
+			final Sheep sheep = (Sheep) entity;
+			
 			drops.clear();
+			drops.add(new ItemStack(Material.WOOL, 1, sheep.getColor().getWoolData()));
 			drops.add(new ItemStack(Material.COOKED_MUTTON, 2));
 			return;
 		}
