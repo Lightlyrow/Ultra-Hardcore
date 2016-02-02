@@ -3,48 +3,29 @@ package com.leontg77.ultrahardcore.listeners;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.inventory.CraftingInventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Parkour;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.User;
-import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
-import com.leontg77.ultrahardcore.scenario.ScenarioManager;
-import com.leontg77.ultrahardcore.scenario.scenarios.VengefulSpirits;
 import com.leontg77.ultrahardcore.utils.GameUtils;
-import com.leontg77.ultrahardcore.utils.RecipeUtils;
 
 /**
  * Player listener class.
@@ -123,33 +104,6 @@ public class PlayerListener implements Listener {
 		Entity clicked = event.getRightClicked();
 		Player player = event.getPlayer();
 		
-		if (clicked instanceof Horse) {
-			if (!game.horses()) {
-				player.sendMessage(Main.PREFIX + "Horses are disabled.");
-				event.setCancelled(true);
-				return;
-			}
-			
-			if (!game.horseHealing()) {
-				ItemStack hand = player.getItemInHand();
-				
-				if (hand == null) {
-					return;
-				}
-				
-				Material type = hand.getType();
-				
-				if (type != Material.SUGAR && type != Material.WHEAT && type != Material.APPLE && type != Material.GOLDEN_CARROT && type != Material.GOLDEN_APPLE && type != Material.HAY_BLOCK) {
-					return;
-				}
-
-				player.sendMessage(Main.PREFIX + "Horse healing is disabled.");
-				player.updateInventory();
-				event.setCancelled(true);
-			}
-			return;
-		}
-		
 		if (!(clicked instanceof Player)) {
 			return;
 		}
@@ -171,80 +125,6 @@ public class PlayerListener implements Listener {
     }
 	
 	@EventHandler
-	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
-		Recipe recipe = event.getRecipe();
-		
-		CraftingInventory inv = event.getInventory();
-		ItemStack item = recipe.getResult();
-		
-		if (item == null) {
-			return;
-		}
-		
-		/**
-		 * @author Ghowden
-		 */
-        if (RecipeUtils.areSimilar(event.getRecipe(), Main.headRecipe)) {
-            ItemMeta meta = item.getItemMeta();
-            String name = "N/A";
-          
-            for (ItemStack content : inv.getContents()) {
-                if (content.getType() == Material.SKULL_ITEM) {
-                    SkullMeta skullMeta = (SkullMeta) content.getItemMeta();
-                    name = skullMeta.getOwner();
-                    break;
-                }
-            }
-
-            List<String> list = meta.getLore();
-            list.add(ChatColor.AQUA + "Made from the head of: " + (name == null ? "N/A" : name));
-            meta.setLore(list);
-            item.setItemMeta(meta);
-            
-            inv.setResult(item);
-        }
-		
-		if (item.getType() == Material.GOLDEN_APPLE) {
-			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().hasLore() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
-				ScenarioManager scen = ScenarioManager.getInstance();
-				
-				if (scen.getScenario(VengefulSpirits.class).isEnabled()) {
-					return;
-				}
-				
-				if (!game.goldenHeads()) {
-					inv.setResult(new ItemStack(Material.AIR));
-				}
-				return;
-			}
-			
-			if (item.getDurability() == 1) {
-				if (!game.notchApples()) {
-					inv.setResult(new ItemStack(Material.AIR));
-				}
-			}
-			return;
-		}
-		
-		if (item.getType() == Material.SPECKLED_MELON) {
-			if (recipe instanceof ShapedRecipe) {
-				ShapedRecipe shaped = (ShapedRecipe) event.getRecipe();
-
-				if (shaped.getIngredientMap().values().contains(new ItemStack (Material.GOLD_NUGGET))) {
-					inv.setResult(new ItemStack(Material.AIR));
-				}
-			}
-			return;
-		}
-		
-		if (item.getType() == Material.BOOKSHELF) {
-			if (!game.bookshelves()) {
-				inv.setResult(new ItemStack(Material.AIR));
-			}
-		}
-    }
-	
-	@EventHandler
 	public void onPlayerAchievementAwarded(PlayerAchievementAwardedEvent event) {
 		Spectator spec = Spectator.getInstance();
 		Player player = event.getPlayer();
@@ -257,47 +137,6 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-		final Player player = event.getPlayer();
-		final ItemStack item = event.getItem();
-		
-		User user = User.get(player);
-		
-		final float before = player.getSaturation();
-
-		new BukkitRunnable() {
-			public void run() {
-				float change = player.getSaturation() - before;
-				player.setSaturation((float) (before + change * 2.5D));
-			}
-        }.runTaskLater(Main.plugin, 1);
-		
-		if (item.getType() == Material.GOLDEN_APPLE) {
-			if (!game.absorption()) {
-				player.removePotionEffect(PotionEffectType.ABSORPTION);
-				
-				new BukkitRunnable() {
-					public void run() {
-						player.removePotionEffect(PotionEffectType.ABSORPTION);
-					}
-		        }.runTaskLater(Main.plugin, 1);
-			}
-			
-			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("§6Golden Head")) {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, (25 * game.goldenHeadsHeal()), 1));
-				user.increaseStat(Stat.GOLDENHEADSEATEN);
-			} else {
-				user.increaseStat(Stat.GOLDENAPPLESEATEN);
-			}
-			return;
-		}
-		
-		if (item.getType() == Material.POTION && item.getDurability() != 0) {
-			user.increaseStat(Stat.POTIONS);
-		}
-	}
-	
-	@EventHandler
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		Player player = (Player) event.getEntity();
 		World world = player.getWorld();
@@ -307,10 +146,6 @@ public class PlayerListener implements Listener {
 			event.setFoodLevel(20);
 			return;
 		}
-		
-		if (event.getFoodLevel() < player.getFoodLevel()) {
-			event.setCancelled(new Random().nextInt(100) < 66);
-	    }
 	}
 	
 	@EventHandler
