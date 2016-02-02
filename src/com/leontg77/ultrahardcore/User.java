@@ -6,7 +6,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -117,8 +116,6 @@ public class User {
         	try {
         		file.createNewFile();
         		creating = true;
-        		
-        		FileUtils.updateUserFiles();
         	} catch (Exception e) {
         		plugin.getLogger().severe(ChatColor.RED + "Could not create " + uuid + ".yml!");
         	}
@@ -135,8 +132,6 @@ public class User {
             	config.set("uuid", player.getUniqueId().toString());
             	config.set("ip", player.getAddress().getAddress().getHostAddress());
         	}
-
-        	TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         	
         	config.set("firstjoined", new Date().getTime());
         	config.set("lastlogin", new Date().getTime());
@@ -152,6 +147,7 @@ public class User {
 			}
 			
         	saveFile();
+    		FileUtils.getUserFiles().add(config);
         }
 	}
 	
@@ -614,7 +610,7 @@ public class User {
     	HOSTILEMOBKILLS("Killed a monster"),
     	ANIMALKILLS("Killed an animal"),
     	LONGESTSHOT("Longest Shot"),
-    	EXP("XP Earned");
+    	LEVELS("Levels Earned");
     	
     	private String name;
     	
