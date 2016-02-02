@@ -50,7 +50,7 @@ public class ChatListener implements Listener {
 		final String messageAndColor = name.startsWith("§f") ? "§7%s" : "§f%s";
     	
     	if (game.isRecordedRound()) {
-    		event.setFormat(name + " §8» " + messageAndColor);
+    		event.setFormat("§f<" + name + "§f> §f%s");
     		return;
     	}
 		
