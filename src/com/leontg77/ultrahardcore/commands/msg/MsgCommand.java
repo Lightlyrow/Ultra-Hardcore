@@ -34,7 +34,7 @@ public class MsgCommand extends UHCCommand {
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can ignore other players.");
+			sender.sendMessage(ChatColor.RED + "Only players can message other players.");
 			return true;
 		}
 		
