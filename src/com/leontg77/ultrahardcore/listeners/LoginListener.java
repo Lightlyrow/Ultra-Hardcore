@@ -4,6 +4,7 @@ import static com.leontg77.ultrahardcore.Main.plugin;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -95,7 +96,14 @@ public class LoginListener implements Listener {
 				
 				spec.enableSpecmode(player);
 			} else {
-				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName());
+				final Game game = Game.getInstance();
+				
+				final List<Player> online = PlayerUtils.getPlayers();
+				final List<Player> gameP = GameUtils.getGamePlayers();
+				
+				final int current = gameP.size() == 0 ? online.size() : gameP.size();
+				
+				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName() + " §7joined. §8(§a" + current + "§8/§a" + game.getMaxPlayers() + "§8)");
 				
 				if (user.isNew()) {
 					File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
