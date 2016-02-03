@@ -17,9 +17,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -51,7 +51,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 	@EventHandler
 	public void on(GameStartEvent event) {
 		for (Player online : PlayerUtils.getPlayers()) {
-			online.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, 1));
+			online.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, NumberUtils.get999DaysInTicks(), 1));
 			jump.put(online.getName(), 1);
 		}
 	}
@@ -76,7 +76,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (!State.isState(State.INGAME) || Timers.timeSeconds < 20) {
+		if (!State.isState(State.INGAME) || timer.getTimeSinceStartInSeconds() < 20) {
 			return;
 		}
 		
@@ -89,7 +89,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 		if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
 			int level = jump.get(player.getName());
 			
-			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, level));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, NumberUtils.get999DaysInTicks(), level));
 		}
 	}
 	
@@ -114,7 +114,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 		int level = jump.get(player.getName());
 		
 		player.removePotionEffect(PotionEffectType.JUMP);
-		player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 1726272000, level));
+		player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, NumberUtils.get999DaysInTicks(), level));
 	}
 
 	@EventHandler
