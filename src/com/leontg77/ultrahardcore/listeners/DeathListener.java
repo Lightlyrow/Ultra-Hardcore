@@ -24,12 +24,10 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.feature.toggleable.DeathLightningModule;
-import com.leontg77.ultrahardcore.feature.toggleable.GoldenHeadsFeature;
-import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
+import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -47,23 +45,14 @@ public class DeathListener implements Listener {
 		final Player player = event.getEntity();
 		final Arena arena = Arena.getInstance();
 		
-		// if they have hardcore hearts, auto respawn them before they're able to respawn themselves.
-		if (game.hardcoreHearts()) {
-			new BukkitRunnable() {
-				public void run() {
-					player.spigot().respawn();
-				}
-			}.runTaskLater(Main.plugin, 18);
-		}
-		
 		// the arena has it's own way of doing deaths.
 		if (arena.isEnabled() && arena.hasPlayer(player)) {
 			return;
 		} 
 
 		final List<World> worlds = GameUtils.getGameWorlds();
-	    final String deathMessage = event.getDeathMessage();
-	    
+		
+	    String deathMessage = event.getDeathMessage();
 	    event.setDeathMessage(null);
 	    
 	    // I don't care about the rest if it hasn't started or they're not in a game world.
@@ -71,28 +60,12 @@ public class DeathListener implements Listener {
 	    	return;
 	    }
 
-		final BoardManager board = BoardManager.getInstance();
 		// they're dead, no more wl for them.
 		player.setWhitelisted(false);
-		
-		if (game.deathLightning()) {
-	    	// for now, until I add a listener register for it.
-			new DeathLightningModule().on(event);
-		}
-
-	    if (game.goldenHeads()) {
-	    	// for now, until I add a listener register for it.
-			new GoldenHeadsFeature().on(event);
-	    }
 
 		final Player killer = player.getKiller();
 
 		if (killer == null) {
-			if (!game.isRecordedRound()) {
-				board.setScore("§8» §a§lPvE", board.getScore("§8» §a§lPvE") + 1);
-		        board.resetScore(player.getName());
-			}
-			
 			if (deathMessage == null) {
 				return;
 			}
@@ -104,6 +77,10 @@ public class DeathListener implements Listener {
 		
 		if (deathMessage != null && !deathMessage.isEmpty()) {
 			ItemStack item = killer.getItemInHand();
+			
+			if (deathMessage.contains("shot")) {
+				deathMessage += " §8(§7" + NumberUtils.formatDouble(killer.getLocation().distance(player.getLocation())) + " blocks§8)";
+			}
 			
 			if (item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && deathMessage.contains(killer.getName()) && (deathMessage.contains("slain") || deathMessage.contains("shot"))) {
 				String name = item.getItemMeta().getDisplayName();
@@ -147,14 +124,6 @@ public class DeathListener implements Listener {
 		if (pteam != null && pteam.equals(team)) {
 			return;
 		}
-		
-		board.setScore(killer.getName(), board.getScore(killer.getName()) + 1);
-		
-		if (game.isRecordedRound()) {
-			return;
-		}
-		
-		board.resetScore(player.getName());
 		
 		if (Main.kills.containsKey(killer.getName())) {
 			Main.kills.put(killer.getName(), Main.kills.get(killer.getName()) + 1);
