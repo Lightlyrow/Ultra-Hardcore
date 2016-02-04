@@ -168,7 +168,7 @@ public class Arena {
 			}
 			
 			PlayerUtils.broadcast(PREFIX + "The arena board has been disabled.");
-			BoardManager.getInstance().kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+			BoardManager.getInstance().getKillsObjective().setDisplaySlot(DisplaySlot.SIDEBAR);
 			
 			if (!isResetting) {
 				game.setArenaBoard(false);
