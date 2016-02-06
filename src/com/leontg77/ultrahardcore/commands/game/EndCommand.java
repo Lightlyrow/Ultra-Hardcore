@@ -20,10 +20,11 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.feature.world.AntiStripmineFeature;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
@@ -51,15 +52,15 @@ public class EndCommand extends UHCCommand {
 			return false;
 		}
 		
-		int totalKills = parseInt(args[0], "kill amount");
+		final int totalKills = parseInt(args[0], "kill amount");
 
 		final BoardManager board = BoardManager.getInstance();
-		TeamManager teams = TeamManager.getInstance();
+		final TeamManager teams = TeamManager.getInstance();
 		
-		Spectator spec = Spectator.getInstance();
+		final Spectator spec = Spectator.getInstance();
 		
-		List<String> winners = new ArrayList<String>();
-		Settings settings = Settings.getInstance();
+		final List<String> winners = new ArrayList<String>();
+		final Settings settings = Settings.getInstance();
 		
 		PlayerUtils.broadcast(Main.PREFIX + "The game has ended!");
 		PlayerUtils.broadcast(" ");
@@ -74,10 +75,10 @@ public class EndCommand extends UHCCommand {
 				user.saveFile();
 			}
 			
-			int pKills;
+			final int pKills;
 
-			Integer savedKills = Main.kills.get(winner.getName());
-			int boardKills = board.getScore(winner.getName());
+			final Integer savedKills = Main.kills.get(winner.getName());
+			final int boardKills = board.getScore(winner.getName());
 			
 			if (savedKills == null || savedKills < boardKills) {
 				pKills = boardKills;
@@ -85,7 +86,7 @@ public class EndCommand extends UHCCommand {
 				pKills = savedKills;
 			}
 			
-			String color = teams.getTeam(winner) == null ? "§7" : teams.getTeam(winner).getPrefix();
+			final String color = teams.getTeam(winner) == null ? "§7" : teams.getTeam(winner).getPrefix();
 			
 			PlayerUtils.broadcast(Main.PREFIX + "§8- " + color + winner.getName() + " §8(§a" + pKills + " §7 " + (pKills == 1 ? "kill" : "kills") + "§8)");
 			winners.add(winner.getName());
@@ -96,12 +97,12 @@ public class EndCommand extends UHCCommand {
 		PlayerUtils.broadcast(Main.PREFIX + "Thanks for playing and congrats to the winners!");
 		PlayerUtils.broadcast(Main.PREFIX + "Remember to check out the hall of fame by using §6/hof§7.");
 		
-		String host = GameUtils.getHostName(game.getHost());
+		final String host = GameUtils.getHostName(game.getHost());
 		
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		Date date = new Date();
+		final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		final Date date = new Date();
 
-		Fireworks firework = Fireworks.getInstance();
+		final Fireworks firework = Fireworks.getInstance();
 		FileUtils.updateUserFiles();
 		
 		int matchcount = 1;
@@ -125,10 +126,6 @@ public class EndCommand extends UHCCommand {
 			scen.setEnabled(false);
 		}
 
-		for (World world : Bukkit.getWorlds()) {
-			world.save();
-		}
-
 		for (Player online : PlayerUtils.getPlayers()) {
 			if (spec.isSpectating(online)) {
 				spec.disableSpecmode(online);
@@ -146,8 +143,6 @@ public class EndCommand extends UHCCommand {
 			
 			User user = User.get(online);
 			user.reset();
-			
-			online.saveData();
 		}
 		
 		State.setState(State.NOT_RUNNING);
@@ -160,17 +155,14 @@ public class EndCommand extends UHCCommand {
 		Main.plugin.saveData();
 
 		game.setScenarios("games running");
-		game.setAntiStripmine(true);
 		game.setMatchPost("none");
-		game.setMaxPlayers(150);
+		game.setMaxPlayers(120);
 		game.setTeamSize("No");
 		
-		teams.getSavedTeams().clear();
-		Team team = teams.getTeam("spec");
+		final FeatureManager feat = FeatureManager.getInstance();
+		feat.getFeature(AntiStripmineFeature.class).enable();
 		
-		for (String member : team.getEntries()) {
-			team.removeEntry(member);
-		}
+		teams.getSavedTeams().clear();
 
 		for (OfflinePlayer whitelisted : Bukkit.getWhitelistedPlayers()) {
 			whitelisted.setWhitelisted(false);
@@ -178,11 +170,11 @@ public class EndCommand extends UHCCommand {
 
 		new BukkitRunnable() {
 			public void run() {
-				for (String entry : board.board.getEntries()) {
+				for (String entry : board.getBoard().getEntries()) {
 					board.resetScore(entry);
 				}
 				
-				TeamManager teams = TeamManager.getInstance();
+				final TeamManager teams = TeamManager.getInstance();
 				
 				for (Team team : teams.getTeams()) {
 					for (String member : team.getEntries()) {
@@ -192,7 +184,7 @@ public class EndCommand extends UHCCommand {
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Reset scoreboards and teams.");
 
-				WorldManager manager = WorldManager.getInstance();
+				final WorldManager manager = WorldManager.getInstance();
 				
 				for (World world : GameUtils.getGameWorlds()) {
 					manager.deleteWorld(world);
@@ -218,18 +210,18 @@ public class EndCommand extends UHCCommand {
 			}
 		}.runTaskLater(Main.plugin, 1200);
 		
-		if (Bukkit.getScheduler().isQueued(Timers.taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(Timers.taskMinutes)) {
-			Bukkit.getScheduler().cancelTask(Timers.taskMinutes);
-		}
-		
-		if (Bukkit.getScheduler().isQueued(Timers.taskSeconds) || Bukkit.getScheduler().isCurrentlyRunning(Timers.taskSeconds)) {
-			Bukkit.getScheduler().cancelTask(Timers.taskSeconds);
-		}
+		timer.stopTimers();
 		return true;
 	}
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		return null;
+		List<String> toReturn = new ArrayList<String>();
+		
+		for (Player online : PlayerUtils.getPlayers()) {
+			toReturn.add(online.getName());
+		}
+		
+		return toReturn;
 	}
 }
