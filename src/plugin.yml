@@ -1,6 +1,6 @@
 name: UHC
 main: com.leontg77.ultrahardcore.Main
-version: 1.10
+version: 1.10.0
 author: LeonTG77
 description: UHC plugin made for ArcitcUHC by LeonTG77
 softdepend: [ProtocolLib, Pregenner]
