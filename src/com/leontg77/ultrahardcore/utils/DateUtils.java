@@ -105,7 +105,7 @@ public class DateUtils {
  
         if (seconds > 0) {
             if (output.length() > 0) {
-                output.append("§7 andÂ§a ");
+                output.append("§7 and§a ");
             }
  
             output.append(seconds).append(" ").append(seconds == 1 ? "§7second§a" : "§7seconds§a");
