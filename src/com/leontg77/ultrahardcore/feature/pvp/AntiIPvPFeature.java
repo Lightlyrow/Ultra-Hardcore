@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.listeners;
+package com.leontg77.ultrahardcore.feature.pvp;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,31 +13,34 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.feature.Feature;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
- * Player listener class.
- * <p> 
- * Contains all eventhandlers for player releated events.
+ * Anti iPvP feature class.
  * 
  * @author LeonTG77
  */
-public class iPvPListener implements Listener {
-	private static final String PREFIX = "Â§8[Â§4Â§liPvPÂ§8] Â§7";
-	
-	private TeamManager manager = TeamManager.getInstance();
-    private Spectator spec = Spectator.getInstance();
+public class AntiIPvPFeature extends Feature implements Listener {
+	private static final String PREFIX = "§8[§4§liPvP§8] §7";
+
+	private final TeamManager manager = TeamManager.getInstance();
+    private final SpecManager spec = SpecManager.getInstance();
+
+	public AntiIPvPFeature() {
+		super("Anti-iPvP", "Disable all players to indirect damage other players before pvp.");
+	}
     
     @EventHandler
     public void on(final PlayerBucketEmptyEvent event) {
-    	Block clicked = event.getBlockClicked();
-    	BlockFace face = event.getBlockFace();
+    	final Block clicked = event.getBlockClicked();
+    	final BlockFace face = event.getBlockFace();
     	
-    	Block block = clicked.getRelative(face);
-    	Player player = event.getPlayer();
+    	final Block block = clicked.getRelative(face);
+    	final Player player = event.getPlayer();
         
         // silly, no spectators should trigger this (since they have a lava bucket in their inv)
         if (spec.isSpectating(player)) {
@@ -64,9 +67,9 @@ public class iPvPListener implements Listener {
     }
 	
 	@EventHandler
-	public void on(BlockPlaceEvent event) {
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+	public void on(final BlockPlaceEvent event) {
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
         
         // silly, no spectators should trigger this (since they have a lava bucket in their inv)
         if (spec.isSpectating(player)) {
@@ -91,9 +94,9 @@ public class iPvPListener implements Listener {
 	}
 	
 	@EventHandler
-	public void on(BlockBreakEvent event) {
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+	public void on(final BlockBreakEvent event) {
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
         
         // silly, no spectators should trigger this (since they have a lava bucket in their inv)
         if (spec.isSpectating(player)) {
@@ -117,8 +120,15 @@ public class iPvPListener implements Listener {
     	}
 	}
 
+	/**
+	 * Check if the given iPvPer is using fire, lava or cactus to damage someone.
+	 * 
+	 * @param iPvPer The iPvPer.
+	 * @param event The block place event that gets the block they are placing.
+	 * @return True if he is and alerts the staff, false otherwise.
+	 */
 	private boolean isDamageBlock(Player iPvPer, BlockPlaceEvent event) {
-		Block block = event.getBlock();
+		final Block block = event.getBlock();
 		boolean isiPvPBlock = false;
 		
 		switch (block.getType()) {
@@ -134,16 +144,23 @@ public class iPvPListener implements Listener {
 		return isiPvPBlock && isAnyoneNearby(iPvPer, block.getLocation());
 	}
 
+	/**
+	 * Check if the given iPvPer is breaking a block that will make someone below that block get suffocated.
+	 * 
+	 * @param iPvPer The iPvPer.
+	 * @param event The block break event that gets the block they are breaking.
+	 * @return True if he is and alerts the staff, false otherwise.
+	 */
 	private boolean isBreakSuffocation(Player iPvPer, BlockBreakEvent event) {
-		Block block = event.getBlock();
-		Location loc = block.getLocation();
+		final Block block = event.getBlock();
+		final Location loc = block.getLocation();
 		
 		boolean isPlayerBelow = false;
 		boolean isFallingBlock;
 
-		Team playerTeam = manager.getTeam(iPvPer);
+		final Team playerTeam = manager.getTeam(iPvPer);
 		
-		Block above = block.getRelative(BlockFace.UP, 1);
+		final Block above = block.getRelative(BlockFace.UP, 1);
 		
 		switch (above.getType()) {
 		case SAND:
@@ -165,16 +182,16 @@ public class iPvPListener implements Listener {
 				continue;
 			}
 			
-			Team nearTeam = manager.getTeam(inWorld);
+			final Team nearTeam = manager.getTeam(inWorld);
 			
 			if (playerTeam != null && playerTeam.equals(nearTeam)) {
 				continue;
 			}
 			
-			Location pLoc = inWorld.getLocation();
+			final Location pLoc = inWorld.getLocation();
 			
 			if (pLoc.getBlockX() == loc.getBlockX() && pLoc.getBlockY() < loc.getBlockY() && loc.getBlockZ() == pLoc.getBlockZ()) {
-				PlayerUtils.broadcast(PREFIX + "Â§c" + iPvPer.getName() + " Â§8-Â» Â§a" + inWorld.getName() + " Â§8[Â§7SuffocationÂ§8]", "uhc.staff");
+				PlayerUtils.broadcast(PREFIX + "§c" + iPvPer.getName() + " §8-» §a" + inWorld.getName() + " §8[§7Suffocation§8]", "uhc.staff");
 				isPlayerBelow = true;
 				break;
 			}
@@ -182,15 +199,22 @@ public class iPvPListener implements Listener {
 		
 		return isFallingBlock && isPlayerBelow;
 	}
-	
+
+	/**
+	 * Check if the given iPvPer is placing falling blocks above someone to suffocate them.
+	 * 
+	 * @param iPvPer The iPvPer.
+	 * @param event The block place event that gets the block they are placing.
+	 * @return True if he is and alerts the staff, false otherwise.
+	 */
 	private boolean isSuffocation(Player iPvPer, BlockPlaceEvent event) {
-		Block block = event.getBlock();
-		Location loc = block.getLocation();
+		final Block block = event.getBlock();
+		final Location loc = block.getLocation();
 		
 		boolean isPlayerBelow = false;
 		boolean isFallingBlock;
 
-		Team playerTeam = manager.getTeam(iPvPer);
+		final Team playerTeam = manager.getTeam(iPvPer);
 		
 		switch (block.getType()) {
 		case SAND:
@@ -203,7 +227,7 @@ public class iPvPListener implements Listener {
 			return false;
 		}
 		
-		Block below = block.getRelative(BlockFace.DOWN, 1);
+		final Block below = block.getRelative(BlockFace.DOWN, 1);
 		
 		for (Player inWorld : iPvPer.getWorld().getPlayers()) {
 			if (inWorld == iPvPer) {
@@ -214,16 +238,16 @@ public class iPvPListener implements Listener {
 				continue;
 			}
 			
-			Team nearTeam = manager.getTeam(inWorld);
+			final Team nearTeam = manager.getTeam(inWorld);
 			
 			if (playerTeam != null && playerTeam.equals(nearTeam)) {
 				continue;
 			}
 			
-			Location pLoc = inWorld.getLocation();
+			final Location pLoc = inWorld.getLocation();
 			
 			if (below.getType() == Material.AIR && pLoc.getBlockX() == loc.getBlockX() && pLoc.getBlockY() < loc.getBlockY() && loc.getBlockZ() == pLoc.getBlockZ()) {
-				PlayerUtils.broadcast(PREFIX + "Â§c" + iPvPer.getName() + " Â§8-Â» Â§a" + inWorld.getName() + " Â§8[Â§7" + NameUtils.capitalizeString(block.getType().name(), true) + "Â§8]", "uhc.staff");
+				PlayerUtils.broadcast(PREFIX + "§c" + iPvPer.getName() + " §8-» §a" + inWorld.getName() + " §8[§7" + NameUtils.capitalizeString(block.getType().name(), true) + "§8]", "uhc.staff");
 				isPlayerBelow = true;
 				break;
 			}
@@ -232,11 +256,18 @@ public class iPvPListener implements Listener {
 		return below.getType() == Material.AIR && isFallingBlock && isPlayerBelow;
 	}
 
+	/**
+	 * Check if the given iPvPer is spleefing someone.
+	 * 
+	 * @param iPvPer The iPvPer.
+	 * @param event The block break event that gets the block they are breaking.
+	 * @return True if he is and alerts the staff, false otherwise.
+	 */
 	private boolean isSpleef(Player iPvPer, BlockBreakEvent event) {
-		Block block = event.getBlock();
-		Location loc = block.getLocation();
+		final Block block = event.getBlock();
+		final Location loc = block.getLocation();
 
-		Team playerTeam = manager.getTeam(iPvPer);
+		final Team playerTeam = manager.getTeam(iPvPer);
 		boolean isPlayerAbove = false;
 		
 		for (Player inWorld : iPvPer.getWorld().getPlayers()) {
@@ -257,7 +288,7 @@ public class iPvPListener implements Listener {
 			Location pLoc = inWorld.getLocation();
 			
 			if (pLoc.getBlockX() == loc.getBlockX() && pLoc.getBlockY() == loc.clone().add(0, 1, 0).getBlockY() && loc.getBlockZ() == pLoc.getBlockZ()) {
-				PlayerUtils.broadcast(PREFIX + "Â§c" + iPvPer.getName() + " Â§8-Â» Â§a" + inWorld.getName() + " Â§8[Â§7SpleefÂ§8]", "uhc.staff");
+				PlayerUtils.broadcast(PREFIX + "§c" + iPvPer.getName() + " §8-» §a" + inWorld.getName() + " §8[§7Spleef§8]", "uhc.staff");
 				isPlayerAbove = true;
 				break;
 			}
@@ -266,15 +297,22 @@ public class iPvPListener implements Listener {
 		return isPlayerAbove;
 	}
 
+	/**
+	 * Check if any players are near the given ipvper.
+	 * 
+	 * @param iPvPer The iPvPer used for the name.
+	 * @param loc The location to start the nearby check from.
+	 * @return True if theres any and alerts the staff, false otherwise.
+	 */
 	private boolean isAnyoneNearby(Player iPvPer, Location loc) {
-		Team playerTeam = manager.getTeam(iPvPer);
+		final Team playerTeam = manager.getTeam(iPvPer);
     	
     	for (Entity near : PlayerUtils.getNearby(loc, 10)) {
 			if (!(near instanceof Player)) {
 				continue;
 			}
 			
-			Player nearby = (Player) near;
+			final Player nearby = (Player) near;
 			
 			if (nearby == iPvPer) {
 				continue;
@@ -284,13 +322,13 @@ public class iPvPListener implements Listener {
 				continue;
 			}
 			
-			Team nearTeam = manager.getTeam(nearby);
+			final Team nearTeam = manager.getTeam(nearby);
 			
 			if (playerTeam != null && playerTeam.equals(nearTeam)) {
 				continue;
 			}
 
-			PlayerUtils.broadcast(PREFIX + "Â§c" + iPvPer.getName() + " Â§8-Â» Â§a" + nearby.getName() + " Â§8[Â§7" + NameUtils.capitalizeString(iPvPer.getItemInHand().getType().name(), true) + "Â§8]", "uhc.staff");
+			PlayerUtils.broadcast(PREFIX + "§c" + iPvPer.getName() + " §8-» §a" + nearby.getName() + " §8[§7" + NameUtils.capitalizeString(iPvPer.getItemInHand().getType().name(), true) + "§8]", "uhc.staff");
 			return true;
 		}
     	
