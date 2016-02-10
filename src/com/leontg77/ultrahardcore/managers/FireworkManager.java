@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore;
+package com.leontg77.ultrahardcore.managers;
 
 import java.util.Random;
 
@@ -11,6 +11,7 @@ import org.bukkit.entity.Firework;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
 
 /**
@@ -20,8 +21,8 @@ import com.leontg77.ultrahardcore.utils.LocationUtils;
  * 
  * @author LeonTG77
  */
-public class Fireworks {
-	private static Fireworks instance = new Fireworks();
+public class FireworkManager {
+	private static FireworkManager instance = new FireworkManager();
 	private Random ran = new Random();
 
 	/**
@@ -29,7 +30,7 @@ public class Fireworks {
 	 * 
 	 * @return The instance.
 	 */
-	public static Fireworks getInstance() {
+	public static FireworkManager getInstance() {
 		return instance;
 	}
 
