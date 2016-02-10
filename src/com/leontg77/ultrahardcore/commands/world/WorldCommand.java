@@ -16,7 +16,6 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.world.WorldManager;
 
 /**
@@ -64,14 +63,14 @@ public class WorldCommand extends UHCCommand {
 				sender.sendMessage("§8» §7Nether: §6" + nether);
 				sender.sendMessage("§8» §7End: §6" + end);
 				
-				manager.createWorld(worldname, radius, seed, Environment.NORMAL, WorldType.NORMAL);
+				manager.createWorld(worldname, radius, seed, Environment.NORMAL, WorldType.NORMAL, end, end, end);
 				
 				if (nether) {
-					manager.createWorld(worldname + "_nether", radius, seed, Environment.NETHER, WorldType.NORMAL);
+					manager.createWorld(worldname + "_nether", radius, seed, Environment.NETHER, WorldType.NORMAL, end, end, end);
 				}
 				
 				if (end) {
-					manager.createWorld(worldname + "_end", radius, seed, Environment.THE_END, WorldType.NORMAL);
+					manager.createWorld(worldname + "_end", radius, seed, Environment.THE_END, WorldType.NORMAL, end, end, end);
 				}
 
 				sender.sendMessage(Main.PREFIX + "World creation finished.");
@@ -159,7 +158,7 @@ public class WorldCommand extends UHCCommand {
 						return true;
 					}
 					
-					sender.sendMessage("§8» §7" + world.getName() + " §8- " + color + world.getEnvironment().name() + " §8(§7" + (GameUtils.getGameWorlds().contains(world) ? "In use" : "Not used")+ "§8)");
+					sender.sendMessage("§8» §7" + world.getName() + " §8- " + color + world.getEnvironment().name() + " §8(§7" + (game.getWorlds().contains(world) ? "In use" : "Not used")+ "§8)");
 				}
 				return true;
 			}

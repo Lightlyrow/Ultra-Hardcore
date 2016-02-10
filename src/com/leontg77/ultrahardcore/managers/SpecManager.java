@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore;
+package com.leontg77.ultrahardcore.managers;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -43,13 +44,14 @@ import org.bukkit.potion.PotionType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.ultrahardcore.managers.TeamManager;
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.EntityUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * The spectator class to manage spectating.
@@ -60,8 +62,8 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class Spectator {
-	private static Spectator instance = new Spectator();
+public class SpecManager {
+	private static SpecManager instance = new SpecManager();
 	
 	private Set<String> spectators = new HashSet<String>();
 	private Set<String> specinfo = new HashSet<String>();
@@ -72,7 +74,7 @@ public class Spectator {
 	 * 
 	 * @return The instance.
 	 */
-	public static Spectator getInstance() {
+	public static SpecManager getInstance() {
 		return instance;
 	}
 	
@@ -205,7 +207,7 @@ public class Spectator {
 		player.getInventory().setItem(7, vision);
 		
 		// loop all players, vanish the player and show him the other spectators and show the spectators him.
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (isSpectating(online)) {
 				online.showPlayer(player);
 			} else {
@@ -249,7 +251,7 @@ public class Spectator {
 		user.resetEffects();
 		
 		// loop all players, hide the spectators for the player and unvanish him for everyone else.
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (isSpectating(online)) {
 				player.hidePlayer(online);
 			} else {
@@ -304,7 +306,7 @@ public class Spectator {
 	 */
 	public void hideSpectators(Player player) {
 		// loop all players, hide the spectators for the player and unvanish everyone else.
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (isSpectating(online)) {
 				player.hidePlayer(online);
 			} else {
@@ -347,7 +349,7 @@ public class Spectator {
 		private static Map<String, Map<Material, Integer>> total = new HashMap<String, Map<Material, Integer>>();
 		
 		private Set<Location> locs = new HashSet<Location>();
-		private Spectator spec = Spectator.getInstance();
+		private SpecManager spec = SpecManager.getInstance();
 
 		/**
 		 * Get a map of the material of the ore and the amount the player has mined.
@@ -404,7 +406,7 @@ public class Spectator {
 		 * @param message The message broadcasted.
 		 */
 		private void broadcast(String message) {
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				if (!spec.hasSpecInfo(online)) {
 					continue;
 				}
