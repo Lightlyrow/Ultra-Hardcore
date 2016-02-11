@@ -18,6 +18,5 @@ public class AppleFamine extends Scenario {
 
 	@Override
 	public void onEnable() {
-		game.setAppleRates(0);
 	}
 }
