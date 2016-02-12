@@ -76,7 +76,7 @@ public class Arena {
 			arenaKills = board.registerNewObjective("arenaKills", "dummy");
 		}
 		
-		arenaKills.setDisplayName("§4Arena §8- §7Use /a to join");
+		arenaKills.setDisplayName("§4Arena §8» §7§oUse /a to join§r");
 		
 		if (Game.getInstance().arenaBoard()) {
 			arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -198,7 +198,7 @@ public class Arena {
 		World world = Bukkit.getServer().getWorld("arena");
 		
 		manager.deleteWorld(world);
-		manager.createWorld("arena", 200, seeds.get(new Random().nextInt(seeds.size())), Environment.NORMAL, WorldType.NORMAL);
+		manager.createWorld("arena", 200, seeds.get(new Random().nextInt(seeds.size())), Environment.NORMAL, WorldType.NORMAL, false, false, false);
 		
 		PlayerUtils.broadcast(PREFIX + "World reset done, setting up world options...");
 
@@ -249,7 +249,7 @@ public class Arena {
 		Location loc;
 		
 		try {
-			loc = ScatterManager.findScatterLocations(Bukkit.getWorld("arena"), (int) Bukkit.getWorld("arena").getWorldBorder().getSize() / 3, 1).get(0);
+			loc = ScatterManager.getInstance().findScatterLocations(Bukkit.getWorld("arena"), (int) Bukkit.getWorld("arena").getWorldBorder().getSize() / 3, 1).get(0);
 		} catch (Exception e) {
 			player.sendMessage(ChatColor.RED + "Could not teleport you to the arena.");
 			return;
@@ -261,10 +261,12 @@ public class Arena {
 		giveKit(player);
 		
 		loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 2);
-		
-		player.teleport(loc);
-		player.setGameMode(GameMode.SURVIVAL);
+
 		player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 7));
+		player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 40, 7));
+		
+		player.setGameMode(GameMode.SURVIVAL);
+		player.teleport(loc);
 	}
 	
 	/**
