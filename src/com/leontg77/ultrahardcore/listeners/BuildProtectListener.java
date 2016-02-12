@@ -1,21 +1,21 @@
 package com.leontg77.ultrahardcore.listeners;
 
-import java.util.List;
-
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Build protect listener class.
@@ -25,124 +25,131 @@ import com.leontg77.ultrahardcore.utils.GameUtils;
  * @author LeonTG77
  */
 public class BuildProtectListener implements Listener {
+	private final Game game = Game.getInstance();
 	
 	@EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+    public void on(final BlockBreakEvent event) {
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
     	
-		// if the current state is scatter mode, we want to cancel and return.
     	if (State.isState(State.SCATTER)) {
     		event.setCancelled(true);
     		return;
     	}
     	
-    	List<World> worlds = GameUtils.getGameWorlds();
-    	World world = block.getWorld();
-
-        // if the world is a game world we don't want to do anything.
-    	if (worlds.contains(world)) {
+    	final World world = block.getWorld();
+        
+    	if (game.getWorlds().contains(world) || world.getName().equals("arena")) {
     		return;
     	}
 
-    	// if the world is the arena we don't want to do anything
-    	if (world.getName().equals("arena")) {
-			return;
-		}
-
-        // if the player has the build permission we want to return.
 		if (player.hasPermission("uhc.build")) {
 			return;
 		}
 
-        // the player is in a world that isn't a game world, isn't the arena and he has build perms, cancel the event.
 		event.setCancelled(true);
     }
 
 	@EventHandler
-    public void onBlockPlace(BlockPlaceEvent event) {
-		Block block = event.getBlockPlaced();
-		Player player = event.getPlayer();
+    public void on(final BlockPlaceEvent event) {
+		final Block block = event.getBlockPlaced();
+		final Player player = event.getPlayer();
     	
-		// if the current state is scatter mode, we want to cancel and return.
     	if (State.isState(State.SCATTER)) {
     		event.setCancelled(true);
     		return;
     	}
     	
-    	List<World> worlds = GameUtils.getGameWorlds();
-    	World world = block.getWorld();
+    	final World world = block.getWorld();
 
-        // if the world is a game world we don't want to do anything.
-    	if (worlds.contains(world)) {
+    	if (game.getWorlds().contains(world) || world.getName().equals("arena")) {
     		return;
     	}
 
-    	// if the world is the arena we don't want to do anything
-    	if (world.getName().equals("arena")) {
-			return;
-		}
-
-        // if the player has the build permission we want to return.
 		if (player.hasPermission("uhc.build")) {
 			return;
 		}
 
-        // the player is in a world that isn't a game world, isn't the arena and he has build perms, cancel the event.
 		event.setCancelled(true);
     }
 	
 	@EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        List<World> worlds = GameUtils.getGameWorlds();
-        Action action = event.getAction();
+    public void on(final PlayerInteractEvent event) {
+        final Action action = event.getAction();
         
-        Player player = event.getPlayer();
-        World world = player.getWorld();
-        
-        // if the world is a game world we don't want to do anything.
-    	if (worlds.contains(world)) {
+       	final Player player = event.getPlayer();
+        final World world = player.getWorld();
+    	
+    	if (State.isState(State.SCATTER)) {
+    		event.setCancelled(true);
     		return;
     	}
-    	
-    	// if the world is the arena we don't want to do anything
-    	if (world.getName().equals("arena")) {
+
+    	if (game.getWorlds().contains(world) || world.getName().equals("arena")) {
     		return;
     	}
     		
-    	// if the event was physical (hopping on farms, etc..) we want to cancel and return.
+    	// hopping on farms, etc..
         if (action == Action.PHYSICAL) {
         	event.setCancelled(true);
         	return;
     	}
         
-        // if the player has the build permission we want to return.
         if (player.hasPermission("uhc.build")) {
 			return;
 		}
 		
-        // the player is in a world that isn't a game world, isn't the arena and he has build perms, cancel the event.
 		event.setCancelled(true);
 	}
 	
 	@EventHandler
-	public void onPlayerArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
-		ArmorStand stand = event.getRightClicked();
-		
-		List<World> worlds = GameUtils.getGameWorlds();
-        World world = stand.getWorld();
+	public void on(final PlayerArmorStandManipulateEvent event) {
+		final ArmorStand stand = event.getRightClicked();
+        final World world = stand.getWorld();
         
-        // if the world is a game world we don't want to do anything.
-    	if (worlds.contains(world)) {
-    		return;
-    	}
-    	
-    	// if the world is the arena we don't want to do anything
-    	if (world.getName().equals("arena")) {
+    	if (game.getWorlds().contains(world) || world.getName().equals("arena")) {
     		return;
     	}
 		
-        // the player is in a world that isn't a game world, isn't the arena and he has build perms, cancel the event.
 		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void on(EntityDamageEvent event) {
+		final Entity entity = event.getEntity();
+		
+		if (State.isState(State.SCATTER)) {
+			event.setCancelled(true);
+			return;
+		}
+    	
+		if (!entity.getWorld().getName().equals("lobby")) {
+			return;
+		}
+        
+        if (entity instanceof Player && entity.hasPermission("uhc.build")) {
+			return;
+		}
+		
+		switch (entity.getType()) {
+		case ARMOR_STAND:
+		case BOAT:
+		case ENDER_CRYSTAL:
+		case ITEM_FRAME:
+		case LEASH_HITCH:
+		case MINECART:
+		case MINECART_CHEST:
+		case MINECART_COMMAND:
+		case MINECART_FURNACE:
+		case MINECART_HOPPER:
+		case MINECART_MOB_SPAWNER:
+		case MINECART_TNT:
+		case PAINTING:
+		case PLAYER:
+    		event.setCancelled(true);
+			break;
+		default:
+			break;
+		}
 	}
 }
