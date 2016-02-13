@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,7 +12,6 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * CatsEyes scenario class
@@ -19,7 +19,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class CatsEyes extends Scenario implements Listener {
-	private static final PotionEffect EFFECT = new PotionEffect(PotionEffectType.NIGHT_VISION, NumberUtils.get999DaysInTicks(), 1);
+	private static final PotionEffect EFFECT = new PotionEffect(PotionEffectType.NIGHT_VISION, NumberUtils.TICKS_IN_999_DAYS, 1);
 
 	public CatsEyes() {
 		super("CatsEyes", "All players are given Night Vision at the start of the game.");
@@ -27,7 +27,7 @@ public class CatsEyes extends Scenario implements Listener {
 
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.removePotionEffect(EFFECT.getType());
 		}
 	}
@@ -43,7 +43,7 @@ public class CatsEyes extends Scenario implements Listener {
 	
 	@EventHandler(ignoreCancelled = true)
     public void on(final GameStartEvent event)  {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.addPotionEffect(EFFECT);
 		}
     }
