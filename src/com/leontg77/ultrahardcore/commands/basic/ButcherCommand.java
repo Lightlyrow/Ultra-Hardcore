@@ -13,7 +13,6 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.EntityUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Butcher command class.
@@ -31,7 +30,7 @@ public class ButcherCommand extends UHCCommand {
 		int amount = 0;
 		
 		if (args.length == 0) {
-			for (World world : GameUtils.getGameWorlds()) {
+			for (World world : game.getWorlds()) {
 	    		for (Entity mob : world.getEntities()) {
 	    			EntityType type = mob.getType();
 	    			
