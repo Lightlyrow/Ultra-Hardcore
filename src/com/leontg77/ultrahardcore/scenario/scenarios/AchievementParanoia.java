@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -39,7 +38,7 @@ public class AchievementParanoia extends Scenario implements Listener {
 		final Achievement ach = event.getAchievement();
 		final Player player = event.getPlayer();
 	
-		if (!GameUtils.getGamePlayers().contains(player)) {
+		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 
