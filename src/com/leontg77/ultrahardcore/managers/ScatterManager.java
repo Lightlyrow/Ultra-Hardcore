@@ -37,7 +37,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class ScatterManager {
 	private static final ScatterManager INSTANCE = new ScatterManager();
-	private static final int EFFECT_TICKS = NumberUtils.get999DaysInTicks();
+	private static final int EFFECT_TICKS = NumberUtils.TICKS_IN_999_DAYS;
 	
 	/**
 	 * List of all freeze effects.
@@ -128,7 +128,7 @@ public class ScatterManager {
 	 * @param toScatter The player to handle.
 	 */
 	public void handleLateScatter(Player toScatter) {
-		if (State.isState(State.INGAME)) {
+		if (State.isState(State.SCATTER)) {
 			for (PotionEffect effect : FREEZE_EFFECTS) {
 				if (toScatter.hasPotionEffect(effect.getType())) {
 					toScatter.removePotionEffect(effect.getType());
@@ -165,12 +165,12 @@ public class ScatterManager {
 				if (toScatter.size() > 1) {
 					PlayerUtils.broadcast(Main.PREFIX + "Finding scatter locations...");
 					
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 					}
 				}
 				
-				List<Location> loc = ScatterManager.findScatterLocations(world, radius, toScatter.size());
+				List<Location> loc = findScatterLocations(world, radius, toScatter.size());
 				int index = 0;
 
 				for (String teamOrPlayer : toScatter) {
@@ -185,7 +185,7 @@ public class ScatterManager {
 				if (toScatter.size() > 1) {
 					PlayerUtils.broadcast(Main.PREFIX + "Locations found, loading chunks...");
 
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 					}
 				}
@@ -209,7 +209,7 @@ public class ScatterManager {
 							i++;
 
 							if (toScatter.size() > 1) {
-								for (Player online : PlayerUtils.getPlayers()) {
+								for (Player online : Bukkit.getOnlinePlayers()) {
 									PacketUtils.sendAction(online, "§7Loading scatter locations... §8[§a" + i + "§7/§a" + locs.size() + "§8]");
 								}
 							}
@@ -217,7 +217,7 @@ public class ScatterManager {
 							if (toScatter.size() > 1) {
 								PlayerUtils.broadcast(Main.PREFIX + "All chunks loaded, starting scatter...");
 
-								for (Player online : PlayerUtils.getPlayers()) {
+								for (Player online : Bukkit.getOnlinePlayers()) {
 									online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 								}
 							}
@@ -287,7 +287,7 @@ public class ScatterManager {
 										i++;
 
 										if (toScatter.size() > 1) {
-											for (Player online : PlayerUtils.getPlayers()) {
+											for (Player online : Bukkit.getOnlinePlayers()) {
 												PacketUtils.sendAction(online, "§7Scattered " + scatter + " §8[§a" + i + "§7/§a" + names.size() + "§8]");
 											}
 										}
@@ -295,7 +295,7 @@ public class ScatterManager {
 										if (toScatter.size() > 1) {
 											PlayerUtils.broadcast(Main.PREFIX + "The scatter has finished.");
 											
-											for (Player online : PlayerUtils.getPlayers()) {
+											for (Player online : Bukkit.getOnlinePlayers()) {
 												online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 											}
 										}
@@ -323,7 +323,7 @@ public class ScatterManager {
 	 * 
 	 * @return A list of vaild scatter locations.
 	 */
-	public static List<Location> findScatterLocations(World world, int radius, int count) {
+	public List<Location> findScatterLocations(World world, int radius, int count) {
 		final List<Location> locs = new ArrayList<Location>();
 		
 		for (int i = 0; i < count; i++) {
@@ -369,7 +369,7 @@ public class ScatterManager {
 	 * @param loc the location.
 	 * @return True if its vaild, false otherwise.
 	 */
-	private static boolean isVaild(Location loc) {
+	private boolean isVaild(Location loc) {
 		loc.setY(loc.getWorld().getHighestBlockYAt(loc));
 		
 		Material type = loc.add(0, -1, 0).getBlock().getType();

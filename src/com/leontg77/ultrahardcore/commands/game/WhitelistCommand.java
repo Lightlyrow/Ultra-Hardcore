@@ -115,7 +115,7 @@ public class WhitelistCommand extends UHCCommand {
    		} 
    		
        	if (args[0].equalsIgnoreCase("all")) {
-   			for (Player online : PlayerUtils.getPlayers()) {
+   			for (Player online : Bukkit.getOnlinePlayers()) {
    				online.setWhitelisted(true);
    			}
    			
@@ -182,7 +182,7 @@ public class WhitelistCommand extends UHCCommand {
 		
 		if (args.length == 2) {
         	if (args[0].equalsIgnoreCase("add")) {
-        		for (Player online : PlayerUtils.getPlayers()) {
+        		for (Player online : Bukkit.getOnlinePlayers()) {
         			if (!online.isWhitelisted()) {
 	        			toReturn.add(online.getName());
         			}

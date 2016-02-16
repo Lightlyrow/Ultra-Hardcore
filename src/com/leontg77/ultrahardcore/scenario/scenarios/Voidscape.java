@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -120,7 +121,7 @@ public class Voidscape extends Scenario implements Listener, CommandExecutor {
 
 				int percentCompleted = ((totalChunks - locations.size())*100 / totalChunks);
 				
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendAction(online, Main.PREFIX + "Voidscape generation, §6" + percentCompleted + "% §7finished");
 				}
 			}

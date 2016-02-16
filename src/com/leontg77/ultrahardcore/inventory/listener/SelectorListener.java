@@ -9,8 +9,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**
  * Selector inventory listener class.
@@ -30,7 +30,7 @@ public class SelectorListener implements Listener {
 		Player player = (Player) event.getWhoClicked();
 		InvGUI manager = InvGUI.getInstance();
 		
-		Spectator spec = Spectator.getInstance();
+		SpecManager spec = SpecManager.getInstance();
 		
 		Inventory inv = event.getInventory();
 		ItemStack item = event.getCurrentItem();

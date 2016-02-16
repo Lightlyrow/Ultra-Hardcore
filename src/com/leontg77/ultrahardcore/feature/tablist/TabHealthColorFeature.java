@@ -1,14 +1,14 @@
 package com.leontg77.ultrahardcore.feature.tablist;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Tab health color feature.
@@ -24,7 +24,7 @@ public class TabHealthColorFeature extends ToggleableFeature {
 		icon.setType(Material.INK_SACK);
 		icon.setDurability((short) 10);
 		
-		slot = 8;
+		slot = 6;
 	}
 	
 	@Override
@@ -36,7 +36,7 @@ public class TabHealthColorFeature extends ToggleableFeature {
 		task.cancel();
 		task = null;
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.setPlayerListName(null);
 		}
 	}
@@ -45,10 +45,10 @@ public class TabHealthColorFeature extends ToggleableFeature {
 	public void onEnable() {
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					final String percentString = NumberUtils.makePercent(online.getHealth());
 					
-					if (Spectator.getInstance().isSpectating(online)) {
+					if (SpecManager.getInstance().isSpectating(online)) {
 						continue;
 					}
 					

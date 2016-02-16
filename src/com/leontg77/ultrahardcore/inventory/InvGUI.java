@@ -21,9 +21,9 @@ import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
+import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.utils.DateUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
@@ -36,7 +36,8 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  */
 public class InvGUI {
 	private static InvGUI manager = new InvGUI();
-	
+
+	protected final Timers timer = Timers.getInstance();
 	protected final Game game = Game.getInstance();
 	
 	public HashMap<Player, HashMap<Integer, Inventory>> pagesForPlayer = new HashMap<Player, HashMap<Integer, Inventory>>();
@@ -110,7 +111,7 @@ public class InvGUI {
 	 * @return The opened inventory.
 	 */
 	public Inventory openSelector(Player player) {
-		List<Player> list = GameUtils.getGamePlayers();
+		List<Player> list = game.getPlayers();
 		Inventory inv = null;
 		
 		int pages = ((list.size() / 28) + 1);

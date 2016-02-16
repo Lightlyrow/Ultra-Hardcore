@@ -55,7 +55,7 @@ public class SethealthCommand extends UHCCommand {
 		}
 		
 		if (args[1].equals("*")) {
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				double hp = health;
 
 				// health can't be higher than their maximum.

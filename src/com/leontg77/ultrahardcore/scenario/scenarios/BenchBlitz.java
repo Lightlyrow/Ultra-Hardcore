@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * BenchBlitz scenario class
@@ -49,7 +48,7 @@ public class BenchBlitz extends Scenario implements Listener {
 		final Player player = (Player) event.getWhoClicked();
 		final ItemStack item = event.getCurrentItem();
 		
-		if (!GameUtils.getGamePlayers().contains(player)) {
+		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 		

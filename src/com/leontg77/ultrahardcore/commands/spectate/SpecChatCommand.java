@@ -3,14 +3,14 @@ package com.leontg77.ultrahardcore.commands.spectate;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**
  * SpecChat command class
@@ -29,7 +29,7 @@ public class SpecChatCommand extends UHCCommand {
 			throw new CommandException("Only players can talk in the spectator chat.");
 		}
 		
-        Spectator spec = Spectator.getInstance();
+        SpecManager spec = SpecManager.getInstance();
         Player player = (Player) sender;
         
 		if (!spec.isSpectating(player)) {
@@ -42,7 +42,7 @@ public class SpecChatCommand extends UHCCommand {
         
         String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
         
-        for (Player online : PlayerUtils.getPlayers()) {
+        for (Player online : Bukkit.getOnlinePlayers()) {
         	if (!spec.isSpectating(online)) {
         		continue;
         	}

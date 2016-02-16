@@ -311,7 +311,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 						    		
 						    		PlayerUtils.broadcast(PREFIX + "§a" + slave.getName() + "§7 was sold to §a" + winner.getName() + "§7 for §a" + (biggestBid == 1 ? "1 diamond" : biggestBid + " diamonds") + "§7.");
 
-									for (Player online : PlayerUtils.getPlayers()) {
+									for (Player online : Bukkit.getOnlinePlayers()) {
 							    		online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 							    	}
 						    		
@@ -333,7 +333,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 				    			if (bidTime == -1) {
 				    				List<Player> list = new ArrayList<Player>();
 				    				
-				    				for (Player online : PlayerUtils.getPlayers()) {
+				    				for (Player online : Bukkit.getOnlinePlayers()) {
 				    					if (teams.getTeam(online) == null) {
 				    						list.add(online);
 				    					}
@@ -358,7 +358,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 							    	
 							    	PlayerUtils.broadcast(PREFIX + "§a" + currentSlave + "§7 is now up for auction! Use §a/bid§7!");
 						    		
-									for (Player online : PlayerUtils.getPlayers()) {
+									for (Player online : Bukkit.getOnlinePlayers()) {
 							    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 							    	}
 									return;
@@ -367,7 +367,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 								if (bidTime < 4) {
 									PlayerUtils.broadcast(PREFIX + "Bidding ends in §a" + bidTime + "§7.");
 
-									for (Player online : PlayerUtils.getPlayers()) {
+									for (Player online : Bukkit.getOnlinePlayers()) {
 							    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 							    	}
 								}
@@ -381,7 +381,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 					
 		    		PlayerUtils.broadcast(PREFIX + "Bidding starts in §a" + timeLeft + "§7.");
 		    		
-			    	for (Player online : PlayerUtils.getPlayers()) {
+			    	for (Player online : Bukkit.getOnlinePlayers()) {
 			    		online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 			    	}
 			    	

@@ -45,7 +45,7 @@ public class BanIPCommand extends UHCCommand {
 		PlayerUtils.broadcast(Main.PREFIX + "An IP has been banned for §a" + message);
 		final BanEntry ban = list.addBan(args[0], message, null, sender.getName());
 		
-    	for (Player online : PlayerUtils.getPlayers()) {
+    	for (Player online : Bukkit.getOnlinePlayers()) {
     		if (!online.getAddress().getAddress().getHostAddress().equals(args[0])) {
     			continue;
     		}

@@ -7,10 +7,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**
  * Back command class.
@@ -29,7 +29,7 @@ public class BackCommand extends UHCCommand {
 			throw new CommandException("Only players can teleport to their last location.");
 		}
 
-		Spectator spec = Spectator.getInstance();
+		SpecManager spec = SpecManager.getInstance();
 		
 		Player player = (Player) sender;
 		User user = User.get(player);

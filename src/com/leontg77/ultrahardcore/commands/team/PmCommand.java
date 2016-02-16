@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.google.common.base.Joiner;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 
 /**
@@ -32,7 +32,7 @@ public class PmCommand extends UHCCommand {
 		
 		final Player player = (Player) sender;
 		
-		final Spectator spec = Spectator.getInstance();
+		final SpecManager spec = SpecManager.getInstance();
 		final TeamManager teams = TeamManager.getInstance();
 		
 		final Team team = teams.getTeam(player);

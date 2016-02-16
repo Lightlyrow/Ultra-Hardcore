@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.feature.horses;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -10,7 +11,6 @@ import org.spigotmc.event.entity.EntityMountEvent;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Horses feature class.
@@ -28,7 +28,7 @@ public class HorseFeature extends ToggleableFeature implements Listener {
 
     @Override
     public void onDisable() {
-        for (Player player : PlayerUtils.getPlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             kickOffHorse(player);
         }
     }

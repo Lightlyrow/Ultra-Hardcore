@@ -66,7 +66,7 @@ public class BanCommand extends UHCCommand {
     				PlayerUtils.broadcast(Main.PREFIX + "Incoming ban in §6" + left + "§7.");
     				left--;
     				
-    		    	for (Player online : PlayerUtils.getPlayers()) {
+    		    	for (Player online : Bukkit.getOnlinePlayers()) {
     		    		online.playSound(online.getLocation(), Sound.ANVIL_LAND, 1, 1);
     		    	}
     		    	return;
@@ -74,7 +74,7 @@ public class BanCommand extends UHCCommand {
     				
     			PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been banned for §a" + message + " §8(§apermanent§8)");
 				
-		    	for (Player online : PlayerUtils.getPlayers()) {
+		    	for (Player online : Bukkit.getOnlinePlayers()) {
 		    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
 		    	}
 		    	
@@ -107,7 +107,7 @@ public class BanCommand extends UHCCommand {
 		List<String> toReturn = new ArrayList<String>();
 		
 		if (args.length == 1) {
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				toReturn.add(online.getName());
 			}
 		}

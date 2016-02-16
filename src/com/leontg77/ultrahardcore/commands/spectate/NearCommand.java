@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -32,7 +32,7 @@ public class NearCommand extends UHCCommand {
 			throw new CommandException("Only players can see nearby players.");
 		}
 
-		Spectator spec = Spectator.getInstance();
+		SpecManager spec = SpecManager.getInstance();
 		Player player = (Player) sender;
 		
 		if (!spec.isSpectating(player)) {

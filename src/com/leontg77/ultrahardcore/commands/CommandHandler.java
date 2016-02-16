@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -197,7 +198,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	private List<String> getAllPlayerNames(CommandSender sender) {
 		List<String> list = new ArrayList<String>();
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (sender instanceof Player && !((Player) sender).canSee(online)) {
 				continue;
 			}

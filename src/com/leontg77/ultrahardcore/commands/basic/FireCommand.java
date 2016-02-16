@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import com.leontg77.ultrahardcore.Fireworks;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.managers.FireworkManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -24,7 +24,7 @@ public class FireCommand extends UHCCommand {
 
 	@Override
 	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
-		Fireworks fire = Fireworks.getInstance();
+		FireworkManager fire = FireworkManager.getInstance();
 		
 		PlayerUtils.broadcast(Main.PREFIX + "The firework show has started.");
 		fire.startFireworkShow();

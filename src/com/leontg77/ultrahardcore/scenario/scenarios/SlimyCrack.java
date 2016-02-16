@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -181,7 +182,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
                     public void run() {
                         populate(world, chunk, width, length, useZ);
 						
-						for (Player online : PlayerUtils.getPlayers()) {
+						for (Player online : Bukkit.getOnlinePlayers()) {
 							PacketUtils.sendAction(online, PREFIX + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
 						}
                     }

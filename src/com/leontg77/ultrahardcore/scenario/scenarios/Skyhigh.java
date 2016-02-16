@@ -11,7 +11,6 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
 import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -37,7 +36,7 @@ public class Skyhigh extends Scenario implements Listener {
 	
 	@EventHandler
 	public void on(FinalHealEvent event) {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : game.getPlayers()) {
 			PlayerUtils.giveItem(online, new ItemStack(Material.DIAMOND_SPADE, 1));
 			PlayerUtils.giveItem(online, new ItemStack(Material.FEATHER, 32));
 			PlayerUtils.giveItem(online, new ItemStack(Material.STRING, 2));
@@ -54,11 +53,7 @@ public class Skyhigh extends Scenario implements Listener {
 	public void on(PvPEnableEvent event) {
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (!GameUtils.getGameWorlds().contains(online.getWorld())) {
-						continue;
-					}
-					
+				for (Player online : game.getPlayers()) {
 					if (online.getLocation().getY() > 101) {
 						continue;
 					}

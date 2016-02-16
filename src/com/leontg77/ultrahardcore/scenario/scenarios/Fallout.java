@@ -7,7 +7,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -35,11 +34,7 @@ public class Fallout extends Scenario {
 	public void on(GameStartEvent event) {
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (!GameUtils.getGameWorlds().contains(online.getWorld())) {
-						continue;
-					}
-					
+				for (Player online : game.getPlayers()) {
 					if (online.getLocation().getBlockY() <= 60) {
 						continue;
 					}

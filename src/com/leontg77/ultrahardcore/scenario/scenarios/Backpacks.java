@@ -15,7 +15,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Backpacks scenario class
@@ -46,7 +45,7 @@ public class Backpacks extends Scenario implements Listener, CommandExecutor {
 		final Player player = event.getEntity();
 		final Block block = player.getLocation().subtract(0, 1, 0).getBlock();
 		
-		if (!GameUtils.getGamePlayers().contains(player)) {
+		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 		
@@ -77,7 +76,7 @@ public class Backpacks extends Scenario implements Listener, CommandExecutor {
 			return true;
 		}
 		
-		if (!GameUtils.getGamePlayers().contains(player)) {
+		if (!game.getPlayers().contains(player)) {
 			player.sendMessage(ChatColor.RED + "You can only use your backpack while playing.");
 			return true;
 		}

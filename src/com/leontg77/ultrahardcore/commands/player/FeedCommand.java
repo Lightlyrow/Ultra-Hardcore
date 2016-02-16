@@ -40,7 +40,7 @@ public class FeedCommand extends UHCCommand {
 		}
 		
 		if (args[0].equals("*")) {
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				User user = User.get(online);
 				user.resetFood();
 			}

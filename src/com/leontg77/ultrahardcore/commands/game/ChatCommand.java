@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.commands.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -43,7 +44,7 @@ public class ChatCommand extends UHCCommand {
 		}
 		
 		if (args[0].equalsIgnoreCase("clear")) {
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				for (int i = 0; i < 150; i++) {
 					online.sendMessage("§0");
 				}

@@ -31,7 +31,6 @@ import org.bukkit.inventory.meta.BannerMeta;
 import com.google.common.collect.ImmutableSet;
 import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -112,8 +111,8 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 			for (int i = 0; i < amount; i++) {
 				List<Player> players = new ArrayList<Player>();
 				
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (getTeam(online) == null && GameUtils.getGamePlayers().contains(online)) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					if (getTeam(online) == null && game.getPlayers().contains(online)) {
 						players.add(online);
 					}
 				}
@@ -183,7 +182,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 			if (args.length == 0) {
 				sender.sendMessage(PREFIX + "Gave item to everyone.");
 				
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					MysteryTeam team = getTeam(online);
 					
 					if (team == null) {
@@ -285,7 +284,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 	public void on(PvPEnableEvent event) {
 		PlayerUtils.broadcast(PREFIX + "Banners have been given.");
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			MysteryTeam team = getTeam(online);
 			
 			if (team == null) {

@@ -1,9 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import java.util.List;
-
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,7 +10,6 @@ import org.bukkit.scoreboard.Team;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -35,7 +31,7 @@ public class LAFS extends Scenario implements Listener {
 	public void onEnable() {}
 	
 	@EventHandler
-	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+	public void on(PlayerInteractEntityEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
@@ -47,10 +43,9 @@ public class LAFS extends Scenario implements Listener {
 		Player clicked = (Player) event.getRightClicked();
 		Player player = event.getPlayer();
 		
-		List<World> worlds = GameUtils.getGameWorlds();
 		TeamManager teams = TeamManager.getInstance();
 		
-		if (!worlds.contains(player.getWorld()) && !worlds.contains(clicked.getWorld())) {
+		if (!game.getPlayers().contains(player) && !game.getPlayers().contains(clicked)) {
 			return;
 		}
 		

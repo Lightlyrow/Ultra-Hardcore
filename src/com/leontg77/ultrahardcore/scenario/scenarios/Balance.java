@@ -14,7 +14,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Balance scenario class
@@ -51,7 +50,7 @@ public class Balance extends Scenario implements Listener {
 		final Player player = event.getPlayer();
 		final Block block = event.getBlock();
 		
-		if (!GameUtils.getGameWorlds().contains(block.getWorld())) {
+		if (!game.getWorlds().contains(block.getWorld())) {
 			return;
 		}
 		

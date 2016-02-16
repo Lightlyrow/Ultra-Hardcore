@@ -12,16 +12,22 @@ import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Main.BorderShrink;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.feature.border.BorderShrinkFeature;
+import com.leontg77.ultrahardcore.feature.border.BorderShrinkFeature.BorderShrink;
+import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
+import com.leontg77.ultrahardcore.feature.pearl.PearlDamageFeature;
+import com.leontg77.ultrahardcore.feature.rates.AppleRatesFeature;
+import com.leontg77.ultrahardcore.feature.rates.FlintRatesFeature;
+import com.leontg77.ultrahardcore.feature.rates.ShearsFeature;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -41,7 +47,7 @@ public class ConfigCommand extends UHCCommand {
 	 * @author LeonTG77
 	 */
 	public enum ConfigValue {
-		APPLERATES, BORDERSHRINK, FLINTRATES, HEADSHEAL, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PEARLDAMAGE, PVP, RRNAME, SCENARIOS, SHEARRATES, STATE, TEAMSIZE, WORLD;
+		APPLERATES, BORDERSHRINK, FLINTRATES, HEADSHEAL, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PEARLDAMAGE, PVP, SCENARIOS, SHEARRATES, STATE, TEAMSIZE, WORLD;
 	}
 
 	public ConfigCommand() {
@@ -91,6 +97,8 @@ public class ConfigCommand extends UHCCommand {
 			return true;
 		}
 		
+		final FeatureManager featMan = FeatureManager.getInstance();
+		
 		switch (type) {
 		case APPLERATES:
 			double appleRate = parseDouble(args[1], "apple rate");
@@ -104,7 +112,8 @@ public class ConfigCommand extends UHCCommand {
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + NumberUtils.formatDouble(appleRate) + "%");
-			game.setAppleRates(appleRate);
+			
+			featMan.getFeature(AppleRatesFeature.class).setAppleRates(appleRate);
 			break;
 		case BORDERSHRINK:
 			BorderShrink border;
@@ -121,7 +130,7 @@ public class ConfigCommand extends UHCCommand {
 				PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink " + border.getPreText() + border.name().toLowerCase());
 			}
 			
-			game.setBorderShrink(border);
+			featMan.getFeature(BorderShrinkFeature.class).setBorderShrink(border);
 			break;
 		case STATE:
 			State state;
@@ -147,13 +156,15 @@ public class ConfigCommand extends UHCCommand {
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Flint rates has been changed to §a" + NumberUtils.formatDouble(flintRate) + "%");
-			game.setFlintRates(flintRate);
+			
+			featMan.getFeature(FlintRatesFeature.class).setFlintRates(flintRate);
 			break;
 		case HEADSHEAL:
 			double headheals = parseDouble(args[1], "heal amount");
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + NumberUtils.formatDouble(headheals) + "§7 hearts.");
-			game.setGoldenHeadsHeal(headheals);
+			
+			featMan.getFeature(GoldenHeadsFeature.class).setHealAmount(headheals);
 			break;
 		case HOST:
 			PlayerUtils.broadcast(Main.PREFIX + "The host has been changed to §a" + args[1] + "§7.");
@@ -171,8 +182,8 @@ public class ConfigCommand extends UHCCommand {
 				return true;
 			}
 			
-			if (maxplayers < 1) {
-				sender.sendMessage(ChatColor.RED + "You cannot set the slots lower than 1.");
+			if (maxplayers < 10) {
+				sender.sendMessage(ChatColor.RED + "You cannot set the slots lower than 10.");
 				return true;
 			}
 			
@@ -200,19 +211,13 @@ public class ConfigCommand extends UHCCommand {
 				PlayerUtils.broadcast(Main.PREFIX + "Ender pearls will now deal §a" + NumberUtils.formatDouble(damage) + "§7 hearts.");
 			}
 			
-			game.setPearlDamage(damage);
-			break;
-		case RRNAME:
-			String rrname = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
-			
-			game.setRRName(rrname);
-			PlayerUtils.broadcast(Main.PREFIX + "The recorded round is now called §a" + game.getRRName() + "§7.");
+			featMan.getFeature(PearlDamageFeature.class).setPearlDamage(damage);
 			break;
 		case SCENARIOS:
 			String scens = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
 			
 			game.setScenarios(scens);
-			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize(true, true) + game.getScenarios() + "§7.");
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + game.getAdvancedTeamSize(true, true) + game.getScenarios() + "§7.");
 			break;
 		case SHEARRATES:
 			double shearRate = parseDouble(args[1], "shear rate");
@@ -226,11 +231,12 @@ public class ConfigCommand extends UHCCommand {
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Shear rates has been changed to §a" + NumberUtils.formatDouble(shearRate) + "%");
-			game.setShearRates(shearRate);
+			
+			featMan.getFeature(ShearsFeature.class).setShearRates(shearRate);
 			break;
 		case TEAMSIZE:
 			game.setTeamSize(args[1]);
-			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + GameUtils.getTeamSize(true, true) + game.getScenarios() + "§7.");
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + game.getAdvancedTeamSize(true, true) + game.getScenarios() + "§7.");
 			break;
 		case WORLD:
 			PlayerUtils.broadcast(Main.PREFIX + "The game will now be played in '§a" + args[1] + "§7'.");
@@ -268,7 +274,7 @@ public class ConfigCommand extends UHCCommand {
 	    		}
 				break;
 			case HOST:
-	    		for (Player online : PlayerUtils.getPlayers()) {
+	    		for (Player online : Bukkit.getOnlinePlayers()) {
 	    			Rank rank = User.get(online).getRank();
 	    			
 	    			if (rank.getLevel() > 4) {

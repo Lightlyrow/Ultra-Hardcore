@@ -12,10 +12,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**
  * Helpop command class.
@@ -41,9 +40,9 @@ public class HelpopCommand extends UHCCommand {
 		}
 		
 		String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
-		Spectator spec = Spectator.getInstance();
+		SpecManager spec = SpecManager.getInstance();
 
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (!online.hasPermission("uhc.staff") && !spec.isSpectating(online)) {
 				continue;
 			}

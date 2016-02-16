@@ -16,7 +16,6 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Sidebar reset feature class.
@@ -47,7 +46,7 @@ public class SidebarResetFeature extends ToggleableFeature implements Listener {
 		} 
 
 		final BoardManager board = BoardManager.getInstance();
-		final List<World> worlds = GameUtils.getGameWorlds();
+		final List<World> worlds = game.getWorlds();
 	    
 	    // I don't care about the rest if it hasn't started or they're not in a game world.
 	    if (!State.isState(State.INGAME) || !worlds.contains(player.getWorld())) {

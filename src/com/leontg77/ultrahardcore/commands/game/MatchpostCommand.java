@@ -5,11 +5,9 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Matchpost command class.
@@ -23,11 +21,10 @@ public class MatchpostCommand extends UHCCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String[] args) throws CommandException {
-		String teamSize = GameUtils.getTeamSize(false, false);
-		Game game = Game.getInstance();
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
+		final String teamSize = game.getAdvancedTeamSize(false, false).toLowerCase();
 		
-		if (teamSize.startsWith("No") || teamSize.startsWith("Open")) {
+		if (teamSize.startsWith("no") || teamSize.startsWith("open")) {
 			throw new CommandException("There are no matches running.");
 		}
 		
@@ -36,7 +33,7 @@ public class MatchpostCommand extends UHCCommand {
 	}
 
 	@Override
-	public List<String> tabComplete(CommandSender sender, String[] args) {
+	public List<String> tabComplete(final CommandSender sender, final String[] args) {
 		return new ArrayList<String>();
 	}
 }

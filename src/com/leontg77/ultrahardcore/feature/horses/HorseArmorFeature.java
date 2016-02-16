@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.feature.horses;
 
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -21,7 +22,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Horse armor feature class.
@@ -40,7 +40,7 @@ public class HorseArmorFeature extends ToggleableFeature implements Listener {
 
     @Override
     public void onDisable() {
-        for (Player player : PlayerUtils.getPlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             if (!player.isInsideVehicle()) {
             	continue;
             }

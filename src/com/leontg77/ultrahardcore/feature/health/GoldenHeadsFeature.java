@@ -34,7 +34,6 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.VengefulSpirits;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Golden head feature class.
@@ -98,7 +97,7 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 
 		final Player player = event.getEntity();
 		
-		final List<World> worlds = GameUtils.getGameWorlds();
+		final List<World> worlds = game.getWorlds();
 		final Arena arena = Arena.getInstance();
 		
 		// the arena has it's own way of doing deaths.

@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -47,7 +48,7 @@ public class Bombers extends Scenario implements Listener {
 		meta.spigot().setUnbreakable(true);
 		toGive.setItemMeta(meta);
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			PlayerUtils.giveItem(online, toGive.clone());
 		}
 	}

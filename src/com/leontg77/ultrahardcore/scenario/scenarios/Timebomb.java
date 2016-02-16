@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -38,11 +37,11 @@ public class Timebomb extends Scenario implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		final Player player = event.getEntity();
 		
-		if (!GameUtils.getGameWorlds().contains(player.getWorld())) {
+		if (!game.getWorlds().contains(player.getWorld())) {
 			return;
 		}
 		
-		User user = User.get(player);
+		final User user = User.get(player);
 		
 		final Location loc = player.getLocation().add(0, -1, 0);
 		event.setKeepInventory(true);

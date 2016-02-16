@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,7 +16,6 @@ import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Timer command class.
@@ -68,13 +68,13 @@ public class TimerCommand extends UHCCommand {
 			
 			public void run() {
 				if (!countdown) {
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						PacketUtils.sendAction(online, message); 
 					}
 					return;
 				}
 					
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendAction(online, message + " " + DateUtils.ticksToString(ticks)); 
 				}
 				ticks--;

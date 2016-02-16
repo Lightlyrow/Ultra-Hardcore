@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class GoneFishing extends Scenario implements Listener {
 
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.getInventory().remove(Material.FISHING_ROD);
 			online.getInventory().remove(Material.ANVIL);
 			online.setLevel(0);
@@ -47,7 +48,7 @@ public class GoneFishing extends Scenario implements Listener {
 		
 		ItemStack anvil = new ItemStack (Material.ANVIL, 64);
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			PlayerUtils.giveItem(online, rod);
 			PlayerUtils.giveItem(online, anvil);
 			online.setLevel(20000);

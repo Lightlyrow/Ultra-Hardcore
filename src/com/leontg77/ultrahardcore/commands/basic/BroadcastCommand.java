@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.commands.basic;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -33,7 +34,7 @@ public class BroadcastCommand extends UHCCommand {
 		String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
 		PlayerUtils.broadcast(Main.PREFIX + "§a§l" + ChatColor.translateAlternateColorCodes('&', message));
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 		}
 		return true;

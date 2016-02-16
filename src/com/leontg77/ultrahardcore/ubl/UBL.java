@@ -20,11 +20,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Universial Ban List class.
@@ -122,7 +121,7 @@ public class UBL implements Runnable {
                 data = downloadBanlist(in, bufferSize, timeout * 20);
                 plugin.getLogger().info("UBL has been updated.");
                 
-                for (Player online : PlayerUtils.getPlayers()) {
+                for (Player online : Bukkit.getOnlinePlayers()) {
                 	if (!isBanned(online.getUniqueId())) {
                 		continue;
                 	}
@@ -133,7 +132,7 @@ public class UBL implements Runnable {
                 plugin.getLogger().severe("Connection was interrupted while downloading banlist from " + banlistURL);
                 data = loadFromBackup();
                 
-                for (Player online : PlayerUtils.getPlayers()) {
+                for (Player online : Bukkit.getOnlinePlayers()) {
                 	if (!isBanned(online.getUniqueId())) {
                 		continue;
                 	}
@@ -144,7 +143,7 @@ public class UBL implements Runnable {
                 plugin.getLogger().log(Level.SEVERE, "Timed out while waiting for banlist server to send data", ex);
                 data = loadFromBackup();
                 
-                for (Player online : PlayerUtils.getPlayers()) {
+                for (Player online : Bukkit.getOnlinePlayers()) {
                 	if (!isBanned(online.getUniqueId())) {
                 		continue;
                 	}
@@ -158,7 +157,7 @@ public class UBL implements Runnable {
             plugin.getLogger().severe("banlist-url in the config.yml is invalid or corrupt. This must be corrected and the config reloaded before the UBL can be updated");
             data = loadFromBackup();
             
-            for (Player online : PlayerUtils.getPlayers()) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
             	if (!isBanned(online.getUniqueId())) {
             		continue;
             	}
@@ -169,7 +168,7 @@ public class UBL implements Runnable {
             plugin.getLogger().warning("Banlist server " + banlistURL + " is currently unreachable");
             data = loadFromBackup();
             
-            for (Player online : PlayerUtils.getPlayers()) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
             	if (!isBanned(online.getUniqueId())) {
             		continue;
             	}

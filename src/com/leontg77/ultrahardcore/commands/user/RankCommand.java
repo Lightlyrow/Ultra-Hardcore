@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.commands.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -56,7 +57,7 @@ public class RankCommand extends UHCCommand {
 		List<String> toReturn = new ArrayList<String>();
 		
 		if (args.length == 1) {
-    		for (Player online : PlayerUtils.getPlayers()) {
+    		for (Player online : Bukkit.getOnlinePlayers()) {
 				toReturn.add(online.getName());
     		}
         }

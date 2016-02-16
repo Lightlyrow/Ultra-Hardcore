@@ -9,7 +9,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Timber scenario class
@@ -36,7 +35,7 @@ public class Timber extends Scenario implements Listener {
 			return;
 		}
 		
-		if (!GameUtils.getGameWorlds().contains(block.getWorld())) {
+		if (!game.getWorlds().contains(block.getWorld())) {
 			return;
 		}
 

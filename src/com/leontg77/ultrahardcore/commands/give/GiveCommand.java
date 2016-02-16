@@ -62,7 +62,7 @@ public class GiveCommand extends UHCCommand {
 		}
 		
 		if (args.length > 3) {
-			durability = (short) parseInt(args[2], "durability");
+			durability = (short) parseInt(args[3], "durability");
 		}
 
 		ItemStack item = new ItemStack(material, amount, durability);

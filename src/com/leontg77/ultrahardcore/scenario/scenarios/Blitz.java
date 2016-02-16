@@ -1,16 +1,15 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Blitz scenario class
@@ -36,7 +35,7 @@ public class Blitz extends Scenario implements Listener {
 		
 		on(new GameStartEvent());
 		
-		if (Timers.meetup > 0) {
+		if (timer.getMeetup() > 0) {
 			return;
 		}
 		
@@ -45,14 +44,14 @@ public class Blitz extends Scenario implements Listener {
 	
 	@EventHandler
 	public void on(GameStartEvent event) {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.setHealth(1);
 		}
 	}
 	
 	@EventHandler
 	public void on(MeetupEvent event) {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			User.get(online).resetHealth();
 		}
 	}

@@ -9,9 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Ms command class.
@@ -43,7 +43,9 @@ public class MsCommand extends UHCCommand {
 			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
-		ping = PlayerUtils.getPing(target);
+		User user = User.get(target);
+		
+		ping = user.getPing();
 		
 		// Not calculated yet
 		if (ping == 0) { 

@@ -30,7 +30,6 @@ import org.bukkit.util.Vector;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Pyrophobia scenario class
@@ -208,7 +207,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 
 		int one = ((this.totalChunks - this.locations.size())*100 / totalChunks);
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			PacketUtils.sendAction(online, "§4§lPyrophobia §8» §7Processed: §6" + ((one / 2) + 50) + "%");
 		}
 	}
@@ -236,7 +235,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 
 		int one = ((totalChunks - locations.size())*100 / totalChunks);
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			PacketUtils.sendAction(online, "§4§lPyrophobia §8» §7Processed: §6" + (one / 2) + "%");
 		}
 	}

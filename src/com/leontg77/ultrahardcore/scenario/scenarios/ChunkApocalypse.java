@@ -126,7 +126,7 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 
 				int percentCompleted = ((totalChunks - locations.size())*100 / totalChunks);
 				
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendAction(online, PREFIX + "Removed chunk at x:" + chunk.getX() + " z:" + chunk.getZ() + ", §6" + percentCompleted + "% §7finished");
 				}
 			}

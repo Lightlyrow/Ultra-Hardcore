@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +13,6 @@ import org.bukkit.potion.PotionEffectType;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * 100Hearts scenario class
@@ -27,14 +27,14 @@ public class HundredHearts extends Scenario implements Listener {
 
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.setMaxHealth(20);
 		}
 	}
 
 	@Override
 	public void onEnable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.setMaxHealth(200);
 			online.setHealth(200);
 		}
@@ -42,7 +42,7 @@ public class HundredHearts extends Scenario implements Listener {
 
 	@EventHandler
 	public void on(FinalHealEvent event) {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.setMaxHealth(200);
 			online.setHealth(200);
 		}

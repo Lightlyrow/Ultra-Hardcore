@@ -19,7 +19,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -52,7 +51,7 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 	
 	@Override
 	public void onEnable() {
-		if (!State.isState(State.INGAME) || Timers.pvp > 0) {
+		if (!State.isState(State.INGAME) || timer.getPvP() > 0) {
 			return;
 		}
 		
@@ -61,13 +60,13 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 	
 	@EventHandler
 	public void on(PvPEnableEvent event) {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			list.add(online.getName());
 		}
 		
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					if (!list.contains(online.getName())) {
 						online.sendMessage(ChatColor.GREEN + "BestBTC players gained a heart!");
 						continue;
@@ -102,7 +101,7 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 			return;
 		}
 		
-		if (Timers.time < 20) {
+		if (timer.getTimeSinceStart() < 20) {
 			return;
 		}
 

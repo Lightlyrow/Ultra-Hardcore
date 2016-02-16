@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,7 +9,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * InfinieEnchanter scenario class
@@ -23,7 +23,7 @@ public class InfiniteEnchanter extends Scenario implements Listener {
 
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.getInventory().remove(Material.ENCHANTMENT_TABLE);
 			online.getInventory().remove(Material.BOOKSHELF);
 			online.getInventory().remove(Material.ANVIL);
@@ -36,7 +36,7 @@ public class InfiniteEnchanter extends Scenario implements Listener {
 	
 	@EventHandler
 	public void on(FinalHealEvent event) {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.getInventory().addItem(new ItemStack (Material.ENCHANTMENT_TABLE, 128));
 			online.getInventory().addItem(new ItemStack (Material.BOOKSHELF, 128));
 			online.getInventory().addItem(new ItemStack (Material.ANVIL, 128));

@@ -67,7 +67,7 @@ public class ArenaCommand extends UHCCommand {
 						game.setArenaBoard(false);
 						
 						BoardManager board = BoardManager.getInstance();
-						board.kills.setDisplaySlot(DisplaySlot.SIDEBAR);
+						board.getKillsObjective().setDisplaySlot(DisplaySlot.SIDEBAR);
 					} else {
 						PlayerUtils.broadcast(Arena.PREFIX + "The arena board has been enabled.");
 						arena.arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);

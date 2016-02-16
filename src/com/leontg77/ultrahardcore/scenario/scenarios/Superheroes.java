@@ -23,8 +23,8 @@ import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.Lists;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -46,7 +46,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			removeEffects(online);
 		}
 		
@@ -62,7 +62,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 	public void on(FinalHealEvent event) {
 		PlayerUtils.broadcast(Main.PREFIX + "Setting hero types...");
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			HeroType type = getRandomType(online);
 			
 			if (type == null) {
@@ -106,7 +106,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 			return true;
 		}
 		
-		Spectator spec = Spectator.getInstance();
+		SpecManager spec = SpecManager.getInstance();
 		
 		if (!sender.hasPermission("uhc.superheroes") && !spec.isSpectating(sender.getName())) {
 			sender.sendMessage(Main.NO_PERM_MSG);
@@ -128,7 +128,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				addEffects(online, types.get(online.getName()));
 			}
 			
@@ -334,7 +334,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
         return type;
     }
 	
-	private static final int effectTicks = NumberUtils.get999DaysInTicks();
+	private static final int effectTicks = NumberUtils.TICKS_IN_999_DAYS;
 	
 	/**
 	 * HeroType enum class.

@@ -8,9 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**
  * Tp command class
@@ -25,7 +25,7 @@ public class TpCommand extends UHCCommand {
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
-		Spectator spec = Spectator.getInstance();
+		SpecManager spec = SpecManager.getInstance();
 		
 		if (!sender.hasPermission("uhc.tp.bypass") && !spec.isSpectating(sender.getName())) {
 			throw new CommandException("You can only do this while spectating.");

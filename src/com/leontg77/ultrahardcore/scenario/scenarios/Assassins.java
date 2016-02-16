@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +21,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -47,7 +46,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	
 	@Override
 	public void onEnable() {
-		if (!State.isState(State.INGAME) || Timers.pvp > 0) {
+		if (!State.isState(State.INGAME) || timer.getPvP() > 0) {
 			return;
 		}
 		
@@ -58,7 +57,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	public void on(final PvPEnableEvent event) {
 		PlayerUtils.broadcast(PREFIX + "Assigning targets...");
 		
-		final List<Player> players = PlayerUtils.getPlayers();
+		final List<Player> players = new ArrayList<Player>(Bukkit.getOnlinePlayers());
 		Collections.shuffle(players);
 
 		for (int i = 0; i < players.size(); i++) {
@@ -74,7 +73,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 		final Player player = event.getEntity();
 		final Player killer = player.getKiller();
 		
-		if (!GameUtils.getGamePlayers().contains(player) || !GameUtils.getGamePlayers().contains(killer)) {
+		if (!game.getPlayers().contains(player) || !game.getPlayers().contains(killer)) {
 			return;
 		}
 
@@ -101,7 +100,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 		final Player player = event.getPlayer();
 		final String target = getAssassin(player.getName());
 		
-		if (!GameUtils.getGamePlayers().contains(player)) {
+		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 

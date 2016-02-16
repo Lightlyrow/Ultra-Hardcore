@@ -150,7 +150,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
                     public void run() {
                         populate(world, chunk, width, length);
 						
-						for (Player online : PlayerUtils.getPlayers()) {
+						for (Player online : Bukkit.getOnlinePlayers()) {
 							PacketUtils.sendAction(online, PREFIX + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
 						}
                     }

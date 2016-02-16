@@ -57,7 +57,7 @@ public class DQCommand extends UHCCommand {
     				PlayerUtils.broadcast(Main.PREFIX + "Incoming DQ in §6" + left + "§7.");
     				left--;
     				
-    		    	for (Player online : PlayerUtils.getPlayers()) {
+    		    	for (Player online : Bukkit.getOnlinePlayers()) {
     		    		online.playSound(online.getLocation(), Sound.ANVIL_LAND, 1, 1);
     		    	}
     		    	return;
@@ -65,7 +65,7 @@ public class DQCommand extends UHCCommand {
     				
     			PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been disqualified for §a" + message + " §8(§afor this game§8)");
 				
-		    	for (Player online : PlayerUtils.getPlayers()) {
+		    	for (Player online : Bukkit.getOnlinePlayers()) {
 		    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
 		    	}
 		    	

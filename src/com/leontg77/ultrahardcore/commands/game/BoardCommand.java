@@ -11,7 +11,6 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -31,10 +30,10 @@ public class BoardCommand extends UHCCommand {
 			throw new CommandException("You cannot toggle the board when the game has started.");
 		}
 		
-		BoardManager score = BoardManager.getInstance();
+		final BoardManager score = BoardManager.getInstance();
 		
 		if (game.pregameBoard()) {
-			for (String entry : score.board.getEntries()) {
+			for (String entry : score.getBoard().getEntries()) {
 				score.resetScore(entry);
 			}
 			
@@ -43,7 +42,7 @@ public class BoardCommand extends UHCCommand {
 			return true;
 		}
 		
-		for (String entry : score.board.getEntries()) {
+		for (String entry : score.getBoard().getEntries()) {
 			score.resetScore(entry);
 		}
 		
@@ -64,7 +63,7 @@ public class BoardCommand extends UHCCommand {
 
 		score.setScore("§b ", 8);
 		score.setScore("§8» §cTeamsize:", 7);
-		score.setScore("§8» §7" + GameUtils.getTeamSize(true, false), 6);
+		score.setScore("§8» §7" + game.getAdvancedTeamSize(true, false), 6);
 		
 		score.setScore("§c ", 5);
 		score.setScore("§8» §cScenarios:", 4);

@@ -71,7 +71,7 @@ public class TempbanCommand extends UHCCommand {
     				PlayerUtils.broadcast(Main.PREFIX + "Incoming ban in §6" + left + "§7.");
     				left--;
     				
-    		    	for (Player online : PlayerUtils.getPlayers()) {
+    		    	for (Player online : Bukkit.getOnlinePlayers()) {
     		    		online.playSound(online.getLocation(), Sound.ANVIL_LAND, 1, 1);
     		    	}
     		    	return;
@@ -82,7 +82,7 @@ public class TempbanCommand extends UHCCommand {
 				
 				PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been temp-banned for §a" + message + "§7. §8(§a" + DateUtils.formatDateDiff(time) + "§8)");
 				
-		    	for (Player online : PlayerUtils.getPlayers()) {
+		    	for (Player online : Bukkit.getOnlinePlayers()) {
 		    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
 		    	}
 		    	
@@ -116,7 +116,7 @@ public class TempbanCommand extends UHCCommand {
 		List<String> toReturn = new ArrayList<String>();
 		
 		if (args.length == 1) {
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				toReturn.add(online.getName());
 			}
 		}

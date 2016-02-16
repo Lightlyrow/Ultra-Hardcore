@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,7 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.protocol.OldEnchants;
+import com.leontg77.ultrahardcore.protocol.EnchantPreview;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -35,16 +36,16 @@ public class EnchantParanoia extends Scenario implements Listener {
 	public void onDisable() {
 		task.cancel();
 		
-		OldEnchants.disable();
+		EnchantPreview.disable();
 	}
 
 	@Override
 	public void onEnable() {
-		OldEnchants.enable();
+		EnchantPreview.enable();
 		
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					for (ItemStack contents : online.getOpenInventory().getBottomInventory().getContents()) {
 						if (contents == null) {
 							continue;

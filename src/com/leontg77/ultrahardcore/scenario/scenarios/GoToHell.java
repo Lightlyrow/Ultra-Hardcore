@@ -1,14 +1,16 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -31,15 +33,16 @@ public class GoToHell extends Scenario implements Listener {
 
 	@Override
 	public void onEnable() {
-		Game game = Game.getInstance();
-		game.setNether(true);
+		final FeatureManager feat = FeatureManager.getInstance();
+		
+		feat.getFeature(NetherFeature.class).enable();
 	}
 	
 	@EventHandler
 	public void on(PvPEnableEvent event) {
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					Environment env = online.getWorld().getEnvironment();
 					
 					if (env == Environment.NETHER) {

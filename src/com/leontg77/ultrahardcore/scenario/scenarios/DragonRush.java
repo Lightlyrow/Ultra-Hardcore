@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -15,8 +16,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
@@ -61,7 +62,7 @@ public class DragonRush extends Scenario implements Listener {
         Player player = event.getPlayer();
     	
     	Location loc = new Location(block.getWorld(), 0, block.getLocation().getY(), 0);
-        Spectator spec = Spectator.getInstance();
+        SpecManager spec = SpecManager.getInstance();
         
         if (spec.isSpectating(player)) {
         	return;
@@ -92,7 +93,7 @@ public class DragonRush extends Scenario implements Listener {
     	if (placed == 3) {
         	PlayerUtils.broadcast(Main.PREFIX + "§d§l§oThe portal has been activated.");
         	
-        	for (Player online : PlayerUtils.getPlayers()) {
+        	for (Player online : Bukkit.getOnlinePlayers()) {
 				online.playSound(online.getLocation(), Sound.PORTAL_TRAVEL, 1, 1);
 			}
         	
@@ -104,7 +105,7 @@ public class DragonRush extends Scenario implements Listener {
     	} else if (placed < 3) {
         	PlayerUtils.broadcast(Main.PREFIX + "An eye has been placed (§a" + placed + "§7/§a3§7)");
         	
-        	for (Player online : PlayerUtils.getPlayers()) {
+        	for (Player online : Bukkit.getOnlinePlayers()) {
 				online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 			}
     	}
@@ -126,7 +127,7 @@ public class DragonRush extends Scenario implements Listener {
     	
     	PlayerUtils.broadcast(Main.PREFIX + "The dragon was defeated by §a" + killer.getName() + "§7.");
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (online.getWorld() == killer.getWorld()) {
 				continue;
 			}
@@ -139,7 +140,7 @@ public class DragonRush extends Scenario implements Listener {
     public void on(MeetupEvent event) {
         PlayerUtils.broadcast(Main.PREFIX + "The dragon won, the time ran out.");
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			PacketUtils.sendTitle(online, "§cTIMES UP!", "§7The time ran out and the dragon won", 5, 30, 5);
 		}
     }

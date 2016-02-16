@@ -14,11 +14,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Barebones scenario class
@@ -46,7 +46,7 @@ public class Barebones extends Scenario implements Listener {
 		final Player player = event.getPlayer();
 		final Block block = event.getBlock();
 		
-		if (!GameUtils.getGameWorlds().contains(block.getWorld())) {
+		if (!game.getWorlds().contains(block.getWorld())) {
 			return;
 		}
 		
@@ -84,7 +84,7 @@ public class Barebones extends Scenario implements Listener {
 		
 		final Player player = event.getEntity();
 		
-		if (!GameUtils.getGameWorlds().contains(player.getWorld())) {
+		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 		
@@ -104,7 +104,7 @@ public class Barebones extends Scenario implements Listener {
 		
 		final Player player = (Player) event.getWhoClicked();
 		
-		if (!GameUtils.getGameWorlds().contains(player.getWorld())) {
+		if (!Game.getInstance().getWorlds().contains(player.getWorld())) {
 			return;
 		}
 		

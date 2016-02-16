@@ -8,11 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * PMores command class.
@@ -33,11 +32,11 @@ public class PmoresCommand extends UHCCommand {
 		
 		final Player player = (Player) sender;
 
-		if (!GameUtils.getGamePlayers().contains(player)) {
+		if (!game.getPlayers().contains(player)) {
 			throw new CommandException("You are not playing a match.");
 		}
 		
-		final Spectator spec = Spectator.getInstance();
+		final SpecManager spec = SpecManager.getInstance();
 		final TeamManager teams = TeamManager.getInstance();
 		
 		final Team team = teams.getTeam(player);

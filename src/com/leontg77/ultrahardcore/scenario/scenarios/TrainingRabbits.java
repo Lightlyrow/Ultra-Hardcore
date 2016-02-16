@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,7 +21,6 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * TrainingRabbits scenario class
@@ -36,7 +36,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.removePotionEffect(PotionEffectType.JUMP);
 		}
 		
@@ -50,8 +50,8 @@ public class TrainingRabbits extends Scenario implements Listener {
 	
 	@EventHandler
 	public void on(GameStartEvent event) {
-		for (Player online : PlayerUtils.getPlayers()) {
-			online.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, NumberUtils.get999DaysInTicks(), 1));
+		for (Player online : Bukkit.getOnlinePlayers()) {
+			online.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, NumberUtils.TICKS_IN_999_DAYS, 1));
 			jump.put(online.getName(), 1);
 		}
 	}
@@ -89,7 +89,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 		if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
 			int level = jump.get(player.getName());
 			
-			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, NumberUtils.get999DaysInTicks(), level));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, NumberUtils.TICKS_IN_999_DAYS, level));
 		}
 	}
 	
@@ -114,7 +114,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 		int level = jump.get(player.getName());
 		
 		player.removePotionEffect(PotionEffectType.JUMP);
-		player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, NumberUtils.get999DaysInTicks(), level));
+		player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, NumberUtils.TICKS_IN_999_DAYS, level));
 	}
 
 	@EventHandler

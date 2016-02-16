@@ -9,11 +9,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Landmines scenario class
@@ -30,9 +28,7 @@ public class Landmines extends Scenario implements Listener {
 	public void onDisable() {}
 
 	@Override
-	public void onEnable() {
-		Game.getInstance().setNether(false);
-	}
+	public void onEnable() {}
 	
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
@@ -42,11 +38,11 @@ public class Landmines extends Scenario implements Listener {
 		
 		Player player = event.getPlayer();
 		
-		if (Spectator.getInstance().isSpectating(player)) {
+		if (SpecManager.getInstance().isSpectating(player)) {
 			return;
 		}
 		
-		if (!GameUtils.getGameWorlds().contains(event.getTo().getWorld())) {
+		if (!game.getWorlds().contains(event.getTo().getWorld())) {
 			return;
 		}
 		

@@ -110,7 +110,7 @@ public class MonstersInc extends Scenario implements Listener {
 		Location loc;
 		
 		if (door.isEmpty()) {
-			List<Location> locs = ScatterManager.findScatterLocations(block.getWorld(), 500, 1);
+			List<Location> locs = ScatterManager.getInstance().findScatterLocations(block.getWorld(), 500, 1);
 			
 			if (locs.isEmpty()) {
 				player.sendMessage(PREFIX + "There are no other doors or random locations.");

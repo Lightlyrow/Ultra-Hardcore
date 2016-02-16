@@ -26,7 +26,6 @@ import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.EntityUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -148,11 +147,11 @@ public class SpreadCommand extends UHCCommand {
 				PlayerUtils.broadcast(Main.PREFIX + "Scattering §a" + solo + " §7players...");
 			}
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				online.playSound(online.getLocation(), Sound.FIREWORK_LAUNCH, 1, 1);
 			}
 			
-			for (World worlds : GameUtils.getGameWorlds()) {
+			for (World worlds : Game.getInstance().getWorlds()) {
 				worlds.setDifficulty(Difficulty.HARD);
 				worlds.setPVP(false);
 				worlds.setTime(0);
@@ -228,7 +227,7 @@ public class SpreadCommand extends UHCCommand {
 		if (args.length == 2) {
 			toReturn.add("*");
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				toReturn.add(online.getName());
 			}
 		}

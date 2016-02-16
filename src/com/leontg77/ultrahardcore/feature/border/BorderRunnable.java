@@ -1,13 +1,14 @@
 package com.leontg77.ultrahardcore.feature.border;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.utils.DateUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -24,11 +25,12 @@ public class BorderRunnable extends BukkitRunnable {
 	
 	@Override
 	public void run() {
+		final Game game = Game.getInstance();
 		next--;
 
 		int borderSize = 0;
 
-		for (World world : GameUtils.getGameWorlds()) {
+		for (World world : game.getWorlds()) {
 			borderSize = (int) world.getWorldBorder().getSize();
 		}
 		
@@ -59,16 +61,16 @@ public class BorderRunnable extends BukkitRunnable {
 				
 			PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink to §6" + size + "x" + size + " §7over §a10 §7minutes.");
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 			}
 
-			for (World world : GameUtils.getGameWorlds()) {
+			for (World world : Game.getInstance().getWorlds()) {
 				world.getWorldBorder().setSize(size, 600);
 			}
 			break;
 		case -600:
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 			}
 			

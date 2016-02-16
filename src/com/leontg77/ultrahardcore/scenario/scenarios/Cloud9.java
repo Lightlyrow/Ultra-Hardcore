@@ -8,7 +8,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -35,11 +34,7 @@ public class Cloud9 extends Scenario implements Listener {
 	public void on(PvPEnableEvent event) {
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (!GameUtils.getGameWorlds().contains(online.getWorld())) {
-						continue;
-					}
-					
+				for (Player online : game.getPlayers()) {
 					if (online.getLocation().getY() > 200) {
 						continue;
 					}

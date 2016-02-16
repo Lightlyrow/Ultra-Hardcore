@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -43,7 +44,7 @@ public class RandomCommand extends UHCCommand {
 		for (int i = 0; i < amount; i++) {
 			List<Player> list = new ArrayList<Player>();
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				if (teams.getTeam(online) == null) {
 					list.add(online);
 				}

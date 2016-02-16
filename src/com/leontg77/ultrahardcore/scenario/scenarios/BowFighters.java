@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -54,7 +55,7 @@ public class BowFighters extends Scenario implements Listener {
         meta.addStoredEnchant(Enchantment.ARROW_INFINITE, 1, true);
         book.setItemMeta(meta);
         
-        for (Player online : PlayerUtils.getPlayers()) {
+        for (Player online : Bukkit.getOnlinePlayers()) {
         	PlayerUtils.giveItem(online, book, arrow, string);
         }
 	}

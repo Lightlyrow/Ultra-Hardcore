@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,7 +14,6 @@ import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * List command class.
@@ -28,14 +28,14 @@ public class ListCommand extends UHCCommand {
 
 	@Override
 	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
-		if (PlayerUtils.getPlayers().isEmpty()) {
+		if (Bukkit.getOnlinePlayers().isEmpty()) {
 	    	throw new CommandException("There are no players online.");
 		}
 
 		final List<Player> players = new ArrayList<Player>();
     	int playersOnline = 0;
     		
-    	for (Player online : PlayerUtils.getPlayers()) {
+    	for (Player online : Bukkit.getOnlinePlayers()) {
     		if (sender instanceof Player && !((Player) sender).canSee(online)) {
     			continue;
     		}

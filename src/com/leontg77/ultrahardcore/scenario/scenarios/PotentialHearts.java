@@ -1,12 +1,12 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * PotentialHearts scenario class
@@ -21,7 +21,7 @@ public class PotentialHearts extends Scenario implements Listener {
 
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.setMaxHealth(20);
 		}
 	}
@@ -31,7 +31,7 @@ public class PotentialHearts extends Scenario implements Listener {
 	
 	@EventHandler
 	public void on(FinalHealEvent event) {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.setMaxHealth(40);
 		}
 	}

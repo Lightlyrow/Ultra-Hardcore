@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,11 +15,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
+import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.feature.health.AbsorptionFeature;
+import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * PotentialPermanent scenario class
@@ -33,7 +35,7 @@ public class PotentialPermanent extends Scenario implements Listener {
 
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.removePotionEffect(PotionEffectType.ABSORPTION);
 			online.setMaxHealth(20);
 		}
@@ -41,17 +43,17 @@ public class PotentialPermanent extends Scenario implements Listener {
 
 	@Override
 	public void onEnable() {
-		Game game = Game.getInstance();
-
-		game.setGoldenHeadsHeal(2);
-		game.setAbsorption(true);
+		final FeatureManager manager = FeatureManager.getInstance();
+		
+		manager.getFeature(AbsorptionFeature.class).enable();
+		manager.getFeature(GoldenHeadsFeature.class).setHealAmount(2);
 	}
 	
 	@EventHandler
 	public void on(FinalHealEvent event) {
 		PotionEffect effect = new PotionEffect(PotionEffectType.ABSORPTION, Integer.MAX_VALUE, 4);
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.addPotionEffect(effect);
 			online.setMaxHealth(20);
 		}

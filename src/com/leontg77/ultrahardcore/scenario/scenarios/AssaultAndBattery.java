@@ -24,7 +24,6 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -83,7 +82,7 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 	public void on(PlayerDeathEvent event) {
 		final Player player = event.getEntity();
 		
-		if (!GameUtils.getGamePlayers().contains(player)) {
+		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 		
@@ -115,14 +114,14 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			return;
 		}
 		
-		if (!GameUtils.getGamePlayers().contains(entity)) {
+		if (!game.getPlayers().contains(entity)) {
 			return;
 		}
 		
 		if (damager instanceof Player) {
 			final Player player = (Player) damager;
 			
-			if (!GameUtils.getGamePlayers().contains(player)) {
+			if (!game.getPlayers().contains(player)) {
 				return;
 			}
 			
@@ -146,7 +145,7 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 			
 			final Player player = (Player) proj.getShooter();
 			
-			if (!GameUtils.getGamePlayers().contains(player)) {
+			if (!game.getPlayers().contains(player)) {
 				return;
 			}
 			

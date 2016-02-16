@@ -15,15 +15,13 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.game.VoteCommand;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.DateUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Player listener class.
@@ -41,7 +39,7 @@ public class ChatListener implements Listener {
 		final User user = User.get(player);
 
 		final TeamManager teams = TeamManager.getInstance();
-		final Spectator spec = Spectator.getInstance();
+		final SpecManager spec = SpecManager.getInstance();
 
 		final String message = event.getMessage();
 		final Team team = teams.getTeam(player);
@@ -55,7 +53,7 @@ public class ChatListener implements Listener {
     	}
 		
 		if (VoteCommand.isRunning() && (message.equalsIgnoreCase("y") || message.equalsIgnoreCase("n"))) {
-			if (!GameUtils.getGamePlayers().contains(player)) {
+			if (!game.getPlayers().contains(player)) {
 				player.sendMessage(ChatColor.RED + "You can only vote while playing the game.");
 				event.setCancelled(true);
 				return;
@@ -184,9 +182,9 @@ public class ChatListener implements Listener {
   		String message = event.getMessage();
   		Player player = event.getPlayer();
   		
-  		Spectator spec = Spectator.getInstance();
+  		SpecManager spec = SpecManager.getInstance();
   		
-  		for (Player online : PlayerUtils.getPlayers()) {
+  		for (Player online : Bukkit.getOnlinePlayers()) {
   			if (online == player) {
   				continue;
   			}
@@ -234,7 +232,7 @@ public class ChatListener implements Listener {
   					return;
   				}
   				
-  				for (Player online : PlayerUtils.getPlayers()) {
+  				for (Player online : Bukkit.getOnlinePlayers()) {
   					online.kickPlayer("§8» §7The server is restarting §8«");
   				}
   				

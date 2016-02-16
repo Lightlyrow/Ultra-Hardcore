@@ -40,7 +40,7 @@ public class Paranoia extends Scenario implements Listener {
 
 	@Override
 	public void onEnable() {
-		Scoreboard board = BoardManager.getInstance().board;
+		Scoreboard board = BoardManager.getInstance().getBoard();
 		
 		board.clearSlot(DisplaySlot.PLAYER_LIST);
 		board.clearSlot(DisplaySlot.BELOW_NAME);

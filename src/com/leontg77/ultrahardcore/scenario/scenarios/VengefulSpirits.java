@@ -14,8 +14,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 
@@ -38,8 +39,8 @@ public class VengefulSpirits extends Scenario implements Listener {
 	public void onEnable() {
 		// I don't want the code to place the normal skulls so then
 		// I disable them instead since I have a custom dropping
-		Game game = Game.getInstance();
-		game.setGoldenHeads(false);
+		final FeatureManager manager = FeatureManager.getInstance();
+		manager.getFeature(GoldenHeadsFeature.class).disable();
 	}
 	
 	@EventHandler

@@ -11,8 +11,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 
@@ -45,7 +45,7 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 		Player player = event.getPlayer();
 		Biome biome = player.getLocation().getBlock().getBiome();
 		
-		if (Spectator.getInstance().isSpectating(player)) {
+		if (SpecManager.getInstance().isSpectating(player)) {
 			player.setPlayerListName(null);
 			return;
 		}

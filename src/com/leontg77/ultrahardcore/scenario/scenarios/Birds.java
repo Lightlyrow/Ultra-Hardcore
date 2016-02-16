@@ -1,12 +1,12 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Birds scenario class
@@ -21,7 +21,7 @@ public class Birds extends Scenario implements Listener {
 	
 	@Override
 	public void onDisable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.setAllowFlight(false);
 			online.setFlying(false);
 		}
@@ -29,7 +29,7 @@ public class Birds extends Scenario implements Listener {
 
 	@Override
 	public void onEnable() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.setAllowFlight(true);
 		}
 	}

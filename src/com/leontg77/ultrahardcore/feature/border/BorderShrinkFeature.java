@@ -4,13 +4,13 @@ import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
 import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.feature.Feature;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Border shrink feature class.
@@ -60,7 +60,7 @@ public class BorderShrinkFeature extends Feature implements Listener {
 		
 		final Timers timer = event.getTimers();
 		
-		for (World world : GameUtils.getGameWorlds()) {
+		for (World world : Game.getInstance().getWorlds()) {
 			world.getWorldBorder().setSize(300, timer.getMeetupInSeconds());
 		}
 	}
@@ -73,7 +73,7 @@ public class BorderShrinkFeature extends Feature implements Listener {
 		
 		final Timers timer = event.getTimers();
 		
-		for (World world : GameUtils.getGameWorlds()) {
+		for (World world : Game.getInstance().getWorlds()) {
 			world.getWorldBorder().setSize(300, timer.getMeetupInSeconds());
 		}
 	}

@@ -13,7 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -143,12 +143,12 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 			
 			for (int i = 1; i <= amount; i++) {
 				ArrayList<String> list = new ArrayList<String>();
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					if (captains.contains(online.getName())) {
 						continue;
 					}
 					
-					if (Spectator.getInstance().isSpectating(online)) {
+					if (SpecManager.getInstance().isSpectating(online)) {
 						continue;
 					}
 					

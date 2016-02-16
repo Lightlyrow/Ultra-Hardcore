@@ -19,7 +19,6 @@ import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * TeamHealth scenario class
@@ -81,7 +80,7 @@ public class TeamHealth extends Scenario implements Listener {
 		
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {	
+				for (Player online : Bukkit.getOnlinePlayers()) {	
 					Team team = TeamManager.getInstance().getTeam(online);
 					
 					double health = 0;

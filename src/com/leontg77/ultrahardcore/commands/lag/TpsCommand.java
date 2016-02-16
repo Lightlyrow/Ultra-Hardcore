@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Tps command class.
@@ -61,7 +60,7 @@ public class TpsCommand extends UHCCommand {
 			entities += world.getEntities().size();
 		}
 		
-		entities -= PlayerUtils.getPlayers().size();
+		entities -= Bukkit.getOnlinePlayers().size();
 
 		sender.sendMessage(Main.PREFIX + "Server performance:");
 		sender.sendMessage("§8§l» §7Current TPS: " + color + tps + " §8(§6" + status + "§8)");

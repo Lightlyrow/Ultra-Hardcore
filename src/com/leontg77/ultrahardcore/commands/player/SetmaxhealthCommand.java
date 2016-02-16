@@ -57,7 +57,7 @@ public class SetmaxhealthCommand extends UHCCommand {
 		if (args[1].equals("*")) {
 			PlayerUtils.broadcast(Main.PREFIX + "All players max health was set to §6" + NumberUtils.makePercent(health).substring(2) + "%");
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				online.setMaxHealth(health);
 			}
 			return true;

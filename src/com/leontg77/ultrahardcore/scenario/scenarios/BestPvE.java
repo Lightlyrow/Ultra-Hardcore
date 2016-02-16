@@ -19,7 +19,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -56,7 +55,7 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 
 		on(new GameStartEvent());
 		
-		if (Timers.timeSeconds < 20) {
+		if (timer.getTimeSinceStartInSeconds() < 20) {
 			return;
 		}
 		
@@ -67,7 +66,7 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 	public void on(GameStartEvent event) {
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					if (!list.contains(online.getName())) {
 						online.sendMessage(ChatColor.GREEN + "BestPvE players gained a heart!");
 						continue;
@@ -139,7 +138,7 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 			return;
 		}
 		
-		if (Timers.timeSeconds < 20) {
+		if (timer.getTimeSinceStartInSeconds() < 20) {
 			return;
 		}
 		

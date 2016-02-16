@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,7 +37,7 @@ public class Chicken extends Scenario implements Listener {
 	
 	@EventHandler
 	public void on(final GameStartEvent event) {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
         	PlayerUtils.giveItem(online, new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1));
         	online.setHealth(1);
         }

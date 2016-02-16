@@ -9,12 +9,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.utils.GameUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**
  * Spectate command class.
@@ -33,7 +31,7 @@ public class SpectateCommand extends UHCCommand {
     		return false;
 		}
 		
-		Spectator spec = Spectator.getInstance();
+		SpecManager spec = SpecManager.getInstance();
 		
 		if (args[0].equalsIgnoreCase("list")) {
 			if (spec.getSpectators().isEmpty()) {
@@ -81,7 +79,7 @@ public class SpectateCommand extends UHCCommand {
 		}
 		
 		if (args[0].equalsIgnoreCase("toggle")) {
-			if (GameUtils.getGameWorlds().contains(target.getWorld())) {
+			if (game.getWorlds().contains(target.getWorld())) {
 				throw new CommandException("You need to be in spawn to do this.");
 			}
 
@@ -99,7 +97,7 @@ public class SpectateCommand extends UHCCommand {
 				throw new CommandException((target == sender ? "You are" : "'" + target.getName() + "' is") + " already spectating.");
 			}
 			
-			if (State.isState(State.INGAME) && GameUtils.getGameWorlds().contains(target.getWorld())) {
+			if (State.isState(State.INGAME) && game.getWorlds().contains(target.getWorld())) {
 				throw new CommandException("You need to be in spawn to do this.");
 			}
 			
@@ -117,7 +115,7 @@ public class SpectateCommand extends UHCCommand {
 				throw new CommandException((target == sender ? "You are" : "'" + target.getName() + "' is") + " not spectating.");
 			}
 			
-			if (GameUtils.getGameWorlds().contains(target.getWorld())) {
+			if (game.getWorlds().contains(target.getWorld())) {
 				throw new CommandException("You need to be in spawn to do this.");
 			}
 
@@ -179,7 +177,7 @@ public class SpectateCommand extends UHCCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
 		List<String> toReturn = new ArrayList<String>();
-		Spectator spec = Spectator.getInstance();
+		SpecManager spec = SpecManager.getInstance();
     	
 		if (args.length == 1) {
 			toReturn.add("help");
@@ -197,27 +195,27 @@ public class SpectateCommand extends UHCCommand {
 			}
 			
 			if (args[0].equalsIgnoreCase("on")) {
-        		for (Player online : PlayerUtils.getPlayers()) {
+        		for (Player online : Bukkit.getOnlinePlayers()) {
     				if (!spec.isSpectating(online)) {
         				toReturn.add(online.getName());
     				}
         		}
         	} else if (args[0].equalsIgnoreCase("off")) {
-        		for (Player online : PlayerUtils.getPlayers()) {
+        		for (Player online : Bukkit.getOnlinePlayers()) {
     				if (spec.isSpectating(online)) {
         				toReturn.add(online.getName());
     				}
         		}
         	} else if (args[0].equalsIgnoreCase("toggle")) {
-        		for (Player online : PlayerUtils.getPlayers()) {
+        		for (Player online : Bukkit.getOnlinePlayers()) {
     				toReturn.add(online.getName());
         		}
         	} else if (args[0].equalsIgnoreCase("cmdspy")) {
-        		for (Player online : PlayerUtils.getPlayers()) {
+        		for (Player online : Bukkit.getOnlinePlayers()) {
     				toReturn.add(online.getName());
     			}
         	} else if (args[0].equalsIgnoreCase("info")) {
-        		for (Player online : PlayerUtils.getPlayers()) {
+        		for (Player online : Bukkit.getOnlinePlayers()) {
     				toReturn.add(online.getName());
     			}
         	}

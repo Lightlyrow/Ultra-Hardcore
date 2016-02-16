@@ -34,7 +34,7 @@ public class KickCommand extends UHCCommand {
 		final String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
 
 		if (args[0].equals("*")) {
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				if (online.hasPermission("uhc.prelist")) {
 					continue;
 				}
@@ -47,7 +47,7 @@ public class KickCommand extends UHCCommand {
 		}
 
 		if (args[0].equals("**")) {
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				if (online.isOp()) {
 					continue;
 				}
@@ -78,7 +78,7 @@ public class KickCommand extends UHCCommand {
 			toReturn.add("*");
 			toReturn.add("**");
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				toReturn.add(online.getName());
 			}
 		}

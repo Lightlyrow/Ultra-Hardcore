@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,9 +22,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.ultrahardcore.Spectator.SpecInfo;
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
 import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
@@ -32,14 +33,15 @@ import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
 import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
+import com.leontg77.ultrahardcore.managers.SpecManager.SpecInfo;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.Astrophobia;
 import com.leontg77.ultrahardcore.scenario.scenarios.Kings;
 import com.leontg77.ultrahardcore.scenario.scenarios.SlaveMarket;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.EntityUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -55,8 +57,8 @@ public class Timers {
 	private static final Timers INSTANCE = new Timers();
 	private final Game game = Game.getInstance();
 
-	private int taskSeconds;
-	private int taskMinutes;
+	private BukkitRunnable taskSeconds;
+	private BukkitRunnable taskMinutes;
 
 	private int time;
 	private int pvp;
@@ -164,7 +166,7 @@ public class Timers {
 	 */
 	public void start() {
 		for (int i = 0; i < 150; i++) {
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				online.sendMessage("§0");
 			}
 		}
@@ -174,7 +176,7 @@ public class Timers {
 
 		new BukkitRunnable() {
 			public void run() {
-				InvGUI.getInstance().openGameInfo(PlayerUtils.getPlayers());
+				InvGUI.getInstance().openGameInfo(new ArrayList<Player>(Bukkit.getOnlinePlayers()));
 			}
 		}.runTaskLater(Main.plugin, 100);
 
@@ -198,13 +200,13 @@ public class Timers {
 
 		new BukkitRunnable() {
 			public void run() {
-				PlayerUtils.broadcast(Main.PREFIX + "This is a §a" + GameUtils.getTeamSize(false, true) + game.getScenarios());
+				PlayerUtils.broadcast(Main.PREFIX + "This is a §a" + Game.getInstance().getAdvancedTeamSize(false, true) + game.getScenarios());
 			}
 		}.runTaskLater(Main.plugin, 400);
 
 		new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendTitle(online, "§45", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
@@ -215,7 +217,7 @@ public class Timers {
 		
 		new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendTitle(online, "§c4", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
@@ -226,7 +228,7 @@ public class Timers {
 		
 		new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendTitle(online, "§63", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
@@ -237,7 +239,7 @@ public class Timers {
 
 		new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendTitle(online, "§e2", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
@@ -248,7 +250,7 @@ public class Timers {
 
 		new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendTitle(online, "§a1", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
@@ -265,11 +267,11 @@ public class Timers {
 				PlayerUtils.broadcast(Main.PREFIX + "Meetup is in: §a" + game.getMeetup() + " minutes.");
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				
-				ScenarioManager scen = ScenarioManager.getInstance();
-				Spectator spec = Spectator.getInstance();
+				final ScenarioManager scen = ScenarioManager.getInstance();
+				final SpecManager spec = SpecManager.getInstance();
 
-				TeamManager teams = TeamManager.getInstance();
-				BoardManager sb = BoardManager.getInstance();
+				final TeamManager teams = TeamManager.getInstance();
+				final BoardManager sb = BoardManager.getInstance();
 
 				Bukkit.getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
 				
@@ -289,8 +291,6 @@ public class Timers {
 				timer();
 				
 				for (Team team : teams.getTeamsWithPlayers()) {
-					Main.teamKills.put(team.getName(), 0);
-					
 					Set<String> players = new HashSet<String>(team.getEntries());
 					teams.getSavedTeams().put(team.getName(), players);
 				}
@@ -301,7 +301,7 @@ public class Timers {
 					}
 				}
 				
-				for (World world : GameUtils.getGameWorlds()) {
+				for (World world : game.getWorlds()) {
 					world.setDifficulty(Difficulty.HARD);
 					world.setPVP(false);
 					world.setTime(0);
@@ -318,7 +318,7 @@ public class Timers {
 					}
 				}
 				
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					if (!TimerCommand.isRunning()) {
 						PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
 					}
@@ -330,7 +330,7 @@ public class Timers {
 					
 					SpecInfo.getTotal(online).clear();
 					
-					User user = User.get(online);
+					final User user = User.get(online);
 					
 					if (spec.isSpectating(online)) {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
@@ -347,16 +347,14 @@ public class Timers {
 					user.resetHealth();
 					user.resetFood();
 					user.resetExp();
-
-					Main.kills.put(online.getName(), 0);
 					
-					Kings kings = scen.getScenario(Kings.class);
+					final Kings kings = scen.getScenario(Kings.class);
 
 					if (kings.isEnabled() && kings.getKings().contains(online.getName())) {
-		        		online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, NumberUtils.get999DaysInTicks(), 0)); 
-		            	online.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, NumberUtils.get999DaysInTicks(), 0)); 
-		            	online.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, NumberUtils.get999DaysInTicks(), 0)); 
-		            	online.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, NumberUtils.get999DaysInTicks(), 0));
+		        		online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, NumberUtils.TICKS_IN_999_DAYS, 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, NumberUtils.TICKS_IN_999_DAYS, 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, NumberUtils.TICKS_IN_999_DAYS, 0)); 
+		            	online.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, NumberUtils.TICKS_IN_999_DAYS, 0));
 					} else {
 						online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100));
 					}
@@ -366,7 +364,7 @@ public class Timers {
 					}
 					
 					if (scen.getScenario(SlaveMarket.class).isEnabled()) {
-						PlayerInventory inv = online.getInventory();
+						final PlayerInventory inv = online.getInventory();
 
 						for (ItemStack item : inv.getContents()) {
 							if (item == null) {
@@ -383,7 +381,7 @@ public class Timers {
 				        inv.setArmorContents(null);
 				        online.setItemOnCursor(new ItemStack(Material.AIR));
 
-				        InventoryView openInventory = online.getOpenInventory();
+				        final InventoryView openInventory = online.getOpenInventory();
 				        
 				        if (openInventory.getType() == InventoryType.CRAFTING) {
 				            openInventory.getTopInventory().clear();
@@ -404,7 +402,7 @@ public class Timers {
 	public void timer() {
 		stopTimers();
 		
-		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+		taskMinutes = new BukkitRunnable() {
 			public void run() {
 				ScenarioManager scen = ScenarioManager.getInstance();
 				BoardManager sb = BoardManager.getInstance();
@@ -419,7 +417,7 @@ public class Timers {
 				}
 				
 				if (time == 2) {
-					for (World world : GameUtils.getGameWorlds()) {
+					for (World world : Game.getInstance().getWorlds()) {
 						world.setSpawnFlags(true, true);
 					}
 					
@@ -430,12 +428,12 @@ public class Timers {
 					PlayerUtils.broadcast(Main.PREFIX + "PvP/iPvP has been enabled.");
 					Bukkit.getPluginManager().callEvent(new PvPEnableEvent());
 					
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						PacketUtils.sendTitle(online, "", "§4PvP has been enabled!", 5, 10, 5);
 						online.playSound(online.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
 					}
 					
-					for (World world : GameUtils.getGameWorlds()) {
+					for (World world : Game.getInstance().getWorlds()) {
 						world.setPVP(true);
 					}
 					
@@ -461,11 +459,11 @@ public class Timers {
 					
 					Bukkit.getPluginManager().callEvent(new MeetupEvent());
 					
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						online.playSound(online.getLocation(), Sound.WITHER_DEATH, 1, 1);
 					}
 
-					for (World world : GameUtils.getGameWorlds()) {
+					for (World world : Game.getInstance().getWorlds()) {
 						world.setThundering(false);
 						world.setStorm(false);
 
@@ -482,7 +480,7 @@ public class Timers {
 					if (meetupToString.equals("1") || meetupToString.endsWith("5") || meetupToString.endsWith("0")) {
 						PlayerUtils.broadcast(Main.PREFIX + "Meetup is in §a" + DateUtils.advancedTicksToString(meetup * 60) + "§7.");
 						
-						for (Player online : PlayerUtils.getPlayers()) {
+						for (Player online : Bukkit.getOnlinePlayers()) {
 							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 						}
 						
@@ -499,15 +497,17 @@ public class Timers {
 					if (pvpToString.equals("1") || pvpToString.endsWith("5") || pvpToString.endsWith("0")) {
 						PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a" + DateUtils.advancedTicksToString(pvp * 60) + "§7.");
 						
-						for (Player online : PlayerUtils.getPlayers()) {
+						for (Player online : Bukkit.getOnlinePlayers()) {
 							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 						}
 					}
 				}
 			}
-		}, 1200, 1200);
+		};
 		
-		taskSeconds = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+		taskMinutes.runTaskTimer(Main.plugin, 1200, 1200);
+		
+		taskSeconds = new BukkitRunnable() {
 			int finalHeal = 20;
 			
 			public void run() {
@@ -519,7 +519,7 @@ public class Timers {
 					PlayerUtils.broadcast(Main.PREFIX + "Final heal has been given.");
 					PlayerUtils.broadcast(Main.PREFIX + "Do not ask for another one.");
 					
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						if (!TimerCommand.isRunning()) {
 							PacketUtils.sendTitle(online, "§6Final heal!", "§7Do not ask for another one", 5, 10, 5);
 						}
@@ -543,7 +543,7 @@ public class Timers {
 						return;
 					}
 					
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(finalHeal));
 					}
 				} else if (pvpInSeconds > 0) {
@@ -551,7 +551,7 @@ public class Timers {
 						return;
 					}
 					
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						PacketUtils.sendAction(online, "§7PvP is enabled in §8» §a" + DateUtils.ticksToString(pvpInSeconds));
 					}
 				} else if (meetupInSeconds > 0) {
@@ -559,7 +559,7 @@ public class Timers {
 						return;
 					}
 					
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						PacketUtils.sendAction(online, "§7Meetup is in §8» §a" + DateUtils.ticksToString(meetupInSeconds));
 					}
 				} else {
@@ -567,26 +567,28 @@ public class Timers {
 						return;
 					}
 					
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						PacketUtils.sendAction(online, "§8» §6Meetup is now! §8«");
 					}
 				}
 			}
-		}, 20, 20);
+		};
+		
+		taskSeconds.runTaskTimer(Main.plugin, 20, 20);
 	}
 	
 	/**
 	 * Start the countdown for the recorded round.
 	 */
 	public void startRR() {
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			PacketUtils.sendTitle(online, "§c3", "", 1, 20, 1);
 			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 		}
 		
 		new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendTitle(online, "§e2", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
@@ -595,7 +597,7 @@ public class Timers {
 		
 		new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendTitle(online, "§a1", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
@@ -604,10 +606,10 @@ public class Timers {
 		
 		new BukkitRunnable() {
 			public void run() {
-				ScenarioManager scen = ScenarioManager.getInstance();
-				Spectator spec = Spectator.getInstance();
+				final ScenarioManager scen = ScenarioManager.getInstance();
+				final SpecManager spec = SpecManager.getInstance();
 
-				PluginManager manager = Bukkit.getPluginManager();
+				final PluginManager manager = Bukkit.getPluginManager();
 				manager.registerEvents(new SpecInfo(), Main.plugin);
 				
 				State.setState(State.INGAME);
@@ -625,7 +627,7 @@ public class Timers {
 				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				
-				for (World world : GameUtils.getGameWorlds()) {
+				for (World world : game.getWorlds()) {
 					world.setDifficulty(Difficulty.HARD);
 					world.setPVP(false);
 					world.setTime(0);
@@ -643,7 +645,7 @@ public class Timers {
 					}
 				}
 				
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 					
 					for (Achievement a : Achievement.values()) {
@@ -664,14 +666,14 @@ public class Timers {
 						}
 					}
 					
-					User user = User.get(online);
+					final User user = User.get(online);
 
 					user.resetEffects();
 					user.resetHealth();
 					user.resetFood();
 					user.resetExp();
 					
-					Kings kings = scen.getScenario(Kings.class);
+					final Kings kings = scen.getScenario(Kings.class);
 
 					if (kings.isEnabled() && kings.getKings().contains(online.getName())) {
 		        		online.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 1726272000, 0)); 
@@ -687,7 +689,7 @@ public class Timers {
 					}
 					
 					if (scen.getScenario(SlaveMarket.class).isEnabled()) {
-						PlayerInventory inv = online.getInventory();
+						final PlayerInventory inv = online.getInventory();
 
 						for (ItemStack item : inv.getContents()) {
 							if (item == null) {
@@ -704,7 +706,7 @@ public class Timers {
 				        inv.setArmorContents(null);
 				        online.setItemOnCursor(new ItemStack(Material.AIR));
 
-				        InventoryView openInventory = online.getOpenInventory();
+				        final InventoryView openInventory = online.getOpenInventory();
 				        
 				        if (openInventory.getType() == InventoryType.CRAFTING) {
 				            openInventory.getTopInventory().clear();
@@ -723,11 +725,11 @@ public class Timers {
 				PlayerUtils.broadcast(Main.PREFIX + "Final heal has been given.");
 				Bukkit.getPluginManager().callEvent(new FinalHealEvent());
 				
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendTitle(online, "§6Final heal!", "", 5, 10, 5);
 					online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 					
-					User user = User.get(online);
+					final User user = User.get(online);
 					user.resetHealth();
 					user.resetFood();
 				}
@@ -741,7 +743,7 @@ public class Timers {
 	public void timerRR() {
 		stopTimers();
 		
-		taskMinutes = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+		taskMinutes = new BukkitRunnable() {
 			public void run() {
 				// pvp is used as time passed.
 				pvp++;
@@ -750,7 +752,7 @@ public class Timers {
 				if (time == 0) {
 					PlayerUtils.broadcast(Main.PREFIX + "End of episode §a" + meetup + " §8| §7Start of episode §a" + (meetup + 1));		
 					
-					for (Player online : PlayerUtils.getPlayers()) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
 						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
 					}
 					
@@ -764,7 +766,7 @@ public class Timers {
 					PlayerUtils.broadcast(Main.PREFIX + "PvP has been enabled!");
 					Bukkit.getPluginManager().callEvent(new PvPEnableEvent());
 					
-					for (World world : GameUtils.getGameWorlds()) {
+					for (World world : Game.getInstance().getWorlds()) {
 						world.setPVP(true);
 					}
 				}
@@ -772,7 +774,7 @@ public class Timers {
 				if (pvp == 100) {
 					PlayerUtils.broadcast(Main.PREFIX + "Permaday activated!");
 					
-					for (World world : GameUtils.getGameWorlds()) {
+					for (World world : Game.getInstance().getWorlds()) {
 						world.setGameRuleValue("doDaylightCycle", "false");
 						world.setTime(6000);
 					}
@@ -783,19 +785,23 @@ public class Timers {
 					Bukkit.getPluginManager().callEvent(new MeetupEvent());
 				}
 			}
-		}, 1200, 1200);
+		};
+		
+		taskMinutes.runTaskTimer(Main.plugin, 1200, 1200);
 	}
  
 	/**
 	 * Stop all the running timers.
 	 */
 	public void stopTimers() {
-		if (Bukkit.getScheduler().isQueued(taskMinutes) || Bukkit.getScheduler().isCurrentlyRunning(taskMinutes)) {
-			Bukkit.getScheduler().cancelTask(taskMinutes);
+		final BukkitScheduler sch = Bukkit.getScheduler();
+
+		if (taskMinutes != null && (sch.isQueued(taskMinutes.getTaskId()) || sch.isCurrentlyRunning(taskMinutes.getTaskId()))) {
+			taskMinutes.cancel();
 		}
 		
-		if (Bukkit.getScheduler().isQueued(taskSeconds) || Bukkit.getScheduler().isCurrentlyRunning(taskSeconds)) {
-			Bukkit.getScheduler().cancelTask(taskSeconds);
+		if (taskSeconds != null && (sch.isQueued(taskSeconds.getTaskId()) || sch.isCurrentlyRunning(taskSeconds.getTaskId()))) {
+			taskSeconds.cancel();
 		}
 	}
 }

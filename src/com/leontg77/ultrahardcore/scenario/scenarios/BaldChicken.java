@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
 /**
@@ -37,7 +36,7 @@ public class BaldChicken extends Scenario implements Listener {
 		
 		Entity entity = event.getEntity();
 		
-		if (!GameUtils.getGameWorlds().contains(entity.getWorld())) {
+		if (!game.getWorlds().contains(entity.getWorld())) {
 			return;
 		}
 		

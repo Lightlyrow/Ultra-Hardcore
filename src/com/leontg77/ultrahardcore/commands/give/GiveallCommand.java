@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.commands.give;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -63,7 +64,7 @@ public class GiveallCommand extends UHCCommand {
 
 		PlayerUtils.broadcast(Main.PREFIX + "All players recieved §a" + amount + " " + itemName + "§7.");
 		
-		for (Player online : PlayerUtils.getPlayers()) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			PlayerUtils.giveItem(online, item.clone());
 		}
 		return true;
