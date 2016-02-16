@@ -15,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
@@ -152,6 +153,17 @@ public class User {
 	}
 	
 	/**
+	 * Get the given player's ping.
+	 * 
+	 * @return the players ping
+	 */
+	public int getPing() {
+		final CraftPlayer craft = (CraftPlayer) player;
+		
+		return craft.getHandle().ping;
+	} 
+	
+	/**
 	 * Check if the user hasn't been welcomed to the server.
 	 * 
 	 * @return True if he hasn't, false otherwise.
@@ -210,7 +222,7 @@ public class User {
 	 * 
 	 * @param rank The new rank.
 	 */
-	public void setRank(Rank rank) {
+	public void setRank(final Rank rank) {
 		config.set("rank", rank.name());
 		saveFile();
 		
@@ -274,7 +286,7 @@ public class User {
 	 * 
 	 * @param location The death loc.
 	 */
-	public void setDeathLocation(Location location) {
+	public void setDeathLocation(final Location location) {
 		deathLoc = location;
 	}
 	
@@ -292,7 +304,7 @@ public class User {
 	 * 
 	 * @param location The death loc.
 	 */
-	public void setLastLocation(Location location) {
+	public void setLastLocation(final Location location) {
 		lastLoc = location;
 	}
 	
@@ -312,8 +324,8 @@ public class User {
 	 * 
 	 * @param player The player to ignore
 	 */
-	public void ignore(Player player) {
-		List<String> ignoreList = config.getStringList(IGNORE_PATH);
+	public void ignore(final Player player) {
+		final List<String> ignoreList = config.getStringList(IGNORE_PATH);
 		ignoreList.add(player.getUniqueId().toString());
 		
 		config.set(IGNORE_PATH, ignoreList);
@@ -325,8 +337,8 @@ public class User {
 	 * 
 	 * @param player The player to stop ignoring
 	 */
-	public void unIgnore(Player player) {
-		List<String> ignoreList = config.getStringList(IGNORE_PATH);
+	public void unIgnore(final Player player) {
+		final List<String> ignoreList = config.getStringList(IGNORE_PATH);
 		ignoreList.remove(player.getUniqueId().toString());
 		
 		config.set(IGNORE_PATH, ignoreList);
@@ -339,7 +351,7 @@ public class User {
 	 * @param player The player checking.
 	 * @return True if he is, false otherwise.
 	 */
-	public boolean isIgnoring(Player player) {
+	public boolean isIgnoring(final Player player) {
 		if (getRank().getLevel() >= Rank.STAFF.getLevel()) {
 			return false;
 		}
@@ -353,7 +365,7 @@ public class User {
 	 * @param reason The reason of the mute.
 	 * @param unmute The date of unmute, null if permanent.
 	 */
-	public void mute(String reason, Date unmute) {
+	public void mute(final String reason, final Date unmute) {
 		config.set("muted.status", true);
 		config.set("muted.reason", reason);
 		
@@ -408,7 +420,7 @@ public class User {
 			return null;
 		}
 	
-		long unmute = config.getLong("muted.time", -1);
+		final long unmute = config.getLong("muted.time", -1);
 		
 		if (unmute == -1) {
 			return null;
@@ -424,13 +436,13 @@ public class User {
 	 * @param value The new value.
 	 */
 	public void setStat(Stat stat, double value) {
-		Game game = Game.getInstance();
+		final Game game = Game.getInstance();
 		
 		if (game.isRecordedRound() || game.isPrivateGame()) {
 			return;
 		}
 		
-		String statName = stat.name().toLowerCase();
+		final String statName = stat.name().toLowerCase();
 		
 		if (stat == Stat.ARENADEATHS || stat == Stat.ARENAKILLSTREAK || stat == Stat.ARENAKILLS) {
 			if (!Bukkit.hasWhitelist()) {
@@ -451,14 +463,14 @@ public class User {
 	 * @param stat the stat increasing.
 	 */
 	public void increaseStat(Stat stat) {
-		Game game = Game.getInstance();
+		final Game game = Game.getInstance();
 		
 		if (game.isRecordedRound() || game.isPrivateGame()) {
 			return;
 		}
 		
-		String statName = stat.name().toLowerCase();
-		double current = config.getDouble("stats." + statName, 0);
+		final String statName = stat.name().toLowerCase();
+		final double current = config.getDouble("stats." + statName, 0);
 		
 		if (stat == Stat.ARENADEATHS || stat == Stat.ARENAKILLSTREAK || stat == Stat.ARENAKILLS) {
 			if (!Bukkit.hasWhitelist()) {
@@ -544,13 +556,13 @@ public class User {
 	 * Reset the players inventory.
 	 */
     public void resetInventory() {
-        PlayerInventory inv = player.getInventory();
+    	final PlayerInventory inv = player.getInventory();
 
         inv.clear();
         inv.setArmorContents(null);
         player.setItemOnCursor(new ItemStack(Material.AIR));
 
-        InventoryView openInventory = player.getOpenInventory();
+        final InventoryView openInventory = player.getOpenInventory();
         
         if (openInventory.getType() == InventoryType.CRAFTING) {
             openInventory.getTopInventory().clear();
@@ -567,7 +579,7 @@ public class User {
     	
     	int level;
     	
-    	private Rank(int level) {
+    	private Rank(final int level) {
     		this.level = level;
     	}
     	
@@ -614,7 +626,7 @@ public class User {
     	
     	private String name;
     	
-    	private Stat(String name) {
+    	private Stat(final String name) {
     		this.name = name;
     	}
     	
@@ -627,7 +639,7 @@ public class User {
     		return name;
     	}
     	
-    	public Stat getStat(String stat) {
+    	public Stat getStat(final String stat) {
     		try {
     			return valueOf(stat);
     		} catch (Exception e) {
