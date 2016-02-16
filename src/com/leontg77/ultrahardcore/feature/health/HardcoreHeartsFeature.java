@@ -23,7 +23,7 @@ public class HardcoreHeartsFeature extends ToggleableFeature implements Listener
 		super("Hardcore Hearts", "Players hearts are like hardcore mode hearts and it features auto respawn when someone dies.");
 		
 		icon.setType(Material.REDSTONE);
-		slot = 6;
+		slot = 8;
 	}
 
 	@Override

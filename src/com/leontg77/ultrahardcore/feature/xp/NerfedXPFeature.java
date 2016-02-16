@@ -18,7 +18,7 @@ public class NerfedXPFeature extends ToggleableFeature implements Listener {
 		super("Nerfed XP", "Make all xp you pick up be 50% less than normal.");
 		
 		icon.setType(Material.EXP_BOTTLE);
-		slot = 21;
+		slot = 31;
 	}
 
 	@EventHandler

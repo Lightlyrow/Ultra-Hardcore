@@ -21,7 +21,7 @@ public class NerfedQuartzXPFeature extends ToggleableFeature implements Listener
 		super("Nerfed Quartz XP", "Make the xp from quartz be 50% less when dropped.");
 		
 		icon.setType(Material.QUARTZ);
-		slot = 22;
+		slot = 30;
 	}
 
 	@EventHandler

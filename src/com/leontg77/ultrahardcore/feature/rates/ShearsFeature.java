@@ -31,7 +31,7 @@ public class ShearsFeature extends ToggleableFeature implements Listener {
 		super("Shears", "Using shears on leaves gives an increased rate of apples.");
 		
 		icon.setType(Material.SHEARS);
-		slot = 3;
+		slot = 37;
 	}
 
 	/**
