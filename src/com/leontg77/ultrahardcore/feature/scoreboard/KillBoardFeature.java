@@ -15,7 +15,6 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Kill board feature class.
@@ -28,7 +27,7 @@ public class KillBoardFeature extends Feature implements Listener {
 		super("Kill Board", "Adds your kill to the sidebar when you get one.");
 	}
 
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.LOW)
 	public void on(final PlayerDeathEvent event) {
 		if (game.isRecordedRound()) {
 			return;
@@ -42,7 +41,7 @@ public class KillBoardFeature extends Feature implements Listener {
 			return;
 		} 
 
-		final List<World> worlds = GameUtils.getGameWorlds();
+		final List<World> worlds = game.getWorlds();
 	    
 	    // I don't care about the rest if it hasn't started or they're not in a game world.
 	    if (!State.isState(State.INGAME) || !worlds.contains(player.getWorld())) {
@@ -50,9 +49,6 @@ public class KillBoardFeature extends Feature implements Listener {
 	    }
 
 		final BoardManager board = BoardManager.getInstance();
-		// I know this isnt a kill board thing, but they're dead, no more wl for them.
-		player.setWhitelisted(false);
-
 		final Player killer = player.getKiller();
 
 		if (killer == null) {
