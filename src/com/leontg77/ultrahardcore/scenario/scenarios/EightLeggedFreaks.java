@@ -28,7 +28,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * EightLeggedFreaks scenario class
@@ -46,7 +45,7 @@ public class EightLeggedFreaks extends Scenario implements Listener {
 
 	@Override
 	public void onEnable() {
-		for (World world : GameUtils.getGameWorlds()) {
+		for (World world : game.getWorlds()) {
 			for (Entity entity : world.getEntities()) {
 				switch (entity.getType()) {
 				case CAVE_SPIDER:
@@ -67,12 +66,16 @@ public class EightLeggedFreaks extends Scenario implements Listener {
 	}
 	
 	@EventHandler
-	public void onCreatureSpawn(CreatureSpawnEvent event) {
+	public void on(CreatureSpawnEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
-		LivingEntity entity = event.getEntity();
+		final LivingEntity entity = event.getEntity();
+		
+		if (!game.getWorlds().contains(entity.getWorld())) {
+			return;
+		}
 		
 		if (entity instanceof Zombie || entity instanceof Skeleton || entity instanceof Creeper) {
 			entity.getWorld().spawn(entity.getLocation(), Spider.class);
@@ -149,6 +152,10 @@ public class EightLeggedFreaks extends Scenario implements Listener {
 		DamageCause cause = event.getCause();
 		Entity entity = event.getEntity();
 		
+		if (!game.getWorlds().contains(entity.getWorld())) {
+			return;
+		}
+		
 		if (entity.getType() != EntityType.SPIDER) {
 			return;
 		}
@@ -175,6 +182,10 @@ public class EightLeggedFreaks extends Scenario implements Listener {
 		
 		Entity damager = event.getDamager();
 		Entity entity = event.getEntity();
+		
+		if (!game.getWorlds().contains(entity.getWorld())) {
+			return;
+		}
 		
 		if (!(entity instanceof Player)) {
 			return;
@@ -215,6 +226,10 @@ public class EightLeggedFreaks extends Scenario implements Listener {
 		
 		LivingEntity entity = event.getEntity();
 		Random rand = new Random();
+		
+		if (!game.getWorlds().contains(entity.getWorld())) {
+			return;
+		}
 		
 		if (entity.getType() == EntityType.CAVE_SPIDER) {
 			if (rand.nextDouble() <= 0.15) {
