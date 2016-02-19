@@ -11,19 +11,27 @@ import org.bukkit.event.Listener;
 import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.feature.border.BorderShrinkFeature;
 import com.leontg77.ultrahardcore.feature.death.DeathLightningFeature;
+import com.leontg77.ultrahardcore.feature.death.DeathMessageFeature;
+import com.leontg77.ultrahardcore.feature.death.RespawnFeature;
 import com.leontg77.ultrahardcore.feature.enchants.AnvilsFeature;
 import com.leontg77.ultrahardcore.feature.enchants.BookshelfFeature;
 import com.leontg77.ultrahardcore.feature.enchants.EnchantmentPreviewFeature;
+import com.leontg77.ultrahardcore.feature.entity.MobRatesFeature;
+import com.leontg77.ultrahardcore.feature.entity.WitchHealthPotionFeature;
+import com.leontg77.ultrahardcore.feature.entity.PetFeature;
 import com.leontg77.ultrahardcore.feature.food.SaturationFixFeature;
 import com.leontg77.ultrahardcore.feature.health.AbsorptionFeature;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.feature.health.HardcoreHeartsFeature;
+import com.leontg77.ultrahardcore.feature.health.HealthRegenFeature;
 import com.leontg77.ultrahardcore.feature.horses.HorseArmorFeature;
 import com.leontg77.ultrahardcore.feature.horses.HorseFeature;
 import com.leontg77.ultrahardcore.feature.horses.HorseHealingFeature;
 import com.leontg77.ultrahardcore.feature.pearl.PearlDamageFeature;
 import com.leontg77.ultrahardcore.feature.portal.EndFeature;
 import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
+import com.leontg77.ultrahardcore.feature.portal.PortalCampingFeature;
+import com.leontg77.ultrahardcore.feature.portal.PortalTrappingFeature;
 import com.leontg77.ultrahardcore.feature.portal.PortalTravelSoundFeature;
 import com.leontg77.ultrahardcore.feature.potions.NerfedStrengthFeature;
 import com.leontg77.ultrahardcore.feature.potions.PotionFuelListener;
@@ -31,19 +39,23 @@ import com.leontg77.ultrahardcore.feature.potions.RegenPotionFeature;
 import com.leontg77.ultrahardcore.feature.potions.SplashPotionFeature;
 import com.leontg77.ultrahardcore.feature.potions.StrengthPotionFeature;
 import com.leontg77.ultrahardcore.feature.potions.Tier2PotionFeature;
+import com.leontg77.ultrahardcore.feature.pvp.AntiIPvPFeature;
+import com.leontg77.ultrahardcore.feature.pvp.CombatLogFeature;
+import com.leontg77.ultrahardcore.feature.pvp.LongshotFeature;
+import com.leontg77.ultrahardcore.feature.pvp.ShootHealthFeature;
 import com.leontg77.ultrahardcore.feature.rates.AppleRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.FlintRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.ShearsFeature;
 import com.leontg77.ultrahardcore.feature.recipes.GlisteringMelonRecipeFeature;
 import com.leontg77.ultrahardcore.feature.recipes.GoldenCarrotRecipeFeature;
+import com.leontg77.ultrahardcore.feature.recipes.GoldplateCraftbackFeature;
+import com.leontg77.ultrahardcore.feature.recipes.IronplateCraftbackFeature;
 import com.leontg77.ultrahardcore.feature.recipes.NotchApplesFeature;
 import com.leontg77.ultrahardcore.feature.scoreboard.KillBoardFeature;
 import com.leontg77.ultrahardcore.feature.scoreboard.SidebarResetFeature;
+import com.leontg77.ultrahardcore.feature.serverlist.ServerMOTDFeature;
 import com.leontg77.ultrahardcore.feature.tablist.HeartsOnTabFeature;
 import com.leontg77.ultrahardcore.feature.tablist.TabHealthColorFeature;
-import com.leontg77.ultrahardcore.feature.world.AntiStripmineFeature;
-import com.leontg77.ultrahardcore.feature.world.NewStoneFeature;
-import com.leontg77.ultrahardcore.feature.world.OreLimiterFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedQuartzXPFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedXPFeature;
 
@@ -138,11 +150,18 @@ public class FeatureManager {
 		
 		// death
 		addFeature(new DeathLightningFeature());
+		addFeature(new DeathMessageFeature());
+		addFeature(new RespawnFeature());
 		
 		// enchants
 		addFeature(new AnvilsFeature());
 		addFeature(new BookshelfFeature());
 		addFeature(new EnchantmentPreviewFeature());
+		
+		// entity
+		addFeature(new MobRatesFeature());
+		addFeature(new PetFeature());
+		addFeature(new WitchHealthPotionFeature());
 		
 		// food
 		addFeature(new SaturationFixFeature());
@@ -151,6 +170,7 @@ public class FeatureManager {
 		addFeature(new AbsorptionFeature());
 		addFeature(new GoldenHeadsFeature());
 		addFeature(new HardcoreHeartsFeature());
+		addFeature(new HealthRegenFeature());
 		
 		// horses
 		addFeature(new HorseArmorFeature());
@@ -163,6 +183,8 @@ public class FeatureManager {
 		// portal
 		addFeature(new EndFeature());
 		addFeature(new NetherFeature());
+		addFeature(new PortalCampingFeature());
+		addFeature(new PortalTrappingFeature());
 		addFeature(new PortalTravelSoundFeature());
 		
 		// potions
@@ -172,6 +194,12 @@ public class FeatureManager {
 		addFeature(new StrengthPotionFeature(listener));
 		addFeature(new Tier2PotionFeature(listener));
 		
+		// pvp
+		addFeature(new AntiIPvPFeature());
+		addFeature(new CombatLogFeature());
+		addFeature(new LongshotFeature());
+		addFeature(new ShootHealthFeature());
+		
 		// rates
 		addFeature(new AppleRatesFeature());
 		addFeature(new FlintRatesFeature());
@@ -180,20 +208,20 @@ public class FeatureManager {
 		// recipes.
 		addFeature(new GlisteringMelonRecipeFeature());
 		addFeature(new GoldenCarrotRecipeFeature());
+		addFeature(new GoldplateCraftbackFeature());
+		addFeature(new IronplateCraftbackFeature());
 		addFeature(new NotchApplesFeature());
 		
 		// scoreboard
 		addFeature(new KillBoardFeature());
 		addFeature(new SidebarResetFeature());
 		
+		// serverlist
+		addFeature(new ServerMOTDFeature());
+		
 		// tablist
 		addFeature(new HeartsOnTabFeature());
 		addFeature(new TabHealthColorFeature());
-		
-		// world
-		addFeature(new AntiStripmineFeature());
-		addFeature(new NewStoneFeature());
-		addFeature(new OreLimiterFeature());
 		
 		// xp
 		addFeature(new NerfedQuartzXPFeature());
