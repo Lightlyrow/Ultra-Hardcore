@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -31,16 +32,16 @@ public class BlockUtils {
 	 * @param block The block that was broken.
 	 */
 	@SuppressWarnings("deprecation")
-	public static void blockBreak(Player player, Block block) {
+	public static void blockBreak(final Player player, final Block block) {
 		// Loop all players that are in the world.
-		for (Player worldPlayer : block.getWorld().getPlayers()) {
+		for (Player online : block.getWorld().getPlayers()) {
 			// we do not want to display it to the breaker himself, that is done automaticly.
-        	if (player != null && worldPlayer == player) {
+        	if (player != null && online == player) {
         		continue;
         	}
         	
         	// play the effect STEP_SOUND with the given block id at the blocks location.
-        	worldPlayer.playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
+        	online.playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
         }
 	}
 	
@@ -67,27 +68,37 @@ public class BlockUtils {
 	 * 
 	 * @param player The item owner.
 	 */
-	public static void degradeDurabiliy(Player player) {
-		ItemStack newItem = player.getItemInHand();
+	public static void degradeDurabiliy(final Player player) {
+		final ItemStack item = player.getItemInHand();
         
 		// if the item is air, a bow or it's max durability is 0 (only weapons/tools doesn't have it as 0) return.
-        if (newItem.getType() == Material.AIR || newItem.getType() == Material.BOW || newItem.getType().getMaxDurability() == 0) {
+        if (item.getType() == Material.AIR || item.getType() == Material.BOW || item.getType().getMaxDurability() == 0) {
             return;
         }
         
-        short durability = newItem.getDurability();
-        durability++;
+        short durability = item.getDurability();
+        final Random rand = new Random();
+        
+        // incase of unbreaking enchantment.
+        if (item.containsEnchantment(Enchantment.DURABILITY)) {
+        	double chance = (100 / (item.getEnchantmentLevel(Enchantment.DURABILITY) + 1));
+        	
+        	if (rand.nextDouble() <= (chance / 100)) {
+                durability++;
+        	}
+        } else {
+            durability++;
+        }
         
         // if theres no more durability left, play the break sound, remove the item and return.
-        if (durability >= newItem.getType().getMaxDurability()) {
+        if (durability >= item.getType().getMaxDurability()) {
             player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 1, 1);
             player.setItemInHand(new ItemStack(Material.AIR));
             return;
         }
         
-        // set the new durability and update their item in hand.
-        newItem.setDurability(durability);
-        player.setItemInHand(newItem);
+        item.setDurability(durability);
+        player.setItemInHand(item);
 	}
 
 	/**
@@ -96,7 +107,7 @@ public class BlockUtils {
 	 * @return A vector with a random offset.
 	 */
 	private static Vector randomOffset() {
-		Random rand = new Random();
+		final Random rand = new Random();
 		
 		// don't ask me for why these numbers, I was just testing different onces and these seemed to work the best.
 		double offsetX = rand.nextDouble() / 20;
@@ -114,7 +125,7 @@ public class BlockUtils {
 	 * @param block The block checking.
 	 * @return The durability of the block.
 	 */
-	public static int getDurability(Block block) {
+	public static int getDurability(final Block block) {
 		return block.getState().getData().toItemStack().getDurability();
 	}
 }
