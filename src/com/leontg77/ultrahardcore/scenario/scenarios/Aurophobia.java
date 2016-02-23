@@ -16,7 +16,6 @@ import org.bukkit.potion.PotionEffectType;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Aurophobia scenario class
@@ -41,18 +40,18 @@ public class Aurophobia extends Scenario implements Listener {
 			return;
 		}
 		
-		Player player = event.getPlayer();
-		Block block = event.getBlock();
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
     	
 		if (block.getType() != Material.GOLD_ORE) {
 			return;
     	}
 		
-		if (!GameUtils.getGamePlayers().contains(player)) {
+		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 		
-		Random rand = new Random();
+		final Random rand = new Random();
 		
 		if (rand.nextDouble() <= 0.05) {
 			player.damage(2);
