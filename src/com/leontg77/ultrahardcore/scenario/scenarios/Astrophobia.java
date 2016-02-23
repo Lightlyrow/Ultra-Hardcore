@@ -16,6 +16,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Firework;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.TNTPrimed;
@@ -26,6 +27,7 @@ import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
@@ -39,11 +41,9 @@ import org.bukkit.util.Vector;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Astrophobia scenario class
@@ -100,7 +100,7 @@ public class Astrophobia extends Scenario implements Listener {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, TICKS_TO_START - (Timers.timeSeconds * 20), TICK_INTERVAL);
+		task.runTaskTimer(Main.plugin, Math.max(0, TICKS_TO_START - (timer.getTimeSinceStartInSeconds() * 20)), TICK_INTERVAL);
 	}
 
 	@EventHandler
@@ -137,7 +137,7 @@ public class Astrophobia extends Scenario implements Listener {
 			return;
 		}
 		
-		if (!GameUtils.getGameWorlds().contains(entity.getWorld())) {
+		if (!game.getWorlds().contains(entity.getWorld())) {
 			return;
 		}
 		
@@ -175,7 +175,7 @@ public class Astrophobia extends Scenario implements Listener {
 			return;
 		}
 		
-		if (!GameUtils.getGameWorlds().contains(damager.getWorld())) {
+		if (!game.getWorlds().contains(damager.getWorld())) {
 			return;
 		}
 		
@@ -210,7 +210,7 @@ public class Astrophobia extends Scenario implements Listener {
 			return;
 		}
 		
-		if (!GameUtils.getGameWorlds().contains(entity.getWorld())) {
+		if (!game.getWorlds().contains(entity.getWorld())) {
 			return;
 		}
 		
@@ -254,11 +254,11 @@ public class Astrophobia extends Scenario implements Listener {
 		
 		final Entity entity = event.getEntity();
 		
-		if (!GameUtils.getGameWorlds().contains(entity.getWorld())) {
+		if (!game.getWorlds().contains(entity.getWorld())) {
 			return;
 		}
 		
-		if (entity instanceof Monster && Timers.time < 10 && entity.getLocation().getY() > 60) {
+		if (entity instanceof Monster && timer.getTimeSinceStart() < 10 && entity.getLocation().getY() > 60) {
 			event.setCancelled(true);
 		}
 		
@@ -279,6 +279,23 @@ public class Astrophobia extends Scenario implements Listener {
 		creep.getEquipment().setItemInHand(new ItemStack(Material.MONSTER_EGG, 1, (short) 50));
 		creep.getEquipment().setItemInHandDropChance(100.0F);
 		creep.setCanPickupItems(false);
+	}
+	
+	@EventHandler
+    public void on(EntityDeathEvent event) {
+    	final LivingEntity entity = event.getEntity();
+    	
+    	if (!(entity instanceof Creeper)) {
+    		return;
+    	}
+    	
+    	Creeper creeper = (Creeper) entity;
+		
+		if (!creeper.isPowered()) {
+			return;
+		}
+		
+		event.setDroppedExp(0);
 	}
 
 	/**
