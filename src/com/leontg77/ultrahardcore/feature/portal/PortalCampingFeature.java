@@ -1,15 +1,20 @@
 package com.leontg77.ultrahardcore.feature.portal;
 
-import org.bukkit.event.Listener;
+import org.bukkit.Material;
 
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
 
-public class PortalCampingFeature extends ToggleableFeature implements
-		Listener {
+/**
+ * Portal camping feature class.
+ * 
+ * @author LeonTG77
+ */
+public class PortalCampingFeature extends ToggleableFeature {
 
-	public PortalCampingFeature(String name, String description) {
-		super(name, description);
-		// TODO Auto-generated constructor stub
+	public PortalCampingFeature() {
+		super("Portal Camping", "Players that wait at the portal for others to go thru.");
+		
+		icon.setType(Material.OBSIDIAN);
+		slot = 44;
 	}
-
 }
