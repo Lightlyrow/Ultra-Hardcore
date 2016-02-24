@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.events;
 import org.bukkit.event.Event;
 
 import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Timers;
 
 /**
  * UHCEvent abstract class
@@ -21,4 +22,13 @@ public abstract class UHCEvent extends Event {
 	public Game getGame() {
 		return Game.getInstance();
 	}
+    
+	/**
+	 * Get the timers.
+	 * 
+	 * @return The timers.
+	 */
+    public Timers getTimers() {
+    	return Timers.getInstance();
+    }
 }
