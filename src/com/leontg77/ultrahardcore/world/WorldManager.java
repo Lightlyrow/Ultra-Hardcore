@@ -13,8 +13,6 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.commands.CommandException;
-import com.leontg77.ultrahardcore.feature.FeatureManager;
-import com.leontg77.ultrahardcore.feature.world.NewStoneFeature;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
 
@@ -24,8 +22,8 @@ import com.leontg77.ultrahardcore.utils.LocationUtils;
  * @author LeonTG77
  */
 public class WorldManager {
+	private static final WorldManager INSTANCE = new WorldManager();
 	private Settings settings = Settings.getInstance();
-	private static WorldManager instance = new WorldManager();
 	
 	/**
 	 * Get the instance of the class.
@@ -33,32 +31,25 @@ public class WorldManager {
 	 * @return The instance.
 	 */
 	public static WorldManager getInstance() {
-		return instance;
+		return INSTANCE;
 	}
 	
 	/**
 	 * Load all the saved worlds.
 	 */
 	public void loadWorlds() {
-		try {
-			Set<String> worlds = settings.getWorlds().getConfigurationSection("worlds").getKeys(false);
-			
-			for (String world : worlds) {
-				String name = world;
-				
-				try {
-					loadWorld(name);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		final Set<String> worlds = settings.getWorlds().getConfigurationSection("worlds").getKeys(false);
+		
+		if (worlds == null) {
+			return;
+		}
+		
+		for (String world : worlds) {
+			try {
+				loadWorld(world);
+			} catch (Exception ex) {
+				Bukkit.getLogger().severe(ex.getMessage());
 			}
-		} catch (Exception e) {
-			settings.getWorlds().set("worlds.arena.name", "arena");
-			settings.getWorlds().set("worlds.arena.radius", 200);
-			settings.getWorlds().set("worlds.arena.seed", 123l);
-			settings.getWorlds().set("worlds.arena.environment", "NORMAL");
-			settings.getWorlds().set("worlds.arena.worldtype", "NORMAL");
-			settings.saveWorlds();
 		}
 	}
 	
@@ -71,16 +62,14 @@ public class WorldManager {
 	 * @param environment The world's environment.
 	 * @param type The world type.
 	 */
-	public void createWorld(String name, int radius, long seed, Environment environment, WorldType type) {
+	public void createWorld(String name, int radius, long seed, Environment environment, WorldType type, boolean antiStripmine, boolean oreLimiter, boolean newStone) {
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		creator.environment(environment);
 		creator.type(type);
 		creator.seed(seed);
 		
-		FeatureManager feat = FeatureManager.getInstance();
-		
-		if (feat.getFeature(NewStoneFeature.class).isEnabled()) {
+		if (newStone) {
 			creator.generatorSettings("{\"useMonuments\":false}");
 		} else {
 			creator.generatorSettings("{\"useMonuments\":false,\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
@@ -103,11 +92,11 @@ public class WorldManager {
 		
 		world.save();
 
-		settings.getWorlds().set("worlds." + world.getName() + ".name", name);
-		settings.getWorlds().set("worlds." + world.getName() + ".radius", radius);
-		settings.getWorlds().set("worlds." + world.getName() + ".seed", seed);
-		settings.getWorlds().set("worlds." + world.getName() + ".environment", environment.name());
-		settings.getWorlds().set("worlds." + world.getName() + ".worldtype", type.name());
+		settings.getWorlds().set(world.getName() + ".name", name);
+		settings.getWorlds().set(world.getName() + ".radius", radius);
+		settings.getWorlds().set(world.getName() + ".seed", seed);
+		settings.getWorlds().set(world.getName() + ".environment", environment.name());
+		settings.getWorlds().set(world.getName() + ".worldtype", type.name());
 		settings.saveWorlds();
 	}
 	
@@ -149,10 +138,8 @@ public class WorldManager {
 		
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
-
-		FeatureManager feat = FeatureManager.getInstance();
 		
-		if (!feat.getFeature(NewStoneFeature.class).isEnabled()) {
+		if (true) {
 			creator.generatorSettings("{\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
 		}
 		
