@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
 /**
@@ -46,7 +45,7 @@ public class BedBombs extends Scenario implements Listener {
 			return;
 		}
 		
-		if (!GameUtils.getGameWorlds().contains(block.getWorld())) {
+		if (!game.getWorlds().contains(block.getWorld())) {
 			return;
 		}
 		
@@ -54,6 +53,7 @@ public class BedBombs extends Scenario implements Listener {
 			return;
 		}
 		
+		block.setType(Material.AIR);
 		event.setCancelled(true);
 		
 		final Location loc = block.getLocation();
