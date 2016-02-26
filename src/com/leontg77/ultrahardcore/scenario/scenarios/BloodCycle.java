@@ -108,11 +108,11 @@ public class BloodCycle extends Scenario implements Listener {
 		final Player player = event.getPlayer();
 		final Block block = event.getBlock();
 		
-		if (!ORES.contains(block.getType())) {
+		if (!ORES.contains(block.getType()) && block.getType() != Material.GLOWING_REDSTONE_ORE) {
 			return;
 		}
 		
-		if (current != null && block.getType() != current) {
+		if (!isCorrectOre(block)) {
 			return;
 		}
 		
@@ -140,6 +140,7 @@ public class BloodCycle extends Scenario implements Listener {
 			
 			PlayerUtils.damage(player, 1);
 			break;
+		case GLOWING_REDSTONE_ORE:
 		case REDSTONE_ORE:
 			if (rand.nextDouble() > 0.35) {
 				return;
@@ -171,5 +172,27 @@ public class BloodCycle extends Scenario implements Listener {
 		default:
 			break;
 		}
+	}
+
+	/**
+	 * Check if the given block is the correct one for blood cycle.
+	 * 
+	 * @param block The block to check.
+	 * @return True if it is, false otherwise.
+	 */
+	private boolean isCorrectOre(Block block) {
+		if (current == null) {
+			return false;
+		}
+		
+		if (current == Material.REDSTONE_ORE) {
+			return block.getType() == Material.REDSTONE_ORE || block.getType() == Material.GLOWING_REDSTONE_ORE;
+		}
+		
+		if (current == block.getType()) {
+			return true;
+		}
+		
+		return false;
 	}
 }
