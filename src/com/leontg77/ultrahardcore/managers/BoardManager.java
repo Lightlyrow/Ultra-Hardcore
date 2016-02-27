@@ -23,8 +23,9 @@ public class BoardManager {
 
 	private Objective nameHealth = board.getObjective("nameHealth");
 	private Objective tabHealth = board.getObjective("tabHealth");
-	
 	private Objective hearts = board.getObjective("hearts");
+	
+	private Objective backup = board.getObjective("backup");
 	private Objective kills = board.getObjective("kills");
 	
 	/**
@@ -82,11 +83,24 @@ public class BoardManager {
 	}
 	
 	/**
+	 * Get the sidebar kill backup objective.
+	 * 
+	 * @return The objective.
+	 */
+	public Objective getBackupObjective() {
+		return backup;
+	}
+	
+	/**
 	 * Setup the scoreboard objectives.
 	 */
 	public void setup() {
 		if (board.getObjective("kills") == null) {
 			kills = board.registerNewObjective("kills", "dummy");
+		}
+		
+		if (board.getObjective("backup") == null) {
+			backup = board.registerNewObjective("backup", "dummy");
 		}
 		
 		if (board.getObjective("tabHealth") == null) {
@@ -101,7 +115,7 @@ public class BoardManager {
 			hearts = board.registerNewObjective("hearts", "health");
 		}
 		
-		Game game = Game.getInstance();
+		final Game game = Game.getInstance();
 		
 		if (game.isRecordedRound()) {
 			kills.setDisplayName("Kills");
@@ -122,31 +136,48 @@ public class BoardManager {
 	/**
 	 * Sets the score of the given player.
 	 * 
-	 * @param player the player setting it for.
+	 * @param entry the player setting it for.
 	 * @param newScore the new score.
 	 */
-	public void setScore(String player, int newScore) {
-		Score score = kills.getScore(player);
-		
-		score.setScore(newScore);
+	public void setScore(final String entry, final int newScore) {
+		final Score backupScore = backup.getScore(entry);
+		final Score killScore = kills.getScore(entry);
+
+		backupScore.setScore(getActualScore(entry) + newScore);
+		killScore.setScore(newScore);
 	}
 
 	/**
 	 * Gets a score for the given string.
 	 * 
-	 * @param string the wanted string.
+	 * @param entry the wanted string.
 	 * @return The score of the string.
 	 */
-	public int getScore(String string) {
-		return kills.getScore(string).getScore();
+	public int getScore(final String entry) {
+		return kills.getScore(entry).getScore();
+	}
+
+	/**
+	 * Gets a actual score for the given string.
+	 * 
+	 * @param entry the wanted string.
+	 * @return The actual score of the string.
+	 */
+	public int getActualScore(final String entry) {
+		return backup.getScore(entry).getScore();
 	}
 
 	/**
 	 * Reset the score of the given string.
 	 * 
-	 * @param string the string resetting.
+	 * @param entry the string resetting.
 	 */
-	public void resetScore(String string) {
-		board.resetScores(string);
+	public void resetScore(final String entry) {
+		int score = getActualScore(entry);
+		
+		board.resetScores(entry);
+		
+		// this should never be reset, so i'm adding it back! :D
+		backup.getScore(entry).setScore(score);
 	}
 }
