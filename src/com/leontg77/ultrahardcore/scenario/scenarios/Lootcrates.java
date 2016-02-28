@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,9 +14,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -48,8 +49,8 @@ public class Lootcrates extends Scenario implements Listener {
 	public void on(GameStartEvent event) {
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : PlayerUtils.getPlayers()) {
-					if (Spectator.getInstance().isSpectating(online)) {
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					if (SpecManager.getInstance().isSpectating(online)) {
 						continue;
 					}
 					
