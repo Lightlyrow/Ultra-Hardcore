@@ -33,7 +33,13 @@ public class Config extends InvGUI implements Listener {
 		final FeatureManager manager = FeatureManager.getInstance();
 		
 		for (ToggleableFeature feature : manager.getToggleableFeatures()) {
-			inv.setItem(feature.getInventorySlot(), feature.getToggleItem());
+			final int slot = feature.getInventorySlot();
+			
+			if (slot > 53 || slot < 0) {
+				continue;
+			}
+			
+			inv.setItem(slot, feature.getToggleItem());
 		}
 	}
 
