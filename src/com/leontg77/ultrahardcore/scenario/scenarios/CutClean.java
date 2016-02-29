@@ -6,6 +6,7 @@ import java.util.Random;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.Entity;
@@ -47,6 +48,11 @@ public class CutClean extends Scenario implements Listener {
 		final List<ItemStack> drops = event.getDrops();
 		final Entity entity = event.getEntity();
 		
+		if (entity instanceof Ageable && !((Ageable) entity).isAdult()) {
+			drops.clear();
+			return;
+		}
+		
 		if (entity instanceof Cow) {
 			drops.clear();
 			drops.add(new ItemStack(Material.COOKED_BEEF, 3));
@@ -78,7 +84,7 @@ public class CutClean extends Scenario implements Listener {
 	
 		if (entity instanceof Rabbit) {
 			drops.clear();
-			drops.add(new ItemStack(Material.COOKED_RABBIT, 1));
+			drops.add(new ItemStack(Material.COOKED_RABBIT, 2));
 			drops.add(new ItemStack(Material.RABBIT_HIDE));
 		}
 	}
