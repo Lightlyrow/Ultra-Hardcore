@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.world;
+package com.leontg77.ultrahardcore.world.biomeswap;
 
 import static com.leontg77.ultrahardcore.Main.plugin;
 
