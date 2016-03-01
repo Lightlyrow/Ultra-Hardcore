@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -18,14 +19,23 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 
 /**
- * Build protect listener class.
+ * Protection listener class.
  * <p> 
  * All events in this class is for protecting certain worlds from being destroyed
  * 
  * @author LeonTG77
  */
-public class BuildProtectListener implements Listener {
-	private final Game game = Game.getInstance();
+public class ProtectionListener implements Listener {
+	private final Game game;
+	
+	/**
+	 * Player listener class constructor.
+	 * 
+	 * @param game The game class.
+	 */
+	public ProtectionListener(Game game) {
+		this.game = game;
+	}
 	
 	@EventHandler
     public void on(final BlockBreakEvent event) {
@@ -126,8 +136,8 @@ public class BuildProtectListener implements Listener {
 		if (!entity.getWorld().getName().equals("lobby")) {
 			return;
 		}
-        
-        if (entity instanceof Player && entity.hasPermission("uhc.build")) {
+		
+		if (event instanceof EntityDamageByEntityEvent && shouldCancelDamageByOther((EntityDamageByEntityEvent) event)) {
 			return;
 		}
 		
@@ -151,5 +161,27 @@ public class BuildProtectListener implements Listener {
 		default:
 			break;
 		}
+	}
+ 
+	/**
+	 * Check if the entity damage by entity event should return the entity damge event int he method above.
+	 * 
+	 * @param event The entity damage by entity event.
+	 * @return True if it should, false otherwise.
+	 */
+	private boolean shouldCancelDamageByOther(EntityDamageByEntityEvent event) {
+		final Entity damager = event.getDamager();
+		final Entity entity = event.getEntity();
+		
+		if (entity.isDead() || damager.isDead()) {
+			event.setCancelled(true);
+			return true;
+		}
+		
+		if (damager instanceof Player && damager.hasPermission("uhc.build")) {
+			return true;
+		}
+		
+		return false;
 	}
 }
