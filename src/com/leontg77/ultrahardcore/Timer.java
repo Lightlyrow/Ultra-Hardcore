@@ -1,8 +1,6 @@
 package com.leontg77.ultrahardcore;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
@@ -23,19 +21,17 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
-import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
-import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
-import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.FinalHealEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
+import com.leontg77.ultrahardcore.events.MeetupEvent;
+import com.leontg77.ultrahardcore.events.PvPEnableEvent;
+import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
-import com.leontg77.ultrahardcore.managers.TeamManager;
-import com.leontg77.ultrahardcore.managers.SpecManager.SpecInfo;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.Astrophobia;
 import com.leontg77.ultrahardcore.scenario.scenarios.Kings;
@@ -53,9 +49,26 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class Timers {
-	private static final Timers INSTANCE = new Timers();
-	private final Game game = Game.getInstance();
+public class Timer {
+	private final Main plugin;
+	private final Game game;
+	
+	private final ScenarioManager scen;
+	private final StalkingFeature stalk;
+	
+	private final BoardManager board;
+	private final SpecManager spec;
+	
+	public Timer(Main plugin, Game game, ScenarioManager scen, StalkingFeature stalk, BoardManager board, SpecManager spec) {
+		this.plugin = plugin;
+		this.game = game;
+		
+		this.scen = scen;
+		this.stalk = stalk;
+		
+		this.board = board;
+		this.spec = spec;
+	}
 
 	private BukkitRunnable taskSeconds;
 	private BukkitRunnable taskMinutes;
@@ -67,15 +80,6 @@ public class Timers {
 	private int timeInSeconds;
 	private int pvpInSeconds;
 	private int meetupInSeconds;
-	
-	/**
-	 * Get the instance of the class.
-	 * 
-	 * @return The instance.
-	 */
-	public static Timers getInstance() {
-		return INSTANCE;
-	}
 	
 	/**
 	 * Set the time since the game started.
@@ -176,33 +180,33 @@ public class Timers {
 
 		new BukkitRunnable() {
 			public void run() {
-				InvGUI.getInstance().openGameInfo(new ArrayList<Player>(Bukkit.getOnlinePlayers()));
+				new InvGUI().openGameInfo(new ArrayList<Player>(Bukkit.getOnlinePlayers()));
 			}
-		}.runTaskLater(Main.plugin, 100);
+		}.runTaskLater(plugin, 100);
 
 		new BukkitRunnable() {
 			public void run() {
 				PlayerUtils.broadcast(Main.PREFIX + "Remember to use §a/uhc §7for all game information.");
 			}
-		}.runTaskLater(Main.plugin, 250);
+		}.runTaskLater(plugin, 250);
 
 		new BukkitRunnable() {
 			public void run() {
 				PlayerUtils.broadcast(Main.PREFIX + "If you have a question and §a/uhc§7 didn't help, ask in §a/helpop");
 			}
-		}.runTaskLater(Main.plugin, 300);
+		}.runTaskLater(plugin, 300);
 
 		new BukkitRunnable() {
 			public void run() {
 				PlayerUtils.broadcast(Main.PREFIX + "To find the matchpost, use §a/post");
 			}
-		}.runTaskLater(Main.plugin, 350);
+		}.runTaskLater(plugin, 350);
 
 		new BukkitRunnable() {
 			public void run() {
-				PlayerUtils.broadcast(Main.PREFIX + "This is a §a" + Game.getInstance().getAdvancedTeamSize(false, true) + game.getScenarios());
+				PlayerUtils.broadcast(Main.PREFIX + "This is a §a" + game.getAdvancedTeamSize(false, true) + game.getScenarios());
 			}
-		}.runTaskLater(Main.plugin, 400);
+		}.runTaskLater(plugin, 400);
 
 		new BukkitRunnable() {
 			public void run() {
@@ -213,7 +217,7 @@ public class Timers {
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §45.");
 			}
-		}.runTaskLater(Main.plugin, 500);
+		}.runTaskLater(plugin, 500);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -224,7 +228,7 @@ public class Timers {
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §c4.");
 			}
-		}.runTaskLater(Main.plugin, 520);
+		}.runTaskLater(plugin, 520);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -235,7 +239,7 @@ public class Timers {
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §63.");
 			}
-		}.runTaskLater(Main.plugin, 540);
+		}.runTaskLater(plugin, 540);
 
 		new BukkitRunnable() {
 			public void run() {
@@ -246,7 +250,7 @@ public class Timers {
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §e2.");
 			}
-		}.runTaskLater(Main.plugin, 560);
+		}.runTaskLater(plugin, 560);
 
 		new BukkitRunnable() {
 			public void run() {
@@ -257,29 +261,23 @@ public class Timers {
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §a1.");
 			}
-		}.runTaskLater(Main.plugin, 580);
+		}.runTaskLater(plugin, 580);
 		
 		new BukkitRunnable() {
 			public void run() {
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
-				PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in: §a" + (pvp = game.getPvP()) + " minutes.");
+				PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in: §a" + game.getPvP() + " minutes.");
 				PlayerUtils.broadcast(Main.PREFIX + "Meetup is in: §a" + game.getMeetup() + " minutes.");
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
-				
-				final ScenarioManager scen = ScenarioManager.getInstance();
-				final SpecManager spec = SpecManager.getInstance();
 
-				final TeamManager teams = TeamManager.getInstance();
-				final BoardManager sb = BoardManager.getInstance();
-
-				Bukkit.getPluginManager().registerEvents(new SpecInfo(), Main.plugin);
+				Bukkit.getPluginManager().registerEvents(spec.getSpecInfo(), plugin);
 				
 				State.setState(State.INGAME);
 				game.setArenaBoard(false);
 				
-				sb.setScore("§8» §a§lPvE", 1);
-				sb.setScore("§8» §a§lPvE", 0);
+				board.setScore("§8» §c§oPvE", 1);
+				board.setScore("§8» §c§oPvE", 0);
 				
 				pvp = game.getPvP();
 				meetup = game.getMeetup();
@@ -290,14 +288,9 @@ public class Timers {
 				Bukkit.getServer().setIdleTimeout(10);
 				timer();
 				
-				for (Team team : teams.getTeamsWithPlayers()) {
-					Set<String> players = new HashSet<String>(team.getEntries());
-					teams.getSavedTeams().put(team.getName(), players);
-				}
-				
-				for (String entry : sb.getBoard().getEntries()) {
-					if (entry.equals("§a§o@ArcticUHC") || sb.getScore(entry) > 0) {
-						sb.setScore(entry, sb.getScore(entry) - 9);
+				for (String entry : board.getBoard().getEntries()) {
+					if (entry.equals("§a§o@ArcticUHC") || board.getScore(entry) > 0) {
+						board.setScore(entry, board.getScore(entry) - 9);
 					}
 				}
 				
@@ -307,7 +300,6 @@ public class Timers {
 					world.setTime(0);
 					
 					world.setGameRuleValue("doDaylightCycle", "true");
-					world.setSpawnFlags(false, true);
 					world.setThundering(false);
 					world.setStorm(false);
 					
@@ -328,7 +320,7 @@ public class Timers {
 					online.awardAchievement(Achievement.OPEN_INVENTORY);
 					online.removeAchievement(Achievement.MINE_WOOD);
 					
-					SpecInfo.getTotal(online).clear();
+					spec.getSpecInfo().getTotal(online).clear();
 					
 					final User user = User.get(online);
 					
@@ -393,7 +385,7 @@ public class Timers {
 				
 				Bukkit.getPluginManager().callEvent(new GameStartEvent());
 			}
-		}.runTaskLater(Main.plugin, 600);
+		}.runTaskLater(plugin, 600);
 	}
 	
 	/**
@@ -404,9 +396,6 @@ public class Timers {
 		
 		taskMinutes = new BukkitRunnable() {
 			public void run() {
-				ScenarioManager scen = ScenarioManager.getInstance();
-				BoardManager sb = BoardManager.getInstance();
-				
 				time++;
 				pvp--;
 				meetup--;
@@ -417,7 +406,7 @@ public class Timers {
 				}
 				
 				if (time == 2) {
-					for (World world : Game.getInstance().getWorlds()) {
+					for (World world : game.getWorlds()) {
 						world.setSpawnFlags(true, true);
 					}
 					
@@ -430,20 +419,21 @@ public class Timers {
 					
 					for (Player online : Bukkit.getOnlinePlayers()) {
 						PacketUtils.sendTitle(online, "", "§4PvP has been enabled!", 5, 10, 5);
-						online.playSound(online.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
+						online.playSound(online.getLocation(), "mob.wolf.howl", (float) 1, (float) 1);
 					}
 					
-					for (World world : Game.getInstance().getWorlds()) {
+					for (World world : game.getWorlds()) {
 						world.setPVP(true);
 					}
 					
 					game.setPregameBoard(false);
 					
-					for (String entry : sb.getBoard().getEntries()) {
-						if (sb.getScore(entry) != 0 && !entry.equals("§8» §a§lPvE")) {
-							sb.resetScore(entry);
+					for (String entry : board.getBoard().getEntries()) {
+						if (board.getScore(entry) != 0 && !entry.equals("§8» §a§lPvE")) {
+							board.resetScore(entry);
 						}
 					}
+					return;
 				}
 				
 				if (meetup == 0) {
@@ -463,7 +453,7 @@ public class Timers {
 						online.playSound(online.getLocation(), Sound.WITHER_DEATH, 1, 1);
 					}
 
-					for (World world : Game.getInstance().getWorlds()) {
+					for (World world : game.getWorlds()) {
 						world.setThundering(false);
 						world.setStorm(false);
 
@@ -496,6 +486,7 @@ public class Timers {
 					
 					if (pvpToString.equals("1") || pvpToString.endsWith("5") || pvpToString.endsWith("0")) {
 						PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a" + DateUtils.advancedTicksToString(pvp * 60) + "§7.");
+						PlayerUtils.broadcast(Main.PREFIX + "Reminder: Stalking is " + stalk.getStalkingRule().getMessage().toLowerCase() + "§7.");
 						
 						for (Player online : Bukkit.getOnlinePlayers()) {
 							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -505,15 +496,15 @@ public class Timers {
 			}
 		};
 		
-		taskMinutes.runTaskTimer(Main.plugin, 1200, 1200);
+		taskMinutes.runTaskTimer(plugin, 1200, 1200);
 		
 		taskSeconds = new BukkitRunnable() {
-			int finalHeal = 20;
-			
 			public void run() {
 				timeInSeconds++;
 				pvpInSeconds--;
 				meetupInSeconds--;
+				
+				int finalHeal = 20 - timeInSeconds;
 				
 				if (timeInSeconds == 20) {
 					PlayerUtils.broadcast(Main.PREFIX + "Final heal has been given.");
@@ -537,8 +528,6 @@ public class Timers {
 				}
 				
 				if (timeInSeconds < 20) {
-					finalHeal--;
-					
 					if (TimerCommand.isRunning()) {
 						return;
 					}
@@ -574,7 +563,7 @@ public class Timers {
 			}
 		};
 		
-		taskSeconds.runTaskTimer(Main.plugin, 20, 20);
+		taskSeconds.runTaskTimer(plugin, 20, 20);
 	}
 	
 	/**
@@ -593,7 +582,7 @@ public class Timers {
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
-		}.runTaskLater(Main.plugin, 20);
+		}.runTaskLater(plugin, 20);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -602,15 +591,12 @@ public class Timers {
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
 			}
-		}.runTaskLater(Main.plugin, 40);
+		}.runTaskLater(plugin, 40);
 		
 		new BukkitRunnable() {
 			public void run() {
-				final ScenarioManager scen = ScenarioManager.getInstance();
-				final SpecManager spec = SpecManager.getInstance();
-
-				final PluginManager manager = Bukkit.getPluginManager();
-				manager.registerEvents(new SpecInfo(), Main.plugin);
+				PluginManager manager = Bukkit.getPluginManager();
+				manager.registerEvents(spec.getSpecInfo(), plugin);
 				
 				State.setState(State.INGAME);
 				game.setArenaBoard(false);
@@ -654,7 +640,7 @@ public class Timers {
 						}
 					}
 					
-					SpecInfo.getTotal(online).clear();
+					spec.getSpecInfo().getTotal(online).clear();
 					
 					if (spec.isSpectating(online)) {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
@@ -718,7 +704,7 @@ public class Timers {
 				
 				Bukkit.getPluginManager().callEvent(new GameStartEvent());
 			}
-		}.runTaskLater(Main.plugin, 60);
+		}.runTaskLater(plugin, 60);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -734,7 +720,7 @@ public class Timers {
 					user.resetFood();
 				}
 			}
-		}.runTaskLater(Main.plugin, 260);
+		}.runTaskLater(plugin, 260);
 	}
 	
 	/**
@@ -766,7 +752,7 @@ public class Timers {
 					PlayerUtils.broadcast(Main.PREFIX + "PvP has been enabled!");
 					Bukkit.getPluginManager().callEvent(new PvPEnableEvent());
 					
-					for (World world : Game.getInstance().getWorlds()) {
+					for (World world : game.getWorlds()) {
 						world.setPVP(true);
 					}
 				}
@@ -774,7 +760,7 @@ public class Timers {
 				if (pvp == 100) {
 					PlayerUtils.broadcast(Main.PREFIX + "Permaday activated!");
 					
-					for (World world : Game.getInstance().getWorlds()) {
+					for (World world : game.getWorlds()) {
 						world.setGameRuleValue("doDaylightCycle", "false");
 						world.setTime(6000);
 					}
@@ -787,7 +773,7 @@ public class Timers {
 			}
 		};
 		
-		taskMinutes.runTaskTimer(Main.plugin, 1200, 1200);
+		taskMinutes.runTaskTimer(plugin, 1200, 1200);
 	}
  
 	/**
