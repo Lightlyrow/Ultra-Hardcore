@@ -1,8 +1,8 @@
 name: UHC
 main: com.leontg77.ultrahardcore.Main
-version: 1.10.0
+version: 1.10.1
 author: LeonTG77
-description: UHC plugin made for ArcitcUHC by LeonTG77
+description: A private UHC plugin made for ArcticUHC ONLY.
 softdepend: [ProtocolLib, Pregenner]
 
 commands:
@@ -25,6 +25,7 @@ commands:
     aliases: [bc, bcast]
   butcher:
     description: Kills all hostile mobs.
+    aliases: [ekill, killall]
   config:
     description: Change the game settings.
   chat:
@@ -91,6 +92,8 @@ commands:
     description: Mute a player or the chat.
   near:
     description: Check for nearby players.
+  parkour:
+    description: Restart, leave or go to your last parkour checkpoint.
   pm:
     description: Team chat command.
     aliases: [tc]
@@ -196,6 +199,8 @@ commands:
     description: Generate the big crack.
   bl:
     description: View the biomeparanoia colors.
+  ore:
+    description: View the current blood cycle ore.
   addcaptain:
     description: Add a captain.
   removecaptain:
