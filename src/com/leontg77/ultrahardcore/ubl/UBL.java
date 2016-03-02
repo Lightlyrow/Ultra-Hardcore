@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore.ubl;
 
-import static com.leontg77.ultrahardcore.Main.plugin;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,6 +23,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.leontg77.ultrahardcore.Main;
+
 /**
  * Universial Ban List class.
  * <p>
@@ -33,57 +33,70 @@ import org.bukkit.scheduler.BukkitTask;
  * @author XHawk87, modified by LeonTG77
  */
 public class UBL implements Runnable {
-	private static UBL instance = new UBL();
+	private final Main plugin;
 	
-    public Map<UUID, BanEntry> banlistByUUID;
-    private BukkitTask autoChecker;
-
 	/**
-	 * Gets the instance of this class
+	 * UBL class constructor.
 	 * 
-	 * @return The instance.
+	 * @param plugin The main class.
 	 */
-	public static UBL getInstance() {
-		return instance;
+	public UBL(Main plugin) {
+		this.plugin = plugin;
 	}
+	
+	private static final String BANLIST_URL = "https://docs.google.com/spreadsheet/ccc?key=0AjACyg1Jc3_GdEhqWU5PTEVHZDVLYWphd2JfaEZXd2c&output=csv";
+    
+	private static final int RETRIES = 3;
+    private static final int MAX_BANDWIDTH = 64;
+    private static final int BUFFER_SIZE = (MAX_BANDWIDTH * 1024) / 20;
+    private static final int TIMEOUT = 20;
+	
+    private Map<UUID, BanEntry> banlist;
+    private BukkitTask autoChecker;
+    
+    /**
+     * Get the ban entry for the given UUID.
+     * 
+     * @param uuid The uuid to get for.
+     * @return The ban entry, null if none.
+     */
+    public BanEntry getBanEntry(UUID uuid) {
+    	return banlist.get(uuid);
+    }
 	
 	@Override
     public void run() {
-        String banlistURL = "https://docs.google.com/spreadsheet/ccc?key=0AjACyg1Jc3_GdEhqWU5PTEVHZDVLYWphd2JfaEZXd2c&output=csv";
-        
-        int retries = 3;
-        int maxBandwidth = 64;
-        int bufferSize = (maxBandwidth * 1024) / 20;
-        int timeout = 20;
-
         URL url;
         String data;
         BufferedReader in;
         
         try {
-            url = new URL(banlistURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setInstanceFollowRedirects(false);
-            conn.setConnectTimeout(timeout * 1000);
-            conn.setReadTimeout(timeout * 1000);
-            conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-            conn.addRequestProperty("User-Agent", "Mozilla");
-            conn.addRequestProperty("Referer", "google.com");
+            url = new URL(BANLIST_URL);
+            
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            
+            con.setInstanceFollowRedirects(false);
+            con.setConnectTimeout(TIMEOUT * 1000);
+            con.setReadTimeout(TIMEOUT * 1000);
+            con.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+            con.addRequestProperty("User-Agent", "Mozilla");
+            con.addRequestProperty("Referer", "google.com");
             
             boolean found = false;
             int tries = 0;
+            
             StringBuilder cookies = new StringBuilder();
             
             while (!found) {
-                int status = conn.getResponseCode();
+                int status = con.getResponseCode();
                 
                 if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_SEE_OTHER) {
-                    String newUrl = conn.getHeaderField("Location");
+                    String newUrl = con.getHeaderField("Location");
                     String headerName;
                     
-                    for (int i = 1; (headerName = conn.getHeaderFieldKey(i)) != null; i++) {
+                    for (int i = 1; (headerName = con.getHeaderFieldKey(i)) != null; i++) {
                         if (headerName.equals("Set-Cookie")) {
-                            String newCookie = conn.getHeaderField(i);
+                            String newCookie = con.getHeaderField(i);
                             newCookie = newCookie.substring(0, newCookie.indexOf(";"));
                             String cookieName = newCookie.substring(0, newCookie.indexOf("="));
                             String cookieValue = newCookie.substring(newCookie.indexOf("=") + 1, newCookie.length());
@@ -94,14 +107,14 @@ public class UBL implements Runnable {
                         }
                     }
 
-                    conn = (HttpURLConnection) new URL(newUrl).openConnection();
-                    conn.setInstanceFollowRedirects(false);
-                    conn.setRequestProperty("Cookie", cookies.toString());
-                    conn.setConnectTimeout(timeout * 1000);
-                    conn.setReadTimeout(timeout * 1000);
-                    conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-                    conn.addRequestProperty("User-Agent", "Mozilla");
-                    conn.addRequestProperty("Referer", "google.com");
+                    con = (HttpURLConnection) new URL(newUrl).openConnection();
+                    con.setInstanceFollowRedirects(false);
+                    con.setRequestProperty("Cookie", cookies.toString());
+                    con.setConnectTimeout(TIMEOUT * 1000);
+                    con.setReadTimeout(TIMEOUT * 1000);
+                    con.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
+                    con.addRequestProperty("User-Agent", "Mozilla");
+                    con.addRequestProperty("Referer", "google.com");
                 } 
                 else if (status == HttpURLConnection.HTTP_OK) {
                     found = true;
@@ -109,16 +122,16 @@ public class UBL implements Runnable {
                 else {
                     tries++;
                     
-                    if (tries >= retries) {
-                        throw new IOException("Failed to reach " + url.getHost() + " after " + retries + " attempts");
+                    if (tries >= RETRIES) {
+                        throw new IOException("Failed to reach " + url.getHost() + " after " + RETRIES + " attempts");
                     }
                 }
             }
 
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()), bufferSize);
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()), BUFFER_SIZE);
 
             try {
-                data = downloadBanlist(in, bufferSize, timeout * 20);
+                data = downloadBanlist(in, BUFFER_SIZE, TIMEOUT * 20);
                 plugin.getLogger().info("UBL has been updated.");
                 
                 for (Player online : Bukkit.getOnlinePlayers()) {
@@ -129,7 +142,7 @@ public class UBL implements Runnable {
             		online.kickPlayer(getBanMessage(online.getUniqueId()));
                 }
             } catch (IOException ex) {
-                plugin.getLogger().severe("Connection was interrupted while downloading banlist from " + banlistURL);
+                plugin.getLogger().severe("Connection was interrupted while downloading banlist from " + BANLIST_URL);
                 data = loadFromBackup();
                 
                 for (Player online : Bukkit.getOnlinePlayers()) {
@@ -165,7 +178,7 @@ public class UBL implements Runnable {
         		online.kickPlayer(getBanMessage(online.getUniqueId()));
             }
         } catch (IOException ex) {
-            plugin.getLogger().warning("Banlist server " + banlistURL + " is currently unreachable");
+            plugin.getLogger().warning("Banlist server " + BANLIST_URL + " is currently unreachable");
             data = loadFromBackup();
             
             for (Player online : Bukkit.getOnlinePlayers()) {
@@ -235,9 +248,10 @@ public class UBL implements Runnable {
      * @return True, if the player is banned and not exempt, otherwise false
      */
     public boolean isBanned(UUID uuid) {
-    	if (banlistByUUID != null) {
-            return banlistByUUID.containsKey(uuid);
+    	if (banlist != null) {
+            return banlist.containsKey(uuid);
     	}
+    	
 		return false;
     }
 
@@ -246,7 +260,7 @@ public class UBL implements Runnable {
      * @return A personalised ban message for this player
      */
     public String getBanMessage(UUID uuid) {
-        BanEntry banEntry = banlistByUUID.get(uuid);
+        BanEntry banEntry = banlist.get(uuid);
         
         if (banEntry == null) {
             return "Not on the UBL";
@@ -272,6 +286,7 @@ public class UBL implements Runnable {
 	    
 	    for (int i = 0; i < line.length(); i++) {
 	    	char c = line.charAt(i);
+	    	
 	    	if (c == ',') {
 	    		fields.add(sb.toString());
 	    		sb = new StringBuilder();
@@ -298,19 +313,19 @@ public class UBL implements Runnable {
      * Update the entire ban-list using raw CSV lines, overwriting any previous
      * settings
      *
-     * @param banlist The new ban-list
+     * @param bans The new ban-list
      */
-    public void setBanList(String fieldNamesCSV, List<String> banlist) {
+    public void setBanList(String fieldNamesCSV, List<String> bans) {
         String[] fieldNames = parseLine(fieldNamesCSV);
         
         if (!Arrays.asList(fieldNames).contains("IGN") && !Arrays.asList(fieldNames).contains("UUID")) {
         	plugin.getLogger().warning("The ubl commitee fucked up the google doc, go spam them on skype to fix it :D");
         }
         
-        banlistByUUID = new HashMap<UUID, BanEntry>();
+        banlist = new HashMap<UUID, BanEntry>();
         
-        for (String rawCSV : banlist) {
-            BanEntry banEntry = new BanEntry(fieldNames, rawCSV);
+        for (String rawCSV : bans) {
+            BanEntry banEntry = new BanEntry(this, fieldNames, rawCSV);
             String ign = banEntry.getData("IGN");
             
             if (ign != null) {
@@ -325,17 +340,20 @@ public class UBL implements Runnable {
             
             if (uuidString.length() == 32) {
                 StringBuilder sb = new StringBuilder();
+                
                 sb.append(uuidString.substring(0, 8)).append('-');
                 sb.append(uuidString.substring(8, 12)).append('-');
                 sb.append(uuidString.substring(12, 16)).append('-');
                 sb.append(uuidString.substring(16, 20)).append('-');
                 sb.append(uuidString.substring(20, 32));
+                
                 uuidString = sb.toString();
             }
             
             if (uuidString.length() == 36) {
                 UUID uuid = UUID.fromString(uuidString);
-                banlistByUUID.put(uuid, banEntry);
+                
+                banlist.put(uuid, banEntry);
                 banEntry.setUUID(uuid);
             }
         }
@@ -371,8 +389,7 @@ public class UBL implements Runnable {
     }
 
     /**
-     * Attempt to download the ban-list from the given stream within the
-     * specified time limit
+     * Attempt to download the ban-list from the given stream within the specified time limit.
      *
      * @param in The input stream
      * @param bufferSize The size of the data buffer in bytes
@@ -383,8 +400,8 @@ public class UBL implements Runnable {
      */
     private String downloadBanlist(BufferedReader in, int bufferSize, int timeout) throws IOException, InterruptedException {
         final Thread iothread = Thread.currentThread();
+        
         BukkitTask timer = new BukkitRunnable() {
-            @Override
             public void run() {
                 iothread.interrupt();
             }
@@ -392,16 +409,16 @@ public class UBL implements Runnable {
 
         try {
             char[] buffer = new char[bufferSize];
-            StringBuilder sb = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
 
             while (true) {
                 int bytesRead = in.read(buffer);
 
                 if (bytesRead == -1) {
-                    return sb.toString();
+                    return builder.toString();
                 }
 
-                sb.append(buffer, 0, bytesRead);
+                builder.append(buffer, 0, bytesRead);
 
                 Thread.sleep(50);
             }
@@ -419,6 +436,7 @@ public class UBL implements Runnable {
         new BukkitRunnable() {
             public void run() {
                 String[] lines = data.split("\\r?\\n");
+                
                 if (lines.length < 2) {
                     plugin.getLogger().warning("Banlist is empty!");
                     return;
@@ -438,10 +456,12 @@ public class UBL implements Runnable {
      */
     public String loadFromBackup() {
         File file = new File(plugin.getDataFolder(), "ubl.backup");
+        
         if (!file.exists()) {
             plugin.getLogger().severe("The backup file could not be located. You are running without UBL protection!");
             return "";
         }
+        
         try (BufferedReader in = new BufferedReader(new FileReader(file))) {
             StringBuilder sb = new StringBuilder();
             char[] buffer = new char[8192];
@@ -455,8 +475,9 @@ public class UBL implements Runnable {
             }
 
             plugin.getLogger().info("UBL loaded from local backup");
+            
             return sb.toString();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             plugin.getLogger().log(Level.SEVERE, "Could not load UBL backup. You are running without UBL protection!", ex);
             return "";
         }
@@ -471,12 +492,11 @@ public class UBL implements Runnable {
      */
     public void saveToBackup(String data) {
         File file = new File(plugin.getDataFolder(), "ubl.backup");
+        
         try (BufferedWriter out = new BufferedWriter(new FileWriter(file))) {
             out.write(data);
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save UBL backup", ex);
         }
     }
-    
-    
 }
