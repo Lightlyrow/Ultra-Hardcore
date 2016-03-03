@@ -22,6 +22,8 @@ import com.leontg77.ultrahardcore.feature.border.BorderShrinkFeature;
 import com.leontg77.ultrahardcore.feature.border.BorderShrinkFeature.BorderShrink;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.feature.pearl.PearlDamageFeature;
+import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
+import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature.StalkingRule;
 import com.leontg77.ultrahardcore.feature.rates.AppleRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.FlintRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.ShearsFeature;
@@ -47,7 +49,7 @@ public class ConfigCommand extends UHCCommand {
 	 * @author LeonTG77
 	 */
 	public enum ConfigValue {
-		APPLERATES, BORDERSHRINK, FLINTRATES, HEADSHEAL, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PEARLDAMAGE, PVP, SCENARIOS, SHEARRATES, STATE, TEAMSIZE, WORLD;
+		APPLERATES, BORDERSHRINK, FLINTRATES, HEADSHEAL, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PEARLDAMAGE, PVP, SCENARIOS, STALKING, SHEARRATES, STATE, TEAMSIZE, WORLD;
 	}
 
 	public ConfigCommand() {
@@ -131,6 +133,19 @@ public class ConfigCommand extends UHCCommand {
 			}
 			
 			featMan.getFeature(BorderShrinkFeature.class).setBorderShrink(border);
+			break;
+		case STALKING:
+			StalkingRule rule;
+			
+			try {
+				rule = StalkingRule.valueOf(args[1].toUpperCase());
+			} catch (Exception e) {
+				throw new CommandException("'" + args[1] + "' is not a vaild stalking rule.");
+			}
+
+			PlayerUtils.broadcast(Main.PREFIX + "Stalking is now " + rule.getMessage());
+			
+			featMan.getFeature(StalkingFeature.class).setStalkingRule(rule);
 			break;
 		case STATE:
 			State state;
@@ -270,6 +285,11 @@ public class ConfigCommand extends UHCCommand {
     		switch (configType) {
 			case BORDERSHRINK:
 	    		for (BorderShrink type : BorderShrink.values()) {
+	    			toReturn.add(type.name().toLowerCase());
+	    		}
+				break;
+			case STALKING:
+	    		for (StalkingRule type : StalkingRule.values()) {
 	    			toReturn.add(type.name().toLowerCase());
 	    		}
 				break;

@@ -6,7 +6,18 @@ package com.leontg77.ultrahardcore;
  * @author LeonTG77
  */
 public enum State {
-	NOT_RUNNING, OPEN, CLOSED, SCATTER, INGAME;
+	NOT_RUNNING, OPEN, CLOSED, SCATTER, INGAME, ENDING;
+	
+	private static Settings settings;
+	
+	/**
+	 * Set the instance of the timer to the givne instance.
+	 * 
+	 * @param game The timer instance.
+	 */
+	public static void setSettings(Settings setting) {
+		settings = setting;
+	}
 
 	private static State currentState;
 	
@@ -16,7 +27,6 @@ public enum State {
 	 * @param state the state setting it to.
 	 */
 	public static void setState(State state) {
-		Settings settings = Settings.getInstance();
 		currentState = state;
 		
 		settings.getData().set("state", state.name());
@@ -30,7 +40,7 @@ public enum State {
 	 * @return True if it's the given state.
 	 */
 	public static boolean isState(State state) {
-		return currentState == state;
+		return getState() == state;
 	}
 	
 	/**
@@ -39,6 +49,18 @@ public enum State {
 	 * @return The state
 	 */
 	public static State getState() {
+		if (currentState == null) {
+			State state;
+					
+			try {
+				state = State.valueOf(settings.getData().getString("state"));
+			} catch (Exception e) {
+				state = State.NOT_RUNNING;
+			}
+			
+			currentState = state;
+		}
+		
 		return currentState;
 	}
 }

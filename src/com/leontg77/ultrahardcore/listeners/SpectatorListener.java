@@ -1,25 +1,31 @@
 package com.leontg77.ultrahardcore.listeners;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
+import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Spectator inventory listener class.
@@ -29,6 +35,81 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class SpectatorListener implements Listener {
+	private final Game game;
+
+	private final SpecManager spec;
+	private final InvGUI inv;
+	
+	private final NetherFeature nether;
+	
+	/**
+	 * Spectator listener class constructor.
+	 * 
+	 * @param game The game class.
+	 * @param spec The spectator manager class.
+	 * @param inv The inv gui class.
+	 * @param nether The nether feature class.
+	 */
+	public SpectatorListener(Game game, SpecManager spec, InvGUI inv, NetherFeature nether) {
+		this.game = game;
+		
+		this.spec = spec;
+		this.inv = inv;
+		
+		this.nether = nether;
+	}
+
+	@EventHandler
+    public void on(PlayerInteractEvent event) {	
+        Player player = event.getPlayer();
+        Action action = event.getAction();
+        
+		if (!spec.isSpectating(player)) {
+			return;
+		}
+		
+		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+			inv.openSelector(player);
+			return;
+		} 
+		
+		if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+			List<Player> list = game.getPlayers();
+			
+			if (list.isEmpty()) {
+				player.sendMessage(Main.PREFIX + "Couldn't find any players.");
+				return;
+			}
+			
+			Random rand = new Random();
+			Player target = list.get(rand.nextInt(list.size()));
+			
+			player.sendMessage(Main.PREFIX + "Teleported to §a" + target.getName() + "§7.");
+			player.teleport(target.getLocation());
+		}
+	}
+	
+	@EventHandler
+    public void on(PlayerInteractEntityEvent event) {
+		Entity clicked = event.getRightClicked();
+		Player player = event.getPlayer();
+		
+		if (!(clicked instanceof Player)) {
+			return;
+		}
+	    	
+		Player interacted = (Player) clicked;
+		
+		if (!spec.isSpectating(player)) {
+			return;
+		}
+		
+		if (spec.isSpectating(interacted)) {
+			return;
+		}
+		
+		inv.openPlayerInventory(player, interacted);
+    }
 	
 	@EventHandler
     public void onInventoryClick(InventoryClickEvent event) {	
@@ -37,8 +118,6 @@ public class SpectatorListener implements Listener {
         }
         
 		Player player = (Player) event.getWhoClicked();
-		
-		Spectator spec = Spectator.getInstance();
 		ItemStack item = event.getCurrentItem();
 		
 		if (!spec.isSpectating(player)) {
@@ -67,15 +146,15 @@ public class SpectatorListener implements Listener {
 		
 		if (item.getType() == Material.COMPASS) {
 			if (event.isRightClick()) {
-				InvGUI.getInstance().openSelector(player);
+				inv.openSelector(player);
 				event.setCancelled(true);
 				return;
 			}
 			
 			ArrayList<Player> players = new ArrayList<Player>();
 			
-			for (Player online : PlayerUtils.getPlayers()) {
-				if (!Spectator.getInstance().isSpectating(online)) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
+				if (!spec.isSpectating(online)) {
 					players.add(online);
 				}
 			}
@@ -93,9 +172,7 @@ public class SpectatorListener implements Listener {
 		}
 		
 		if (item.getType() == Material.LAVA_BUCKET) {
-			Game game = Game.getInstance();
-
-			if (!game.nether()) {
+			if (!nether.isEnabled()) {
 				player.sendMessage(Main.PREFIX + "Nether is disabled.");
 				event.setCancelled(true);
 				return;
@@ -104,9 +181,9 @@ public class SpectatorListener implements Listener {
 			ArrayList<String> netherL = new ArrayList<String>();
 			StringBuilder nether = new StringBuilder();
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				if (online.getWorld().getEnvironment() == Environment.NETHER) {
-					if (Spectator.getInstance().isSpectating(online)) {
+					if (spec.isSpectating(online)) {
 						continue;
 					}
 					
@@ -122,9 +199,9 @@ public class SpectatorListener implements Listener {
 			
 			int i = 1;
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				if (online.getWorld().getEnvironment() == Environment.NETHER) {
-					if (Spectator.getInstance().isSpectating(online)) {
+					if (spec.isSpectating(online)) {
 						continue;
 					}
 					

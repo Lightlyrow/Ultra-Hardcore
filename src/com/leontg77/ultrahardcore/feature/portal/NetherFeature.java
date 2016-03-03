@@ -25,7 +25,7 @@ public class NetherFeature extends ToggleableFeature implements Listener {
 	private static final String WORLD_SUFFIX = "_nether";
 
 	public NetherFeature() {
-		super("Nether", "A dimention where everything is hot and full of lava.");
+		super("Nether", "A dimension where everything is hot and full of lava.");
 		
 		icon.setType(Material.NETHER_STALK);
 		slot = 18;

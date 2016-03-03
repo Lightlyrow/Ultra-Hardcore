@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -26,8 +27,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
-import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.PvPEnableEvent;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
@@ -59,6 +60,15 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 
 	@Override
 	public void onEnable() {}
+
+	/**
+	 * Get a list of the moles.
+	 * 
+	 * @return The moles.
+	 */
+	public List<String> getMoles() {
+		return moles;
+	}
 	
 	@EventHandler
 	public void on(PvPEnableEvent event) {
@@ -70,8 +80,8 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 					ArrayList<String> players = new ArrayList<String>();
 					cancel();
 					
-					for (Player online : PlayerUtils.getPlayers()) {
-						online.playSound(online.getLocation(), Sound.FIREWORK_TWINKLE, 1, 1);
+					for (Player online : Bukkit.getOnlinePlayers()) {
+						online.playSound(online.getLocation(), Sound.WOLF_HOWL, 1, 1);
 					}
 					
 					for (Team team : TeamManager.getInstance().getTeamsWithPlayers()) {
@@ -151,8 +161,8 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 				PlayerUtils.broadcast(Main.PREFIX + "Moles are being set in §a" + i + "§7 " + (i == 1 ? "second" : "seconds"));
 				PlayerUtils.broadcast(Main.PREFIX + "§4§lCLEAR YOUR TOP ROWS!");
 				
-				for (Player online : PlayerUtils.getPlayers()) {
-					online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					online.playSound(online.getLocation(), Sound.FIRE_IGNITE, 1, 0);
 				}
 				
 				i--;
@@ -191,7 +201,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				if (!moles.contains(online.getName())) {
 					continue;
 				}
@@ -217,9 +227,9 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 				message.append(args[i]).append(" ");
 			}
 
-			Spectator spec = Spectator.getInstance();
+			SpecManager spec = SpecManager.getInstance();
 			
-			for (Player online : PlayerUtils.getPlayers()) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
 				if (!spec.isSpectating(online) && !moles.contains(online.getName())) {
 					continue;
 				}
@@ -229,7 +239,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("mcp")) {
-			Spectator spec = Spectator.getInstance();
+			SpecManager spec = SpecManager.getInstance();
 			
 			if (!spec.isSpectating(player) && !moles.contains(player.getName())) {
 				player.sendMessage(Main.PREFIX.replaceFirst("UHC", "Moles") + "You are not a mole.");

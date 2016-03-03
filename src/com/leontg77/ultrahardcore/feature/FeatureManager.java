@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore.feature;
 
-import static com.leontg77.ultrahardcore.Main.plugin;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +7,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
 import com.google.common.collect.ImmutableList;
+import com.leontg77.ultrahardcore.Arena;
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Settings;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.feature.border.BorderShrinkFeature;
 import com.leontg77.ultrahardcore.feature.death.DeathLightningFeature;
 import com.leontg77.ultrahardcore.feature.death.DeathMessageFeature;
@@ -17,8 +20,8 @@ import com.leontg77.ultrahardcore.feature.enchants.AnvilsFeature;
 import com.leontg77.ultrahardcore.feature.enchants.BookshelfFeature;
 import com.leontg77.ultrahardcore.feature.enchants.EnchantmentPreviewFeature;
 import com.leontg77.ultrahardcore.feature.entity.MobRatesFeature;
-import com.leontg77.ultrahardcore.feature.entity.WitchHealthPotionFeature;
 import com.leontg77.ultrahardcore.feature.entity.PetFeature;
+import com.leontg77.ultrahardcore.feature.entity.WitchHealthPotionFeature;
 import com.leontg77.ultrahardcore.feature.food.SaturationFixFeature;
 import com.leontg77.ultrahardcore.feature.health.AbsorptionFeature;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
@@ -43,6 +46,8 @@ import com.leontg77.ultrahardcore.feature.pvp.AntiIPvPFeature;
 import com.leontg77.ultrahardcore.feature.pvp.CombatLogFeature;
 import com.leontg77.ultrahardcore.feature.pvp.LongshotFeature;
 import com.leontg77.ultrahardcore.feature.pvp.ShootHealthFeature;
+import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
+import com.leontg77.ultrahardcore.feature.rainbow.RainbowArmorFeature;
 import com.leontg77.ultrahardcore.feature.rates.AppleRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.FlintRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.ShearsFeature;
@@ -55,7 +60,9 @@ import com.leontg77.ultrahardcore.feature.scoreboard.KillBoardFeature;
 import com.leontg77.ultrahardcore.feature.scoreboard.SidebarResetFeature;
 import com.leontg77.ultrahardcore.feature.serverlist.ServerMOTDFeature;
 import com.leontg77.ultrahardcore.feature.tablist.HeartsOnTabFeature;
+import com.leontg77.ultrahardcore.feature.tablist.PercentOnTabFeature;
 import com.leontg77.ultrahardcore.feature.tablist.TabHealthColorFeature;
+import com.leontg77.ultrahardcore.feature.world.WorldUpdaterFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedQuartzXPFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedXPFeature;
 
@@ -65,17 +72,15 @@ import com.leontg77.ultrahardcore.feature.xp.NerfedXPFeature;
  * @author LeonTG77
  */
 public class FeatureManager {
-	private static final FeatureManager INSTANCE = new FeatureManager();
-	private final List<Feature> features = new ArrayList<Feature>();
+	private final Settings settings;
+	private final Main plugin;
 	
-	/**
-	 * Get the instance of this class.
-	 * 
-	 * @return The class instance.
-	 */
-	public static FeatureManager getInstance() {
-		return INSTANCE;
+	public FeatureManager(Main plugin, Settings settings) {
+		this.settings = settings;
+		this.plugin = plugin;
 	}
+	
+	private final List<Feature> features = new ArrayList<Feature>();
 	
 	/**
 	 * Get a feature by a name.
@@ -141,7 +146,7 @@ public class FeatureManager {
 	/**
 	 * Setup all the feature classes.
 	 */
-	public void setup() {
+	public void setup(Arena arena, Game game, Timer timer) {
 		final PotionFuelListener listener = new PotionFuelListener();
 		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	    
@@ -149,9 +154,9 @@ public class FeatureManager {
 		addFeature(new BorderShrinkFeature());
 		
 		// death
-		addFeature(new DeathLightningFeature());
-		addFeature(new DeathMessageFeature());
-		addFeature(new RespawnFeature());
+		addFeature(new DeathLightningFeature(arena));
+		addFeature(new DeathMessageFeature(arena));
+		addFeature(new RespawnFeature(plugin, arena, game));
 		
 		// enchants
 		addFeature(new AnvilsFeature());
@@ -159,7 +164,7 @@ public class FeatureManager {
 		addFeature(new EnchantmentPreviewFeature());
 		
 		// entity
-		addFeature(new MobRatesFeature());
+		addFeature(new MobRatesFeature(timer, game));
 		addFeature(new PetFeature());
 		addFeature(new WitchHealthPotionFeature());
 		
@@ -199,6 +204,10 @@ public class FeatureManager {
 		addFeature(new CombatLogFeature());
 		addFeature(new LongshotFeature());
 		addFeature(new ShootHealthFeature());
+		addFeature(new StalkingFeature());
+		
+		// rainbow
+		addFeature(new RainbowArmorFeature(plugin));
 		
 		// rates
 		addFeature(new AppleRatesFeature());
@@ -217,11 +226,15 @@ public class FeatureManager {
 		addFeature(new SidebarResetFeature());
 		
 		// serverlist
-		addFeature(new ServerMOTDFeature());
+		addFeature(new ServerMOTDFeature(game));
 		
 		// tablist
 		addFeature(new HeartsOnTabFeature());
-		addFeature(new TabHealthColorFeature());
+		addFeature(new PercentOnTabFeature(plugin, null));
+		addFeature(new TabHealthColorFeature(plugin));
+		
+		// world
+		addFeature(new WorldUpdaterFeature(plugin));
 		
 		// xp
 		addFeature(new NerfedQuartzXPFeature());
@@ -244,6 +257,8 @@ public class FeatureManager {
 		
 		if (feature instanceof ToggleableFeature) {
 			ToggleableFeature toggle = (ToggleableFeature) feature;
+			
+			toggle.enabled = settings.getConfig().getBoolean("feature." + feature.getName().toLowerCase() + ".enabled", false);
 			
 			if (toggle.isEnabled()) {
 				toggle.onEnable();

@@ -3,7 +3,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 

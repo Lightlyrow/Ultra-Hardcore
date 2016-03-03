@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.feature.Feature;
 
@@ -13,9 +14,12 @@ import com.leontg77.ultrahardcore.feature.Feature;
  * @author LeonTG77
  */
 public class ServerMOTDFeature extends Feature implements Listener {
+	private final Game game;
 
-	public ServerMOTDFeature() {
+	public ServerMOTDFeature(Game game) {
 		super("Server MOTD", "Simple changes to the server list motd that says the current game state.");
+		
+		this.game = game;
 	}
 
 	@EventHandler

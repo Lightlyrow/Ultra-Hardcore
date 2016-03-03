@@ -24,7 +24,7 @@ public class EndFeature extends ToggleableFeature implements Listener {
 	private static final String WORLD_SUFFIX = "_end";
 
 	public EndFeature() {
-		super("The End", "A dimention with a floating island where the dragon lives.");
+		super("The End", "A dimension with a floating island where the dragon lives.");
 
 		icon.setType(Material.ENDER_PORTAL_FRAME);
 		slot = 19;

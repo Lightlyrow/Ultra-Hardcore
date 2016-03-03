@@ -5,10 +5,11 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.leontg77.ultrahardcore.inventory.InvGUI;
+import com.leontg77.ultrahardcore.Settings;
 
 /**
  * A toggleable feature is a feature you can disable and enable.
@@ -16,7 +17,7 @@ import com.leontg77.ultrahardcore.inventory.InvGUI;
  * @author LeonTG77
  */
 public abstract class ToggleableFeature extends Feature {
-	private boolean enabled = false;
+	protected boolean enabled = false;
 	
 	protected ItemStack icon = new ItemStack(Material.BARRIER);
 	protected int slot = 0;
@@ -31,8 +32,6 @@ public abstract class ToggleableFeature extends Feature {
 	 */
 	public ToggleableFeature(String name, String description) {
 		super(name, description);
-		
-		this.enabled = settings.getConfig().getBoolean("feature." + getName().toLowerCase() + ".enabled", false);
 	}
 
 	/**
@@ -50,7 +49,7 @@ public abstract class ToggleableFeature extends Feature {
 	 * 
 	 * @return True if successful, false otherwise.
 	 */
-	public boolean enable() {
+	public boolean enable(Settings settings) {
 		if (isEnabled()) {
 			return false;
 		}
@@ -60,8 +59,6 @@ public abstract class ToggleableFeature extends Feature {
 		
 		this.enabled = true;
 		onEnable();
-		
-		InvGUI.getGameInfo().update();
 		return true;
 	}
 	
@@ -70,7 +67,7 @@ public abstract class ToggleableFeature extends Feature {
 	 * 
 	 * @return True if successful, false otherwise.
 	 */
-	public boolean disable() {
+	public boolean disable(Settings settings) {
 		if (!isEnabled()) {
 			return false;
 		}
@@ -80,19 +77,8 @@ public abstract class ToggleableFeature extends Feature {
 		
 		this.enabled = false;
 		onDisable();
-		
-		InvGUI.getGameInfo().update();
 		return true;
-	}
-	
-	/**
-	 * Toggle the feature.
-	 * 
-	 * @return True if successful, false otherwise.
-	 */
-	public boolean toggle() {
-		return isEnabled() ? disable() : enable();
-	}
+	}     
 	
 	/**
 	 * Check if the feature is enabled
@@ -141,6 +127,7 @@ public abstract class ToggleableFeature extends Feature {
 		
 		meta.setDisplayName("§8» §6" + getName() + " §8«");
 		meta.setLore(lore);
+		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_POTION_EFFECTS);
 		icon.setItemMeta(meta);
 		
 		return icon;

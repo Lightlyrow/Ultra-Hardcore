@@ -36,19 +36,35 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ScatterManager {
-	private static final ScatterManager INSTANCE = new ScatterManager();
-	private static final int EFFECT_TICKS = NumberUtils.TICKS_IN_999_DAYS;
+	private final Main plugin;
+	
+	private final TeamManager manager;
+	private final Game game;
+	
+	/**
+	 * Scatter manager class constructor.
+	 * 
+	 * @param plugin The main class.
+	 * @param manager The team manager class.
+	 * @param game The game class.
+	 */
+	public ScatterManager(Main plugin, TeamManager manager, Game game) {
+		this.plugin = plugin;
+		
+		this.manager = manager;
+		this.game = game;
+	}
 	
 	/**
 	 * List of all freeze effects.
 	 */
 	public static final Set<PotionEffect> FREEZE_EFFECTS = ImmutableSet.of(
-			new PotionEffect(PotionEffectType.JUMP, EFFECT_TICKS, 128), 
-			new PotionEffect(PotionEffectType.BLINDNESS, EFFECT_TICKS, 6),
-			new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, EFFECT_TICKS, 6),
-			new PotionEffect(PotionEffectType.SLOW_DIGGING, EFFECT_TICKS, 10),
-			new PotionEffect(PotionEffectType.SLOW, EFFECT_TICKS, 6),
-			new PotionEffect(PotionEffectType.INVISIBILITY, EFFECT_TICKS, 2)
+			new PotionEffect(PotionEffectType.JUMP, NumberUtils.TICKS_IN_999_DAYS, 128), 
+			new PotionEffect(PotionEffectType.BLINDNESS, NumberUtils.TICKS_IN_999_DAYS, 6),
+			new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, NumberUtils.TICKS_IN_999_DAYS, 6),
+			new PotionEffect(PotionEffectType.SLOW_DIGGING, NumberUtils.TICKS_IN_999_DAYS, 10),
+			new PotionEffect(PotionEffectType.SLOW, NumberUtils.TICKS_IN_999_DAYS, 6),
+			new PotionEffect(PotionEffectType.INVISIBILITY, NumberUtils.TICKS_IN_999_DAYS, 2)
 	);
 	
 	/**
@@ -69,15 +85,6 @@ public class ScatterManager {
 	
 	private World world;
 	private int radius;
-	
-	/**
-	 * Get the instance of the class.
-	 * 
-	 * @return The instance.
-	 */
-	public static ScatterManager getInstance() {
-		return INSTANCE;
-	}
 
 	/**
 	 * Check if the scatter is currently running.
@@ -156,7 +163,6 @@ public class ScatterManager {
 		}
 		
 		final Map<String, Location> scatterLocs = new HashMap<String, Location>();
-		final TeamManager manager = TeamManager.getInstance();
 		
 		scattering = true;
 		
@@ -178,7 +184,7 @@ public class ScatterManager {
 					index++;
 				}
 			}
-		}.runTaskLater(Main.plugin, 30);
+		}.runTaskLater(plugin, 30);
 
 		new BukkitRunnable() {
 			public void run() {
@@ -198,7 +204,7 @@ public class ScatterManager {
 					
 					public void run() {
 						if (i < locs.size()) {
-							Player host = Bukkit.getPlayer(Game.getInstance().getHost());
+							Player host = Bukkit.getPlayer(game.getHost());
 							
 							if (State.isState(State.INGAME) || host == null) {
 								locs.get(i).getChunk().load(true);
@@ -306,12 +312,12 @@ public class ScatterManager {
 										cancel();
 									}
 								}
-							}.runTaskTimer(Main.plugin, 40, 3);
+							}.runTaskTimer(plugin, 40, 3);
 						}
 					}
-				}.runTaskTimer(Main.plugin, 5, 5);
+				}.runTaskTimer(plugin, 5, 5);
 			}
-		}.runTaskLater(Main.plugin, 60);
+		}.runTaskLater(plugin, 60);
 	}
 	
 	/**

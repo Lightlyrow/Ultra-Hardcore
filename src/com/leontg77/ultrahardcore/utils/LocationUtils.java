@@ -11,12 +11,32 @@ import org.bukkit.block.BlockFace;
 /**
  * Location utilities class.
  * <p>
- * Contains location related methods.
+ * Contains methods for checking for nearby blocks, getting the highest blocks safe or not and 
+ * checking if a player is outside of the border and if so a method to tp them safely inside of it.
  * 
  * @author LeonTG77, with help from ghowden and D4mnX
  */
 public class LocationUtils {
 	private static BlockFace[] faces = new BlockFace[] { BlockFace.SELF, BlockFace.EAST, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH_EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST, BlockFace.NORTH_WEST};
+	
+	/**
+	 * Check if the given locations have the same x, y and z.
+	 * 
+	 * @param loc1 The first location.
+	 * @param loc2 The second location.
+	 * @return True if they are equal, false otherwise.
+	 */
+	public static boolean areEqual(Location loc1, Location loc2) {
+		if (loc1 == null || loc2 == null) {
+			return false;
+		}
+		
+		if (!loc1.getWorld().equals(loc2.getWorld())) {
+			return false;
+		}
+		
+		return loc1.getBlockX() == loc2.getBlockX() && loc1.getBlockY() == loc2.getBlockY() && loc1.getBlockZ() == loc2.getBlockZ();
+	}
 	
 	/**
 	 * Check if the given block is nearby the given location.

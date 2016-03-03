@@ -21,7 +21,6 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * SharedHealth scenario class
@@ -29,16 +28,20 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author dans1988
  */
 public class SharedHealth extends Scenario implements Listener {
-	private TeamManager manager = TeamManager.getInstance();
+	private final TeamManager manager;
+	private final Main plugin;
 	
 	private Map<String, Double> damageBalance;
     private Map<String, Boolean> sharedDamage;
 	
-	public SharedHealth() {
+	public SharedHealth(Main plugin, TeamManager manager) {
 		super("SharedHealth", "All teammates share their health, does not apply for lava, fire or poison damage");
 		
 		damageBalance = new HashMap<String, Double>();
         sharedDamage = new HashMap<String, Boolean>();
+
+        this.manager = manager;
+        this.plugin = plugin;
 	}
 
 	@Override
@@ -117,7 +120,7 @@ public class SharedHealth extends Scenario implements Listener {
 
             if (!onlineTeammate.getUniqueId().equals(player.getUniqueId())) {
                 setSharedDamage(onlineTeammate.getName(), true);
-        		PlayerUtils.damage(onlineTeammate, 0);
+        		onlineTeammate.damage(0);
                 onlineTeammate.setHealth(finalHealthAsynch);
             }
         }
@@ -141,7 +144,7 @@ public class SharedHealth extends Scenario implements Listener {
             public void run() {
                 player.setHealth(finalHealthAsynch);
             }
-        }.runTaskLater(Main.plugin, 1);
+        }.runTaskLater(plugin, 1);
     }
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

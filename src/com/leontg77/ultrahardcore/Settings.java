@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore;
 
-import static com.leontg77.ultrahardcore.Main.plugin;
-
 import java.io.File;
 
 import org.bukkit.Bukkit;
@@ -17,15 +15,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author LeonTG77
  */
 public class Settings {
-	private static Settings instance = new Settings();
-
-	/**
-	 * Gets the instance of the class.
-	 * 
-	 * @return The instance.
-	 */
-	public static Settings getInstance() {
-		return instance;
+	private final Main plugin;
+    
+	public Settings(Main plugin) {
+		this.plugin = plugin;
 	}
 	
 	private FileConfiguration config;
@@ -42,9 +35,9 @@ public class Settings {
 	
 	private FileConfiguration worlds;
 	private File wfile;
-       
+
 	/**
-	 * Sets the settings manager up and creates missing files.
+	 * Sets the settings configs and create missing files.
 	 */
 	public void setup() {      
 		if (!plugin.getDataFolder().exists()) {
@@ -61,7 +54,7 @@ public class Settings {
 			try {
 				cfile.createNewFile();
 			} catch (Exception e) {
-				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create config.yml!");
+				plugin.getLogger().severe(ChatColor.RED + "Could not create config.yml!");
 			}
 		}
 		    

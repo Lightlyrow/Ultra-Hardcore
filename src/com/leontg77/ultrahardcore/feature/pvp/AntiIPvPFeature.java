@@ -13,6 +13,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
@@ -47,6 +48,10 @@ public class AntiIPvPFeature extends Feature implements Listener {
         	return;
         }
         
+        if (!game.getWorlds().contains(player.getWorld())) {
+        	return;
+        }
+        
         // if pvp is enabled we want them to be able to iPvP
         if (player.getWorld().getPVP()) {
         	return;
@@ -76,6 +81,10 @@ public class AntiIPvPFeature extends Feature implements Listener {
         	return;
         }
         
+        if (!game.getWorlds().contains(player.getWorld())) {
+        	return;
+        }
+        
         // if pvp is enabled we want them to be able to iPvP
         if (player.getWorld().getPVP()) {
         	return;
@@ -100,6 +109,10 @@ public class AntiIPvPFeature extends Feature implements Listener {
         
         // silly, no spectators should trigger this (since they have a lava bucket in their inv)
         if (spec.isSpectating(player)) {
+        	return;
+        }
+        
+        if (!game.getWorlds().contains(player.getWorld())) {
         	return;
         }
         

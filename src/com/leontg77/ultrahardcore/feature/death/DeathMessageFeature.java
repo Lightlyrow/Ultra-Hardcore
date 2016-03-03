@@ -4,9 +4,9 @@ import java.util.List;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 import org.bukkit.Bukkit;
@@ -30,15 +30,21 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class DeathMessageFeature extends Feature implements Listener {
+	private final Arena arena;
 
-	public DeathMessageFeature() {
+	public DeathMessageFeature(Arena arena) {
 		super("Death Messages", "Modified death messages.");
+		
+		this.arena = arena;
 	}
 
 	@EventHandler
 	public void on(PlayerDeathEvent event) {
+		if (game.isRecordedRound()) {
+			return;
+		} 
+		
 		final Player player = event.getEntity();
-		final Arena arena = Arena.getInstance();
 		
 		// the arena has it's own way of doing deaths.
 		if (arena.isEnabled() && arena.hasPlayer(player)) {

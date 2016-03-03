@@ -18,7 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 

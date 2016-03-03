@@ -7,7 +7,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -20,32 +19,12 @@ import com.leontg77.ultrahardcore.Main;
 /**
  * Player utilities class.
  * <p>
- * Contains player related methods.
+ * Contains methods for broadcasting messages, giving items, getting nearby entities and offline players.
  * 
  * @author LeonTG77
  */
 @SuppressWarnings("deprecation")
 public class PlayerUtils {
-	
-	/**
-	 * Get a list of players online.
-	 * 
-	 * @return A list of online players.
-	 */
-	public static List<Player> getPlayers() {
-		return new ArrayList<Player>(Bukkit.getOnlinePlayers());
-	}
-	
-	/**
-	 * Get the given player's ping.
-	 * 
-	 * @param player the player
-	 * @return the players ping
-	 */
-	public static int getPing(Player player) {
-		CraftPlayer craft = (CraftPlayer) player;
-		return craft.getHandle().ping;
-	} 
 	
 	/**
 	 * Gets an offline player by a name.
@@ -55,7 +34,7 @@ public class PlayerUtils {
 	 * @param name The name.
 	 * @return the offline player.
 	 */
-	public static OfflinePlayer getOfflinePlayer(String name) {
+	public static OfflinePlayer getOfflinePlayer(final String name) {
 		return Bukkit.getOfflinePlayer(name);
 	}
 	
@@ -74,24 +53,22 @@ public class PlayerUtils {
 	 * @param message the message.
 	 * @param permission the permission.
 	 */
-	public static void broadcast(String message, String permission) {
-		for (Player online : getPlayers()) {
+	public static void broadcast(String message, final String permission) {
+		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (permission != null && !online.hasPermission(permission)) {
 				continue;
 			}
 			
 			online.sendMessage(message);
 		}
-		
-		String consoleMsg = message;
 
-		consoleMsg = consoleMsg.replaceAll("§l", "");
-		consoleMsg = consoleMsg.replaceAll("§o", "");
-		consoleMsg = consoleMsg.replaceAll("§r", "§f");
-		consoleMsg = consoleMsg.replaceAll("§m", "");
-		consoleMsg = consoleMsg.replaceAll("§n", "");
+		message = message.replaceAll("§l", "");
+		message = message.replaceAll("§o", "");
+		message = message.replaceAll("§r", "§f");
+		message = message.replaceAll("§m", "");
+		message = message.replaceAll("§n", "");
 		
-		Bukkit.getLogger().info(consoleMsg);
+		Bukkit.getLogger().info(message);
 	}
 
 	/**
@@ -102,7 +79,7 @@ public class PlayerUtils {
 	 * @param player The player to damage.
 	 * @param amount The amount of damage.
 	 */
-	public static void damage(Player player, double amount) {
+	public static void damage(final Player player, final double amount) {
 		final EntityDamageEvent event = new EntityDamageEvent(player, DamageCause.CUSTOM, amount);
 		
 		Bukkit.getPluginManager().callEvent(event);
@@ -116,29 +93,31 @@ public class PlayerUtils {
 	 * @param distance the distance.
 	 * @return A list of entites nearby.
 	 */
-	public static List<Entity> getNearby(Location loc, double distance) {
-		List<Entity> list = new ArrayList<Entity>();
+	public static List<Entity> getNearby(final Location loc, final double distance) {
+		final List<Entity> list = new ArrayList<Entity>();
 		
-		for (Entity e : loc.getWorld().getEntities()) {
-			if (e instanceof Player) {
+		for (Entity entity : loc.getWorld().getEntities()) {
+			if (entity instanceof Player) {
 				continue;
 			}
 			
-			if (!e.getType().isAlive()) {
+			if (!entity.getType().isAlive()) {
+				continue;
+			}
+
+			if (loc.distance(entity.getLocation()) > distance) {
 				continue;
 			}
 			
-			if (loc.distance(e.getLocation()) <= distance) {
-				list.add(e);
-			}
+			list.add(entity);
 		}
 		
-		for (Player online : getPlayers()) {
-			if (online.getWorld() == loc.getWorld()) {
-				if (loc.distance(online.getLocation()) <= distance) {
-					list.add(online);
-				}
+		for (Player online : loc.getWorld().getPlayers()) {
+			if (loc.distance(online.getLocation()) > distance) {
+				continue;
 			}
+			
+			list.add(online);
 		}
 		
 		return list;
@@ -152,17 +131,16 @@ public class PlayerUtils {
 	 * @param player the player giving to.
 	 * @param stack the item giving.
 	 */
-	public static void giveItem(Player player, ItemStack... stacks) {
-		PlayerInventory inv = player.getInventory();
-		
-		Map<Integer, ItemStack> leftOvers = inv.addItem(stacks);
+	public static void giveItem(final Player player, final ItemStack... stacks) {
+		final PlayerInventory inv = player.getInventory();
+		final Map<Integer, ItemStack> leftOvers = inv.addItem(stacks);
 		
 		if (leftOvers.isEmpty()) {
 			return;
 		}
 		
 		player.sendMessage(Main.PREFIX + "Your inventory was full, item was dropped on the ground.");
-		Location loc = player.getLocation();
+		final Location loc = player.getLocation();
 		
 		for (ItemStack leftOver : leftOvers.values()) {
 			BlockUtils.dropItem(loc, leftOver);

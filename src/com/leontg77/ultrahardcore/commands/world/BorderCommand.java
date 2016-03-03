@@ -43,7 +43,7 @@ public class BorderCommand extends UHCCommand {
 		}
 		
 		if (!sender.hasPermission("uhc.border.set")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
+			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 		

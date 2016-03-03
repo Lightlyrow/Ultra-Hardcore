@@ -1,31 +1,18 @@
 package com.leontg77.ultrahardcore.listeners;
 
-import java.util.List;
-import java.util.Random;
-
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
-import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Parkour;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.inventory.InvGUI;
-import com.leontg77.ultrahardcore.utils.GameUtils;
+import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**
  * Player listener class.
@@ -35,98 +22,19 @@ import com.leontg77.ultrahardcore.utils.GameUtils;
  * @author LeonTG77
  */
 public class PlayerListener implements Listener {
-	private Game game = Game.getInstance();
+	private final SpecManager spec;
 	
-	@EventHandler
-	public void onServerListPing(ServerListPingEvent event) {
-		event.setMotd("§4§lArctic UHC §8» §6" + GameUtils.getMOTDMessage() + " §8« [§71.8§8] [§7EU§8]\n§8» §7§oFollow us on twitter, §a§o@ArcticUHC§7§o!");
-		event.setMaxPlayers(game.getMaxPlayers());
+	/**
+	 * Player listener class constructor.
+	 * 
+	 * @param spec The spectator manager class.
+	 */
+	public PlayerListener(SpecManager spec) {
+		this.spec = spec;
 	}
 	
 	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event) {
-		Player player = event.getPlayer();
-		Location to = event.getTo();
-		
-		if (to.getWorld().getName().equals("lobby") && to.getY() <= 20) {
-			Parkour parkour = Parkour.getInstance();
-			
-			if (parkour.isParkouring(player)) {
-				if (parkour.getCheckpoint(player) != null) {
-					int checkpoint = parkour.getCheckpoint(player);
-					player.teleport(parkour.getLocation(checkpoint));
-					return;
-				}
-				
-				player.teleport(parkour.getLocation(0));
-				return;
-			}
-			
-			player.teleport(Main.getSpawn());
-		}
-	}
-	
-	@EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {	
-        Player player = event.getPlayer();
-        Action action = event.getAction();
-        
-        Spectator spec = Spectator.getInstance();
-        InvGUI inv = InvGUI.getInstance();
-        
-		if (!spec.isSpectating(player)) {
-			return;
-		}
-		
-		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-			inv.openSelector(player);
-			return;
-		} 
-		
-		if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
-			List<Player> list = GameUtils.getGamePlayers();
-			
-			if (list.isEmpty()) {
-				player.sendMessage(Main.PREFIX + "Couldn't find any players.");
-				return;
-			}
-			
-			Random rand = new Random();
-			Player target = list.get(rand.nextInt(list.size()));
-			
-			player.sendMessage(Main.PREFIX + "Teleported to §a" + target.getName() + "§7.");
-			player.teleport(target.getLocation());
-		}
-	}
-	
-	@EventHandler
-    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-		Entity clicked = event.getRightClicked();
-		Player player = event.getPlayer();
-		
-		if (!(clicked instanceof Player)) {
-			return;
-		}
-	    	
-		Player interacted = (Player) clicked;
-				
-		Spectator spec = Spectator.getInstance();
-		InvGUI inv = InvGUI.getInstance();
-		
-		if (!spec.isSpectating(player)) {
-			return;
-		}
-		
-		if (spec.isSpectating(interacted)) {
-			return;
-		}
-		
-		inv.openPlayerInventory(player, interacted);
-    }
-	
-	@EventHandler
-	public void onPlayerAchievementAwarded(PlayerAchievementAwardedEvent event) {
-		Spectator spec = Spectator.getInstance();
+	public void on(PlayerAchievementAwardedEvent event) {
 		Player player = event.getPlayer();
 		
 		if (!spec.isSpectating(player) && State.isState(State.INGAME)) {
@@ -137,7 +45,7 @@ public class PlayerListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onFoodLevelChange(FoodLevelChangeEvent event) {
+	public void on(FoodLevelChangeEvent event) {
 		Player player = (Player) event.getEntity();
 		World world = player.getWorld();
 		
@@ -156,5 +64,13 @@ public class PlayerListener implements Listener {
 			player.setAllowFlight(false);
 			player.setFlying(false);
 		}
+	}
+	
+	@EventHandler
+	public void on(PlayerTeleportEvent event) {
+		final Player player = event.getPlayer();
+		final User user = User.get(player);
+		
+		user.setLastLocation(player.getLocation());
 	}
 }

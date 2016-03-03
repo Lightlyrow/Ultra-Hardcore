@@ -65,7 +65,7 @@ public class Voidscape extends Scenario implements Listener, CommandExecutor {
 		}
 		
 		if (!sender.hasPermission("uhc.voidscape")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
+			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 		

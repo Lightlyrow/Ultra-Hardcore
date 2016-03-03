@@ -31,15 +31,22 @@ import com.leontg77.ultrahardcore.utils.DateUtils;
  * @author LeonTG77
  */
 public class ChatListener implements Listener {
-	private Game game = Game.getInstance();
+	private final Game game;
+	
+	private final TeamManager teams;
+	private final SpecManager spec;
+	
+	public ChatListener(Game game, TeamManager teams, SpecManager spec) {
+		this.game = game;
+		
+		this.teams = teams;
+		this.spec = spec;
+	}
 	
 	@EventHandler
     public void on(final AsyncPlayerChatEvent event) {
 		final Player player = event.getPlayer();
 		final User user = User.get(player);
-
-		final TeamManager teams = TeamManager.getInstance();
-		final SpecManager spec = SpecManager.getInstance();
 
 		final String message = event.getMessage();
 		final Team team = teams.getTeam(player);
@@ -182,18 +189,12 @@ public class ChatListener implements Listener {
   		String message = event.getMessage();
   		Player player = event.getPlayer();
   		
-  		SpecManager spec = SpecManager.getInstance();
-  		
   		for (Player online : Bukkit.getOnlinePlayers()) {
   			if (online == player) {
   				continue;
   			}
   			
-  			if (!online.hasPermission("uhc.cmdspy")) {
-  				continue;
-  			}
-  			
-  			if (!spec.hasCommandSpy(online) && State.isState(State.INGAME)) {
+  			if (!online.hasPermission("uhc.cmdspy") || !spec.hasCommandSpy(online)) {
   				continue;
   			}
   			
@@ -207,7 +208,7 @@ public class ChatListener implements Listener {
   		String command = message.split(" ")[0].substring(1).toLowerCase();
   		
   		if (command.equalsIgnoreCase("me") || command.equalsIgnoreCase("kill")) {
-  			player.sendMessage(Main.NO_PERM_MSG);
+  			player.sendMessage(Main.NO_PERMISSION_MESSAGE);
   			event.setCancelled(true);
   			return;
   		}
@@ -217,7 +218,7 @@ public class ChatListener implements Listener {
   				return;
   			}
   			
-  			player.sendMessage(Main.NO_PERM_MSG);
+  			player.sendMessage(Main.NO_PERMISSION_MESSAGE);
   			event.setCancelled(true);
   			return;
   		}
@@ -233,7 +234,7 @@ public class ChatListener implements Listener {
   				}
   				
   				for (Player online : Bukkit.getOnlinePlayers()) {
-  					online.kickPlayer("§8» §7The server is restarting §8«");
+  					online.kickPlayer("§4Arctic §8» §7Server is currently §erebooting§7.");
   				}
   				
   				Bukkit.shutdown();

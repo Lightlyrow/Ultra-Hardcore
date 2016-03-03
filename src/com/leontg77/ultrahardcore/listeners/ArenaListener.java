@@ -33,23 +33,16 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ArenaListener implements Listener {
-
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		Player player = event.getPlayer();
-		Arena arena = Arena.getInstance();
-		
-		if (!arena.hasPlayer(player)) {
-			return;
-		}
-		
-		arena.removePlayer(player, false);
+	private final Arena arena;
+	
+	private static final ItemStack THREE_LAPIS = new ItemStack(Material.INK_SACK, 3, (short) 4);
+	
+	public ArenaListener(Arena arena) {
+		this.arena = arena;
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerDeath(PlayerDeathEvent event) {
-		Arena arena = Arena.getInstance();
-		
+	public void on(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		User user = User.get(player);
 		
@@ -114,51 +107,79 @@ public class ArenaListener implements Listener {
 			PlayerUtils.broadcast(Arena.PREFIX + "§6" + killer.getName() + " §7is now on a §a" + killstreak + " §7killstreak!");
 		}
 	}
-	
+
 	@EventHandler
-	public void onInventoryOpen(InventoryOpenEvent event) {
-		Player player = (Player) event.getPlayer();
-		Inventory inv = event.getInventory();
+	public void on(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
 		
-		Arena arena = Arena.getInstance();
-		
-		if (arena.hasPlayer(player) && inv instanceof EnchantingInventory) {
-			inv.setItem(1, new ItemStack (Material.INK_SACK, 3, (short) 4));
+		if (!arena.hasPlayer(player)) {
+			return;
 		}
+		
+		arena.removePlayer(player, false);
 	}
 	
 	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent event) {
+	public void on(InventoryOpenEvent event) {
 		Player player = (Player) event.getPlayer();
 		Inventory inv = event.getInventory();
-		Arena arena = Arena.getInstance();
 
-		if (arena.hasPlayer(player) && inv instanceof EnchantingInventory) {
-			inv.setItem(1, null);
+		if (!arena.hasPlayer(player)) {
+			return;
 		}
+
+		if (!(inv instanceof EnchantingInventory)) {
+			return;
+		}
+
+		inv.setItem(1, THREE_LAPIS);
+	}
+	
+	@EventHandler
+	public void on(InventoryCloseEvent event) {
+		Player player = (Player) event.getPlayer();
+		Inventory inv = event.getInventory();
+		
+		if (!arena.hasPlayer(player)) {
+			return;
+		}
+
+		if (!(inv instanceof EnchantingInventory)) {
+			return;
+		}
+		
+		inv.setItem(1, null);
 	}
 
 	@EventHandler
-	public void onEnchantItem(EnchantItemEvent event) {
+	public void on(EnchantItemEvent event) {
 		Player player = event.getEnchanter();
 		Inventory inv = event.getInventory();
 		
-		Arena arena = Arena.getInstance();
-		
-		if (arena.hasPlayer(player)) {
-			inv.setItem(1, new ItemStack (Material.INK_SACK, 3, (short) 4));
+		if (!arena.hasPlayer(player)) {
+			return;
 		}
+
+		inv.setItem(1, THREE_LAPIS);
 	}
 	
 	@EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void on(InventoryClickEvent event) {
+		// safe cast
 		Player player = (Player) event.getWhoClicked();
-        Arena arena = Arena.getInstance();
 		
-		if (arena.hasPlayer(player) && event.getClickedInventory() instanceof EnchantingInventory) {
-			if (event.getSlot() == 1) {
-				event.setCancelled(true);
-			}
+		if (!arena.hasPlayer(player)) {
+			return;
+		}
+		
+		Inventory inv = event.getClickedInventory();
+		
+		if (!(inv instanceof EnchantingInventory)) {
+			return;
+		}
+		
+		if (event.getSlot() == 1) {
+			event.setCancelled(true);
 		}
 	}
 }

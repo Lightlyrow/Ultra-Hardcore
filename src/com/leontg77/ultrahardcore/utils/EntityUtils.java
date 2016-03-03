@@ -24,8 +24,8 @@ public class EntityUtils {
 		EntityType.EGG, EntityType.ENDERMAN, EntityType.ENDERMITE, EntityType.ENDER_PEARL, EntityType.EXPERIENCE_ORB, 
 		EntityType.FIREBALL, EntityType.GHAST, EntityType.GIANT, EntityType.GUARDIAN, EntityType.IRON_GOLEM, 
 		EntityType.MAGMA_CUBE, EntityType.MUSHROOM_COW, EntityType.PIG_ZOMBIE, EntityType.PRIMED_TNT,
-		EntityType.SILVERFISH, EntityType.SKELETON, EntityType.SLIME, EntityType.SMALL_FIREBALL, EntityType.SNOWMAN, 
-		EntityType.SPIDER, EntityType.WITCH, EntityType.WITHER, EntityType.WITHER_SKULL, EntityType.ZOMBIE
+		EntityType.SILVERFISH, EntityType.SKELETON, EntityType.SLIME, EntityType.SMALL_FIREBALL, EntityType.SPIDER,
+		EntityType.WITCH, EntityType.WITHER, EntityType.WITHER_SKULL, EntityType.ZOMBIE
 	);
 	
 	/**
@@ -34,7 +34,7 @@ public class EntityUtils {
 	 * @param type The type checking.
 	 * @return True if it is butcherable, false otherwise.
 	 */
-	public static boolean isButcherable(EntityType type) {
+	public static boolean isButcherable(final EntityType type) {
 		return clearable.contains(type);
 	}
 	
@@ -44,7 +44,7 @@ public class EntityUtils {
 	 * @param type The type wanting to check.
 	 * @return The MC name of the type.
 	 */
-	public static String getMobName(EntityType type) {
+	public static String getMobName(final EntityType type) {
 		switch (type) {
 		case ARMOR_STAND:
 			return "Armor Stand";

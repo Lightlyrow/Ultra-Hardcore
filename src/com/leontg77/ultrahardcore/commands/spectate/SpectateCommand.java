@@ -20,9 +20,12 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  * @author LeonTG77
  */
 public class SpectateCommand extends UHCCommand {
+	private final SpecManager spec;
 
-	public SpectateCommand() {
+	public SpectateCommand(SpecManager spec) {
 		super("spectate", "<on|off|toggle|list|cmdspy|info> [player]");
+		
+		this.spec = spec;
 	}
 
 	@Override
@@ -30,8 +33,6 @@ public class SpectateCommand extends UHCCommand {
 		if (args.length == 0) {
     		return false;
 		}
-		
-		SpecManager spec = SpecManager.getInstance();
 		
 		if (args[0].equalsIgnoreCase("list")) {
 			if (spec.getSpectators().isEmpty()) {
@@ -64,7 +65,7 @@ public class SpectateCommand extends UHCCommand {
 		
 		Player target;
 		
-		if (args.length == 1) {
+		if (args.length == 1 || !sender.hasPermission(getPermission() + ".others")) {
 			if (!(sender instanceof Player)) {
 				throw new CommandException("Only players can manage their spectator mode.");
 			}
@@ -149,7 +150,7 @@ public class SpectateCommand extends UHCCommand {
 
 		if (args[0].equalsIgnoreCase("cmdspy")) {
 			if (!target.hasPermission("uhc.cmdspy")) {
-				sender.sendMessage(Main.NO_PERM_MSG);
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			
@@ -177,7 +178,6 @@ public class SpectateCommand extends UHCCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
 		List<String> toReturn = new ArrayList<String>();
-		SpecManager spec = SpecManager.getInstance();
     	
 		if (args.length == 1) {
 			toReturn.add("help");

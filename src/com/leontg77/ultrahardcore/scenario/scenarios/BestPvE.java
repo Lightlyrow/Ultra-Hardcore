@@ -19,8 +19,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.FinalHealEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -163,7 +163,7 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("pve")) {
 			if (!sender.hasPermission("uhc.bestpve")) {
-				sender.sendMessage(Main.NO_PERM_MSG);
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			

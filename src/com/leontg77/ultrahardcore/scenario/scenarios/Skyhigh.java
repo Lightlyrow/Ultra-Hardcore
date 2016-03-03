@@ -8,8 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
-import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.FinalHealEvent;
+import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 

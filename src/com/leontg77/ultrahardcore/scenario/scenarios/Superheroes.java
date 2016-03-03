@@ -23,7 +23,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.Lists;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
+import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -109,7 +109,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		SpecManager spec = SpecManager.getInstance();
 		
 		if (!sender.hasPermission("uhc.superheroes") && !spec.isSpectating(sender.getName())) {
-			sender.sendMessage(Main.NO_PERM_MSG);
+			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 		
@@ -124,7 +124,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		
 		if (args[0].equalsIgnoreCase("apply")) {
 			if (!sender.hasPermission("uhc.superheroes")) {
-				sender.sendMessage(Main.NO_PERM_MSG);
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			
@@ -138,7 +138,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 
 		if (args[0].equalsIgnoreCase("set")) {
 			if (!sender.hasPermission("uhc.superheroes")) {
-				sender.sendMessage(Main.NO_PERM_MSG);
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			
@@ -170,7 +170,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 
 		if (args[0].equalsIgnoreCase("clear")) {
 			if (!sender.hasPermission("uhc.superheroes")) {
-				sender.sendMessage(Main.NO_PERM_MSG);
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			
@@ -195,7 +195,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		
 		if (args[0].equalsIgnoreCase("list")) {
 			if (!spec.isSpectating(sender.getName())) {
-				sender.sendMessage(Main.NO_PERM_MSG);
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			
@@ -334,7 +334,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
         return type;
     }
 	
-	private static final int effectTicks = NumberUtils.TICKS_IN_999_DAYS;
+	private static final int EFFECT_TICKS = NumberUtils.TICKS_IN_999_DAYS;
 	
 	/**
 	 * HeroType enum class.
@@ -342,11 +342,11 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 	 * @author LeonTG77
 	 */
 	private enum HeroType {
-		JUMP(new PotionEffect(PotionEffectType.JUMP, effectTicks, 3), new PotionEffect(PotionEffectType.FAST_DIGGING, effectTicks, 1), new PotionEffect(PotionEffectType.SATURATION, effectTicks, 9)), 
-		RESISTANCE(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, effectTicks, 1), new PotionEffect(PotionEffectType.FIRE_RESISTANCE, effectTicks, 0)),
-		INVIS(new PotionEffect(PotionEffectType.INVISIBILITY, effectTicks, 1), new PotionEffect(PotionEffectType.WATER_BREATHING, effectTicks, 0)), 
-		SPEED(new PotionEffect(PotionEffectType.SPEED, effectTicks, 1), new PotionEffect(PotionEffectType.FAST_DIGGING, effectTicks, 1)), 
-		STRENGTH(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, effectTicks, 0)), 
+		JUMP(new PotionEffect(PotionEffectType.JUMP, EFFECT_TICKS, 3), new PotionEffect(PotionEffectType.FAST_DIGGING, EFFECT_TICKS, 1), new PotionEffect(PotionEffectType.SATURATION, EFFECT_TICKS, 9)), 
+		RESISTANCE(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, EFFECT_TICKS, 1), new PotionEffect(PotionEffectType.FIRE_RESISTANCE, EFFECT_TICKS, 0)),
+		INVIS(new PotionEffect(PotionEffectType.INVISIBILITY, EFFECT_TICKS, 1), new PotionEffect(PotionEffectType.WATER_BREATHING, EFFECT_TICKS, 0)), 
+		SPEED(new PotionEffect(PotionEffectType.SPEED, EFFECT_TICKS, 1), new PotionEffect(PotionEffectType.FAST_DIGGING, EFFECT_TICKS, 1)), 
+		STRENGTH(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, EFFECT_TICKS, 0)), 
 		HEALTH();
 
 		private PotionEffect[] effects;

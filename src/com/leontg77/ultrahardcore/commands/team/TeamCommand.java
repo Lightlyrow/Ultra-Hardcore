@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -21,10 +22,10 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -34,7 +35,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class TeamCommand extends UHCCommand {
-	public static HashMap<String, List<String>> invites = new HashMap<String, List<String>>();
+	public static Map<String, List<String>> invites = new HashMap<String, List<String>>();
 	
 	private int teamsize = 0;
 	
@@ -43,9 +44,9 @@ public class TeamCommand extends UHCCommand {
 	}
 	
 	@Override
-	public boolean execute(CommandSender sender, String[] args) throws CommandException {
-		TeamManager teams = TeamManager.getInstance();
-		Game game = Game.getInstance();
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
+		final BoardManager board = BoardManager.getInstance();
+		final TeamManager teams = TeamManager.getInstance();
 		
 		if (args.length == 0) {
 			// the method returns true but hey, one less line :D
@@ -68,10 +69,7 @@ public class TeamCommand extends UHCCommand {
 
 				sender.sendMessage(Main.PREFIX + ChatColor.GREEN + target.getName() + "'s §7team info:");
 				sender.sendMessage("§8» §7Team: §c" + (team == null ? "None" : team.getPrefix() + team.getName()));
-				
-				if (Main.kills.containsKey(target.getName())) {
-					sender.sendMessage("§8» §7Kills: §a" + Main.kills.get(target.getName()));
-				}
+				sender.sendMessage("§8» §7Kills: §a" + board.getActualScore(target.getName()));
 				
 				if (team == null) {
 					return true;
@@ -87,6 +85,8 @@ public class TeamCommand extends UHCCommand {
 				
 				Set<String> savedTeam = teams.getSavedTeams().get(team.getName());
 				
+				int teamkills = 0;
+				
 				for (String entry : savedTeam) {
 					if (list.length() > 0) {
 						if (i == savedTeam.size()) {
@@ -95,6 +95,8 @@ public class TeamCommand extends UHCCommand {
 							list.append("§7, §f");
 						}
 					}
+					
+					teamkills += board.getActualScore(entry);
 					
 					OfflinePlayer teammates = PlayerUtils.getOfflinePlayer(entry);
 					
@@ -105,11 +107,8 @@ public class TeamCommand extends UHCCommand {
 					}
 					i++;
 				}
-				
-				if (Main.teamKills.containsKey(team.getName())) {
-					sender.sendMessage("§8» §7Team Kills: §a" + Main.teamKills.get(team.getName()));
-				}
-				
+
+				sender.sendMessage("§8» §7Team Kills: §a" + teamkills);
 				sender.sendMessage("§8» ---------------------------");
 				sender.sendMessage("§8» §7Teammates: §o(Names in red means they are offline)");
 				sender.sendMessage("§8» §f" + list.toString().trim());
@@ -401,7 +400,7 @@ public class TeamCommand extends UHCCommand {
 			
 			Team team = teams.getTeam(player);
 			
-			if (team == null || Spectator.getInstance().isSpectating(player)) {
+			if (team == null || SpecManager.getInstance().isSpectating(player)) {
 				throw new CommandException("You are not on a team.");
 			}
 			
@@ -414,6 +413,8 @@ public class TeamCommand extends UHCCommand {
 			int i = 1;
 			
 			Set<String> savedTeam = teams.getSavedTeams().get(team.getName());
+
+			int teamkills = 0;
 			
 			for (String entry : savedTeam) {
 				if (list.length() > 0) {
@@ -423,6 +424,8 @@ public class TeamCommand extends UHCCommand {
 						list.append("§7, §f");
 					}
 				}
+				
+				teamkills += board.getActualScore(entry);
 				
 				OfflinePlayer teammates = PlayerUtils.getOfflinePlayer(entry);
 				
@@ -436,14 +439,9 @@ public class TeamCommand extends UHCCommand {
 
 			sender.sendMessage(Main.PREFIX + "Your team info:");
 			sender.sendMessage("§8» §7Team: §c" + (team == null ? "None" : team.getPrefix() + team.getName()));
-			
-			if (Main.kills.containsKey(player.getName())) {
-				sender.sendMessage("§8» §7Kills: §a" + Main.kills.get(player.getName()));
-			}
-			
-			if (Main.teamKills.containsKey(team.getName())) {
-				sender.sendMessage("§8» §7Team Kills: §a" + Main.teamKills.get(team.getName()));
-			}
+
+			sender.sendMessage("§8» §7Kills: §a" + board.getActualScore(player.getName()));
+			sender.sendMessage("§8» §7Team Kills: §a" + teamkills);
 			
 			sender.sendMessage("§8» ---------------------------");
 			sender.sendMessage("§8» §7Teammates: §o(Names in red means they are offline)");
@@ -455,10 +453,8 @@ public class TeamCommand extends UHCCommand {
 			if (!sender.hasPermission("uhc.team.admin")) {
 				return helpMenu(sender);
 			}
-
-			BoardManager manager = BoardManager.getInstance();
 			
-			for (Team team : manager.board.getTeams()) {
+			for (Team team : board.getBoard().getTeams()) {
 				for (OfflinePlayer player : teams.getPlayers(team)) {
 					teams.leaveTeam(player, true);
 				}
@@ -516,8 +512,6 @@ public class TeamCommand extends UHCCommand {
 			return true;
 		}
 		
-		BoardManager board = BoardManager.getInstance();
-		
 		if (args[0].equalsIgnoreCase("enable")) {
 			if (!sender.hasPermission("uhc.team.admin") || args.length == 1) {
 				return helpMenu(sender);
@@ -530,7 +524,7 @@ public class TeamCommand extends UHCCommand {
 			
 			teamsize = parseInt(args[1], "teamsize");
 			
-			PlayerUtils.broadcast(Main.PREFIX + "You can now create your own teams! (Max team size: §6" + teamsize + "§7)");
+			PlayerUtils.broadcast(Main.PREFIX + "You can now create your own teams! §8(§7Max team size: §6" + teamsize + "§8)");
 			PlayerUtils.broadcast(Main.PREFIX + "Use §a/team create §7and §a/team invite§7 to create the team.");
 
 			if (game.pregameBoard()) {
@@ -636,7 +630,7 @@ public class TeamCommand extends UHCCommand {
 		sender.sendMessage("§8» §f/team info §7- §f§oDisplay your team info.");
 		sender.sendMessage("§8» §f/team list §7- §f§oList all teams.");
 		
-		if (Game.getInstance().teamManagement()) {
+		if (game.teamManagement()) {
 			sender.sendMessage("§8» §f/team create §7- §f§oCreate a team.");
 			sender.sendMessage("§8» §f/team leave §7- §f§oLeave your team.");
 			sender.sendMessage("§8» §f/team invite <player> §7- §f§oInvite a player to your team.");

@@ -17,11 +17,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.Timer;
+import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -31,14 +31,22 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author audicymc
  */
 public class Assassins extends Scenario implements Listener, CommandExecutor {
-	private final Map<String, String> assassins = new HashMap<String, String>();
-	private static final String PREFIX = "§c§lAssassins §8» §7";
+	private final Timer timer;
+	private final Game game;
 
-	public Assassins() {
+	public Assassins(Timer timer, Game game) {
 		super("Assassins", "Each player has a target that they must kill. Killing anyone that is not your target or assassin will result in no items dropping. When your target dies, you get their target.");
+		
+		this.timer = timer;
+		this.game = game;
+		
 		Bukkit.getPluginCommand("target").setExecutor(this);
 	}
+	
+	private static final String PREFIX = "§cAssassins §8» §7";
 
+	private final Map<String, String> assassins = new HashMap<String, String>();
+	
 	@Override
 	public void onDisable() {
 		assassins.clear();
@@ -46,7 +54,7 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	
 	@Override
 	public void onEnable() {
-		if (!State.isState(State.INGAME) || timer.getPvP() > 0) {
+		if (!State.isState(State.INGAME) && timer.getPvP() > 0) {
 			return;
 		}
 		
@@ -151,17 +159,13 @@ public class Assassins extends Scenario implements Listener, CommandExecutor {
 	private void setTarget(final String assassin, final String target) {
 		assassins.put(assassin, target);
 
-		new BukkitRunnable() {
-			public void run() {
-				final Player player = Bukkit.getPlayer(assassin);
-				
-				if (player == null) {
-					return;
-				}
-				
-				player.sendMessage(PREFIX + "Your new target: §a" + target);
-			}
-		}.runTaskLater(Main.plugin, 1L);
+		final Player player = Bukkit.getPlayer(assassin);
+		
+		if (player == null) {
+			return;
+		}
+		
+		player.sendMessage(PREFIX + "Your new target: §a" + target);
 	}
 
 	/**

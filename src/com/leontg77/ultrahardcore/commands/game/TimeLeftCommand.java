@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
+import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 
@@ -23,27 +23,32 @@ public class TimeLeftCommand extends UHCCommand {
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) {
+	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		if (game.isRecordedRound()) {
-			sender.sendMessage(Main.PREFIX + "Current Episode: §a" + Timers.meetup);
-			sender.sendMessage(Main.PREFIX + "Time to next episode: §a" + Timers.time + " minutes");
+			sender.sendMessage(Main.PREFIX + "Current Episode: §a" + timer.getMeetup() + ".");
+			sender.sendMessage(Main.PREFIX + "Time to next episode: §a" + timer.getTimeSinceStart() + " minute(s).");
 			return true;
 		}
 		
 		if (game.getTeamSize().startsWith("No") || game.getTeamSize().startsWith("Open")) {
-			sender.sendMessage(Main.PREFIX + "There are no matches running.");
-			return true;
+			throw new CommandException("There are no matches running.");
 		}
 		
 		if (!State.isState(State.INGAME)) {
-			sender.sendMessage(Main.PREFIX + "The game has not started yet.");
-			return true;
+			throw new CommandException("The game has not started yet.");
 		}
 		
-		sender.sendMessage(Main.PREFIX + "Displaying game timers:");
-		sender.sendMessage("§8» §7Time since start: §a" + DateUtils.ticksToString(Timers.timeSeconds));
-		sender.sendMessage(Timers.pvpSeconds <= 0 ? "§8» §aPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Timers.pvpSeconds));
-		sender.sendMessage(Timers.meetupSeconds <= 0 ? "§8» §6Meetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
+		int timePassed = timer.getTimeSinceStartInSeconds();
+		int meetup = timer.getMeetupInSeconds();
+		int pvp = timer.getPvPInSeconds();
+		
+		int finalheal = 20 - timePassed;
+		
+		sender.sendMessage(Main.PREFIX + "UHC Game Timers:");
+		sender.sendMessage("§8» §7Time since start: §a" + DateUtils.ticksToString(timePassed));
+		sender.sendMessage("§8» " + (finalheal <= 0 ? "§eFinal heal has passed!" : "§7Final heal is given in: §a" + DateUtils.ticksToString(finalheal)));
+		sender.sendMessage("§8» " + (pvp <= 0 ? "§aPvP is enabled!" : "§7PvP enables in: §a" + DateUtils.ticksToString(pvp)));
+		sender.sendMessage("§8» " + (meetup <= 0 ? "§cMeetup is NOW!" : "§7Meetup in: §a" + DateUtils.ticksToString(meetup)));
 		return true;
 	}
 

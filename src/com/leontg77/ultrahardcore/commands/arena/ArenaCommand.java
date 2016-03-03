@@ -59,7 +59,7 @@ public class ArenaCommand extends UHCCommand {
 
 				if (args[0].equalsIgnoreCase("board")) {
 					if (game.arenaBoard()) {
-						for (String entry : arena.board.getEntries()) {
+						for (String entry : arena.sb.getEntries()) {
 							arena.resetScore(entry);
 						}
 						

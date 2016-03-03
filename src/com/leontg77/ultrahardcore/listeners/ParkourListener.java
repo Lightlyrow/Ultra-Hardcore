@@ -1,161 +1,193 @@
 package com.leontg77.ultrahardcore.listeners;
 
-import org.bukkit.GameMode;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerAchievementAwardedEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Parkour;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.DateUtils;
+import com.leontg77.ultrahardcore.utils.LocationUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
- * Player listener class.
+ * Parkour listener class.
  * <p> 
- * Contains all eventhandlers for player releated events.
+ * Contains events to manage the parkour.
  * 
  * @author LeonTG77
  */
 public class ParkourListener implements Listener {
+	private final Parkour parkour;
+	private final Main plugin;
+	
+	public ParkourListener(Main plugin, Parkour parkour) {
+		this.parkour = parkour;
+		this.plugin = plugin;
+	}
+	
+	@EventHandler
+	public void on(final PlayerGameModeChangeEvent event) {
+		final Player player = event.getPlayer();
+		
+		if (!parkour.isParkouring(player)) {
+			return;
+		}
+		
+		player.sendMessage(ChatColor.DARK_RED + "Parkour failed! §cYou cannot change gamemode while in the parkour!");
+
+		player.teleport(plugin.getSpawn(), TeleportCause.UNKNOWN);
+		parkour.removePlayer(player);
+	}
+	
+	@EventHandler
+	public void on(final PlayerToggleFlightEvent event) {
+		final Player player = event.getPlayer();
+		
+		if (!parkour.isParkouring(player)) {
+			return;
+		}
+		
+		player.sendMessage(ChatColor.DARK_RED + "Parkour failed! §cYou cannot fly while in the parkour!");
+
+		player.teleport(plugin.getSpawn(), TeleportCause.UNKNOWN);
+		parkour.removePlayer(player);
+	}
+	
+	@EventHandler
+	public void on(final PlayerTeleportEvent event) {
+		final Player player = event.getPlayer();
+		
+		if (event.getCause() == TeleportCause.UNKNOWN) {
+			return;
+		}
+		
+		if (!parkour.isParkouring(player)) {
+			return;
+		}
+		
+		player.sendMessage(ChatColor.DARK_RED + "Parkour failed! §cYou cannot teleport while in the parkour!");
+
+		event.setTo(plugin.getSpawn());
+		parkour.removePlayer(player);
+	}
+	
+	@EventHandler
+	public void on(final PlayerQuitEvent event) {
+		final Player player = event.getPlayer();
+		
+		if (!parkour.isParkouring(player)) {
+			return;
+		}
+		
+		player.teleport(plugin.getSpawn(), TeleportCause.UNKNOWN);
+	}
 	
 	@EventHandler
 	public void on(PlayerMoveEvent event) {
-		Player player = event.getPlayer();
-		Location to = event.getTo();
+		final Location from = event.getFrom();
+		final Location to = event.getTo();
 		
-		if (to.getWorld().getName().equals("lobby") && to.getY() <= 20) {
-			Parkour parkour = Parkour.getInstance();
+		if (!to.getWorld().getName().equals("lobby")) {
+			return;
+		}
+		
+		final Player player = event.getPlayer();
 			
+		if (to.getBlockY() < 20) {
+			player.teleport(parkour.getLocation(parkour.getCheckpoint(player)), TeleportCause.UNKNOWN);
+			return;
+		}
+	
+		if (LocationUtils.areEqual(from, to)) {
+			return;
+		}
+		
+		final State state = State.getState();
+		
+		// parkour should never be used incase of this.
+		if (state == State.SCATTER || state == State.INGAME || state == State.ENDING) {
+			return;
+		}
+		
+		// start point
+		if (LocationUtils.areEqual(to, parkour.getLocation(0))) {
 			if (parkour.isParkouring(player)) {
-				if (parkour.getCheckpoint(player) != null) {
-					int checkpoint = parkour.getCheckpoint(player);
-					player.teleport(parkour.getLocation(checkpoint));
-					return;
-				}
+				player.sendMessage(Parkour.PREFIX + "The timer has been reset.");
+				player.playSound(player.getLocation(), "random.pop", 1, 1);
 				
-				player.teleport(parkour.getLocation(0));
+				parkour.resetTime(player);
 				return;
 			}
 			
-			player.teleport(Main.getSpawn());
-		}
-	}
-	
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		Player player = event.getPlayer();
-		
-		if (parkourers.contains(player)) {
-			parkourers.remove(player);
+			player.sendMessage(Parkour.PREFIX + "You started the parkour!");
+			player.playSound(player.getLocation(), "random.pop", 1, 1);
+			
+			parkour.addPlayer(player);
 		}
 		
-		if (checkpoint.containsKey(player)) {
-			checkpoint.remove(player);
-		}
-		
-		if (time.containsKey(player)) {
-			time.remove(player);
-		}
-	}
-	
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event) {
-		if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+		if (!parkour.isParkouring(player)) {
 			return;
 		}
 		
-		Player player = event.getPlayer();
-		Entity point;
+		final String date = DateUtils.formatDateDiff(parkour.getStartTime(player).getTime());
 		
-		try {
-			point = PlayerUtils.getNearby(event.getTo(), 0.5).get(0);
-		} catch (Exception e) {
-			return;
+		// checkpoint 1
+		if (LocationUtils.areEqual(to, parkour.getLocation(1))) {
+			if (parkour.getCheckpoint(player) == 1) {
+				return;
+			}
+
+			player.sendMessage(Parkour.PREFIX + "You reached checkpoint §61§7.");
+			player.sendMessage(Parkour.PREFIX + "You have used: §a" + date);
+			
+			player.playSound(player.getLocation(), "random.pop", 1, 1);
+			parkour.setCheckpoint(player, 1);
 		}
 		
-		if (point instanceof ArmorStand) {
-			ArmorStand stand = (ArmorStand) point;
+		// checkpoint 2
+		if (LocationUtils.areEqual(to, parkour.getLocation(2))) {
+			if (parkour.getCheckpoint(player) == 2) {
+				return;
+			}
+
+			player.sendMessage(Parkour.PREFIX + "You reached checkpoint §62§7.");
+			player.sendMessage(Parkour.PREFIX + "You have used: §a" + date);
 			
-			if (stand.getCustomName() == null) {
+			player.playSound(player.getLocation(), "random.pop", 1, 1);
+			parkour.setCheckpoint(player, 2);
+		}
+		
+		// checkpoint 3
+		if (LocationUtils.areEqual(to, parkour.getLocation(3))) {
+			if (parkour.getCheckpoint(player) == 3) {
 				return;
 			}
 			
-			if (stand.getCustomName().contains("Start")) {
-				if (parkourers.contains(player)) {
-					player.sendMessage(Main.PREFIX + "The timer has been reset to §a0s§7.");
-					player.playSound(player.getLocation(), "random.pop", 1, 1);
-					time.put(player, 0);
-					return;
-				}
-				
-				player.sendMessage(Main.PREFIX + "Parkour started.");
-				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				parkourers.add(player);
-				checkpoint.put(player, 0);
-				time.put(player, 0);
-			}
+			player.sendMessage(Parkour.PREFIX + "You reached checkpoint §63§7.");
+			player.sendMessage(Parkour.PREFIX + "You have used: §a" + date);
 			
-			if (!parkourers.contains(player)) {
-				return;
-			}
-			
-			if (stand.getCustomName().contains("#1")) {
-				if (checkpoint.containsKey(player) && checkpoint.get(player) == 1) {
-					return;
-				}
-				
-				player.sendMessage(Main.PREFIX + "You reached checkpoint §c1§7.");
-				((CraftWorld) player.getWorld()).getHandle().makeSound(((CraftPlayer) player).getHandle(), "random.pop", 1, 1);
-				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				parkourers.add(player);
-				checkpoint.put(player, 1);
-			}
-			
-			if (stand.getCustomName().contains("#2")) {
-				if (checkpoint.containsKey(player) && checkpoint.get(player) == 2) {
-					return;
-				}
-				
-				player.sendMessage(Main.PREFIX + "You reached checkpoint §c2§7.");
-				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				parkourers.add(player);
-				checkpoint.put(player, 2);
-			}
-			
-			if (stand.getCustomName().contains("#3")) {
-				if (checkpoint.containsKey(player) && checkpoint.get(player) == 3) {
-					return;
-				}
-				
-				player.sendMessage(Main.PREFIX + "You reached checkpoint §c3§7.");
-				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				parkourers.add(player);
-				checkpoint.put(player, 3);
-			}
-			
-			if (stand.getCustomName().contains("finish")) {
-				player.sendMessage(Main.PREFIX + "You finished the parkour, time used: §a" + DateUtils.ticksToString(time.get(player)));
-				player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
-				
-				parkourers.remove(player);
-				checkpoint.remove(player);
-				time.remove(player);
-			}
+			player.playSound(player.getLocation(), "random.pop", 1, 1);
+			parkour.setCheckpoint(player, 3);
+		}
+		
+		// end point
+		if (LocationUtils.areEqual(to, parkour.getLocation(4))) {
+			PlayerUtils.broadcast(Parkour.PREFIX + "§a" + player.getName() + " §7completed the parkour in " + date + "!");
+			player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
+
+			player.teleport(plugin.getSpawn(), TeleportCause.UNKNOWN);
+			parkour.removePlayer(player);
 		}
 	}
 }

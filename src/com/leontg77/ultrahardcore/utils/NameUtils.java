@@ -1,18 +1,11 @@
 package com.leontg77.ultrahardcore.utils;
 
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-
-import net.md_5.bungee.api.chat.BaseComponent;
-
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 /**
  * Name utilities class.
  * <p>
- * Contains name related methods.
+ * Contains methods for capitalizing strings and getting potion real names.
  * 
  * @author LeonTG77
  */
@@ -25,7 +18,7 @@ public class NameUtils {
 	 * @param replaceUnderscore True to replace all _ with a space, false otherwise.
 	 * @return The new fixed text.
 	 */
-	public static String capitalizeString(String text, boolean replaceUnderscore) {
+	public static String capitalizeString(final String text, final boolean replaceUnderscore) {
 		if (text.isEmpty()) {
 			return text;
 		}
@@ -49,7 +42,7 @@ public class NameUtils {
 	 * @param type the type.
 	 * @return The real potion name.
 	 */
-	public static String getPotionName(PotionEffectType type) {
+	public static String getPotionName(final PotionEffectType type) {
 		switch (type.getName().toLowerCase()) {
 		case "speed":
 			return "Speed";
@@ -96,40 +89,9 @@ public class NameUtils {
 		case "absorption":
 			return "Absorption";
 		case "saturation":
-			return "Saturaion";
+			return "Saturation";
 		default:
-			return "?";
+			return "???";
 		}
-	}
-	
-	/**
-	* Converts an {@link ItemStack} to a Json string
-	* for sending with {@link BaseComponent}'s.
-	*
-	* @param itemStack the item to convert
-	* @return the Json string representation of the item
-	*/
-	public static String convertToJson(ItemStack itemStack) {
-		Class<?> craftitemstack = ReflectionUtils.getOBCClass("inventory.CraftItemStack");
-	    Method method = ReflectionUtils.getMethod(craftitemstack, "asNMSCopy", ItemStack.class);
-
-	    Class<?> itemstack = ReflectionUtils.getNMSClass("ItemStack");
-	    Class<?> nbt = ReflectionUtils.getNMSClass("NBTTagCompound");
-	    Method save = ReflectionUtils.getMethod(itemstack, "save", nbt);
-
-	    Object nbtInstance; 
-	    Object nsmcopy; 
-	    Object toReturn; 
-
-	    try {
-	        nbtInstance = nbt.newInstance();
-	        nsmcopy = method.invoke(null, itemStack);
-	        toReturn = save.invoke(nsmcopy, nbtInstance);
-	    } catch (Throwable t) {
-	        Bukkit.getLogger().log(Level.SEVERE, "failed to serialize itemstack to nms item", t);
-	        return null;
-	    }
-
-	    return toReturn.toString();
 	}
 }

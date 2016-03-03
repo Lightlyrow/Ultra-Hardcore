@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Arena;
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.feature.Feature;
@@ -19,15 +20,23 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  * @author LeonTG77
  */
 public class RespawnFeature extends Feature implements Listener {
+	private final Main plugin;
+	
+	private final Arena arena;
+	private final Game game;
 
-	public RespawnFeature() {
+	public RespawnFeature(Main plugin, Arena arena, Game game) {
 		super("Respawn", "Messages and auto spec mode when someone respawn!");
+
+		this.plugin = plugin;
+		
+		this.arena = arena;
+		this.game = game;
 	}
 	
 	@EventHandler
 	public void on(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
-		final Arena arena = Arena.getInstance();
 		
 		event.setRespawnLocation(Main.getSpawn());
 		player.setMaxHealth(20);
@@ -66,6 +75,6 @@ public class RespawnFeature extends Feature implements Listener {
 				
 				spec.enableSpecmode(player);
 			}
-		}.runTaskLater(Main.plugin, 200);
+		}.runTaskLater(plugin, 200);
 	}
 }

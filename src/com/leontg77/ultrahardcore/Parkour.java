@@ -1,204 +1,207 @@
 package com.leontg77.ultrahardcore;
 
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
+import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.ultrahardcore.utils.DateUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
+import com.leontg77.ultrahardcore.listeners.ParkourListener;
 
 /**
  * The parkour class.
  * 
  * @author LeonTG77
  */
-public class Parkour implements Listener {
-	private static Parkour manager = new Parkour();
-	public BukkitRunnable task;
+public class Parkour {
+	public static final String PREFIX = "§9Parkour §8» §7";
 
-	private Location spawn = new Location(Bukkit.getWorld("lobby"), -34.5, 32, 0.5, 90, 0);
-	private Location point1 = new Location(Bukkit.getWorld("lobby"), -80.5, 38.5, -1.5, 90, 0);
-	private Location point2 = new Location(Bukkit.getWorld("lobby"), -135.5, 36.5, -12.5, 90, 0);
-	private Location point3 = new Location(Bukkit.getWorld("lobby"), -159.5, 29.5, 8.5, 0, 0);
+	private final Settings settings;
+	private final Main plugin;
 	
-	private Set<Player> players = new HashSet<Player>();
-	private Map<Player, Integer> checkpoint = new HashMap<Player, Integer>();
-	private Map<Player, Integer> time = new HashMap<Player, Integer>();
-
 	/**
-	 * Gets the instance of this class
+	 * Parkour class constructor.
 	 * 
-	 * @return The instance.
+	 * @param plugin The main class.
+	 * @param settings The settings class.
 	 */
-	public static Parkour getInstance() {
-		return manager;
+	protected Parkour(Main plugin, Settings settings) {
+		this.settings = settings;
+		this.plugin = plugin;
 	}
+
+	private Location spawnpoint;
+	private Location checkpoint1;
+	private Location checkpoint2;
+	private Location checkpoint3;
+	private Location endpoint;
 	
 	/**
-	 * Set up the parkour system.
+	 * Set up the checkpoints and listeners for the parkour
 	 */
 	public void setup() {
-		Bukkit.getServer().getPluginManager().registerEvents(this, Main.plugin);
+		Bukkit.getPluginManager().registerEvents(new ParkourListener(plugin, this), plugin);
 		
-		task = new BukkitRunnable() {
-			public void run() {
-				for (Player parkourers : time.keySet()) {
-					time.put(parkourers, time.get(parkourers) + 1);
-				}
-			}
-		};
+		spawnpoint = loadLocation("parkour.spawnpoint");
+		endpoint = loadLocation("parkour.endpoint");
 		
-		task.runTaskTimer(Main.plugin, 20, 20);
+		checkpoint1 = loadLocation("parkour.checkpoint.1");
+		checkpoint2 = loadLocation("parkour.checkpoint.2");
+		checkpoint3 = loadLocation("parkour.checkpoint.3");
 	}
 	
 	/**
-	 * Reset the parkour data.
+	 * Load up the location at the given config path.
+	 * 
+	 * @param path The config path.
+	 * @return The location if found, null otherwise.
+	 */
+	private Location loadLocation(final String path) {
+		final FileConfiguration data = settings.getData();
+		
+		if (!data.contains(path)) {
+			return null;
+		}
+		
+		World world = Bukkit.getWorld(data.getString(path + ".world"));
+		
+		if (world == null) {
+			world = Bukkit.getWorlds().get(0);
+		}
+		
+		double x = data.getDouble(path + ".x", 0.5);
+		double y = data.getDouble(path + ".y", 33.0);
+		double z = data.getDouble(path + ".z", 0.5);
+		float yaw = (float) data.getDouble(path + ".yaw", 0);
+		float pitch = (float) data.getDouble(path + ".pitch", 0);
+		
+		Location loc = new Location(world, x, y, z, yaw, pitch);
+		return loc;
+	}
+	
+	private final Map<UUID, Integer> checkpoint = new HashMap<UUID, Integer>();
+	private final Map<UUID, Date> startTime = new HashMap<UUID, Date>();
+	
+	/**
+	 * Reset who is parkouring, their checkpoint and their start time.
 	 */
 	public void reset() {
 		checkpoint.clear();
-		players.clear();
-		time.clear();
+		startTime.clear();
 	}
 	
-	public Location getLocation(int checkpoint) {
-		if (checkpoint == 1) {
-			return point1;
-		}
-		else if (checkpoint == 2) {
-			return point2;
-		}
-		else if (checkpoint == 3) {
-			return point3;
-		}
-		else {
-			return spawn;
-		}
-	}
-	
-	public boolean isParkouring(Player player) {
-		return players.contains(player);
-	}
-	
-	public Integer getCheckpoint(Player player) {
-		return checkpoint.get(player);
-	}
-	
-	public Integer getTime(Player player) {
-		return time.get(player);
-	}
-	
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		Player player = event.getPlayer();
+	/**
+	 * Add the given player to the parkour.
+	 * 
+	 * @param player The player to add.
+	 */
+	public void addPlayer(final Player player) {
+		player.setGameMode(GameMode.SURVIVAL);
 		
-		if (players.contains(player)) {
-			players.remove(player);
+		setCheckpoint(player, 0);
+		resetTime(player);
+	}
+	
+	/**
+	 * Remove the given player from the parkour 
+	 * <p>
+	 * Either when they log off or when they complete it.
+	 * 
+	 * @param player The player to remove.
+	 */
+	public void removePlayer(final Player player) {
+		if (checkpoint.containsKey(player.getUniqueId())) {
+			checkpoint.remove(player.getUniqueId());
 		}
 		
-		if (checkpoint.containsKey(player)) {
-			checkpoint.remove(player);
-		}
-		
-		if (time.containsKey(player)) {
-			time.remove(player);
+		if (startTime.containsKey(player.getUniqueId())) {
+			startTime.remove(player.getUniqueId());
 		}
 	}
 	
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event) {
-		if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
-			return;
+	/**
+	 * Reset the start time for the given player.
+	 * 
+	 * @param player The player to reset for.
+	 */
+	public void resetTime(final Player player) {
+		startTime.put(player.getUniqueId(), new Date());
+	}
+	
+	/**
+	 * Check if the given player is currently parkouring.
+	 * 
+	 * @param player The player checking.
+	 * @return True if the player is, false otherwise.
+	 */
+	public boolean isParkouring(final Player player) {
+		if (!player.getWorld().getName().equals("lobby")) {
+			return false;
 		}
 		
-		Player player = event.getPlayer();
-		Entity point;
-		
-		try {
-			point = PlayerUtils.getNearby(event.getTo(), 0.5).get(0);
-		} catch (Exception e) {
-			return;
+		return checkpoint.containsKey(player.getUniqueId());
+	}
+
+	/**
+	 * Set the checkpoint for the given player.
+	 * 
+	 * @param player The player to set for.
+	 * @param checkpoint The new checkpoint.
+	 */
+	public void setCheckpoint(Player player, int checkpoint) {
+		this.checkpoint.put(player.getUniqueId(), checkpoint);
+	}
+	
+	/**
+	 * Get the current checkpoint of the given player.
+	 * 
+	 * @param player The player getting for.
+	 * @return The checkpoint if any, -1 if not parkouring.
+	 */
+	public int getCheckpoint(final Player player) {
+		if (!isParkouring(player)) {
+			return -1;
 		}
 		
-		if (point instanceof ArmorStand) {
-			ArmorStand stand = (ArmorStand) point;
-			
-			if (stand.getCustomName() == null) {
-				return;
-			}
-			
-			if (stand.getCustomName().contains("Start")) {
-				if (players.contains(player)) {
-					player.sendMessage(Main.PREFIX + "The timer has been reset to §a0s§7.");
-					player.playSound(player.getLocation(), "random.pop", 1, 1);
-					time.put(player, 0);
-					return;
-				}
-				
-				player.sendMessage(Main.PREFIX + "Parkour started.");
-				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				players.add(player);
-				checkpoint.put(player, 0);
-				time.put(player, 0);
-			}
-			
-			if (!players.contains(player)) {
-				return;
-			}
-			
-			if (stand.getCustomName().contains("#1")) {
-				if (checkpoint.containsKey(player) && checkpoint.get(player) == 1) {
-					return;
-				}
-				
-				player.sendMessage(Main.PREFIX + "You reached checkpoint §c1§7.");
-				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				players.add(player);
-				checkpoint.put(player, 1);
-			}
-			
-			if (stand.getCustomName().contains("#2")) {
-				if (checkpoint.containsKey(player) && checkpoint.get(player) == 2) {
-					return;
-				}
-				
-				player.sendMessage(Main.PREFIX + "You reached checkpoint §c2§7.");
-				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				players.add(player);
-				checkpoint.put(player, 2);
-			}
-			
-			if (stand.getCustomName().contains("#3")) {
-				if (checkpoint.containsKey(player) && checkpoint.get(player) == 3) {
-					return;
-				}
-				
-				player.sendMessage(Main.PREFIX + "You reached checkpoint §c3§7.");
-				player.playSound(player.getLocation(), "random.pop", 1, 1);
-				players.add(player);
-				checkpoint.put(player, 3);
-			}
-			
-			if (stand.getCustomName().contains("finish")) {
-				player.sendMessage(Main.PREFIX + "You finished the parkour, time used: §a" + DateUtils.ticksToString(time.get(player)));
-				player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
-				
-				players.remove(player);
-				checkpoint.remove(player);
-				time.remove(player);
-			}
+		return checkpoint.get(player.getUniqueId()).intValue();
+	}
+	
+	/**
+	 * Get the start time when the given player started the parkour.
+	 * 
+	 * @param player The player.
+	 * @return The date if the player is parkouring, null otherwise.
+	 */
+	public Date getStartTime(final Player player) {
+		return startTime.get(player.getUniqueId());
+	}
+	
+	/**
+	 * Get the location of the given checkpoint number.
+	 * 
+	 * @param checkpoint The checkpoint number.
+	 * @return The checkpoint if any, the spawn if invaild number.
+	 */
+	public Location getLocation(final int checkpoint) {
+		switch (checkpoint) {
+		case 0:
+			return spawnpoint;
+		case 1:
+			return checkpoint1;
+		case 2:
+			return checkpoint2;
+		case 3:
+			return checkpoint3;
+		case 4:
+			return endpoint;
+		default:
+			return plugin.getSpawn();
 		}
 	}
 }

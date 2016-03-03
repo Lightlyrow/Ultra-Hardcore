@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore.protocol;
 
-import org.bukkit.plugin.Plugin;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.PacketType.Play;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -20,15 +18,14 @@ import com.leontg77.ultrahardcore.Main;
  * @author LeonTG77
  */
 public class EnchantPreview extends PacketAdapter {
-	private static final ProtocolManager PROTOCOL_MANAGER = ProtocolLibrary.getProtocolManager();
-	private static final EnchantPreview INSTANCE = new EnchantPreview(Main.plugin);
+	private final ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
 	/**
-	 * Constructor for OldEnchants.
+	 * Constructor for Enchant Preview.
 	 * 
 	 * @param plugin The main class of the plugin.
 	 */
-	public EnchantPreview(Plugin plugin) {
+	public EnchantPreview(Main plugin) {
 		super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.CRAFT_PROGRESS_BAR);
 	}
 
@@ -49,14 +46,14 @@ public class EnchantPreview extends PacketAdapter {
     /**
      * Enable the old enchants.
      */
-    public static void enable() {
-	    PROTOCOL_MANAGER.addPacketListener(INSTANCE);
+    public void enable() {
+    	manager.addPacketListener(this);
     }    
     
     /**
      * Disable the old enchants.
      */
-    public static void disable() {
-	    PROTOCOL_MANAGER.removePacketListener(INSTANCE);
+    public void disable() {
+    	manager.removePacketListener(this);
     }
 }

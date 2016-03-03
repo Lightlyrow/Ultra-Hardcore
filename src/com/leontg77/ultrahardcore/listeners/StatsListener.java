@@ -20,6 +20,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -27,16 +28,18 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Arena;
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Stat;
-import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 
 /**
  * Stats listener class.
@@ -44,25 +47,44 @@ import com.leontg77.ultrahardcore.utils.GameUtils;
  * @author LeonTG77
  */
 public class StatsListener implements Listener {
+	private final Main plugin;
 	
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	private final Arena arena;
+	private final Game game;
+
+	private final BoardManager board;
+	private final TeamManager teams;
+	
+	private final GoldenHeadsFeature ghead;
+	
+	public StatsListener(Main plugin, Arena arena, Game game, BoardManager board, TeamManager teams, GoldenHeadsFeature ghead) {
+		this.plugin = plugin;
+		
+		this.arena = arena;
+		this.game = game;
+		
+		this.board = board;
+		this.teams = teams;
+		
+		this.ghead = ghead;
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void on(final PlayerDeathEvent event) {
 		final Player player = event.getEntity();
-		final Arena arena = Arena.getInstance();
 		
 		// the arena has it's own way of doing deaths.
 		if (arena.isEnabled() && arena.hasPlayer(player)) {
 			return;
 		} 
 
-		final List<World> worlds = GameUtils.getGameWorlds();
+		final List<World> worlds = game.getWorlds();
 		
 	    // I don't care about the rest they're not in a game world.
 	    if (!worlds.contains(player.getWorld())) {
 	    	return;
 	    }
 
-		final BoardManager board = BoardManager.getInstance();
 		final User user = User.get(player);
 		
 		final Player killer = player.getKiller();
@@ -72,8 +94,8 @@ public class StatsListener implements Listener {
 			return;
 		}
 		
-		final Team pteam = TeamManager.getInstance().getTeam(player);
-		final Team team = TeamManager.getInstance().getTeam(killer);
+		final Team pteam = teams.getTeam(player);
+		final Team team = teams.getTeam(killer);
 		
 		if (pteam != null && pteam.equals(team)) {
 			return;
@@ -107,6 +129,40 @@ public class StatsListener implements Listener {
 		if (entity instanceof Animals) {
 			user.increaseStat(Stat.ANIMALKILLS);
 		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void on(EntityDamageEvent event) {
+		final Entity entity = event.getEntity();
+		
+		if (!(entity instanceof Player)) {
+			return;
+		}
+		
+		final Player player = (Player) entity;
+		final double olddamage = player.getHealth();
+
+		new BukkitRunnable() {
+			public void run() {
+				final double damage = olddamage - player.getHealth();
+				
+				final User user = User.get(player);
+				
+				if (game.isRecordedRound() || game.isPrivateGame()) {
+					return;
+				}
+				
+				if (!State.isState(State.INGAME)) {
+					return;
+				}
+				
+				final String statName = "damagetaken";
+				final double current = user.getFile().getDouble("stats." + statName, 0);
+				
+				user.getFile().set("stats." + statName, current + damage);
+				user.saveFile();
+			}
+		}.runTaskLater(plugin, 1);
 	}
 	
 	@EventHandler(ignoreCancelled = true)
@@ -148,11 +204,9 @@ public class StatsListener implements Listener {
 		
 		final Player killer = (Player) arrow.getShooter();
 		final double distance = killer.getLocation().distance(player.getLocation());
-		
-		final TeamManager manager = TeamManager.getInstance();
 
-		final Team kTeam = manager.getTeam(killer);
-		final Team pTeam = manager.getTeam(player);
+		final Team kTeam = teams.getTeam(killer);
+		final Team pTeam = teams.getTeam(player);
 		
 		// no stats boosting for teammates.
 		if (kTeam != null && kTeam.equals(pTeam)) {
@@ -201,10 +255,7 @@ public class StatsListener implements Listener {
 		final Player player = event.getPlayer();
 		final User user = User.get(player);
 		
-		final FeatureManager manager = FeatureManager.getInstance();
 		final ItemStack item = event.getItem();
-		
-		final GoldenHeadsFeature ghead = manager.getFeature(GoldenHeadsFeature.class);
 		
 		if (item.getType() == Material.GOLDEN_APPLE) {
 			if (ghead.isGoldenHead(item)) {

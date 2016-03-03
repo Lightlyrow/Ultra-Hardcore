@@ -22,7 +22,7 @@ import com.leontg77.ultrahardcore.feature.ToggleableFeature;
 public class BookshelfFeature extends ToggleableFeature implements Listener {
 
 	public BookshelfFeature() {
-		super("Bookshelves", "A block you surrond enchantment tales with to increase the level.");
+		super("Bookshelves", "A block you surrond enchantment tables with to increase the level.");
 		
 		icon.setType(Material.BOOKSHELF);
 		slot = 45;

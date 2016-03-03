@@ -20,7 +20,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
 public class PregenCommand extends UHCCommand {
 
 	public PregenCommand() {
-		super("pregen", "<world|cancel|pause> [radius] [force]");
+		super("pregen", "<world|cancel|pause> <radius> [force]");
 	}
 
 	@Override

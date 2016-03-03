@@ -14,19 +14,21 @@ import com.leontg77.ultrahardcore.managers.BoardManager;
  * @author LeonTG77
  */
 public class HeartsOnTabFeature extends ToggleableFeature {
-
-	public HeartsOnTabFeature() {
+	private final BoardManager board;
+	
+	public HeartsOnTabFeature(BoardManager board) {
 		super("Hearts on tab", "Makes your health on the tab list be hearts instead of percent.");
 		
 		icon.setType(Material.INK_SACK);
 		icon.setDurability((short) 1);
 		
 		slot = 7;
+		
+		this.board = board;
 	}
 	
 	@Override
 	public void onDisable() {
-		final BoardManager board = BoardManager.getInstance();
 		board.getTabHealthObjective().setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		
 		for (Player online : Bukkit.getOnlinePlayers()) {
@@ -39,7 +41,6 @@ public class HeartsOnTabFeature extends ToggleableFeature {
 	
 	@Override
 	public void onEnable() {
-		final BoardManager board = BoardManager.getInstance();
 		board.getTabHeartsObjective().setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		
 		for (Player online : Bukkit.getOnlinePlayers()) {

@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore;
  
-import static com.leontg77.ultrahardcore.Main.plugin;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.Date;
@@ -23,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
+import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.utils.FileUtils;
@@ -35,7 +34,30 @@ import com.leontg77.ultrahardcore.utils.FileUtils;
  * @author LeonTG77
  */
 public class User {
-	private static File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+	private static Main plugin;
+	
+	private static InvGUI gui;
+	private static Game game;
+	
+	private static PermissionsManager perm;
+	
+	/**
+	 * Setup the instances.
+	 * 
+	 * @param plugins The main class.
+	 * @param games The game class
+	 * @param guis The gui class.
+	 */
+	public static void setupInstances(Main plugins, Game games, InvGUI guis, PermissionsManager perms) {
+		plugin = plugins;
+		
+		game = games;
+		gui = guis;
+		
+		perm = perms;
+	}
+	
+	public static final File FOLDER = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 	
 	private Player player;
 	private String uuid;
@@ -67,8 +89,14 @@ public class User {
 	 * 
 	 * @param offline the offline player.
 	 * @return the data instance for the player.
+	 * 
+	 * @throws CommandException If the offline player has never joined this server.
 	 */
-	public static User get(OfflinePlayer offline) {
+	public static User get(OfflinePlayer offline) throws CommandException {
+		if (!fileExist(offline.getUniqueId())) {
+			throw new CommandException("'" + offline.getName() + "' has never joined this server.");
+		}
+		
 		return new User(offline.getPlayer(), offline.getUniqueId().toString());
 	}
 	
@@ -79,11 +107,11 @@ public class User {
 	 * @return True if it exist, false otherwise.
 	 */
 	public static boolean fileExist(UUID uuid) {
-		if (!folder.exists() || !folder.isDirectory()) {
+		if (!FOLDER.exists() || !FOLDER.isDirectory()) {
 			return false;
         }
 		
-		for (File file : folder.listFiles()) {
+		for (File file : FOLDER.listFiles()) {
 			String fileName = file.getName().substring(0, file.getName().length() - 4);
 			
 			if (fileName.equals(uuid.toString())) {
@@ -107,11 +135,11 @@ public class User {
         	plugin.getDataFolder().mkdir();
         }
         
-        if (!folder.exists()) {
-        	folder.mkdir(); 
+        if (!FOLDER.exists()) {
+        	FOLDER.mkdir(); 
         }
         
-        file = new File(folder, uuid + ".yml");
+        file = new File(FOLDER, uuid + ".yml");
         
         if (!file.exists()) {
         	try {
@@ -204,7 +232,16 @@ public class User {
 	 */
 	public void saveFile() {
 		try {
+			for (FileConfiguration file : FileUtils.getUserFiles()) {
+				if (file.getString("uuid", "none").equals(config.getString("uuid", "none"))) {
+					FileUtils.getUserFiles().remove(file);
+					break;
+				}
+			}
+			
 			config.save(file);
+			
+    		FileUtils.getUserFiles().add(config);
 		} catch (Exception e) {
     		plugin.getLogger().severe(ChatColor.RED + "Could not save " + file.getName() + "!");
 		}
@@ -226,12 +263,12 @@ public class User {
 		config.set("rank", rank.name());
 		saveFile();
 		
-		FileUtils.updateUserFiles();
-		InvGUI.getGameInfo().updateStaff();
+		FileUtils.updateUserFiles(plugin);
+		gui.getGameInfo().updateStaff();
 		
 		if (player != null) {
-			PermissionsManager.removePermissions(player);
-			PermissionsManager.addPermissions(player);
+			perm.removePermissions(player);
+			perm.addPermissions(player);
 		}
 	}
 
@@ -244,7 +281,7 @@ public class User {
 		Rank rank;
 		
 		try {
-			rank = Rank.valueOf(config.getString("rank", "USER"));
+			rank = Rank.valueOf(config.getString("rank"));
 		} catch (Exception e) {
 			rank = Rank.DEFAULT;
 		}
@@ -258,7 +295,7 @@ public class User {
 	 * @return The rank color.
 	 */
 	public String getRankColor() {
-		if (Game.getInstance().isRecordedRound()) {
+		if (game.isRecordedRound()) {
 			return "§7";
 		}
 		
@@ -436,8 +473,6 @@ public class User {
 	 * @param value The new value.
 	 */
 	public void setStat(Stat stat, double value) {
-		final Game game = Game.getInstance();
-		
 		if (game.isRecordedRound() || game.isPrivateGame()) {
 			return;
 		}
@@ -463,8 +498,6 @@ public class User {
 	 * @param stat the stat increasing.
 	 */
 	public void increaseStat(Stat stat) {
-		final Game game = Game.getInstance();
-		
 		if (game.isRecordedRound() || game.isPrivateGame()) {
 			return;
 		}

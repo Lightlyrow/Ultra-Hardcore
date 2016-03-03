@@ -49,7 +49,7 @@ public class MuteCommand extends UHCCommand {
 
 		if (user.isMuted()) {
 	    	if (!sender.hasPermission("uhc.unmute")) {
-	    		sender.sendMessage(Main.NO_PERM_MSG);
+	    		sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 	    		return true;
 	    	}
 	    	

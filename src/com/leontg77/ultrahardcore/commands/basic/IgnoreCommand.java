@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.commands.basic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -51,7 +52,7 @@ public class IgnoreCommand extends UHCCommand {
 				return true;
 			}
 			
-			final List<FileConfiguration> userFiles = FileUtils.getUserFiles();
+			final Set<FileConfiguration> userFiles = FileUtils.getUserFiles();
 			
 			for (String ignored : ignoreList) {
 				if (i == ignoreList.size()) {

@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
+import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.health.AbsorptionFeature;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;

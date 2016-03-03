@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore.protocol;
 
-import org.bukkit.plugin.Plugin;
-
 import com.comphenix.protocol.PacketType.Play;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -18,15 +16,14 @@ import com.leontg77.ultrahardcore.Main;
  * @author ghowden
  */
 public class HardcoreHearts extends PacketAdapter {
-	private static final ProtocolManager PROTOCOL_MANAGER = ProtocolLibrary.getProtocolManager();
-	private static final HardcoreHearts INSTANCE = new HardcoreHearts(Main.plugin);
+	private final ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
 	/**
 	 * Constructor for HardcoreHearts.
 	 * 
 	 * @param plugin The main class of the plugin.
 	 */
-	public HardcoreHearts(Plugin plugin) {
+	public HardcoreHearts(Main plugin) {
 		super(plugin, ListenerPriority.NORMAL, Play.Server.LOGIN);
 	}
 
@@ -42,14 +39,14 @@ public class HardcoreHearts extends PacketAdapter {
     /**
      * Enable the hardcore hearts.
      */
-    public static void enable() {
-	    PROTOCOL_MANAGER.addPacketListener(INSTANCE);
+    public void enable() {
+	    manager.addPacketListener(this);
     }    
     
     /**
      * Disable the hardcore hearts.
      */
-    public static void disable() {
-	    PROTOCOL_MANAGER.removePacketListener(INSTANCE);
+    public void disable() {
+	    manager.removePacketListener(this);
     }
 }	

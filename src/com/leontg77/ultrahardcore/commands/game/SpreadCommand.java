@@ -157,7 +157,6 @@ public class SpreadCommand extends UHCCommand {
 				worlds.setTime(0);
 				
 				worlds.setGameRuleValue("doDaylightCycle", "true");
-				worlds.setSpawnFlags(false, true);
 				worlds.setThundering(false);
 				worlds.setStorm(false);
 				

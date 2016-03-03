@@ -22,17 +22,18 @@ import com.leontg77.ultrahardcore.utils.LocationUtils;
  * @author LeonTG77
  */
 public class FireworkManager {
-	private static FireworkManager instance = new FireworkManager();
-	private Random ran = new Random();
-
+	private final Main plugin;
+	
 	/**
-	 * Gets the instance of the class.
+	 * Firework manager class constructor.
 	 * 
-	 * @return The instance.
+	 * @param plugin The main class.
 	 */
-	public static FireworkManager getInstance() {
-		return instance;
+	public FireworkManager(Main plugin) {
+		this.plugin = plugin;
 	}
+	
+	private final Random rand = new Random();
 
 	/**
 	 * Launch an random firework at the given location.
@@ -45,17 +46,17 @@ public class FireworkManager {
 
 		Builder builder = FireworkEffect.builder();
 
-		builder.flicker(ran.nextBoolean());
-		builder.trail(ran.nextBoolean());
+		builder.flicker(rand.nextBoolean());
+		builder.trail(rand.nextBoolean());
 		builder.withColor(randomColor());
 		builder.with(randomType());
 		
-		if (ran.nextBoolean()) {
+		if (rand.nextBoolean()) {
 			builder.withFade(randomColor());
 		}
 
 		meta.addEffect(builder.build());
-		meta.setPower(ran.nextInt(2) + 1);
+		meta.setPower(rand.nextInt(2) + 1);
 		item.setFireworkMeta(meta);
 	}
 	
@@ -63,14 +64,23 @@ public class FireworkManager {
 	 * Launch fireworks around the spawn.
 	 */
 	public void startFireworkShow() {
+		startFireworkShow(plugin.getSpawn());
+	}
+	
+	/**
+	 * Launch fireworks around the given location.
+	 * 
+	 * @param locToUse The location to use.
+	 */
+	public void startFireworkShow(final Location locToUse) {
 		new BukkitRunnable() {
 			int i = 0;
 			
 			public void run() {
-				int x = ran.nextInt(50 * 2) - 50;
-				int z = ran.nextInt(50 * 2) - 50;
+				int x = rand.nextInt(50 * 2) - 50;
+				int z = rand.nextInt(50 * 2) - 50;
 
-				Location loc = Main.getSpawn().clone().add(x, 0, z);
+				Location loc = locToUse.clone().add(x, 0, z);
 				loc.setY(LocationUtils.getHighestBlock(loc).getY());
 				
 				launchRandomFirework(loc.add(0, 1, 0));
@@ -81,7 +91,7 @@ public class FireworkManager {
 					cancel();
 				}
 			}
-		}.runTaskTimer(Main.plugin, 20, 5);
+		}.runTaskTimer(plugin, 20, 5);
 	}
 	
 	/**
@@ -90,7 +100,7 @@ public class FireworkManager {
 	 * @return A random color.
 	 */
 	private Color randomColor() {
-		return Color.fromBGR(ran.nextInt(255), ran.nextInt(255), ran.nextInt(255));
+		return Color.fromBGR(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
 	}
 
 	/**
@@ -99,6 +109,6 @@ public class FireworkManager {
 	 * @return A random firework type.
 	 */
 	private Type randomType() {
-		return Type.values()[ran.nextInt(Type.values().length)];
+		return Type.values()[rand.nextInt(Type.values().length)];
 	}
 }

@@ -4,9 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.commands.Parser;
 
 /**
@@ -16,9 +14,6 @@ import com.leontg77.ultrahardcore.commands.Parser;
  */
 public abstract class Scenario extends Parser {
 	private boolean enabled = false;
-
-	protected final Timers timer = Timers.getInstance();
-	protected final Game game = Game.getInstance();
 
 	private String description;
 	private String name;
@@ -53,27 +48,50 @@ public abstract class Scenario extends Parser {
 	}
 	
 	/**
-	 * Sets the scenario to enable or disable
+	 * Enable the scenario.
 	 * 
-	 * @param enable true to enable, false to disable.
+	 * @return True if successful, false otherwise.
 	 */
-	public void setEnabled(boolean enable) {
-		this.enabled = enable;
-		
-		if (enable) {
-			if (this instanceof Listener) {
-				Bukkit.getPluginManager().registerEvents((Listener) this, Main.plugin);
-			}
-			
-			onEnable();
-			return;
+	public boolean enable(Main plugin) {
+		if (isEnabled()) {
+			return false;
+		}
+
+		if (this instanceof Listener) {
+			Bukkit.getPluginManager().registerEvents((Listener) this, plugin);
+		}
+
+		enabled = true;
+		onEnable();
+		return true;
+	}
+	
+	/**
+	 * Disable the scenario.
+	 * 
+	 * @return True if successful, false otherwise.
+	 */
+	public boolean disable() {
+		if (!isEnabled()) {
+			return false;
 		}
 		
 		if (this instanceof Listener) {
 			HandlerList.unregisterAll((Listener) this);
 		}
-		
+
+		enabled = false;
 		onDisable();
+		return true;
+	}
+	
+	/**
+	 * Toggle the scenario.
+	 * 
+	 * @return True if successful, false otherwise.
+	 */
+	public boolean toggle(Main plugin) {
+		return isEnabled() ? disable() : enable(plugin);
 	}
 	
 	/**

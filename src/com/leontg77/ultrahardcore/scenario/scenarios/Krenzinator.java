@@ -22,7 +22,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.RecipeUtils;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Krenzinator scenario class
@@ -43,7 +43,7 @@ public class Krenzinator extends Scenario implements Listener {
 		while (it.hasNext()) {
 			Recipe res = it.next();
 			
-			if (RecipeUtils.areEqual(res, diamond)) {
+			if (res.equals(diamond)) {
 				it.remove();
 			}
 		}
@@ -116,6 +116,7 @@ public class Krenzinator extends Scenario implements Listener {
         if (!item.getType().equals(Material.DIAMOND_SWORD)) {
         	return;
         }
-        event.getWhoClicked().damage(2.0);
+        
+        PlayerUtils.damage((Player) event.getWhoClicked(), 2.0);
     }
 }

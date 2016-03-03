@@ -19,7 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -146,7 +146,7 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("btc")) {
 			if (!sender.hasPermission("uhc.bestbtc")) {
-				sender.sendMessage(Main.NO_PERM_MSG);
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			

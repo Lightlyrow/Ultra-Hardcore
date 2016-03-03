@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 

@@ -10,7 +10,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
+import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 

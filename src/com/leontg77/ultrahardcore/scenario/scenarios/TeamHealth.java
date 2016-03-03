@@ -14,7 +14,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;

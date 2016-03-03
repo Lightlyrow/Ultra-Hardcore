@@ -16,15 +16,19 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * @author LeonTG77
  */
 public class TabHealthColorFeature extends ToggleableFeature {
+	private final Main plugin;
+	
 	private BukkitRunnable task;
 
-	public TabHealthColorFeature() {
+	public TabHealthColorFeature(Main plugin) {
 		super("Tab Health Color", "Your tab name is colored after how high you are on health.");
 		
 		icon.setType(Material.INK_SACK);
 		icon.setDurability((short) 10);
 		
 		slot = 6;
+		
+		this.plugin = plugin;
 	}
 	
 	@Override
@@ -58,6 +62,6 @@ public class TabHealthColorFeature extends ToggleableFeature {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 1, 1);
+		task.runTaskTimer(plugin, 1, 1);
 	}
 }

@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
-import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
+import com.leontg77.ultrahardcore.events.MeetupEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 
 /**

@@ -22,23 +22,22 @@ import com.leontg77.ultrahardcore.utils.LocationUtils;
  * @author LeonTG77
  */
 public class WorldManager {
-	private static final WorldManager INSTANCE = new WorldManager();
-	private Settings settings = Settings.getInstance();
+	private final Settings settings;
 	
 	/**
-	 * Get the instance of the class.
+	 * WorldManager class constructor.
 	 * 
-	 * @return The instance.
+	 * @param settings The settings class.
 	 */
-	public static WorldManager getInstance() {
-		return INSTANCE;
+	public WorldManager(Settings settings) {
+		this.settings = settings;
 	}
 	
 	/**
 	 * Load all the saved worlds.
 	 */
 	public void loadWorlds() {
-		final Set<String> worlds = settings.getWorlds().getConfigurationSection("worlds").getKeys(false);
+		final Set<String> worlds = settings.getWorlds().getKeys(false);
 		
 		if (worlds == null) {
 			return;
@@ -80,6 +79,8 @@ public class WorldManager {
 		world.setSpawnLocation(0, 0, 0);
 		int y = LocationUtils.highestTeleportableYAtLocation(world.getSpawnLocation()) + 2;
 		world.setSpawnLocation(0, y, 0);
+		
+		world.setGameRuleValue("doDaylightCycle", "false");
 
 		WorldBorder border = world.getWorldBorder();
 		
@@ -113,7 +114,7 @@ public class WorldManager {
 		
 		Bukkit.unloadWorld(world, true);
 		
-		settings.getWorlds().set("worlds." + world.getName(), null);
+		settings.getWorlds().set(world.getName(), null);
 		settings.saveWorlds();
 		
 		return FileUtils.deleteFile(world.getWorldFolder());
@@ -130,7 +131,7 @@ public class WorldManager {
 	 * @throws CommandException if world doesn't exist.
 	 */
 	public void loadWorld(String name) throws CommandException {
-		Set<String> worlds = settings.getWorlds().getConfigurationSection("worlds").getKeys(false);
+		Set<String> worlds = settings.getWorlds().getKeys(false);
 		
 		if (!worlds.contains(name)) {
 			throw new CommandException("The world '" + name + "' does not exist.");
@@ -143,9 +144,9 @@ public class WorldManager {
 			creator.generatorSettings("{\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
 		}
 		
-		long seed = settings.getWorlds().getLong("worlds." + name + ".seed", 2347862349786234l);
-		Environment environment = Environment.valueOf(settings.getWorlds().getString("worlds." + name + ".environment", Environment.NORMAL.name()));
-		WorldType worldtype = WorldType.valueOf(settings.getWorlds().getString("worlds." + name + ".worldtype", WorldType.NORMAL.name()));
+		long seed = settings.getWorlds().getLong(name + ".seed", 2347862349786234l);
+		Environment environment = Environment.valueOf(settings.getWorlds().getString(name + ".environment", Environment.NORMAL.name()));
+		WorldType worldtype = WorldType.valueOf(settings.getWorlds().getString(name + ".worldtype", WorldType.NORMAL.name()));
 		
 		creator.environment(environment);
 		creator.type(worldtype);

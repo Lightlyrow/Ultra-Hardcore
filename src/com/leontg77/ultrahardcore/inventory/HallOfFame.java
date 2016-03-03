@@ -57,18 +57,28 @@ public class HallOfFame extends InvGUI implements Listener {
 		String host = currentHost.get(player.getName());
 		int page = currentPage.get(player.getName());
 		
+		HashMap<Integer, Inventory> pages = hostInvs.get(host);
+		
 		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
 			page++;
 			
+			if (!pages.containsKey(page)) {
+				return;
+			}
+			
 			currentPage.put(player.getName(), page);
-			player.openInventory(hostInvs.get(host).get(page));
+			player.openInventory(pages.get(page));
 		}
 		
 		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aPrevious page")) {
 			page--;
 			
+			if (!pages.containsKey(page)) {
+				return;
+			}
+			
 			currentPage.put(player.getName(), page);
-			player.openInventory(hostInvs.get(host).get(page));
+			player.openInventory(pages.get(page));
 		}
 		
 		event.setCancelled(true);

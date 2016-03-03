@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -63,7 +64,7 @@ public class TopStats extends InvGUI implements Listener {
 		Map<String, Double> deaths = new HashMap<String, Double>();
 		Map<String, Double> kills = new HashMap<String, Double>();
 		
-		List<FileConfiguration> files = FileUtils.getUserFiles();
+		Set<FileConfiguration> files = FileUtils.getUserFiles();
 		
 		for (Stat stat : Stat.values()) {
 			data.clear();
@@ -166,13 +167,13 @@ public class TopStats extends InvGUI implements Listener {
 				int iDamage = Integer.parseInt(sDamage.substring(2));
 				
 				if (number == 10) {
-					lore.add("§6#" + number + "§8 | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatInt(Integer.parseInt(NumberUtils.formatDouble(value)))));
+					lore.add("§6#" + number + "§8 | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
 				} else {
 					if (number == 1) {
 						meta.setOwner(name);
 					}
 					
-					lore.add(" §6#" + number + "§8  | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatInt(Integer.parseInt(NumberUtils.formatDouble(value)))));
+					lore.add(" §6#" + number + "§8  | §7" + name + " §8» §a" + (isDamage ? NumberUtils.formatInt(iDamage) + "%" : NumberUtils.formatDouble(value)));
 				}
 
 				number++;

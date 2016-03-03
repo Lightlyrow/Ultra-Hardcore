@@ -68,7 +68,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
 		}
 		
 		if (!player.hasPermission("uhc.bigcrack")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
+			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 		

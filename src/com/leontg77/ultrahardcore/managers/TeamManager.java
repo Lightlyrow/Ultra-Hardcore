@@ -5,10 +5,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,6 +15,7 @@ import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import com.google.common.collect.ImmutableSet;
 import com.leontg77.ultrahardcore.Main;
 
 /**
@@ -27,98 +27,26 @@ import com.leontg77.ultrahardcore.Main;
  */
 @SuppressWarnings("deprecation")
 public class TeamManager {
-	private Scoreboard sb = Bukkit.getScoreboardManager().getMainScoreboard();
-	private static TeamManager manager = new TeamManager();
-
-	public static HashMap<String, Set<String>> savedTeams = new HashMap<String, Set<String>>();
-	private List<Team> teams = new ArrayList<Team>();
+	private final Scoreboard board;
+	private final Main plugin;
 	
 	/**
-	 * Gets the instance of the class.
+	 * Team manager class constructor.
 	 * 
-	 * @return The instance.
+	 * @param plugin The main class.
+	 * @param board The board manager class.
 	 */
-	public static TeamManager getInstance() {
-		return manager;
+	public TeamManager(Main plugin, BoardManager board) {
+		this.plugin = plugin;
+		
+		this.board = board.getBoard();
 	}
+
+	private final Map<String, Set<String>> savedTeams = new HashMap<String, Set<String>>();
+	private final Set<Team> teams = new HashSet<Team>();
 	
 	/**
-	 * Set up all the teams.
-	 */
-	public void setup() {
-		teams.clear();
-		ArrayList<String> list = new ArrayList<String>();
-
-		list.add(ChatColor.BLACK.toString());
-		list.add(ChatColor.DARK_BLUE.toString());
-		list.add(ChatColor.DARK_GREEN.toString());
-		list.add(ChatColor.DARK_AQUA.toString());
-		list.add(ChatColor.DARK_RED.toString());
-		list.add(ChatColor.DARK_PURPLE.toString());
-		list.add(ChatColor.GOLD.toString());
-		list.add(ChatColor.GRAY.toString());
-		list.add(ChatColor.DARK_GRAY.toString());
-		list.add(ChatColor.BLUE.toString());
-		list.add(ChatColor.GREEN.toString());
-		list.add(ChatColor.AQUA.toString());
-		list.add(ChatColor.RED.toString());
-		list.add(ChatColor.LIGHT_PURPLE.toString());
-		list.add(ChatColor.YELLOW.toString());
-		list.add(ChatColor.WHITE.toString());
-
-		Collections.shuffle(list);
-		
-		ArrayList<String> tempList = new ArrayList<String>();
-		
-		for (String li : list) {
-			tempList.add(li + ChatColor.ITALIC);
-		}
-		
-		for (String li : list) {
-			tempList.add(li + ChatColor.BOLD);
-		}
-		
-		for (String li : list) {
-			tempList.add(li + ChatColor.UNDERLINE);
-		}
-		
-		for (String li : list) {
-			tempList.add(li + ChatColor.STRIKETHROUGH);
-		}
-		
-		tempList.remove(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString());
-
-		list.addAll(tempList);
-		
-		Team spec = (getTeam("spec") == null ? sb.registerNewTeam("spec") : sb.getTeam("spec"));
-		spec.setDisplayName("spec");
-		spec.setPrefix("§7§o");
-		spec.setSuffix("§f");
-		
-		spec.setAllowFriendlyFire(false);
-		spec.setCanSeeFriendlyInvisibles(true);	
-		spec.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
-		
-		for (int i = 0; i < list.size(); i++) {
-			String teamName = "UHC" + (i + 1);
-			
-			Team team = (sb.getTeam(teamName) == null ? sb.registerNewTeam(teamName) : sb.getTeam(teamName));
-			team.setDisplayName(teamName);
-			team.setPrefix(list.get(i));
-			team.setSuffix("§f");
-			
-			team.setAllowFriendlyFire(true);
-			team.setCanSeeFriendlyInvisibles(true);
-			team.setNameTagVisibility(NameTagVisibility.ALWAYS);
-			
-			teams.add(team);
-		}
-
-		Bukkit.getLogger().info("[UHC] Setup " + (teams.size() + 1) + " teams.");
-	}
-	
-	/**
-	 * Find the first available team.
+	 * Find the first team with no players in it.
 	 * 
 	 * @return The available team, null if not found.
 	 */
@@ -128,6 +56,7 @@ public class TeamManager {
 				return team;
 			}
 		}
+		
 		return null;
 	}
 
@@ -144,12 +73,15 @@ public class TeamManager {
 			return;
 		}
 		
+		team.addPlayer(player);
+		
 		if (!savedTeams.containsKey(team.getName())) {
 			Set<String> players = new HashSet<String>(team.getEntries());
+			
 			savedTeams.put(team.getName(), players);
+			return;
 		}
 		
-		team.addPlayer(player);
 		savedTeams.get(team.getName()).add(player.getName());
 	}
 
@@ -163,6 +95,7 @@ public class TeamManager {
 	 */
 	public void joinTeam(String name, OfflinePlayer player) {	
 		Team team = getTeam(name);
+		
 		joinTeam(team, player);
 	}
 	
@@ -175,8 +108,7 @@ public class TeamManager {
 	 * @param unsave Wether to unsave the player from the team.
 	 */
 	public void leaveTeam(final OfflinePlayer player, final boolean unsave) {
-		// wait a tick, incase they got removed after death but other events with higher priority wants to use the team.
-		new BukkitRunnable() {
+		new BukkitRunnable() { // wait 5 ticks, incase they got removed after death but other events with higher priority wants to use the team.
 			public void run() {
 				Team team = getTeam(player);
 				
@@ -192,16 +124,18 @@ public class TeamManager {
 				
 				if (!savedTeams.containsKey(team.getName())) {
 					Set<String> players = new HashSet<String>(team.getEntries());
-					savedTeams.put(team.getName(), players);
-				} else {
-					savedTeams.get(team.getName()).remove(player.getName());
 					
-					if (savedTeams.get(team.getName()).isEmpty()) {
-						savedTeams.remove(team.getName());
-					}
+					savedTeams.put(team.getName(), players);
+					return;
+				}
+				
+				savedTeams.get(team.getName()).remove(player.getName());
+				
+				if (savedTeams.get(team.getName()).isEmpty()) {
+					savedTeams.remove(team.getName());
 				}
 			}
-		}.runTaskLater(Main.plugin, 1);
+		}.runTaskLater(plugin, 5);
 	}
 	
 	/**
@@ -221,12 +155,14 @@ public class TeamManager {
 	 * @param message the message to send.
 	 */
 	public void sendMessage(Team team, String message) {
-		for (String entry : team.getEntries()) {
-			Player teammate = Bukkit.getServer().getPlayer(entry);
+		for (OfflinePlayer teammate : getPlayers(team)) {
+			Player online = teammate.getPlayer();
 			
-			if (teammate != null) {
-				teammate.sendMessage(message);
+			if (online == null) {
+				continue;
 			}
+			
+			online.sendMessage(message);
 		}
 	}
 
@@ -237,7 +173,7 @@ public class TeamManager {
 	 * @return The team, null if the player isn't on a team.
 	 */
 	public Team getTeam(OfflinePlayer player) {
-		return sb.getPlayerTeam(player);
+		return board.getPlayerTeam(player);
 	}
 
 	/**
@@ -247,7 +183,7 @@ public class TeamManager {
 	 * @return The team.
 	 */
 	public Team getTeam(String name) {
-		for (Team team : sb.getTeams()) {
+		for (Team team : board.getTeams()) {
 			if (team.getName().equalsIgnoreCase(name)) {
 				return team;
 			}
@@ -257,21 +193,23 @@ public class TeamManager {
 	}
 	
 	/**
-	 * Get a list of all teams.
+	 * Get a map of all saved teams.
+	 * <p>
+	 * The maps key string is the team name and the value Set is the players in it.
 	 * 
-	 * @return A list of all teams.
+	 * @return A map of all saved teams.
 	 */
-	public HashMap<String, Set<String>> getSavedTeams() {
+	public Map<String, Set<String>> getSavedTeams() {
 		return savedTeams;
 	}
 	
 	/**
-	 * Get a list of all teams.
+	 * Get a set of all teams.
 	 * 
-	 * @return A list of all teams.
+	 * @return A set of all teams.
 	 */
-	public List<Team> getTeams() {
-		return teams;
+	public Set<Team> getTeams() {
+		return ImmutableSet.copyOf(teams);
 	}
 	
 	/**
@@ -279,15 +217,126 @@ public class TeamManager {
 	 * 
 	 * @return A list of teams with players.
 	 */
-	public List<Team> getTeamsWithPlayers() {
-		List<Team> teamsWithPlayers = new ArrayList<Team>();
+	public Set<Team> getTeamsWithPlayers() {
+		Set<Team> teamsWithPlayers = new HashSet<Team>();
 		
-		for (Team team : teams) {
+		for (Team team : getTeams()) {
 			if (team.getSize() > 0) {
 				teamsWithPlayers.add(team);
 			}
 		}
+
+		return ImmutableSet.copyOf(teamsWithPlayers);
+	}
+	
+	/**
+	 * Set up all the teams.
+	 */
+	public void setup() {
+		List<String> color = new ArrayList<String>();
+		teams.clear();
+
+		color.add("§1");
+		color.add("§2");
+		color.add("§3");
+		color.add("§4");
+		color.add("§5");
+		color.add("§6");
+		color.add("§7");
+		color.add("§8");
+		color.add("§9");
+		color.add("§a");
+		color.add("§b");
+		color.add("§c");
+		color.add("§d");
+		color.add("§e");
+		color.add("§f");
+
+		Collections.shuffle(color);
 		
-		return teamsWithPlayers;
+		List<String> tempColorList = new ArrayList<String>();
+		
+		for (String li : color) {
+			tempColorList.add(li + "§o");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§n");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§m");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§l");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§m§n");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§o§n");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§o§m");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§l§n");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§l§m");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§o§n§m");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§l§o§n");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§l§o§m");
+		}
+		
+		for (String li : color) {
+			tempColorList.add(li + "§l§o§n§m");
+		}
+
+		color.addAll(tempColorList);
+		
+		color.remove("§7§o");
+		color.remove("§f");
+		
+		Team spec = (getTeam("spec") == null ? board.registerNewTeam("spec") : board.getTeam("spec"));
+		spec.setDisplayName("spec");
+		spec.setPrefix("§7§o");
+		spec.setSuffix("§f");
+		
+		spec.setAllowFriendlyFire(false);
+		spec.setCanSeeFriendlyInvisibles(true);	
+		spec.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
+		
+		for (int i = 0; i < color.size(); i++) {
+			String teamName = "UHC" + (i + 1);
+			
+			Team team = (board.getTeam(teamName) == null ? board.registerNewTeam(teamName) : board.getTeam(teamName));
+			team.setDisplayName(teamName);
+			team.setPrefix(color.get(i));
+			team.setSuffix("§f");
+			
+			team.setAllowFriendlyFire(true);
+			team.setCanSeeFriendlyInvisibles(true);
+			team.setNameTagVisibility(NameTagVisibility.ALWAYS);
+			
+			teams.add(team);
+		}
+
+		plugin.getLogger().info("Setup " + (teams.size() + 1) + " teams.");
 	}
 }

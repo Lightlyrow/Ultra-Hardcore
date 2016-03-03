@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import com.leontg77.ultrahardcore.events.uhc.FinalHealEvent;
+import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 
 /**

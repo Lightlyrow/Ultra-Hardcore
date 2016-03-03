@@ -20,8 +20,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -32,16 +33,22 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class AssaultAndBattery extends Scenario implements Listener, CommandExecutor {
-	private final Map<String, Type> types = new HashMap<String, Type>();
-	
-	private static final String PREFIX = "§b§lA&B §8» §7";
+	private final TeamManager teams;
+	private final Game game;
 
-	public AssaultAndBattery() {
+	public AssaultAndBattery(Game game, TeamManager teams) {
 		super("AssaultAndBattery", "To2 Where one person can only do meelee damage to players, while the other one can only do ranged attacks. If a teammate dies, you can do both meelee and ranged attacks.");
 		
 		Bukkit.getPluginCommand("class").setExecutor(this);
 		Bukkit.getPluginCommand("listclass").setExecutor(this);
+		
+		this.teams = teams;
+		this.game = game;
 	}
+	
+	private final Map<String, Type> types = new HashMap<String, Type>();
+	
+	private static final String PREFIX = "§bA&B §8» §7";
 
 	@Override
 	public void onDisable() {
@@ -59,8 +66,6 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 	
 	@EventHandler
 	public void on(GameStartEvent event) {
-		final TeamManager teams = TeamManager.getInstance();
-		
 		PlayerUtils.broadcast(PREFIX + "Setting classes...");
 		
 		for (Team team : teams.getTeamsWithPlayers()) {
@@ -88,7 +93,6 @@ public class AssaultAndBattery extends Scenario implements Listener, CommandExec
 		
 		types.remove(player.getName());
 		
-		final TeamManager teams = TeamManager.getInstance();
 		final Team team = teams.getTeam(player);
 		
 		if (team == null) {

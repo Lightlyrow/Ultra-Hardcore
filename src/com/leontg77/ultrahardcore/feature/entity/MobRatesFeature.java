@@ -8,13 +8,16 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import com.leontg77.ultrahardcore.Timers;
-import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
+import com.leontg77.ultrahardcore.events.MeetupEvent;
 import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.utils.EntityUtils;
 
@@ -24,9 +27,14 @@ import com.leontg77.ultrahardcore.utils.EntityUtils;
  * @author LeonTG77
  */
 public class MobRatesFeature extends Feature implements Listener {
+	private final Timer timer;
+	private final Game game;
 
-	public MobRatesFeature() {
+	public MobRatesFeature(Timer timer, Game game) {
 		super("Mob Rates", "Lower mob rates by how many people are online, lower mob rates in jungles and fix meetup mobs.");
+		
+		this.timer = timer;
+		this.game = game;
 	}
 
 	@EventHandler
@@ -73,50 +81,32 @@ public class MobRatesFeature extends Feature implements Listener {
 			return;
 		}
 		
-		// vanilla doesn't do a good job on this.
-		if (world.getGameRuleValue("doMobSpawning").equals("false")) {
-			switch (reason) {
-			case CHUNK_GEN:
-			case DEFAULT:
-			case DISPENSE_EGG:
-			case EGG:
-			case NATURAL:
-			case OCELOT_BABY:
-			case VILLAGE_DEFENSE:
-			case VILLAGE_INVASION:
-				event.setCancelled(true);
-				return;
-			default:
-				break;
-			}
-			return;
-		}
-		
-		final Timers timer = Timers.getInstance();
 		final Random rand = new Random();
 		
-		if (timer.getMeetup() <= 0) {
-			switch (reason) {
-			case CHUNK_GEN:
-			case DEFAULT:
-			case DISPENSE_EGG:
-			case EGG:
-			case INFECTION:
-			case NATURAL:
-			case NETHER_PORTAL:
-			case OCELOT_BABY:
-			case REINFORCEMENTS:
-			case SILVERFISH_BLOCK:
-			case SLIME_SPLIT:
-			case SPAWNER:
-			case VILLAGE_DEFENSE:
-			case VILLAGE_INVASION:
-				event.setCancelled(true);
+		if (State.isState(State.INGAME) || State.isState(State.ENDING)) {
+			if (timer.getMeetup() <= 0 || (timer.getTimeSinceStart() < 2 && entity instanceof Monster)) {
+				switch (reason) { 
+				case CHUNK_GEN:
+				case DEFAULT:
+				case DISPENSE_EGG:
+				case EGG:
+				case INFECTION:
+				case NATURAL:
+				case NETHER_PORTAL:
+				case OCELOT_BABY:
+				case REINFORCEMENTS:
+				case SILVERFISH_BLOCK:
+				case SLIME_SPLIT:
+				case SPAWNER:
+				case VILLAGE_DEFENSE:
+				case VILLAGE_INVASION:
+					event.setCancelled(true);
+					return;
+				default:
+					break;
+				}
 				return;
-			default:
-				break;
 			}
-			return;
 		}
 		
 		switch (reason) {
@@ -144,59 +134,67 @@ public class MobRatesFeature extends Feature implements Listener {
 		}
 
 		// limit mob spawning by how many are online.
-		
 		final int count = Bukkit.getOnlinePlayers().size();
-		boolean shouldCancel = false;
 		
 		switch (type) {
 		case SQUID:
 		case BAT:
 			if (count > 60) {
-				shouldCancel = rand.nextBoolean();
+				event.setCancelled(true);
+				return;
 			}
 			
 			if (count > 80) {
-				shouldCancel = true;
+				event.setCancelled(true);
+				return;
 			}
 			break;
 		case BLAZE:
 			if (count > 90) {
-				shouldCancel = rand.nextBoolean();
+				event.setCancelled(true);
+				return;
 			}
 			
 			if (count > 110) {
-				shouldCancel = true;
+				event.setCancelled(true);
+				return;
 			}
 			break;
 		case ENDERMITE:
 		case HORSE:
 		case PIG:
 			if (count > 100) {
-				shouldCancel = rand.nextBoolean();
+				event.setCancelled(true);
+				return;
 			}
 			
 			if (count > 120) {
-				shouldCancel = true;
+				event.setCancelled(true);
+				return;
 			}
 			break;
 		case RABBIT:
 		case SHEEP:
 			if (count > 80) {
-				shouldCancel = rand.nextBoolean();
+				event.setCancelled(true);
+				return;
 			}
 			
 			if (count > 100) {
-				shouldCancel = true;
+				event.setCancelled(true);
+				return;
 			}
 			break;
 		case MAGMA_CUBE:
 		case SLIME:
 			if (count > 80) {
-				shouldCancel = rand.nextBoolean();
+				event.setCancelled(true);
+				return;
 			}
 			
 			if (count > 100) {
-				shouldCancel = true;
+				event.setCancelled(true);
+				return;
 			}
 			break;
 		case CREEPER:
@@ -210,18 +208,19 @@ public class MobRatesFeature extends Feature implements Listener {
 		case CAVE_SPIDER:
 		case ZOMBIE:
 			if (count > 80) {
-				shouldCancel = rand.nextBoolean();
+				event.setCancelled(true);
+				return;
 			}
 			
 			if (count > 110) {
-				shouldCancel = true;
+				event.setCancelled(true);
+				return;
 			}
 			break;
 		default:
-			shouldCancel = false;
-			break;
+			event.setCancelled(false);
+			return;
 		}
 		
-		event.setCancelled(shouldCancel);
 	}
 }

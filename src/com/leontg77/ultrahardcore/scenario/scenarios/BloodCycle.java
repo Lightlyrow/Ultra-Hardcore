@@ -6,6 +6,9 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,8 +18,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -25,18 +29,28 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class BloodCycle extends Scenario implements Listener {
-	private static final List<Material> ORES = ImmutableList.of(Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.LAPIS_ORE, Material.REDSTONE_ORE, Material.DIAMOND_ORE, Material.EMERALD_ORE);
+public class BloodCycle extends Scenario implements Listener, CommandExecutor {
+	private final Main plugin;
+
+	public BloodCycle(Main plugin) {
+		super("BloodCycle", "Every 10 minutes it will cycle to a new ore, these ores consist of Emerald, Diamond, Gold, Iron, Coal, Lapis, and Redstone. If it cycles to one of these ores, when you mine it; it has a chance of damaging you by half-a-heart, but you could it lucky and it will cycle to no ore.");
+	
+		plugin.getCommand("ore").setExecutor(this);
+		
+		this.plugin = plugin;
+	}
+	
+	private static final List<Material> ORES = ImmutableList.of(
+			Material.COAL_ORE, Material.IRON_ORE, Material.GOLD_ORE, Material.LAPIS_ORE, 
+			Material.REDSTONE_ORE, Material.DIAMOND_ORE, Material.EMERALD_ORE
+	);
+	
 	private static final String PREFIX = "§4§lBloodCycle §8» §7";
 	
 	private BukkitRunnable task;
 	private Material current;
 	
 	private int seconds = 600;
-
-	public BloodCycle() {
-		super("BloodCycle", "Every 10 minutes it will cycle to a new ore, these ores consist of Emerald, Diamond, Gold, Iron, Coal, Lapis, and Redstone. If it cycles to one of these ores, when you mine it; it has a chance of damaging you by half-a-heart, but you could it lucky and it will cycle to no ore.");
-	}
 
 	@Override
 	public void onDisable() {
@@ -96,7 +110,7 @@ public class BloodCycle extends Scenario implements Listener {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 0, 20);
+		task.runTaskTimer(plugin, 0, 20);
 	}
 	
 	@EventHandler
@@ -194,5 +208,22 @@ public class BloodCycle extends Scenario implements Listener {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!isEnabled()) {
+			sender.sendMessage(PREFIX + "BloodCycle is not enabled.");
+			return true;
+		}
+		
+		if (current == null) {
+			sender.sendMessage(PREFIX + "§6No ore type has been set.");
+			return true;
+		}
+		
+		sender.sendMessage(PREFIX + "§a" + NameUtils.capitalizeString(current.name(), true) + "§7 has a chance of damaging you!");
+		sender.sendMessage(PREFIX + "§7The ore type changes in §6" + DateUtils.ticksToString(seconds) + "§7.");
+		return true;
 	}
 }

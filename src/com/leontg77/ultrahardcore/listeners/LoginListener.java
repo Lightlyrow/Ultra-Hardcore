@@ -1,16 +1,14 @@
 package com.leontg77.ultrahardcore.listeners;
 
-import static com.leontg77.ultrahardcore.Main.plugin;
-
 import java.io.File;
 import java.util.Date;
-import java.util.List;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,13 +22,13 @@ import org.bukkit.potion.PotionEffectType;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
-import com.leontg77.ultrahardcore.Spectator;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.managers.ScatterManager;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.DateUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
+import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -43,14 +41,41 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class LoginListener implements Listener {
-	private final Game game = Game.getInstance();
+	private final Main plugin;
+	
+	private final Settings settings;
+	private final Game game;
+
+	private final ScatterManager scatter;
+	private final SpecManager spec;
+	
+	private final PermissionsManager perm;
+	
+	/**
+	 * Login listener class constructor.
+	 * 
+	 * @param plugin The main class.
+	 * @param game The game class.
+	 * @param settings The settings class.
+	 * @param spec The spectator manager class.
+	 * @param scatter The scatter manager class.
+	 * @param perm The permission manager class.
+	 */
+	public LoginListener(Main plugin, Game game, Settings settings, SpecManager spec, ScatterManager scatter, PermissionsManager perm) {
+		this.plugin = plugin;
+		
+		this.settings = settings;
+		this.game = game;
+		
+		this.scatter = scatter;
+		this.spec = spec;
+		
+		this.perm = perm;
+	}
 	
 	@EventHandler
 	public void on(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		
-		final Settings settings = Settings.getInstance();
-		final Spectator spec = Spectator.getInstance();
 		
 		// update names (name changes)
 		for (String path : settings.getHOF().getKeys(false)) {
@@ -68,11 +93,19 @@ public class LoginListener implements Listener {
 		
 		user.getFile().set("ip", player.getAddress().getAddress().getHostAddress());
 		user.getFile().set("uuid", player.getUniqueId().toString());
-		user.getFile().set("username", player.getName());
 		user.getFile().set("lastlogin", date.getTime());
+
+		final String oldName = user.getFile().getString("username", "none");
+
+		// update names (name changes) and broadcast old name
+		if (!oldName.equals(player.getName())) {
+			PlayerUtils.broadcast(Main.PREFIX + "§a" + player.getName() + " §7was previously known as §a" + oldName + "§7.");
+			user.getFile().set("username", player.getName());
+		}
+		
 		user.saveFile();
 		
-		PacketUtils.setTabList(player);
+		PacketUtils.setTabList(player, game);
 		player.setNoDamageTicks(0);
 
 		spec.hideSpectators(player);
@@ -89,21 +122,24 @@ public class LoginListener implements Listener {
 			spec.enableSpecmode(player);
 		} else {
 			if ((State.isState(State.INGAME) || State.isState(State.CLOSED) || State.isState(State.SCATTER)) && !player.isWhitelisted() && !spec.isSpectating(player)) {
-				player.sendMessage(Main.PREFIX + "You joined a game without being whitelisted.");
+				player.sendMessage(Main.PREFIX + "You joined without being whitelisted, enabling spec mode...");
 
 				user.resetInventory();
 				user.resetExp();
 				
 				spec.enableSpecmode(player);
 			} else {
-				final Game game = Game.getInstance();
+				for (FileConfiguration file : FileUtils.getUserFiles()) {
+					final String name = file.getString("username", "none");
+					final String IP = file.getString("ip", "none");
+					
+					if (IP.equals(player.getAddress().getAddress().getHostAddress()) && !player.getName().equals(name)) {
+						PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7might be an alt of §c" + name + "§7.", "uhc.staff");
+						break;
+					}
+				}
 				
-				final List<Player> online = PlayerUtils.getPlayers();
-				final List<Player> gameP = GameUtils.getGamePlayers();
-				
-				final int current = gameP.size() == 0 ? online.size() : gameP.size();
-				
-				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName() + " §7joined. §8(§a" + current + "§8/§a" + game.getMaxPlayers() + "§8)");
+				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName() + " §7joined. §8(§a" + plugin.getOnlineCount() + "§8/§a" + game.getMaxPlayers() + "§8)");
 				
 				if (user.isNew()) {
 					File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
@@ -113,7 +149,6 @@ public class LoginListener implements Listener {
 			}
 		}
 		
-		final ScatterManager scatter = ScatterManager.getInstance();
 		
 		if (scatter.needsLateScatter(player) && !scatter.isScattering()) {
 			if (State.isState(State.INGAME)) {
@@ -147,21 +182,21 @@ public class LoginListener implements Listener {
 		}
 		
 		if (!State.isState(State.INGAME) && !State.isState(State.SCATTER)) {
-			player.teleport(Main.getSpawn());
+			player.teleport(plugin.getSpawn());
 		}
 		
 		if (!game.isRecordedRound()) {
 			player.sendMessage("§8» §m----------§8[ §4§lArctic UHC §8]§m----------§8 «");
 			
-			if (GameUtils.getTeamSize(false, false).startsWith("No")) {
+			if (game.getAdvancedTeamSize(false, false).startsWith("No")) {
 				player.sendMessage("§8» §c There are no games running currently.");
 			} 
-			else if (GameUtils.getTeamSize(false, false).startsWith("Open")) {
+			else if (game.getAdvancedTeamSize(false, false).startsWith("Open")) {
 				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
 			} 
 			else {
 				player.sendMessage("§8» §7 Host: §a" + game.getHost());
-				player.sendMessage("§8» §7 Gamemode: §a" + GameUtils.getTeamSize(false, true) + game.getScenarios());
+				player.sendMessage("§8» §7 Gamemode: §a" + game.getAdvancedTeamSize(false, true) + game.getScenarios());
 			}
 			
 			player.sendMessage("§8» §m---------------------------------§8 «");
@@ -169,9 +204,9 @@ public class LoginListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerLogin(PlayerLoginEvent event) {
+	public void on(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
-		PermissionsManager.addPermissions(player);
+		perm.addPermissions(player);
 		
 		if (event.getResult() == Result.KICK_BANNED) {
 			BanList name = Bukkit.getBanList(Type.NAME);
@@ -180,7 +215,7 @@ public class LoginListener implements Listener {
 			String adress = event.getAddress().getHostAddress();
 			
 			if (ip.getBanEntry(adress) != null) {
-				if (player.hasPermission("uhc.staff")) {
+				if (player.isOp()) {
 					ip.pardon(adress);
 					event.allow();
 					return;
@@ -199,7 +234,7 @@ public class LoginListener implements Listener {
 				);
 			}
 			else if (name.getBanEntry(player.getName()) != null) {
-				if (player.hasPermission("uhc.staff")) {
+				if (player.isOp()) {
 					name.pardon(player.getName());
 					event.allow();
 					return;
@@ -224,12 +259,12 @@ public class LoginListener implements Listener {
 			return;
 		}
 		
-		if (Spectator.getInstance().isSpectating(player)) {
+		if (spec.isSpectating(player)) {
 			event.allow();
 			return;
 		}
 		
-		if (PlayerUtils.getPlayers().size() >= game.getMaxPlayers()) {
+		if (Bukkit.getOnlinePlayers().size() >= game.getMaxPlayers()) {
 			if (!game.isRecordedRound()) {
 				if (player.isWhitelisted() || player.isOp()) {
 					event.allow();
@@ -254,7 +289,7 @@ public class LoginListener implements Listener {
 				return;
 			}
 			
-			String teamSize = GameUtils.getTeamSize(false, false);
+			String teamSize = game.getAdvancedTeamSize(false, false);
 			
 			if (teamSize.startsWith("No") || game.isRecordedRound() || game.isPrivateGame()) {
 				event.setKickMessage("§8» §7You are not whitelisted §8«\n\n§cThere are no games running");
@@ -295,12 +330,12 @@ public class LoginListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onPlayerLoginLater(PlayerLoginEvent event) {
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onLater(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
 		
 		if (event.getResult() != Result.ALLOWED) {
-			PermissionsManager.removePermissions(player);
+			perm.removePermissions(player);
 		}
 	}
 }

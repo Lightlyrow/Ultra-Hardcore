@@ -61,7 +61,7 @@ public class CombatLogFeature extends Feature implements Listener {
 		final Entity damager = event.getDamager();
 		final Entity entity = event.getEntity();
 		
-		if (!(entity instanceof Player) && !(damager instanceof Projectile || damager instanceof Player)) {
+		if (!(entity instanceof Player) || !(damager instanceof Projectile || damager instanceof Player)) {
 			return;
 		}
 

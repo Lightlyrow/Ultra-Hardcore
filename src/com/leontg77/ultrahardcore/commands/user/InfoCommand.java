@@ -10,12 +10,14 @@ import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
+import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -83,6 +85,20 @@ public class InfoCommand extends UHCCommand {
 		sender.sendMessage("§8» §7First Joined: §6" + new Date(user.getFile().getLong("firstjoined")));
 		sender.sendMessage("§8» §7Last login: §6" + DateUtils.formatDateDiff(user.getFile().getLong("lastlogin")));
 		sender.sendMessage("§8» §7Last logout: §6" + (lastlogout == -1l ? "§cHasn't logged out" : DateUtils.formatDateDiff(lastlogout)));
+		sender.sendMessage("§8» §m--------------------------------------§8 «");
+		sender.sendMessage("§8» §7Possible alt accounts:");
+        
+		for (FileConfiguration file : FileUtils.getUserFiles()) {
+			if (!file.getString("ip", "none").equals(user.getFile().get("ip", "none"))) {
+				continue;
+			}
+			
+			if (file.getString("username", "Unknown").equals(target.getName())) {
+				continue;
+			}
+			
+			sender.sendMessage("§8» §c" + file.getString("username", "Unknown"));
+		}
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		return true;
 	}

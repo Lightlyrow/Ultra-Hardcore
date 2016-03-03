@@ -30,6 +30,8 @@ public class Config extends InvGUI implements Listener {
 	 * Update the config inventory.
 	 */
 	public void update() {
+		glassify(inv);
+		
 		final FeatureManager manager = FeatureManager.getInstance();
 		
 		for (ToggleableFeature feature : manager.getToggleableFeatures()) {
@@ -81,7 +83,5 @@ public class Config extends InvGUI implements Listener {
 		item.setItemMeta(meta);
 		
 		PlayerUtils.broadcast(Main.PREFIX + name + " has been " + (toggle.isEnabled() ? "enabled" : "disabled") + ".");
-		
-		InvGUI.getGameInfo().update();
 	}
 }

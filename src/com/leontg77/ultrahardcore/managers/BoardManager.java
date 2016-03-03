@@ -1,6 +1,7 @@
 package com.leontg77.ultrahardcore.managers;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -17,7 +18,22 @@ import com.leontg77.ultrahardcore.Main;
  * @author LeonTG77
  */
 public class BoardManager {
-	private static final BoardManager INSTANCE = new BoardManager();
+	private final Main plugin;
+	
+	public BoardManager(Main plugin) {
+		this.plugin = plugin;
+	}
+	
+	private Game game;
+	
+	/**
+	 * Set the instance of the game to the givne instance.
+	 * 
+	 * @param game The game instance.
+	 */
+	public void setGame(Game game) {
+		this.game = game;
+	}
 	
 	private final Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 
@@ -26,16 +42,7 @@ public class BoardManager {
 	private Objective hearts = board.getObjective("hearts");
 	
 	private Objective backup = board.getObjective("backup");
-	private Objective kills = board.getObjective("kills");
-	
-	/**
-	 * Gets the instance of the class.
-	 * 
-	 * @return the instance.
-	 */
-	public static BoardManager getInstance() {
-		return INSTANCE;
-	}
+	private Objective kills = board.getObjective("kills");	
 
 	/**
 	 * Get the main scoreboard.
@@ -115,8 +122,6 @@ public class BoardManager {
 			hearts = board.registerNewObjective("hearts", "health");
 		}
 		
-		final Game game = Game.getInstance();
-		
 		if (game.isRecordedRound()) {
 			kills.setDisplayName("Kills");
 		} else {
@@ -130,7 +135,7 @@ public class BoardManager {
 		nameHealth.setDisplaySlot(DisplaySlot.BELOW_NAME);
 		nameHealth.setDisplayName("§4♥");
 		
-		Main.plugin.getLogger().info("Scoreboards has been setup.");
+		plugin.getLogger().info("Scoreboards has been setup.");
 	}
 	
 	/**
@@ -143,7 +148,7 @@ public class BoardManager {
 		final Score backupScore = backup.getScore(entry);
 		final Score killScore = kills.getScore(entry);
 
-		backupScore.setScore(getActualScore(entry) + newScore);
+		backupScore.setScore(newScore);
 		killScore.setScore(newScore);
 	}
 
@@ -176,8 +181,13 @@ public class BoardManager {
 		int score = getActualScore(entry);
 		
 		board.resetScores(entry);
-		
+
 		// this should never be reset, so i'm adding it back! :D
-		backup.getScore(entry).setScore(score);
+		for (OfflinePlayer offline : Bukkit.getOfflinePlayers()) {
+			if (offline.getName().equalsIgnoreCase(entry)) {
+				backup.getScore(entry).setScore(score);
+				break;
+			}
+		}
 	}
 }

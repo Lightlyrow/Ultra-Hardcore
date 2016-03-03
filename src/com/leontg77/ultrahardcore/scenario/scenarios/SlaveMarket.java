@@ -26,7 +26,7 @@ import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.CommandException;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
@@ -152,7 +152,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	 */
 	private boolean executeMarket(final CommandSender sender, final String[] args) throws CommandException {
 		if (!sender.hasPermission(PERMISSION)) {
-			sender.sendMessage(Main.NO_PERM_MSG);
+			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 		

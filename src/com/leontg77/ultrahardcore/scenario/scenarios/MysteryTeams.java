@@ -29,7 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 
 import com.google.common.collect.ImmutableSet;
-import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -41,7 +41,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
 public class MysteryTeams extends Scenario implements Listener, CommandExecutor {
 	private static final String PREFIX = "§6[§cMysteryTeams§6] §f";
 
-	protected static List<MysteryTeam> teams = new ArrayList<MysteryTeam>(Arrays.asList(MysteryTeam.values()));
+	protected static List<MysteryTeam> teams = Arrays.asList(MysteryTeam.values());
 	protected static Map<MysteryTeam, List<UUID>> orgTeams = new HashMap<MysteryTeam, List<UUID>>();
 
 	public MysteryTeams() {
@@ -254,8 +254,17 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 	 * 
 	 * @return A set of fake teams.
 	 */
-	public static Set<MysteryTeam> getTeams() {
+	public Set<MysteryTeam> getTeams() {
 		return ImmutableSet.copyOf(teams);
+	}
+	
+	/**
+	 * Get a Set of all the orgiginal fake teams.
+	 * 
+	 * @return A set of orgiginal fake teams.
+	 */
+	public Map<MysteryTeam, List<UUID>> getOrgTeams() {
+		return orgTeams;
 	}
 
 	/**

@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -17,12 +18,16 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class AchievementParanoia extends Scenario implements Listener {
-	private static final String PREFIX = "§c§lAchParanoia §8» §7";
+	private final Game game;
 
-	public AchievementParanoia() {
-		super("AchievementParanoia", "Achievements show up in chat like in vanilla minecraft but at the end off each achievement it shows the coordinates of the player who earned that achievement");
+	public AchievementParanoia(Game game) {
+		super("AchievementParanoia", "Achievements show up in chat like in vanilla minecraft but at the end off each achievement it shows the coordinates of the player who earned that achievement.");
+		
+		this.game = game;	
 	}
 
+	private static final String PREFIX = "§cAchParanoia §8» §7";
+	
 	@Override
 	public void onDisable() {}
 
@@ -35,8 +40,8 @@ public class AchievementParanoia extends Scenario implements Listener {
 			return;
 		}
 		
-		final Achievement ach = event.getAchievement();
-		final Player player = event.getPlayer();
+		Achievement ach = event.getAchievement();
+		Player player = event.getPlayer();
 	
 		if (!game.getPlayers().contains(player)) {
 			return;

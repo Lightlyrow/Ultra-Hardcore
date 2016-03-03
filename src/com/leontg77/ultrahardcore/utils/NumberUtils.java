@@ -8,16 +8,17 @@ import java.util.Random;
 /**
  * Number utilities class.
  * <p>
- * Contains number related methods.
+ * Contains methods for formatting doubles and ints, make a health into percent, 
+ * get the amount of ticks #### and to get a random int between two given ints.
  * 
  * @author LeonTG77
  */
 public class NumberUtils {
-	private static final int TICKS_PER_SECOND = 20;
-	private static final int TICKS_PER_MIN = TICKS_PER_SECOND * 60;
-	private static final int TICKS_PER_HOUR = TICKS_PER_MIN * 60;
-	private static final int TICKS_PER_DAY = TICKS_PER_HOUR * 24;
-	private static final int TICKS_IN_999_DAYS = TICKS_PER_DAY * 999;
+	public static final int TICKS_PER_SECOND = 20;
+	public static final int TICKS_PER_MIN = TICKS_PER_SECOND * 60;
+	public static final int TICKS_PER_HOUR = TICKS_PER_MIN * 60;
+	public static final int TICKS_PER_DAY = TICKS_PER_HOUR * 24;
+	public static final int TICKS_IN_999_DAYS = TICKS_PER_DAY * 999;
 	
 	/**
 	 * Format the given double to a less lengthed one.
@@ -25,8 +26,9 @@ public class NumberUtils {
 	 * @param number the double to format.
 	 * @return The formated double.
 	 */
-	public static String formatDouble(double number) {
-		NumberFormat formater = new DecimalFormat("##.##");
+	public static String formatDouble(final double number) {
+		final NumberFormat formater = new DecimalFormat("##.##");
+		
 		return formater.format(number);
 	}
 
@@ -36,20 +38,21 @@ public class NumberUtils {
 	 * @param number the int to format.
 	 * @return The formated integer.
 	 */
-	public static String formatInt(int number) {
-		NumberFormat formater = NumberFormat.getInstance(Locale.UK);
+	public static String formatInt(final int number) {
+		final NumberFormat formater = NumberFormat.getInstance(Locale.UK);
+		
 		return formater.format(number);
 	}
 	
 	/**
-	 * Turn the health given into percent.
+	 * Turn the given health given into percent.
 	 * 
 	 * @param health the health of the player.
 	 * @return the percent of the health.
 	 */
-	public static String makePercent(double health) {
-		double hearts = health / 2;
-		double percent = hearts * 10;
+	public static String makePercent(final double health) {
+		final double hearts = health / 2;
+		final double percent = hearts * 10;
 		
 		if (percent >= 66) {
 			return "§a" + ((int) percent);
@@ -63,24 +66,15 @@ public class NumberUtils {
 	}
 	
 	/**
-	 * Get how many ticks there are in 999 days.
-	 * 
-	 * @return 999 days in ticks.
-	 */
-	public static int get999DaysInTicks() {
-		return TICKS_IN_999_DAYS;
-	}
-	
-	/**
 	 * Get a random integer between two ints.
 	 * 
 	 * @param min minimum integer value.
 	 * @param max maximum integer value.
 	 * @return Random integer between two ints.
 	 */
-	public static int randomIntBetween(int min, int max) {
-	    Random rand = new Random();
-	    int randomNum = rand.nextInt((max - min) + 1) + min;
+	public static int randomIntBetween(final int min, final int max) {
+		final Random rand = new Random();
+	    final int randomNum = rand.nextInt((max - min) + 1) + min;
 
 	    return randomNum;
 	}

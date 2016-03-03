@@ -2,11 +2,13 @@
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
+import com.google.common.collect.ImmutableMap;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
@@ -19,56 +21,45 @@ import com.leontg77.ultrahardcore.User.Rank;
  * @author LeonTG77
  */
 public class PermissionsManager {
-	public static Map<String, PermissionAttachment> permissions = new HashMap<String, PermissionAttachment>();
+	private final Main plugin;
+	
+	/**
+	 * Permissions manager class constructor.
+	 * 
+	 * @param plugin The main class.
+	 */
+	public PermissionsManager(Main plugin) {
+		this.plugin = plugin;
+	}
+	
+	private final Map<UUID, PermissionAttachment> permissions = new HashMap<UUID, PermissionAttachment>();
+	
+	/**
+	 * Get a copy of the permissions HashMap.
+	 * 
+	 * @return Copy of permissions HashMap.
+	 */
+	public Map<UUID, PermissionAttachment> getPermissions() {
+		return ImmutableMap.copyOf(permissions);
+	}
 	
 	/**
 	 * Handle the permissions for the given player.
 	 * 
 	 * @param player the player.
 	 */
-	public static void addPermissions(Player player) {
-		if (!permissions.containsKey(player.getName())) {
-			permissions.put(player.getName(), player.addAttachment(Main.plugin));
+	public void addPermissions(Player player) {
+		if (!permissions.containsKey(player.getUniqueId())) {
+			permissions.put(player.getUniqueId(), player.addAttachment(plugin));
 		}
 
-		PermissionAttachment perm = permissions.get(player.getName());
+		PermissionAttachment perm = permissions.get(player.getUniqueId());
+		Rank rank = Rank.DEFAULT;
 		
-		if (!User.fileExist(player.getUniqueId())) {
-			perm.setPermission("uhc.border", true);
-			perm.setPermission("uhc.stats", true);
-			perm.setPermission("uhc.top", true);
-			perm.setPermission("uhc.team", true);
-			perm.setPermission("uhc.msg", true);
-			perm.setPermission("uhc.reply", true);
-			perm.setPermission("uhc.tl", true);
-			perm.setPermission("uhc.pm", true);
-			perm.setPermission("uhc.pmores", true);
-			perm.setPermission("uhc.health", true);
-			perm.setPermission("uhc.ms", true);
-			perm.setPermission("uhc.tps", true);
-			perm.setPermission("uhc.uhc", true);
-			perm.setPermission("uhc.hof", true);
-			perm.setPermission("uhc.helpop", true);
-			perm.setPermission("uhc.matchpost", true);
-			perm.setPermission("uhc.scenario", true);
-			perm.setPermission("uhc.ignore", true);
-			perm.setPermission("uhc.timeleft", true);
-			perm.setPermission("uhc.list", true);
-			perm.setPermission("uhc.arena", true);
-			perm.setPermission("uhc.hotbar", true);
-			
-			// spectator perms, they can only use them if they're spectating.
-			perm.setPermission("uhc.invsee", true);
-			perm.setPermission("uhc.near", true);
-			perm.setPermission("uhc.specchat", true);
-			perm.setPermission("uhc.speed", true);
-			perm.setPermission("uhc.tp", true);
-			perm.setPermission("uhc.back", true);
-			return;
+		if (User.fileExist(player.getUniqueId())) {
+			User user = User.get(player);
+			rank = user.getRank();
         }
-		
-		User user = User.get(player);
-		Rank rank = user.getRank();
 		
 		if (rank == Rank.OWNER) {
 			player.setOp(true);
@@ -99,8 +90,10 @@ public class PermissionsManager {
 		perm.setPermission("uhc.list", true);
 		perm.setPermission("uhc.arena", true);
 		perm.setPermission("uhc.hotbar", true);
+		perm.setPermission("uhc.parkour", true);
 		
 		// spectator perms, they can only use them if they're spectating.
+		perm.setPermission("uhc.spectate", true);
 		perm.setPermission("uhc.invsee", true);
 		perm.setPermission("uhc.near", true);
 		perm.setPermission("uhc.specchat", true);
@@ -112,7 +105,6 @@ public class PermissionsManager {
 			return;
 		}
 		
-		perm.setPermission("uhc.spectate", true);
 		perm.setPermission("uhc.prelist", true);
 		
 		if (rank == Rank.SPEC) {
@@ -189,17 +181,17 @@ public class PermissionsManager {
 	 * 
 	 * @param player the player.
 	 */
-	public static void removePermissions(Player player) {
-		if (!permissions.containsKey(player.getName())) {
+	public void removePermissions(Player player) {
+		if (!permissions.containsKey(player.getUniqueId())) {
 			return;
 		}
 		
 		try {
-			player.removeAttachment(permissions.get(player.getName()));
+			player.removeAttachment(permissions.get(player.getUniqueId()));
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("Couldn't remove " + player.getName() + "'s permissions.");
 		}
 		
-		permissions.remove(player.getName());
+		permissions.remove(player.getUniqueId());
 	}
 }

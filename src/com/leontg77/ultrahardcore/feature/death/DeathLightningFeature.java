@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.feature.death;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -12,9 +13,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.leontg77.ultrahardcore.Arena;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
-import com.leontg77.ultrahardcore.utils.GameUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * DeathLightninig feature class.
@@ -22,12 +22,15 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class DeathLightningFeature extends ToggleableFeature implements Listener {
+	private final Arena arena;
 
-	public DeathLightningFeature() {
+	public DeathLightningFeature(Arena arena) {
 		super("Death Lightning", "A fake lightning that will strike when a player dies.");
 		
 		icon.setType(Material.BLAZE_ROD);
 		slot = 49;
+		
+		this.arena = arena;
 	}
 
 	@EventHandler
@@ -37,14 +40,18 @@ public class DeathLightningFeature extends ToggleableFeature implements Listener
 		}
 
 		final Player player = event.getEntity();
+		final User user = User.get(player);
 		
-		final List<World> worlds = GameUtils.getGameWorlds();
-		final Arena arena = Arena.getInstance();
+		final List<World> worlds = game.getWorlds();
 		
 		// the arena has it's own way of doing deaths.
 		if (arena.isEnabled() && arena.hasPlayer(player)) {
 			return;
 		} 
+	    
+		// I know this isnt a death lightning thing, but they're dead, no more wl for them.
+		player.setWhitelisted(false);
+		user.setDeathLocation(player.getLocation());
 	    
 	    // I don't care about the rest if it hasn't started or they're not in a game world.
 	    if (!State.isState(State.INGAME) || !worlds.contains(player.getWorld())) {
@@ -53,7 +60,7 @@ public class DeathLightningFeature extends ToggleableFeature implements Listener
 		
 		player.getWorld().strikeLightningEffect(player.getLocation());
 	    
-	    for (Player online : PlayerUtils.getPlayers()) {
+	    for (Player online : Bukkit.getOnlinePlayers()) {
 	    	if (player.getWorld().equals(online.getWorld())) {
 	    		continue;
 	    	}

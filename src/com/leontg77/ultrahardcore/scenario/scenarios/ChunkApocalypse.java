@@ -70,7 +70,7 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 		}
 		
 		if (!sender.hasPermission("uhc.chunkapo")) {
-			sender.sendMessage(Main.NO_PERM_MSG);
+			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 		

@@ -21,8 +21,8 @@ public class BanEntry {
      * @param fieldNames A pre-parsed array of field names
      * @param rawCSV A raw CSV record
      */
-    public BanEntry(String[] fieldNames, String rawCSV) {
-        String[] parts = UBL.getInstance().parseLine(rawCSV);
+    public BanEntry(UBL ubl, String[] fieldNames, String rawCSV) {
+        String[] parts = ubl.parseLine(rawCSV);
         if (parts.length != fieldNames.length) {
             throw new IllegalArgumentException("Expected " + fieldNames.length + " columns: " + rawCSV);
         }

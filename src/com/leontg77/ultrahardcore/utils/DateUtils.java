@@ -13,11 +13,13 @@ import java.util.regex.Pattern;
  * @author Essentials, modifications by LeonTG77 & D4mnX
  */
 public class DateUtils {
+    private static final long SECONDS_PER_HOUR = 3600;
+    private static final long SECONDS_PER_MINUTE = 60;
  
     /**
      * Regex to parse time strings in format 1h2mo3w4d5h6m7s.
      */
-    private static Pattern timePattern = Pattern.compile(
+    private static final Pattern TIME_PATTERN = Pattern.compile(
             "(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" +             // Captured group 1 = Years     (y)
             "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" +    // Captured group 2 = Months    (mo)
             "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" +     // Captured group 3 = Weeks     (w)
@@ -28,18 +30,6 @@ public class DateUtils {
             Pattern.CASE_INSENSITIVE
     );
  
-    private static final long SECONDS_PER_HOUR = 3600;
-    private static final long SECONDS_PER_MINUTE = 60;
- 
-    /**
-     * Remove the first occurance of a {@link #timePattern time string pattern} in the given input.
-     * @param input The input
-     * @return The timestring trimmed input.
-     */
-    public static String removeTimePattern(String input) {
-        return timePattern.matcher(input).replaceFirst("").trim();
-    }
- 
     /**
      * Converts the seconds to hours, minutes and seconds.
      *
@@ -49,13 +39,15 @@ public class DateUtils {
      * @return The converted version.
      */
     public static String ticksToString(long ticks) {
-        int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
+    	final int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
         ticks -= hours * SECONDS_PER_HOUR;
-        int minutes = (int) Math.floor(ticks / (double)SECONDS_PER_MINUTE);
+        
+        final int minutes = (int) Math.floor(ticks / (double) SECONDS_PER_MINUTE);
         ticks -= minutes * SECONDS_PER_MINUTE;
-        int seconds = (int) ticks;
+        
+        final int seconds = (int) ticks;
  
-        StringBuilder output = new StringBuilder();
+        final StringBuilder output = new StringBuilder();
  
         if (hours > 0) {
             output.append(hours).append('h');
@@ -83,13 +75,15 @@ public class DateUtils {
      * @return The converted version.
      */
     public static String advancedTicksToString(long ticks) {
-        int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
+    	final int hours = (int) Math.floor(ticks / (double) SECONDS_PER_HOUR);
         ticks -= hours * SECONDS_PER_HOUR;
-        int minutes = (int) Math.floor(ticks / (double) SECONDS_PER_MINUTE);
+        
+        final int minutes = (int) Math.floor(ticks / (double) SECONDS_PER_MINUTE);
         ticks -= minutes * SECONDS_PER_MINUTE;
-        int seconds = (int) ticks;
+        
+        final int seconds = (int) ticks;
  
-        StringBuilder output = new StringBuilder();
+        final StringBuilder output = new StringBuilder();
  
         if (hours > 0) {
             output.append(hours).append(" ").append(hours == 1 ? "§7hour§a" : "§7hours§a");
@@ -121,8 +115,8 @@ public class DateUtils {
      * @param future True if the parsed time should be in the future, false if it should be in the past.
      * @return {@link java.lang.System#currentTimeMillis()} compatible time.
      */
-    public static long parseDateDiff(String time, boolean future) {
-        Matcher matcher = timePattern.matcher(time);
+    public static long parseDateDiff(final String time, final boolean future) {
+    	final Matcher matcher = TIME_PATTERN.matcher(time);
  
         int years = 0;
         int months = 0;
@@ -169,23 +163,24 @@ public class DateUtils {
         }
  
         // Put everything together
-        Calendar c = new GregorianCalendar();
-        c.add(Calendar.YEAR, years * (future ? 1 : -1));
-        c.add(Calendar.MONTH, months * (future ? 1 : -1));
-        c.add(Calendar.WEEK_OF_YEAR, weeks * (future ? 1 : -1));
-        c.add(Calendar.DAY_OF_MONTH, days * (future ? 1 : -1));
-        c.add(Calendar.HOUR_OF_DAY, hours * (future ? 1 : -1));
-        c.add(Calendar.MINUTE, minutes * (future ? 1 : -1));
-        c.add(Calendar.SECOND, seconds * (future ? 1 : -1));
+        final Calendar cal = new GregorianCalendar();
+        
+        cal.add(Calendar.YEAR, years * (future ? 1 : -1));
+        cal.add(Calendar.MONTH, months * (future ? 1 : -1));
+        cal.add(Calendar.WEEK_OF_YEAR, weeks * (future ? 1 : -1));
+        cal.add(Calendar.DAY_OF_MONTH, days * (future ? 1 : -1));
+        cal.add(Calendar.HOUR_OF_DAY, hours * (future ? 1 : -1));
+        cal.add(Calendar.MINUTE, minutes * (future ? 1 : -1));
+        cal.add(Calendar.SECOND, seconds * (future ? 1 : -1));
  
-        Calendar max = new GregorianCalendar();
+        final Calendar max = new GregorianCalendar();
         max.add(Calendar.YEAR, 10);
         
-        if (c.after(max)) {
+        if (cal.after(max)) {
             return max.getTimeInMillis();
         }
  
-        return c.getTimeInMillis();
+        return cal.getTimeInMillis();
     }
  
     /**
@@ -195,8 +190,8 @@ public class DateUtils {
      * @param groupNumber The group number
      * @return The parsed integer, 0 if parsing fails.
      */
-    static int parseGroup(Matcher matcher, int groupNumber) {
-        String group = matcher.group(groupNumber);
+    static int parseGroup(final Matcher matcher, final int groupNumber) {
+    	final String group = matcher.group(groupNumber);
  
         if (group == null || group.isEmpty()) {
             return 0;
@@ -204,7 +199,7 @@ public class DateUtils {
  
         try {
             return Integer.parseInt(group);
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             return 0;
         }
     }
@@ -217,8 +212,8 @@ public class DateUtils {
      * @param toDate The calendar to check against.
      * @return The field difference.
      */
-    static int dateDiff(int type, Calendar fromDate, Calendar toDate) {
-        boolean future = toDate.after(fromDate);
+    static int dateDiff(final int type, final Calendar fromDate, final Calendar toDate) {
+    	final boolean future = toDate.after(fromDate);
  
         int diff = 0;
         long savedDate = fromDate.getTimeInMillis();
@@ -231,6 +226,7 @@ public class DateUtils {
         
         diff--;
         fromDate.setTimeInMillis(savedDate);
+        
         return diff;
     }
  
@@ -241,12 +237,12 @@ public class DateUtils {
      * @param date {@link System#currentTimeMillis()} compatible time
      * @return See {@link #formatDateDiff(Calendar, Calendar, int)}.
      */
-    public static String formatDateDiff(long date) {
-        Calendar then = new GregorianCalendar();
+    public static String formatDateDiff(final long date) {
+    	final Calendar then = new GregorianCalendar();
         then.setTimeInMillis(date);
-        Calendar now = new GregorianCalendar();
- 
-        return DateUtils.formatDateDiff(now, then);
+        
+        final Calendar now = new GregorianCalendar();
+        return formatDateDiff(now, then);
     }
  
     /**
@@ -254,9 +250,9 @@ public class DateUtils {
      * 
      * @param fromDate The calendar to check from
      * @param toDate The calendar to check against
-     * @return A {@link #timePattern} compatible string.
+     * @return A {@link #TIME_PATTERN} compatible string.
      */
-    public static String formatDateDiff(Calendar fromDate, Calendar toDate) {
+    public static String formatDateDiff(final Calendar fromDate, final Calendar toDate) {
         return formatDateDiff(fromDate, toDate, 3);
     }
  
@@ -266,17 +262,17 @@ public class DateUtils {
      * @param fromDate The calendar to check from
      * @param toDate The calendar to check against
      * @param maxAccuracy The maximum accuracy of the returned string
-     * @return A {@link #timePattern} compatible string.
+     * @return A {@link #TIME_PATTERN} compatible string.
      */
-    public static String formatDateDiff(Calendar fromDate, Calendar toDate, int maxAccuracy) {
+    public static String formatDateDiff(final Calendar fromDate, final Calendar toDate, final int maxAccuracy) {
         if (toDate.equals(fromDate)) {
             return "now";
         }
  
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
  
-        String[] names = new String[] { "year", "years", "month", "months", "day", "days", "hour", "hours", "minute", "minutes", "second", "seconds" };
-        int[] types = new int[] { Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
+        final String[] names = new String[] { "year", "years", "month", "months", "day", "days", "hour", "hours", "minute", "minutes", "second", "seconds" };
+        final int[] types = new int[] { Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
  
         int accuracy = 0;
  
@@ -285,18 +281,18 @@ public class DateUtils {
                 break;
             }
  
-            int diff = dateDiff(types[i], fromDate, toDate);
+            final int diff = dateDiff(types[i], fromDate, toDate);
  
             if (diff > 0) {
                 accuracy++;
-                sb.append(" ").append(diff).append(" ").append(names[i * 2 + (diff > 1 ? 1 : 0)]);
+                builder.append(" ").append(diff).append(" ").append(names[i * 2 + (diff > 1 ? 1 : 0)]);
             }
         }
  
-        if (sb.length() == 0) {
+        if (builder.length() == 0) {
             return "now";
         }
  
-        return sb.toString().trim();
+        return builder.toString().trim();
     }
 }

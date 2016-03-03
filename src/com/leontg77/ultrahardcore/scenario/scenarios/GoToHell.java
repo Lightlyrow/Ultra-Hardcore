@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
 import com.leontg77.ultrahardcore.scenario.Scenario;

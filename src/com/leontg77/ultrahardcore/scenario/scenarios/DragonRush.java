@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
+import com.leontg77.ultrahardcore.events.MeetupEvent;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;

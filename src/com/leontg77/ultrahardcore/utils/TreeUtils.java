@@ -17,7 +17,7 @@ public class TreeUtils {
 	 * @param durability The durability to get for.
 	 * @return The tree type, null if not a log or a leaf.
 	 */
-	public static TreeType getTree(Material type, int durability) {
+	public static TreeType getTree(final Material type, final int durability) {
 		switch (type) {
 		case LOG:
 		case LEAVES:
@@ -110,7 +110,7 @@ public class TreeUtils {
 		 * @param leaf The leaf itemstack of the tree.
 		 * @param sapling The sapling itemstack of the tree.
 		 */
-		private TreeType(ItemStack log, ItemStack leaf, ItemStack sapling) {
+		private TreeType(final ItemStack log, final ItemStack leaf, final ItemStack sapling) {
 			this.sapling = sapling;
 			this.leaf = leaf;
 			this.log = log;

@@ -35,10 +35,14 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * @author LeonTG77
  */
 public class InvGUI {
-	private static InvGUI manager = new InvGUI();
+	
 
 	protected final Timers timer = Timers.getInstance();
 	protected final Game game = Game.getInstance();
+	
+	public InvGUI() {
+		
+	}
 	
 	public HashMap<Player, HashMap<Integer, Inventory>> pagesForPlayer = new HashMap<Player, HashMap<Integer, Inventory>>();
 	public HashMap<Player, Integer> currentPage = new HashMap<Player, Integer>();
@@ -51,20 +55,11 @@ public class InvGUI {
 	private static Config config = new Config();
 	private static Stats stats = new Stats();
 	
-	/**
-	 * Gets the instance of this class
-	 * 
-	 * @return The instance.
-	 */
-	public static InvGUI getInstance() {
-		return manager;
-	}
-	
-	public static GameInfo getGameInfo() {
+	public GameInfo getGameInfo() {
 		return gameInfo;
 	}
 	
-	protected static TopStats getTopStats() {
+	protected TopStats getTopStats() {
 		return topStats;
 	}
 	
@@ -86,8 +81,8 @@ public class InvGUI {
 		manager.registerEvents(hof, Main.plugin);
 		manager.registerEvents(config, Main.plugin);
 		
-		gameInfo.updateStaff();
 		gameInfo.update();
+		gameInfo.updateStaff();
 		
 		topStats.update();
 		
@@ -339,6 +334,39 @@ public class InvGUI {
 			return true;
 		default:
 			return false;
+		}
+	}
+	
+	/**
+	 * Fill the given inventory with class.
+	 * 
+	 * @param inv The inventory to fill.
+	 */
+	protected void glassify(Inventory inv) {
+		ItemStack black = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
+		ItemMeta blackMeta = black.getItemMeta();
+		blackMeta.setDisplayName("§0");
+		black.setItemMeta(blackMeta);
+		
+		ItemStack gray = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+		ItemMeta grayMeta = black.getItemMeta();
+		grayMeta.setDisplayName("§0");
+		gray.setItemMeta(grayMeta);
+		
+		boolean bool = true;
+		
+		for (int i = 0; i < inv.getSize(); i++) {
+			bool = !bool;
+			
+			if (inv.getItem(i) != null || inv.getItem(i).getType() == Material.AIR) {
+				continue;
+			}
+			
+			if (bool) {
+				inv.setItem(i, gray);
+			} else {
+				inv.setItem(i, black);
+			}
 		}
 	}
 }

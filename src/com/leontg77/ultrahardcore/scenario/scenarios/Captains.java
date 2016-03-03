@@ -56,7 +56,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 		
 		if (cmd.getName().equalsIgnoreCase("addcaptain")) {
 			if (!player.hasPermission("uhc.captains")) {
-				player.sendMessage(Main.NO_PERM_MSG);
+				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			
@@ -92,7 +92,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
-				player.sendMessage(Main.NO_PERM_MSG);
+				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			
@@ -123,7 +123,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
-				player.sendMessage(Main.NO_PERM_MSG);
+				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			
@@ -176,7 +176,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 			}
 			
 			if (!player.hasPermission("uhc.captains")) {
-				player.sendMessage(Main.NO_PERM_MSG);
+				player.sendMessage(Main.NO_PERMISSION_MESSAGE);
 				return true;
 			}
 			

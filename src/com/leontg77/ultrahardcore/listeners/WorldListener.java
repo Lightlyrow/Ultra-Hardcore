@@ -15,9 +15,7 @@ import com.leontg77.ultrahardcore.Arena;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
-import com.leontg77.ultrahardcore.scenario.scenarios.ChunkApocalypse;
-import com.leontg77.ultrahardcore.scenario.scenarios.Voidscape;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -28,14 +26,32 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class WorldListener implements Listener {
+	private final Game game;
+	
+	private final Timer timer;
+	private final Arena arena;
+	
+	/**
+	 * World listener class constructor.
+	 * 
+	 * @param game The game class.
+	 * @param timer The timer class.
+	 * @param arena The arena class.
+	 */
+	public WorldListener(Game game, Timer timer, Arena arena) {
+		this.game = game;
+		
+		this.timer = timer;
+		this.arena = arena;
+	}
 
 	@EventHandler
-	public void onWeatherChange(WeatherChangeEvent event) {
+	public void on(WeatherChangeEvent event) {
     	if (!event.toWeatherState()) {
     		return;
     	}
     	
-    	List<World> worlds = Game.getInstance().getWorlds();
+    	List<World> worlds = game.getWorlds();
     	World world = event.getWorld();
     	
     	if (!worlds.contains(world)) {
@@ -47,8 +63,6 @@ public class WorldListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		
-		final Timers timer = Timers.getInstance();
 
 		if (timer.getMeetup() <= 0) {
 			event.setCancelled(true);
@@ -61,7 +75,7 @@ public class WorldListener implements Listener {
 	}
 
 	@EventHandler
-	public void onThunderChange(ThunderChangeEvent event) {
+	public void on(ThunderChangeEvent event) {
     	if (!event.toThunderState()) {
     		return;
 		}
@@ -70,15 +84,16 @@ public class WorldListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onChunkUnload(ChunkUnloadEvent event) {
-		if (State.isState(State.SCATTER) || Voidscape.task != null || ChunkApocalypse.task != null) {
-			event.setCancelled(true);
+	public void on(ChunkUnloadEvent event) {
+		if (!State.isState(State.SCATTER)) {
+			return;
 		}
+		
+		event.setCancelled(true);
 	}
 
 	@EventHandler
-	public void onWorldBorderFillFinished(WorldBorderFillFinishedEvent event) {
-		Arena arena = Arena.getInstance();
+	public void on(WorldBorderFillFinishedEvent event) {
 		World world = event.getWorld();
 		
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " clear");

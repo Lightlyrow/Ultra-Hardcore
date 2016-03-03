@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.utils;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,8 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import com.leontg77.ultrahardcore.Main;
 
 /**
  * Block utilities class.
@@ -59,7 +58,7 @@ public class BlockUtils {
     			Item item = loc.getWorld().dropItem(loc, toDrop);
     			item.setVelocity(randomOffset());
         	}
-        }.runTaskLater(Main.plugin, 2);
+        }.runTaskLater(Bukkit.getPluginManager().getPlugin("UHC"), 2);
 	}
 
 	/**

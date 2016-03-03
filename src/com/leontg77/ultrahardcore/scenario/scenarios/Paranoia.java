@@ -27,7 +27,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Paranoia extends Scenario implements Listener {
-	public static final String PREFIX = "§c§lParanoia §8» §7";
+	public static final String PREFIX = "§c§lParanoia §8» §f";
 	
 	public Paranoia() {
 		super("Paranoia", "Your coordinates are broadcasted when you mine diamonds/gold, craft or eat an golden apple, you craft an anvil or enchantment table or you die");
@@ -47,14 +47,15 @@ public class Paranoia extends Scenario implements Listener {
 	}
 	
 	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
+	public void on(BlockBreakEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
 		Player player = event.getPlayer();
-		Location loc = player.getLocation();
 		Block block = event.getBlock();
+		
+		Location loc = player.getLocation();
 		
 		if (block.getType() == Material.DIAMOND_ORE) {
 			PlayerUtils.broadcast(PREFIX + ChatColor.GREEN + player.getName() + "§7 mined §bdiamond ore §7at " + location(loc));
@@ -66,7 +67,7 @@ public class Paranoia extends Scenario implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+	public void on(PlayerItemConsumeEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
@@ -80,7 +81,7 @@ public class Paranoia extends Scenario implements Listener {
 	}
 	
 	@EventHandler
-	public void onCraftItem(CraftItemEvent event) {
+	public void on(CraftItemEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
@@ -102,7 +103,7 @@ public class Paranoia extends Scenario implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerDeath(PlayerDeathEvent event) {
+	public void on(PlayerDeathEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}

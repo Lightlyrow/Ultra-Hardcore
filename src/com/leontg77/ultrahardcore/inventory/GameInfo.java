@@ -15,15 +15,40 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User.Rank;
+import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.feature.border.BorderShrinkFeature;
+import com.leontg77.ultrahardcore.feature.border.BorderShrinkFeature.BorderShrink;
+import com.leontg77.ultrahardcore.feature.death.DeathLightningFeature;
+import com.leontg77.ultrahardcore.feature.enchants.AnvilsFeature;
+import com.leontg77.ultrahardcore.feature.enchants.BookshelfFeature;
+import com.leontg77.ultrahardcore.feature.enchants.EnchantmentPreviewFeature;
+import com.leontg77.ultrahardcore.feature.entity.WitchHealthPotionFeature;
+import com.leontg77.ultrahardcore.feature.health.AbsorptionFeature;
+import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
+import com.leontg77.ultrahardcore.feature.horses.HorseArmorFeature;
+import com.leontg77.ultrahardcore.feature.horses.HorseFeature;
+import com.leontg77.ultrahardcore.feature.horses.HorseHealingFeature;
+import com.leontg77.ultrahardcore.feature.pearl.PearlDamageFeature;
+import com.leontg77.ultrahardcore.feature.portal.EndFeature;
+import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
+import com.leontg77.ultrahardcore.feature.portal.PortalCampingFeature;
+import com.leontg77.ultrahardcore.feature.portal.PortalTrappingFeature;
+import com.leontg77.ultrahardcore.feature.potions.SplashPotionFeature;
+import com.leontg77.ultrahardcore.feature.potions.StrengthPotionFeature;
+import com.leontg77.ultrahardcore.feature.potions.Tier2PotionFeature;
+import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
+import com.leontg77.ultrahardcore.feature.rates.AppleRatesFeature;
+import com.leontg77.ultrahardcore.feature.rates.FlintRatesFeature;
+import com.leontg77.ultrahardcore.feature.rates.ShearsFeature;
+import com.leontg77.ultrahardcore.feature.recipes.NotchApplesFeature;
+import com.leontg77.ultrahardcore.feature.xp.NerfedQuartzXPFeature;
+import com.leontg77.ultrahardcore.feature.xp.NerfedXPFeature;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.Moles;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.FileUtils;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
@@ -58,27 +83,17 @@ public class GameInfo extends InvGUI implements Listener {
 	 * Update the item lores in the inventory.
 	 */
 	public void update() {
-		ArrayList<String> lore = new ArrayList<String>();
-		Game game = Game.getInstance();
+		glassify(inv);
+		
+		final FeatureManager feat = FeatureManager.getInstance();
+		final List<String> lore = new ArrayList<String>();
 		
 		// general info item
 		ItemStack general = new ItemStack(Material.SIGN);
 		ItemMeta generalMeta = general.getItemMeta();
-		generalMeta.setDisplayName("§8» §6General Info §8«");
-		lore.add(" ");;
-		lore.add("§8» §7Teaming in the arena: §cNot Allowed.");
-		lore.add("§8» §7Starter food: §cNone.");
+		generalMeta.setDisplayName("§8» §6General Rules §8«");
 		lore.add(" ");
-		lore.add("§8» §7Towering: §aAllowed, but come down at meetup.");
-		lore.add("§8» §7Forting: §aAllowed before meetup.");
-		lore.add(" ");
-		lore.add("§8» §7You can follow our twitter @ArcticUHC to find");
-		lore.add(" §7out when our next games are.");
-		lore.add(" ");
-		lore.add("§8» §7Final heal is 20 seconds after start, ");
-		lore.add(" §7no more are given after that.");
-		lore.add(" ");
-		lore.add("§8» §7Our UHC plugin is custom coded by LeonTG77.");
+		lore.add("§8» §7BEING UPDATED, ASK THE STAFF!");
 		lore.add(" ");
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
@@ -88,20 +103,7 @@ public class GameInfo extends InvGUI implements Listener {
 		ItemMeta chatMeta = chat.getItemMeta();
 		chatMeta.setDisplayName("§8» §6Chat Rules §8«");
 		lore.add(" ");
-		lore.add("§8» §7Excessive rage: §eKick.");
-		lore.add(" ");
-		lore.add("§8» §7Talking other languages in chat: §cMute.");
-		lore.add("§8» §7Excessive Swearing: §cMute.");
-		lore.add("§8» §7Homophobic: §cMute.");
-		lore.add("§8» §7Spamming: §cMute.");
-		lore.add("§8» §7Insults: §cMute.");
-		lore.add("§8» §7Racism: §cMute.");
-		lore.add(" ");
-		lore.add("§8» §7Helpop abuse: §4Ban.");
-		lore.add("§8» §7Disrespect: §4Ban.");
-		lore.add(" ");
-		lore.add("§8» §7Spoiling when alive: §aAllowed.");
-		lore.add("§8» §7Spoiling when dead: §cNot allowed.");
+		lore.add("§8» §7BEING UPDATED, ASK THE STAFF!");
 		lore.add(" ");
 		chatMeta.setLore(lore);
 		chat.setItemMeta(chatMeta);
@@ -132,11 +134,13 @@ public class GameInfo extends InvGUI implements Listener {
 		lore.add(" ");
 		lore.add("§8» §7iPvP: §cNot Allowed before pvp.");
 		lore.add(" ");
-		lore.add("§8» §7Stalking: §aAllowed. §c(Not excessive)");
+		lore.add("§8» §7Stalking: " + feat.getFeature(StalkingFeature.class).getStalkingRule().getMessage());
 		lore.add("§8» §7Stealing: §aAllowed.");
 		lore.add(" ");
 		lore.add("§8» §7Team Killing: " + teamKilling);
 		lore.add("§8» §7Crossteaming: §cNot Allowed.");
+		lore.add(" ");
+		lore.add("§8» §7Teaming in the arena: §cNot Allowed.");
 		lore.add(" ");
 		pvpMeta.setLore(lore);
 		pvpMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -148,7 +152,7 @@ public class GameInfo extends InvGUI implements Listener {
 		miningMeta.setDisplayName("§8» §6Mining Rules §8«");
 		lore.add(" ");
 		lore.add("§8» §4Important info:");
-		if (game.antiStripmine()) {
+		if (lore.equals(lore)) {
 			lore.add("§8» §7Gold, diamonds and lapis only spawns near caves.");
 			lore.add(" ");
 			lore.add("§8» §7Stripmining: §aAllowed.");
@@ -163,7 +167,7 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add("§8» §7Digging to entities: §aAllowed.");
 			lore.add("§8» §7Digging to players: §aAllowed.");
 		} else {
-			lore.add("§8» §7\"Ores in caves\" feature is disabled.");
+			lore.add("§8» §7The \"ores in caves\" feature is disabled.");
 			lore.add(" ");
 			lore.add("§8» §7Stripmining: §cNot Allowed.");
 			lore.add("§8» §7Branchmining: §cNot Allowed.");
@@ -188,22 +192,9 @@ public class GameInfo extends InvGUI implements Listener {
 		
 		ItemStack meetup = new ItemStack (Material.EYE_OF_ENDER);
 		ItemMeta miscMeta = meetup.getItemMeta();
-		miscMeta.setDisplayName("§8» §6Misc. Rules §8«");
+		miscMeta.setDisplayName("§8» §6Meetup Rules §8«");
 		lore.add(" ");
-		lore.add("§8» §7Suiciding in random team games: §cNot Allowed.");
-		lore.add("§8» §7TS in random teams games: §cRequired.");
-		lore.add(" ");
-		lore.add("§8» §7Xray/Cavefinder: §cNot Allowed.");
-		lore.add("§8» §7Hacked Client: §cNot Allowed.");
-		lore.add("§8» §7Fast Break: §cNot Allowed.");
-		lore.add(" ");
-		lore.add("§8» §7F3+A Spam: §cNot Allowed.");
-		lore.add("§8» §7Full Bright: §aAllowed.");
-		lore.add(" ");
-		lore.add("§8» §7Benefitting: §4Ban.");
-		lore.add("§8» §7Bug abuse: §4Ban.");
-		lore.add("§8» §7PvP Log: §4Ban.");
-		lore.add("§8» §7PvE Log: §4Ban.");
+		lore.add("§8» §7BEING UPDATED, ASK THE STAFF!");
 		lore.add(" ");
 		miscMeta.setLore(lore);
 		meetup.setItemMeta(miscMeta);
@@ -241,11 +232,11 @@ public class GameInfo extends InvGUI implements Listener {
 		SkullMeta scenarioMeta = (SkullMeta) commands.getItemMeta();
 		scenarioMeta.setOwner("MHF_Question");
 		scenarioMeta.setDisplayName("§8» §6Game Information §8«");
-		if (GameUtils.getTeamSize(false, false).startsWith("No")) {
+		if (game.getAdvancedTeamSize(false, false).startsWith("No")) {
 			lore.add(" ");
 			lore.add("§8» §7There are no games running.");
 			lore.add(" ");
-		} else if (GameUtils.getTeamSize(false, false).startsWith("Open")) {
+		} else if (game.getAdvancedTeamSize(false, false).startsWith("Open")) {
 			lore.add(" ");
 			lore.add("§8» §7Currently having Open " + game.getScenarios());
 			lore.add(" ");
@@ -258,7 +249,7 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add("§8» §7Meetup is after: §a" + game.getMeetup() + " minutes.");
 			lore.add(" ");
 			lore.add("§8» §cTeamsize:");
-			lore.add("§8» §7" + GameUtils.getTeamSize(true, false));
+			lore.add("§8» §7" + game.getAdvancedTeamSize(true, false));
 			lore.add(" ");
 			lore.add("§8» §cScenarios:");
 			for (String scen : game.getScenarios().split(", ")) {
@@ -274,20 +265,22 @@ public class GameInfo extends InvGUI implements Listener {
 		ItemMeta netherMeta = nether.getItemMeta();
 		netherMeta.setDisplayName("§8» §6Nether Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Nether: " + (game.nether() ? "§aEnabled." : "§cDisabled."));
-		lore.add("§8» §7The End: " + (game.theEnd() ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §7Nether: " + (feat.getFeature(NetherFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §7The End: " + (feat.getFeature(EndFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
-		if (game.nether()) {
-			lore.add("§8» §7Trapping: " + (game.theEnd() ? "§cNot allowed." : "§aAllowed."));
-			lore.add("§8» §7Camping: §aAllowed.");
+		if (feat.getFeature(NetherFeature.class).isEnabled()) {
+			lore.add("§8» §7Trapping: " + (feat.getFeature(PortalTrappingFeature.class).isEnabled() ? "§aAllowed." : "§cNot allowed."));
+			lore.add("§8» §7Camping: " + (feat.getFeature(PortalCampingFeature.class).isEnabled() ? "§aAllowed." : "§cNot allowed."));
 			lore.add(" ");
-			lore.add("§8» §7Strength: " + (game.strength() ? "§cNerfed" : "§cDisabled"));
-			lore.add("§8» §7Tier 2: " + (game.tier2() ? "§aEnabled." : "§cDisabled."));
-			lore.add("§8» §7Splash: " + (game.splash() ? "§aEnabled." : "§cDisabled."));
+			lore.add("§8» §7Strength: " + (feat.getFeature(StrengthPotionFeature.class).isEnabled() ? "§cNerfed to MC 1.5 values" : "§cDisabled"));
+			lore.add("§8» §7Tier 2: " + (feat.getFeature(Tier2PotionFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+			lore.add("§8» §7Splash: " + (feat.getFeature(SplashPotionFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
 			lore.add(" ");
+			lore.add("§8» §7Quartz XP: " + (feat.getFeature(NerfedQuartzXPFeature.class).isEnabled() ? "§c50% reduced." : "§aVanilla."));
+			lore.add(" ");
+			lore.add("§8» §7Golden Carrot: §6Gold Ingots.");
 			lore.add("§8» §7Golden Melon: §6Gold Ingots.");
 			lore.add("§8» §7Ghast Drop: §6Gold Ingot.");
-			lore.add("§8» §7Quartz XP: §c50% reduced.");
 			lore.add(" ");
 		}
 		netherMeta.setLore(lore);
@@ -298,12 +291,13 @@ public class GameInfo extends InvGUI implements Listener {
 		ItemMeta healingMeta = healing.getItemMeta();
 		healingMeta.setDisplayName("§8» §6Healing Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Absorption: " + (game.absorption() ? "§aEnabled." : "§cDisabled."));
-		lore.add("§8» §7Golden Heads: " + (game.goldenHeads() ? "§aEnabled." : "§cDisabled."));
-		if (game.goldenHeads()) {
-			lore.add("§8» §7Heads Heal: §6" + NumberUtils.formatDouble(((double) game.goldenHeadsHeal()) / 2) + " hearts.");
+		lore.add("§8» §7Absorption: " + (feat.getFeature(AbsorptionFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §7Notch Apples: " + (feat.getFeature(NotchApplesFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		lore.add(" ");
+		lore.add("§8» §7Golden Heads: " + (feat.getFeature(GoldenHeadsFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		if (feat.getFeature(GoldenHeadsFeature.class).isEnabled()) {
+			lore.add("§8» §7Heads Heal: §6" + NumberUtils.formatDouble(feat.getFeature(GoldenHeadsFeature.class).getHealAmount()) + " hearts.");
 		}
-		lore.add("§8» §7Notch Apples: " + (game.notchApples() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
 		healingMeta.setLore(lore);
 		healing.setItemMeta(healingMeta);
@@ -313,15 +307,14 @@ public class GameInfo extends InvGUI implements Listener {
 		ItemMeta ratesMeta = rates.getItemMeta();
 		ratesMeta.setDisplayName("§8» §6Rates Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Apple Rates: §6" + NumberUtils.formatDouble(game.getAppleRates() * 100) + "%");
-		lore.add("§8» §7Shears: " + (game.shears() ? "§aWork." : "§cDoes not work."));
-		lore.add("§8» §7Flint Rates: §6" + NumberUtils.formatDouble(game.getFlintRates() * 100) + "%");
+		lore.add("§8» §7Apple Rates: §6" + NumberUtils.formatDouble(feat.getFeature(AppleRatesFeature.class).getAppleRates() * 100) + "%");
+		lore.add("§8» §7Flint Rates: §6" + NumberUtils.formatDouble(feat.getFeature(FlintRatesFeature.class).getFlintRate() * 100) + "%");
 		lore.add(" ");
-		lore.add("§8» §7Mob Rates: §6Vanilla, §eDifficulty Hard");
-		lore.add("§8» §7Ore Rates: §6Vanilla.");
-		lore.add("§8» §7Cave Rates: §6Vanilla.");
+		lore.add("§8» §7Witch Pot. Rate: " + (feat.getFeature(WitchHealthPotionFeature.class).isEnabled() ? "§630% (100% when poisoned)." : "§aVanilla."));
+		lore.add("§8» §7Mob Rates: §6Vanilla, Difficulty Hard.");
 		lore.add(" ");
-		lore.add("§8» §7Witch Health Pot: §630% (100% when poisoned)");
+		lore.add("§8» §7Shears for apples: " + (feat.getFeature(ShearsFeature.class).isEnabled() ? "§aWork." : "§cDoes not work."));
+		lore.add("§8» §7Shears for leaves: §aWork.");
 		lore.add(" ");
 		ratesMeta.setLore(lore);
 		rates.setItemMeta(ratesMeta);
@@ -331,32 +324,38 @@ public class GameInfo extends InvGUI implements Listener {
 		ItemMeta horseMeta = horse.getItemMeta();
 		horseMeta.setDisplayName("§8» §6Horse Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Horses: " + (game.horses() ? "§aEnabled." : "§cDisabled."));
-		if (game.horses()) {
-			lore.add("§8» §7Horse Healing: " + (game.horseHealing() ? "§aEnabled." : "§cDisabled."));
-			lore.add("§8» §7Horse Armor: " + (game.horseArmor() ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §7Horses: " + (feat.getFeature(HorseFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		lore.add(" ");
+		if (feat.getFeature(HorseFeature.class).isEnabled()) {
+			lore.add("§8» §7Horse Healing: " + (feat.getFeature(HorseHealingFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+			lore.add("§8» §7Horse Armor: " + (feat.getFeature(HorseArmorFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
 		}
 		lore.add(" ");
 		horseMeta.setLore(lore);
 		horse.setItemMeta(horseMeta);
 		lore.clear();
+
+		BorderShrink border = feat.getFeature(BorderShrinkFeature.class).getBorderShrink();
+		double pDamage = feat.getFeature(PearlDamageFeature.class).getPearlDamage();
 		
 		ItemStack misc = new ItemStack (Material.ENDER_PEARL);
 		ItemMeta miscIMeta = misc.getItemMeta();
 		miscIMeta.setDisplayName("§8» §6Misc. Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Death Lightning: " + (game.deathLightning() ? "§aEnabled." : "§cDisabled."));
 		lore.add("§8» §7Saturation Fix: §aEnabled.");
+		lore.add("§8» §7Starter food: §cNone.");
 		lore.add(" ");
-		lore.add("§8» §7Enderpearl Damage: " + (game.pearlDamage() != 0 ? "§aDeals " + (game.pearlDamage() == 1 ? "1 heart." : game.pearlDamage() + " hearts."): "§cDisabled."));
-		lore.add("§8» §7Bookshelves: " + (game.bookshelves() ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §7Enderpearl Damage: " + (pDamage != 0 ? "§aDeals " + (pDamage == 1 ? "1 heart." : pDamage + " hearts."): "§cDisabled."));
+		lore.add("§8» §7Death Lightning: " + (feat.getFeature(DeathLightningFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
-		lore.add("§8» §7Border shrinks: §6" + NameUtils.capitalizeString(game.getBorderShrink().getPreText(), false) + game.getBorderShrink().name().toLowerCase() + ".");
+		lore.add("§8» §7Enchantment Preview: " + (feat.getFeature(EnchantmentPreviewFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §7Bookshelves: " + (feat.getFeature(BookshelfFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §7Anvils: " + (feat.getFeature(AnvilsFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		lore.add(" ");
+		lore.add("§8» §7Nerfed XP: " + (feat.getFeature(NerfedXPFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		lore.add(" ");
+		lore.add("§8» §7Border shrinks: §6" + NameUtils.capitalizeString(border.getPreText(), false) + border.name().toLowerCase() + ".");
 		lore.add("§8» §7The border will kill you if you go outside!");
-		lore.add(" ");
-		lore.add("§8» §7At meetup you can do everything you want");
-		lore.add("§8» §7as long as you are inside the border and");
-		lore.add("§8» §7on the surface, border can shrink to 100x100.");
 		lore.add(" ");
 		miscIMeta.setLore(lore);
 		misc.setItemMeta(miscIMeta);
@@ -376,72 +375,43 @@ public class GameInfo extends InvGUI implements Listener {
 		inv.setItem(40, rates);
 		inv.setItem(42, horse);
 		inv.setItem(44, misc);
-		
-		final ItemStack black = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
-		final ItemStack gray = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
-		
-		inv.setItem(1, gray);
-		inv.setItem(3, gray);
-		inv.setItem(5, gray);
-		inv.setItem(7, gray);
-		inv.setItem(9, gray);
-		inv.setItem(11, gray);
-		inv.setItem(13, gray);
-		inv.setItem(15, gray);
-		inv.setItem(17, gray);
-		inv.setItem(27, gray);
-		inv.setItem(29, gray);
-		inv.setItem(31, gray);
-		inv.setItem(33, gray);
-		inv.setItem(35, gray);
-		inv.setItem(37, gray);
-		inv.setItem(39, gray);
-		inv.setItem(41, gray);
-		inv.setItem(43, gray);
-		
-		inv.setItem(10, black);
-		inv.setItem(12, black);
-		inv.setItem(14, black);
-		inv.setItem(16, black);
-		inv.setItem(18, black);
-		inv.setItem(20, black);
-		inv.setItem(22, black);
-		inv.setItem(24, black);
-		inv.setItem(26, black);
-		inv.setItem(28, black);
-		inv.setItem(30, black);
-		inv.setItem(32, black);
-		inv.setItem(34, black);
 	}
 	
 	/**
 	 * Update the timer item in the inventory.
 	 */
 	public void updateTimer() {
-		ItemStack timer = new ItemStack (Material.WATCH);
-		ItemMeta timerMeta = timer.getItemMeta();
+		ItemStack timerItem = new ItemStack (Material.WATCH);
+		ItemMeta timerMeta = timerItem.getItemMeta();
 		timerMeta.setDisplayName("§8» §6Timers §8«");
 		
 		List<String> lore = new ArrayList<String>();
 		lore.add(" ");
 		
-		if (Game.getInstance().isRecordedRound()) {
-			lore.add("§8» §7Current Episode: §a" + Timers.meetup);
-			lore.add("§8» §7Time to next episode: §a" + Timers.time + " mins");
-		} else if (GameUtils.getTeamSize(false, false).startsWith("No") || GameUtils.getTeamSize(false, false).startsWith("Open")) {
+		int timePassed = timer.getTimeSinceStartInSeconds();
+		int meetup = timer.getMeetupInSeconds();
+		int pvp = timer.getPvPInSeconds();
+		
+		int finalheal = 20 - timePassed;
+		
+		if (game.isRecordedRound()) {
+			lore.add("§8» §7Current Episode: §a" + timer.getMeetup() + ".");
+			lore.add("§8» §7Time to next episode: §a" + timer.getTimeSinceStart() + " minute(s).");
+		} else if (game.getAdvancedTeamSize(false, false).startsWith("No") || game.getAdvancedTeamSize(false, false).startsWith("Open")) {
 			lore.add("§8» §7There are no matches running.");
 		} else if (!State.isState(State.INGAME)) {
 			lore.add("§8» §7The game has not started yet.");
 		} else {
-			lore.add("§8» §7Time since start: §a" + DateUtils.ticksToString(Timers.timeSeconds));
-			lore.add(Timers.pvpSeconds <= 0 ? "§8» §cPvP is enabled." : "§8» §7PvP in: §a" + DateUtils.ticksToString(Timers.pvpSeconds));
-			lore.add(Timers.meetupSeconds <= 0 ? "§8» §cMeetup is now!" : "§8» §7Meetup in: §a" + DateUtils.ticksToString(Timers.meetupSeconds));
+			lore.add("§8» §7Time since start: §a" + DateUtils.ticksToString(timePassed));
+			lore.add("§8» " + (finalheal <= 0 ? "§eFinal heal has passed!" : "§7Final heal is given in: §a" + DateUtils.ticksToString(timePassed)));
+			lore.add("§8» " + (pvp <= 0 ? "§aPvP is enabled!" : "§7PvP enables in: §a" + DateUtils.ticksToString(pvp)));
+			lore.add("§8» " + (meetup <= 0 ? "§cMeetup is NOW!" : "§7Meetup in: §a" + DateUtils.ticksToString(meetup)));
 		}
 		
 		lore.add(" ");
 		timerMeta.setLore(lore);
-		timer.setItemMeta(timerMeta);
-		inv.setItem(25, timer);
+		timerItem.setItemMeta(timerMeta);
+		inv.setItem(25, timerItem);
 		lore.clear();
 	}
 	

@@ -50,6 +50,10 @@ public class PortalTrappingFeature extends ToggleableFeature implements Listener
     
     @EventHandler
     public void on(final PlayerBucketEmptyEvent event) {
+		if (isEnabled()) {
+			return;
+		}
+		
     	final Block clicked = event.getBlockClicked();
     	final BlockFace face = event.getBlockFace();
     	
@@ -74,6 +78,10 @@ public class PortalTrappingFeature extends ToggleableFeature implements Listener
 	
 	@EventHandler
 	public void on(final BlockPlaceEvent event) {
+		if (isEnabled()) {
+			return;
+		}
+		
 		final Player player = event.getPlayer();
 		final Block block = event.getBlock();
         

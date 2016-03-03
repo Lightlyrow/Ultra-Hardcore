@@ -17,8 +17,9 @@ import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 
@@ -28,16 +29,22 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  * @author Bergasms, modified by LeonTG77.
  */
 public class Armageddon extends Scenario implements Listener {
+	private final Main plugin;
+	private final Game game;
+	
+	public Armageddon(Main plugin, Game game) {
+		super("Armageddon", "Lava, gravel, sand, potions, and some items fall from the sky.");
+		
+		this.plugin = plugin;
+		this.game = game;
+	}
+	
 	private BukkitRunnable task = null;
 	private World world;
 	
 	private static final long TICKS_TO_START = 12000L;
 	private static final long TICK_INTERVAL = 50L;
 	private static final int FREQUENCY = 5;
-	
-	public Armageddon() {
-		super("Armageddon", "Lava, gravel, sand, potions, and some items fall from the sky.");
-	}
 
 	@Override
 	public void onDisable() {
@@ -69,7 +76,7 @@ public class Armageddon extends Scenario implements Listener {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, TICKS_TO_START, TICK_INTERVAL);
+		task.runTaskTimer(plugin, TICKS_TO_START, TICK_INTERVAL);
 	}
 
 	/**

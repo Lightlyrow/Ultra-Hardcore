@@ -29,6 +29,7 @@ import com.leontg77.ultrahardcore.commands.basic.EditCommand;
 import com.leontg77.ultrahardcore.commands.basic.FireCommand;
 import com.leontg77.ultrahardcore.commands.basic.IgnoreCommand;
 import com.leontg77.ultrahardcore.commands.basic.ListCommand;
+import com.leontg77.ultrahardcore.commands.basic.ParkourCommand;
 import com.leontg77.ultrahardcore.commands.basic.SetspawnCommand;
 import com.leontg77.ultrahardcore.commands.basic.SkullCommand;
 import com.leontg77.ultrahardcore.commands.basic.StaffChatCommand;
@@ -84,6 +85,7 @@ import com.leontg77.ultrahardcore.commands.world.BorderCommand;
 import com.leontg77.ultrahardcore.commands.world.PregenCommand;
 import com.leontg77.ultrahardcore.commands.world.PvPCommand;
 import com.leontg77.ultrahardcore.commands.world.WorldCommand;
+import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -105,7 +107,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		
 		// if they don't have permission, tell them so and stop
 		if (!sender.hasPermission(command.getPermission())) {
-			sender.sendMessage(Main.NO_PERM_MSG);
+			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 		
@@ -218,7 +220,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new HotbarCommand());
 		
 		// banning
-		cmds.add(new BanCommand());
+		cmds.add(new BanCommand(BoardManager.getInstance()));
 		cmds.add(new BanIPCommand());
 		cmds.add(new DQCommand());
 		cmds.add(new KickCommand());
@@ -234,6 +236,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new FireCommand());
 		cmds.add(new IgnoreCommand());
 		cmds.add(new ListCommand());
+		cmds.add(new ParkourCommand());
 		cmds.add(new SetspawnCommand());
 		cmds.add(new SkullCommand());
 		cmds.add(new StaffChatCommand());
@@ -285,7 +288,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new BackCommand());
 		cmds.add(new InvseeCommand());
 		cmds.add(new NearCommand());
-		cmds.add(new SpectateCommand());
+		cmds.add(new SpectateCommand(spec));
 		cmds.add(new SpecChatCommand());
 		cmds.add(new SpeedCommand());
 		cmds.add(new TpCommand());
@@ -311,7 +314,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new WorldCommand());
 		
 		for (UHCCommand cmd : cmds) {
-			PluginCommand pCmd = Main.plugin.getCommand(cmd.getName());
+			PluginCommand pCmd = plugin.getCommand(cmd.getName());
 			
 			// if its null, broadcast the command name so I know which one it is (so I can fix it).
 			if (pCmd == null) {

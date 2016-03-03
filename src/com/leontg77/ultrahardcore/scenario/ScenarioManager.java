@@ -1,12 +1,14 @@
 package com.leontg77.ultrahardcore.scenario;
 
-import static com.leontg77.ultrahardcore.Main.plugin;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Timer;
+import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.AchievementParanoia;
-import com.leontg77.ultrahardcore.scenario.scenarios.AppleFamine;
 import com.leontg77.ultrahardcore.scenario.scenarios.Armageddon;
 import com.leontg77.ultrahardcore.scenario.scenarios.Assassins;
 import com.leontg77.ultrahardcore.scenario.scenarios.AssaultAndBattery;
@@ -51,7 +53,6 @@ import com.leontg77.ultrahardcore.scenario.scenarios.Diamondless;
 import com.leontg77.ultrahardcore.scenario.scenarios.DragonRush;
 import com.leontg77.ultrahardcore.scenario.scenarios.Eggs;
 import com.leontg77.ultrahardcore.scenario.scenarios.EightLeggedFreaks;
-import com.leontg77.ultrahardcore.scenario.scenarios.EnchantParanoia;
 import com.leontg77.ultrahardcore.scenario.scenarios.EnchantedDeath;
 import com.leontg77.ultrahardcore.scenario.scenarios.Entropy;
 import com.leontg77.ultrahardcore.scenario.scenarios.Fallout;
@@ -109,17 +110,13 @@ import com.leontg77.ultrahardcore.scenario.scenarios.Voidscape;
  * @author LeonTG77
  */
 public class ScenarioManager {
-	private List<Scenario> scenarios = new ArrayList<Scenario>();
-	private static ScenarioManager manager = new ScenarioManager();
+	private final Main plugin;
 	
-	/**
-	 * Get the instance of this class.
-	 * 
-	 * @return The class instance.
-	 */
-	public static ScenarioManager getInstance() {
-		return manager;
+	public ScenarioManager(Main plugin) {
+		this.plugin = plugin;
 	}
+
+	private List<Scenario> scenarios = new ArrayList<Scenario>();
 	
 	/**
 	 * Get a scenario by a name.
@@ -128,9 +125,9 @@ public class ScenarioManager {
 	 * @return The scenario, null if not found.
 	 */
 	public Scenario getScenario(String name) {
-		for (Scenario s : scenarios) {
-			if (s.getName().equalsIgnoreCase(name)) {
-				return s;
+		for (Scenario scen : scenarios) {
+			if (scen.getName().equalsIgnoreCase(name)) {
+				return scen;
 			}
 		}
 		return null;
@@ -158,7 +155,7 @@ public class ScenarioManager {
 	 * @return the list of scenarios.
 	 */
 	public List<Scenario> getScenarios() {
-		return new ArrayList<Scenario>(scenarios);
+		return ImmutableList.copyOf(scenarios);
 	}
 
 	/**
@@ -198,12 +195,11 @@ public class ScenarioManager {
 	/**
 	 * Setup all the scenario classes.
 	 */
-	public void setup() {
-		scenarios.add(new AchievementParanoia());
-		scenarios.add(new AppleFamine());
-		scenarios.add(new Armageddon());
-		scenarios.add(new Assassins());
-		scenarios.add(new AssaultAndBattery());
+	public void setup(Game game, Timer timer, TeamManager teams) {
+		scenarios.add(new AchievementParanoia(game));
+		scenarios.add(new Armageddon(plugin, game));
+		scenarios.add(new Assassins(timer, game));
+		scenarios.add(new AssaultAndBattery(game, teams));
 		scenarios.add(new Astrophobia());
 		scenarios.add(new Aurophobia());
 		scenarios.add(new Backpacks());
@@ -221,7 +217,7 @@ public class ScenarioManager {
 		scenarios.add(new Blitz());
 		scenarios.add(new Blocked());
 		scenarios.add(new BlockRush());
-		scenarios.add(new BloodCycle());
+		scenarios.add(new BloodCycle(plugin));
 		scenarios.add(new BloodDiamonds());
 		scenarios.add(new BloodEnchants());
 		scenarios.add(new BloodLapis());
@@ -246,7 +242,7 @@ public class ScenarioManager {
 		scenarios.add(new Eggs());
 		scenarios.add(new EightLeggedFreaks());
 		scenarios.add(new EnchantedDeath());
-		/* TODO: Enchanted Books */ scenarios.add(new EnchantParanoia());
+//		/* TODO: Enchanted Books */ scenarios.add(new EnchantParanoia());
 		scenarios.add(new Entropy());
 		scenarios.add(new Fallout());
 		scenarios.add(new FlowerPower());
@@ -280,7 +276,7 @@ public class ScenarioManager {
 		scenarios.add(new Pyrophobia());
 		scenarios.add(new RewardingLongshots());
 		scenarios.add(new RewardingLongshotsPlus());
-		scenarios.add(new SharedHealth());
+		scenarios.add(new SharedHealth(plugin, null));
 		scenarios.add(new SkyClean());
 		scenarios.add(new Skyhigh());
 		scenarios.add(new SlaveMarket());

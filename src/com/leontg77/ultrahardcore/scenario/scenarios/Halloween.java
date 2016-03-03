@@ -26,11 +26,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.GameUtils;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Halloween scenario class
@@ -58,12 +56,8 @@ public class Halloween extends Scenario implements Listener {
 			public void run() {
 				Random ran = new Random();
 				
-				for (Player online : PlayerUtils.getPlayers()) {
+				for (Player online : game.getPlayers()) {
 					Location loc = online.getLocation();
-					
-					if (!GameUtils.getGameWorlds().contains(loc.getWorld())) {
-						continue;
-					}
 					
 					int diffX = ran.nextInt(25 * 2) - 25;
 					int diffZ = ran.nextInt(25 * 2) - 25;
@@ -90,12 +84,16 @@ public class Halloween extends Scenario implements Listener {
 	}
 
 	@EventHandler
-	public void onCreatureSpawn(CreatureSpawnEvent event) {
+	public void on(CreatureSpawnEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
-		Entity entity = event.getEntity();
+		final Entity entity = event.getEntity();
+		
+		if (!game.getWorlds().contains(entity.getWorld())) {
+			return;
+		}
 		
 		if (entity instanceof Zombie || entity instanceof Skeleton) {
 			LivingEntity living = (LivingEntity) entity;
@@ -125,7 +123,7 @@ public class Halloween extends Scenario implements Listener {
 	}
 
 	@EventHandler
-	public void onEntityDamage(EntityDamageEvent event) {
+	public void on(EntityDamageEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
@@ -137,6 +135,10 @@ public class Halloween extends Scenario implements Listener {
 		Player player = (Player) event.getEntity();
 		DamageCause cause = event.getCause();
 		
+		if (!game.getPlayers().contains(player)) {
+			return;
+		}
+		
 		if (cause != DamageCause.LIGHTNING) {
 			return;
 		}
@@ -146,13 +148,17 @@ public class Halloween extends Scenario implements Listener {
 	}
 
 	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+	public void on(EntityDamageByEntityEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
 		Entity entity = event.getEntity();
 		Entity damager = event.getDamager();
+		
+		if (!game.getWorlds().contains(entity.getWorld())) {
+			return;
+		}
 		
 		if (entity instanceof Player && damager instanceof Monster) {
 			Player player = (Player) entity;

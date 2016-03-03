@@ -7,9 +7,9 @@ import org.bukkit.event.Listener;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Timers;
-import com.leontg77.ultrahardcore.events.uhc.GameStartEvent;
-import com.leontg77.ultrahardcore.events.uhc.MeetupEvent;
-import com.leontg77.ultrahardcore.events.uhc.PvPEnableEvent;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
+import com.leontg77.ultrahardcore.events.MeetupEvent;
+import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.feature.Feature;
 
 /**
@@ -89,7 +89,7 @@ public class BorderShrinkFeature extends Feature implements Listener {
 		if (shrink.equals(BorderShrink.MEETUP)) {
 			timeToNextShrink = 120;
 		} else {
-			timeToNextShrink = 1920;
+			timeToNextShrink = 1320;
 		}
 		
 		new BorderRunnable(timeToNextShrink + 1).runTaskTimer(Main.plugin, 0, 20);
