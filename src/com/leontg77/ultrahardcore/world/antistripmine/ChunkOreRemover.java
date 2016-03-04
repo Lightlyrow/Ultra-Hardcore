@@ -1,38 +1,56 @@
 package com.leontg77.ultrahardcore.world.antistripmine;
 
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
-import java.util.UUID;
+import java.util.Set;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 
-import com.leontg77.ultrahardcore.world.antistripmine.AntiStripmine.ChunkOreRemover;
-
+/**
+ * Chunk ore remover class.
+ * 
+ * @author XHawk87, modified by LeonTG77.
+ */
 public class ChunkOreRemover implements Runnable {
-	private static final Random random = new Random();
-	private WorldData worldData;
-	private int chunkX;
-	private int chunkZ;
+	private final AntiStripmine antiSM;
+	private final WorldData data;
+	
+	private final Chunk chunk;
 
-	public ChunkOreRemover(WorldData worldData, Chunk chunk) {
-		this.worldData = worldData;
-		this.chunkX = chunk.getX();
-		this.chunkZ = chunk.getZ();
+	/**
+	 * Chunk ore remover class constructor.
+	 * 
+	 * @param antiSM The anti stripmine class.
+	 * @param data The world data class for this chunk.
+	 * @param chunk The chunk.
+	 */
+	public ChunkOreRemover(AntiStripmine antiSM, WorldData data, Chunk chunk) {
+		this.antiSM = antiSM;
+		this.data = data;
+		
+		this.chunk = chunk;
 	}
 
+	/**
+	 * Get the block in the given chunk on the given coords.
+	 * 
+	 * @param chunk The chunk to check in.
+	 * @param dx The X level of the block.
+	 * @param y The Y level of the block.
+	 * @param dz The Z level of the block.
+	 * 
+	 * @return The block if found, null otherwise.
+	 */
 	private Block getBlock(Chunk chunk, int dx, int y, int dz) {
-		if ((y < 0) || (y > 255)) {
+		if (y < 0 || y > 255) {
 			return null;
 		}
 		
-		if ((dx >= 0) && (dx <= 15) && (dz >= 0) && (dz <= 15)) {
+		if (dx >= 0 && dx <= 15 && dz >= 0 && dz <= 15) {
 			return chunk.getBlock(dx, y, dz);
 		}
 		
@@ -42,164 +60,213 @@ public class ChunkOreRemover implements Runnable {
 		if (chunk.getWorld().isChunkLoaded(x >> 4, z >> 4)) {
 			return chunk.getWorld().getBlockAt(x, y, z);
 		}
+		
 		return null;
 	}
 
-	private void allowLinked(Block block, HashMap<Block, HashSet<Block>> toRemove, HashSet<Block> allowed) {
-		if (toRemove.containsKey(block)) {
-			HashSet<Block> linked = toRemove.get(block);
-			toRemove.remove(block);
-			allowed.add(block);
-			
-			for (Block link : linked) {
-				allowLinked(link, toRemove, allowed);
+	/**
+	 * Allow all linked ores to exist as one of them is near air.
+	 * 
+	 * @param block The block to check for linked ores.
+	 * @param toRemove All blocks that were supposed to be removed.
+	 * @param allowed A list of all blocks that are allowed to be there.
+	 */
+	private void allowLinked(Block block, Map<Block, Set<Block>> toRemove, Set<Block> allowed) {
+		if (!toRemove.containsKey(block)) {
+			return;
+		}
+		
+		Set<Block> linked = toRemove.get(block);
+		toRemove.remove(block);
+		allowed.add(block);
+		
+		for (Block link : linked) {
+			allowLinked(link, toRemove, allowed); // check for linked ores to the linked ores.
+		}
+	}
+
+	/**
+	 * Add all linked ores to the given vein list.
+	 * 
+	 * @param block The block to start checking from.
+	 * @param toRemove The currently getting removed blocks.
+	 * @param vein The vein list to use.
+	 */
+	private void addLinked(Block block, Map<Block, Set<Block>> toRemove, Set<Block> vein) {
+		if (!toRemove.containsKey(block) || vein.contains(block)) {
+			return;
+		}
+		
+		vein.add(block);
+		Set<Block> linked = toRemove.get(block);
+		
+		for (Block link : linked) { // loop for ores connected to the linked ores.
+			if (link.getType().equals(block.getType())) {
+				addLinked(link, toRemove, vein);
 			}
 		}
 	}
 
-	private void addLinked(Block block, HashMap<Block, HashSet<Block>> toRemove, HashSet<Block> vein) {
-		if ((toRemove.containsKey(block)) && (!vein.contains(block))) {
-			vein.add(block);
-			HashSet<Block> linked = toRemove.get(block);
-			
-			for (Block link : linked) {
-				if (link.getType().equals(block.getType())) {
-					addLinked(link, toRemove, vein);
-				}
-			}
-		}
-	}
-
-	private void addRemainingOres(EnumMap<Material, Integer> remaining, Material type, int size) {
-		if (!remaining.containsKey(type)) {
-			remaining.put(type, Integer.valueOf(size));
+	/**
+	 * Add the given type and size to the given remaining map.
+	 * 
+	 * @param remaining The map to add the types to.
+	 * @param type The type of the block.
+	 * @param size The size of the vein.
+	 */
+	private void addRemainingOres(Map<Material, Integer> remaining, Material type, int size) {
+		if (remaining.containsKey(type)) {
+			remaining.put(type, remaining.get(type) + size);
 		} else {
-			remaining.put(type, Integer.valueOf(((Integer) remaining.get(type)).intValue() + size));
+			remaining.put(type, size);
 		}
 	}
 
+	@Override
 	public void run() {
 		long started = System.nanoTime();
-
-		HashMap<Block, HashSet<Block>> toRemove = new HashMap<Block, HashSet<Block>>();
-		HashSet<Block> allowed = new HashSet<Block>();
-		World world = this.worldData.getWorld();
-		Chunk chunk = world.getChunkAt(this.chunkX, this.chunkZ);
-		int maxHeight = this.worldData.getMaxHeight();
-		int removalFactor = this.worldData.getRemovalFactor();
-		EnumSet<Material> excludedOres = this.worldData.getExcluded();
-		Material oreReplacer = this.worldData.getOreReplacer();
-		EnumSet<Material> ores = this.worldData.getOres();
 		boolean hasNoOres = true;
+
+		Set<Material> ores = antiSM.getDefaultOres();
+		
+		Map<Block, Set<Block>> toRemove = new HashMap<Block, Set<Block>>();
+		Set<Block> allowed = new HashSet<Block>();
 		
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
-				for (int y = 0; y <= maxHeight; y++) {
+				for (int y = 0; y <= antiSM.getMaxHeight(); y++) {
 					Block block = getBlock(chunk, x, y, z);
-					if (block != null) {
-						if (ores.contains(block.getType())) {
-							hasNoOres = false;
-							HashSet<Block> nearOres = new HashSet<Block>();
-							
-							for (int dx = -1; dx <= 1; dx++) {
-								for (int dy = -1; dy <= 1; dy++) {
-									for (int dz = -1; dz <= 1; dz++) {
-										if ((dx != 0) || (dy != 0) || (dz != 0)) {
-											Block near = getBlock(chunk, x + dx, y + dy, z + dz);
-											
-											if (near != null) {
-												if (ores.contains(near.getType())) {
-													nearOres.add(near);
-												}
-												if ((allowed.contains(near)) || (near.isEmpty()) || (near.isLiquid())) {
-													allowed.add(block);
-												}
-											}
-										}
-									}
+					
+					if (block == null) {
+						continue;
+					}
+					
+					if (!ores.contains(block.getType())) {
+						continue;
+					}
+					
+					hasNoOres = false;
+					Set<Block> nearOres = new HashSet<Block>();
+					
+					for (int dx = -1; dx <= 1; dx++) {
+						for (int dy = -1; dy <= 1; dy++) {
+							for (int dz = -1; dz <= 1; dz++) {
+								if (dx == 0 && dy == 0 && dz == 0) {
+									continue; // I don't want it to use the block it started looping from.
 								}
-							}
-							if (allowed.contains(block)) {
-								for (Block near : nearOres) {
-									allowLinked(near, toRemove, allowed);
+								
+								Block near = getBlock(chunk, x + dx, y + dy, z + dz);
+								
+								if (near == null) {
+									continue;
 								}
-								toRemove.remove(block);
-							} else {
-								toRemove.put(block, nearOres);
+								
+								// if there is a ore nearby, make sure to check if that one is also not near a cave.
+								if (ores.contains(near.getType())) {
+									nearOres.add(near);
+								}
+								
+								if (allowed.contains(near) || near.isEmpty() || near.isLiquid()) {
+									allowed.add(block); // allow all ores near air or liquids
+								}
 							}
 						}
+					}
+					
+					if (allowed.contains(block)) {
+						for (Block near : nearOres) {
+							allowLinked(near, toRemove, allowed);
+						}
+						
+						toRemove.remove(block);
+					} else {
+						toRemove.put(block, nearOres);
 					}
 				}
 			}
 		}
-		
-		EnumMap<Material, Integer> remaining = new EnumMap<Material, Integer>(Material.class);
-		
+
+	    Map<Material, Integer> remaining = new HashMap<Material, Integer>();
+	    
 		while (!toRemove.isEmpty()) {
-			HashSet<Block> vein = new HashSet<Block>();
-			Block next = (Block) toRemove.keySet().iterator().next();
+			Set<Block> vein = new HashSet<Block>();
+			
+			Block next = toRemove.keySet().iterator().next();
 			addLinked(next, toRemove, vein);
+			
 			Material type = vein.iterator().next().getType();
-			if ((excludedOres.contains(type)) || ((removalFactor < 100) && (random.nextInt(100) >= removalFactor))) {
-				addRemainingOres(remaining, type, vein.size());
+			
+			if (antiSM.getExcludedOres().contains(type)) {
+		        addRemainingOres(remaining, type, vein.size()); // log all excluded ores that were ignored.
 			} else {
 				for (Block block : vein) {
-					block.setType(oreReplacer);
+					block.setType(antiSM.getOreReplacer());
 				}
 			}
+			
 			toRemove.keySet().removeAll(vein);
-		}
-		
-		for (Block block : allowed) {
-			addRemainingOres(remaining, block.getType(), 1);
 		}
 		
 		long duration = System.nanoTime() - started;
 		
-		if ((hasNoOres) && (!this.worldData.hasNoOres(this))) {
-			worldData.doASecondCheck(this);
+		if (hasNoOres && !data.hasNoOres(this)) {
+			data.doASecondCheck(this);
 		} else {
-			worldData.logCompleted(this, duration, remaining);
+			data.logCompleted(this, duration, remaining);
 		}
 	}
 
-	public UUID getWorldName() {
-		return this.worldData.getWorldId();
+	/**
+	 * Get the chunk used for this class.
+	 * 
+	 * @return The chunk.
+	 */
+	public Chunk getChunk() {
+		return chunk;
 	}
 
+	/**
+	 * Get the used chunk's X coordinate.
+	 * 
+	 * @return The chunk X.
+	 */
 	public int getChunkX() {
-		return this.chunkX;
+		return chunk.getX();
 	}
 
+	/**
+	 * Get the used chunk's Z coordinate.
+	 * 
+	 * @return The chunk Z.
+	 */
 	public int getChunkZ() {
-		return this.chunkZ;
+		return chunk.getZ();
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ChunkOreRemover)) {
-			ChunkOreRemover other = (ChunkOreRemover) obj;
-			return (other.chunkX == this.chunkX) && (other.chunkZ == this.chunkZ) && (other.worldData.equals(this.worldData));
+			return false;
 		}
 		
 		ChunkOreRemover other = (ChunkOreRemover) obj;
-		return (other.chunkX == this.chunkX) && (other.chunkZ == this.chunkZ) && (other.worldData.equals(this.worldData));
 		
-		if ((obj instanceof ChunkOreRemover)) {
-		}
-		
+		return (other.getChunkX() == getChunkX()) && (other.getChunkZ() == getChunkZ()) && (other.data.equals(data));
 	}
 
+	@Override
 	public int hashCode() {
 		int hash = 5;
 		
-		hash = 13 * hash + Objects.hashCode(this.worldData);
-		hash = 13 * hash + this.chunkX;
-		hash = 13 * hash + this.chunkZ;
+		hash = 13 * hash + Objects.hashCode(data);
+		hash = 13 * hash + getChunkX();
+		hash = 13 * hash + getChunkZ();
 		
 		return hash;
 	}
 
+	@Override
 	public String toString() {
-		return this.chunkX + "," + this.chunkZ;
+		return getChunkX() + "," + getChunkZ();
 	}
 }

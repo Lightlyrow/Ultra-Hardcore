@@ -201,7 +201,7 @@ public class WorldData {
 					
 					new BukkitRunnable() {
 						public void run() {
-							antiSM.queue(new ChunkOreRemover(worldData, world.getChunkAt(x, z)));
+							antiSM.queue(new ChunkOreRemover(antiSM, worldData, world.getChunkAt(x, z)));
 						}
 					}.runTaskLater(plugin, i++);
 				}
@@ -349,6 +349,7 @@ public class WorldData {
 		}.runTaskLater(plugin, 100L);
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof WorldData)) {
 			return false;
@@ -358,6 +359,7 @@ public class WorldData {
 		return other.getWorld().getUID().equals(world.getUID());
 	}
 
+	@Override
 	public int hashCode() {
 		return Objects.hashCode(world.getUID());
 	}

@@ -23,8 +23,6 @@ import com.leontg77.ultrahardcore.Main;
  */
 public class AntiStripmine {
 	private final Main plugin;
-	
-	private final int removalFactor;
 	private final int maxHeight;
 	
 	private final Material oreReplacer;
@@ -36,18 +34,25 @@ public class AntiStripmine {
 	 */
 	public AntiStripmine(Main plugin) {
 		this.plugin = plugin;
-		
-		this.removalFactor = 100;
 		this.maxHeight = 32;
 		
 		this.oreReplacer = Material.STONE;
 	}
 
 	/**
-	 * All ores that should be removed outside of caves.
+	 * A list of all ores in minecraft.
 	 */
-	private static final Set<Material> ORES_TO_REMOVE = ImmutableSet.of(
+	private static final Set<Material> DEFAULT_ORES = ImmutableSet.of(
+			Material.COAL_ORE, Material.IRON_ORE, Material.REDSTONE_ORE, Material.EMERALD_ORE,
 			Material.DIAMOND_ORE, Material.GOLD_ORE, Material.LAPIS_ORE
+	);
+
+	/**
+	 * A list of ores that shouldn't get removed outside of caves.
+	 */
+	private static final Set<Material> EXCLUDED_ORES = ImmutableSet.of(
+			Material.COAL_ORE, Material.IRON_ORE,
+			Material.REDSTONE_ORE, Material.EMERALD_ORE
 	);
 	
 	private Deque<ChunkOreRemover> queue = new ArrayDeque<ChunkOreRemover>();
@@ -104,16 +109,10 @@ public class AntiStripmine {
 	 * Get the world data for the given world.
 	 * 
 	 * @param world The world to get for.
-	 * @return The data, it will register a new data if not found.
+	 * @return The data, null if none.
 	 */
 	public WorldData getWorldData(World world) {
-		WorldData data = worlds.get(world.getName());
-		
-		if (data == null) {
-			data = registerWorld(world);
-		}
-		
-		return data;
+		return worlds.get(world.getName());
 	}
 
 	/**
@@ -145,15 +144,6 @@ public class AntiStripmine {
 	public int getMaxHeight() {
 		return maxHeight;
 	}
-	
-	/**
-	 * Get the removal factor the ore checker will use.
-	 * 
-	 * @return The removal factor.
-	 */
-	public int getRemovalFactor() {
-		return removalFactor;
-	}
 
 	/**
 	 * Get the block type to replace ores outside of caves with.
@@ -165,11 +155,20 @@ public class AntiStripmine {
 	}
 
 	/**
-	 * Get a list of all ores that should be removed if they're not in a cave.
+	 * Get a list of all ores in minecraft.
 	 * 
-	 * @return A list of ores to remove.
+	 * @return A list of ores.
 	 */
-	public Set<Material> getOresToRemove() {
-		return ORES_TO_REMOVE;
+	public Set<Material> getDefaultOres() {
+		return DEFAULT_ORES;
+	}
+
+	/**
+	 * Get a list of all ores that should NOT be removed if they're not in a cave.
+	 * 
+	 * @return A list of ores NOT to remove.
+	 */
+	public Set<Material> getExcludedOres() {
+		return EXCLUDED_ORES;
 	}
 }
