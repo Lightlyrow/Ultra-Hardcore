@@ -27,10 +27,10 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class WorldListener implements Listener {
 	private final Game game;
-	
+
 	private final Timer timer;
 	private final Arena arena;
-	
+
 	/**
 	 * World listener class constructor.
 	 * 
@@ -40,21 +40,21 @@ public class WorldListener implements Listener {
 	 */
 	public WorldListener(Game game, Timer timer, Arena arena) {
 		this.game = game;
-		
+
 		this.timer = timer;
 		this.arena = arena;
 	}
 
 	@EventHandler
 	public void on(WeatherChangeEvent event) {
-    	if (!event.toWeatherState()) {
-    		return;
-    	}
-    	
-    	List<World> worlds = game.getWorlds();
-    	World world = event.getWorld();
-    	
-    	if (!worlds.contains(world)) {
+		if (!event.toWeatherState()) {
+			return;
+		}
+
+		List<World> worlds = game.getWorlds();
+		World world = event.getWorld();
+
+		if (!worlds.contains(world)) {
 			event.setCancelled(true);
 			return;
 		}
@@ -76,35 +76,35 @@ public class WorldListener implements Listener {
 
 	@EventHandler
 	public void on(ThunderChangeEvent event) {
-    	if (!event.toThunderState()) {
-    		return;
+		if (!event.toThunderState()) {
+			return;
 		}
-    	
+
 		event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	public void on(ChunkUnloadEvent event) {
 		if (!State.isState(State.SCATTER)) {
 			return;
 		}
-		
+
 		event.setCancelled(true);
 	}
 
 	@EventHandler
 	public void on(WorldBorderFillFinishedEvent event) {
 		World world = event.getWorld();
-		
+
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " clear");
-		
+
 		if (arena.isResetting) {
 			PlayerUtils.broadcast(Arena.PREFIX + "Arena reset complete.");
-			
+
 			if (arena.wasEnabled) {
 				arena.enable();
 			}
-			
+
 			arena.wasEnabled = false;
 			arena.isResetting = false;
 			return;
