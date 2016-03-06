@@ -186,17 +186,17 @@ public class LoginListener implements Listener {
 		}
 		
 		if (!game.isRecordedRound()) {
-			player.sendMessage("§8» §m----------§8[ §4§lArctic UHC §8]§m----------§8 «");
+			player.sendMessage("§8» §m-----------§8[ §4Arctic UHC §8]§m------------§8 «");
 			
 			if (game.getAdvancedTeamSize(false, false).startsWith("No")) {
-				player.sendMessage("§8» §c There are no games running currently.");
+				player.sendMessage("§c   There are no games running currently.");
 			} 
 			else if (game.getAdvancedTeamSize(false, false).startsWith("Open")) {
-				player.sendMessage("§8» §7 Open PvP, use §a/a §7to join.");
+				player.sendMessage("   §7Open PvP, use §a/a §7to join.");
 			} 
 			else {
-				player.sendMessage("§8» §7 Host: §a" + game.getHost());
-				player.sendMessage("§8» §7 Gamemode: §a" + game.getAdvancedTeamSize(false, true) + game.getScenarios());
+				player.sendMessage("§7   Host: §a" + game.getHost());
+				player.sendMessage("§7   Gamemode: §a" + game.getAdvancedTeamSize(false, true) + game.getScenarios());
 			}
 			
 			player.sendMessage("§8» §m---------------------------------§8 «");
