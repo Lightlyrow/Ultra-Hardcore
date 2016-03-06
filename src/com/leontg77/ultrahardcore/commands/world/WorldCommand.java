@@ -24,6 +24,7 @@ import com.leontg77.ultrahardcore.world.WorldManager;
  * @author LeonTG77
  */
 public class WorldCommand extends UHCCommand {
+	private
 
 	public WorldCommand() {
 		super("world", "");
@@ -31,8 +32,6 @@ public class WorldCommand extends UHCCommand {
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
-		WorldManager manager = WorldManager.getInstance();
-		
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("create")) {
 				if (args.length < 5) {

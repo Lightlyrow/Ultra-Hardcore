@@ -186,11 +186,10 @@ public class Main extends JavaPlugin {
 		teams.setup();
 
 		scen.setup(game, timer, teams);
-		feat.setup(arena, game, timer);
+		feat.setup(arena, game, timer, board);
 	    
 		worlds.loadWorlds();
 		
-		AntiStripmine.getInstance().setup();
 		BiomeSwap.getInstance().setup();
 
 		announcer.setup();
