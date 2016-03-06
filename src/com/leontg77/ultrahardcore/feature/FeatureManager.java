@@ -62,9 +62,11 @@ import com.leontg77.ultrahardcore.feature.serverlist.ServerMOTDFeature;
 import com.leontg77.ultrahardcore.feature.tablist.HeartsOnTabFeature;
 import com.leontg77.ultrahardcore.feature.tablist.PercentOnTabFeature;
 import com.leontg77.ultrahardcore.feature.tablist.TabHealthColorFeature;
+import com.leontg77.ultrahardcore.feature.world.WeatherFeature;
 import com.leontg77.ultrahardcore.feature.world.WorldUpdaterFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedQuartzXPFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedXPFeature;
+import com.leontg77.ultrahardcore.managers.BoardManager;
 
 /**
  * Scenario management class.
@@ -146,7 +148,7 @@ public class FeatureManager {
 	/**
 	 * Setup all the feature classes.
 	 */
-	public void setup(Arena arena, Game game, Timer timer) {
+	public void setup(Arena arena, Game game, Timer timer, BoardManager board) {
 		final PotionFuelListener listener = new PotionFuelListener();
 		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	    
@@ -229,11 +231,12 @@ public class FeatureManager {
 		addFeature(new ServerMOTDFeature(game));
 		
 		// tablist
-		addFeature(new HeartsOnTabFeature());
-		addFeature(new PercentOnTabFeature(plugin, null));
+		addFeature(new HeartsOnTabFeature(board));
+		addFeature(new PercentOnTabFeature(plugin, board));
 		addFeature(new TabHealthColorFeature(plugin));
 		
 		// world
+		addFeature(new WeatherFeature(game, timer));
 		addFeature(new WorldUpdaterFeature(plugin));
 		
 		// xp
