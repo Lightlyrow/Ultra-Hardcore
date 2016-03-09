@@ -29,9 +29,6 @@ public class Announcer {
 		this.plugin = plugin;
 		this.game = game;
 	}
-
-	private static final String PREFIX = "§a§lInfo §8» §7";
-	private static final long INTERVAL = 10000;
 	
 	/**
 	 * List of announcements.
@@ -66,9 +63,9 @@ public class Announcer {
 					return;
 				}
 				
-				PlayerUtils.broadcast(PREFIX + ANNOUNCEMENTS.get(rand.nextInt(ANNOUNCEMENTS.size())));
+				PlayerUtils.broadcast(Main.INFO_PREFIX + ANNOUNCEMENTS.get(rand.nextInt(ANNOUNCEMENTS.size())));
 			}
-		}.runTaskTimer(plugin, INTERVAL, INTERVAL);
+		}.runTaskTimer(plugin, 10000, 10000);
 		
 		plugin.getLogger().info("The announcer have been setup.");
 	}
