@@ -20,7 +20,6 @@ import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
 import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
-import com.leontg77.ultrahardcore.feature.scoreboard.SidebarResetFeature;
 import com.leontg77.ultrahardcore.inventory.InvGUI;
 import com.leontg77.ultrahardcore.inventory.listener.InvseeListener;
 import com.leontg77.ultrahardcore.inventory.listener.SelectorListener;
@@ -63,6 +62,9 @@ import com.leontg77.ultrahardcore.world.biomeswap.BiomeSwap;
 public class Main extends JavaPlugin {
 	private final Settings settings;
 	private final Data data;
+
+	private final AntiStripmine antiSM;
+	private final BiomeSwap swap;
 	
 	private final WorldManager worlds;
 	private final UBL ubl;
@@ -101,6 +103,9 @@ public class Main extends JavaPlugin {
 		
 		worlds = new WorldManager(settings);	
 		ubl = new UBL(this);
+		
+		antiSM = new AntiStripmine(this);
+		swap = new BiomeSwap(this, settings);
 
 		board = new BoardManager(this);	
 		teams = new TeamManager(this, board);
@@ -110,7 +115,7 @@ public class Main extends JavaPlugin {
 		HOF = new HOFManager(this);	
 		
 		parkour = new Parkour(this, settings);
-		gui = new InvGUI();
+		gui = new InvGUI(this);
 		
 		spec = new SpecManager(this, teams);
 		game = new Game(settings, gui, board, spec);
@@ -127,15 +132,9 @@ public class Main extends JavaPlugin {
 		scen = new ScenarioManager(this);
 		feat = new FeatureManager(this, settings);
 		
-		cmd = new CommandHandler();
+		cmd = new CommandHandler(this);
 		
 		timer = new Timer(this, game, scen, feat.getFeature(StalkingFeature.class), board, spec);
-
-		game.setTimer(timer);
-		board.setGame(game);
-		
-		State.setSettings(settings);
-		User.setupInstances(this, game, gui, perm);
 	}
 	
 	public static final String NO_PERMISSION_MESSAGE = "§cYou don't have permission.";
@@ -153,7 +152,7 @@ public class Main extends JavaPlugin {
 		PluginDescriptionFile file = getDescription();
 		getLogger().info(file.getName() + " is now disabled.");
 		
-		BiomeSwap.getInstance().resetBiomes();
+		swap.resetBiomes();
 		data.store(teams, scen);
 		
 		if (!game.teamManagement()) {
@@ -176,31 +175,34 @@ public class Main extends JavaPlugin {
 		PluginDescriptionFile file = getDescription();
 		getLogger().info(file.getName() + " v" + file.getVersion() + " is now enabled.");
 		getLogger().info("The plugin was created by LeonTG77.");
+
+		game.setTimer(timer);
+		
+		State.setSettings(settings);
+//		User.setupInstances(this, game, gui, perm);
 		
 //		counter.enable();
 		
 		settings.setup();
 		ubl.reload();
 		
-		board.setup();
+		board.setup(game);
 		teams.setup();
 
-		scen.setup(game, timer, teams);
-		feat.setup(arena, game, timer, board);
+		scen.registerScenarios(arena, game, timer, teams, spec);
+		feat.registerFeatures(arena, game, timer, board, teams, spec, enchPreview, hardHearts, scen);
+		cmd.registerCommands(board, spec);
 	    
 		worlds.loadWorlds();
-		
-		BiomeSwap.getInstance().setup();
+		swap.setup();
 
 		announcer.setup();
 		arena.setup();
-		
 		parkour.setup();
 		
 		FileUtils.updateUserFiles(this);
 		
-		gui.setup();
-		
+		gui.setup(settings);
 		data.restore(teams, scen);
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -215,15 +217,16 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new ProtectionListener(game), this);
 		manager.registerEvents(new SpectatorListener(game, spec, gui, feat.getFeature(NetherFeature.class)), this);
 		manager.registerEvents(new StatsListener(this, arena, game, board, teams, feat.getFeature(GoldenHeadsFeature.class)), this);
-		manager.registerEvents(new WorldListener(game, timer, arena), this);
+		manager.registerEvents(new WorldListener(arena), this);
 		manager.registerEvents(new UBLListener(ubl), this);
 
 		// register all inventory listeners.
 		manager.registerEvents(new InvseeListener(), this);
 		manager.registerEvents(new SelectorListener(), this);
-
-		// register all commands.
-		cmd.registerCommands();
+		
+		for (Player online : Bukkit.getOnlinePlayers()) {	
+			perm.addPermissions(online);
+		}
 		
 		switch (State.getState()) {
 		case NOT_RUNNING:
@@ -237,25 +240,6 @@ public class Main extends JavaPlugin {
 		default:
 			break;
 		}
-		
-		for (Player online : Bukkit.getOnlinePlayers()) {	
-			perm.addPermissions(online);
-		}
-		
-		new BukkitRunnable() {
-			public void run() {
-				for (Player online : Bukkit.getOnlinePlayers()) {
-					final Location loc = online.getLocation().clone();
-					
-					if (online.getGameMode() == GameMode.SPECTATOR && LocationUtils.isOutsideOfBorder(loc)) {
-						Location toTeleport = LocationUtils.findSafeLocationInsideBorder(loc.clone(), 0, null);
-						toTeleport.setY(loc.getY());
-						
-						online.teleport(toTeleport);
-					}
-				}
-			}
-		}.runTaskTimer(this, 1, 1);
 	}
 	
 	/**
