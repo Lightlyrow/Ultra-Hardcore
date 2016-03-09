@@ -77,7 +77,7 @@ public class ArenaListener implements Listener {
 
 			player.sendMessage(Arena.PREFIX + "You got killed by PvE!");
 			
-			arena.setScore("§8» §a§lPvE", arena.getScore("§8» §a§lPvE") + 1);
+			arena.setScore("§8» §c§oPvE", arena.getScore("§8» §c§oPvE") + 1);
 			arena.resetScore(player.getName());
 			return;
 		}
