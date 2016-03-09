@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -26,6 +27,11 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * @author LeonTG77
  */
 public class Stats extends InvGUI implements Listener {
+	public Stats(Main plugin) {
+		super(plugin);
+		// TODO Auto-generated constructor stub
+	}
+
 	private Map<String, Inventory> invs = new HashMap<String, Inventory>();
 	
 	@EventHandler
@@ -54,9 +60,9 @@ public class Stats extends InvGUI implements Listener {
 		
 		if (!invs.containsKey(name)) {
 			invs.put(name, Bukkit.createInventory(user.getPlayer(), InventoryType.HOPPER, "» §7" + name + "'s Stats"));
+			update(user);
 		}
 		
-		update(user);
 		return invs.get(name);
 	}
 
