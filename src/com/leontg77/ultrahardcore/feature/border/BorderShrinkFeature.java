@@ -6,11 +6,13 @@ import org.bukkit.event.Listener;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Timers;
+import com.leontg77.ultrahardcore.Settings;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.events.MeetupEvent;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.feature.Feature;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Border shrink feature class.
@@ -19,16 +21,37 @@ import com.leontg77.ultrahardcore.feature.Feature;
  */
 public class BorderShrinkFeature extends Feature implements Listener {
 	private static final String PATH = "feature.border.shrinkAt";
+	
+	private final Settings settings;
+	private final Main plugin;
+	
+	private final Timer timer;
+	private final Game game;
+	
 	private BorderShrink shrink;
 
-	public BorderShrinkFeature() {
-		super("Border Shrink", "A shrinking border once ### event happends.");
+	/**
+	 * Border shrink feature class constructor.
+	 * 
+	 * @param plugin The main class.
+	 * @param settings The settings class.
+	 * @param timer The timer class.
+	 * @param game The game class.
+	 */
+	public BorderShrinkFeature(Main plugin, Settings settings, Timer timer, Game game) {
+		super("Border Shrink", "A shrinking border once the set event happends.");
 		
 		try {
-			shrink = BorderShrink.valueOf(settings.getConfig().getString(PATH, "MEETUP").toUpperCase());
+			shrink = BorderShrink.valueOf(settings.getConfig().getString(PATH).toUpperCase());
 		} catch (Exception e) {
 			shrink = BorderShrink.MEETUP;
 		}
+
+		this.settings = settings;
+		this.plugin = plugin;
+		
+		this.timer = timer;
+		this.game = game;
 	}
 	
 	/**
@@ -57,23 +80,23 @@ public class BorderShrinkFeature extends Feature implements Listener {
 		if (!shrink.equals(BorderShrink.START)) {
 			return;
 		}
+
+		PlayerUtils.broadcast(Main.BORDER_PREFIX + "Border will now shrink to §6300x300 §7over §a" + timer.getMeetup() + " §7minutes.");
 		
-		final Timers timer = event.getTimers();
-		
-		for (World world : Game.getInstance().getWorlds()) {
+		for (World world : game.getWorlds()) {
 			world.getWorldBorder().setSize(300, timer.getMeetupInSeconds());
 		}
 	}
 
 	@EventHandler
 	public void on(PvPEnableEvent event) {
-		if (!shrink.equals(BorderShrink.START)) {
+		if (!shrink.equals(BorderShrink.PVP)) {
 			return;
 		}
 		
-		final Timers timer = event.getTimers();
+		PlayerUtils.broadcast(Main.BORDER_PREFIX + "Border will now shrink to §6300x300 §7over §a" + timer.getMeetup() + " §7minutes.");
 		
-		for (World world : Game.getInstance().getWorlds()) {
+		for (World world : game.getWorlds()) {
 			world.getWorldBorder().setSize(300, timer.getMeetupInSeconds());
 		}
 	}
@@ -84,7 +107,7 @@ public class BorderShrinkFeature extends Feature implements Listener {
 			return;
 		}
 
-		final int timeToNextShrink;
+		int timeToNextShrink;
 		
 		if (shrink.equals(BorderShrink.MEETUP)) {
 			timeToNextShrink = 120;
@@ -92,7 +115,7 @@ public class BorderShrinkFeature extends Feature implements Listener {
 			timeToNextShrink = 1320;
 		}
 		
-		new BorderRunnable(timeToNextShrink + 1).runTaskTimer(Main.plugin, 0, 20);
+		new BorderRunnable(game, timeToNextShrink).runTaskTimer(plugin, 20, 20);
 	}
 	
 	/**
@@ -103,7 +126,22 @@ public class BorderShrinkFeature extends Feature implements Listener {
 	 * @author LeonTG77
 	 */
 	public enum BorderShrink {
-		NEVER(""), START("from "), PVP("at "), MEETUP("at ");
+		/**
+		 * Represents a border that never shrinks.
+		 */
+		NEVER(""), 
+		/**
+		 * Represents a border starts shrinking at the start.
+		 */
+		START("from "), 
+		/**
+		 * Represents a border starts shrinking when pvp enables.
+		 */
+		PVP("at "), 
+		/**
+		 * Represents a border starts shrinking at meetup.
+		 */
+		MEETUP("at ");
 		
 		private String preText;
 		

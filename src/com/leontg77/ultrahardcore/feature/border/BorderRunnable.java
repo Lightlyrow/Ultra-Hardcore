@@ -17,15 +17,16 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BorderRunnable extends BukkitRunnable {
+	private final Game game;
 	private int next;
 	
-	protected BorderRunnable(int next) {
+	protected BorderRunnable(Game game, int next) {
+		this.game = game;
 		this.next = next;
 	}
 	
 	@Override
 	public void run() {
-		final Game game = Game.getInstance();
 		next--;
 
 		int borderSize = 0;
@@ -45,7 +46,7 @@ public class BorderRunnable extends BukkitRunnable {
 		case 3:
 		case 2:
 		case 1:
-			PlayerUtils.broadcast(Main.PREFIX + "The border starts shrinking in §a" + DateUtils.advancedTicksToString(next) + "§7.");
+			PlayerUtils.broadcast(Main.BORDER_PREFIX + "The border starts shrinking in §a" + DateUtils.advancedTicksToString(next) + "§7.");
 			break;
 		case 0:
 			int size = 300;
@@ -59,13 +60,13 @@ public class BorderRunnable extends BukkitRunnable {
 				break;
 			}
 				
-			PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink to §6" + size + "x" + size + " §7over §a10 §7minutes.");
+			PlayerUtils.broadcast(Main.BORDER_PREFIX + "Border will now shrink to §6" + size + "x" + size + " §7over §a10 §7minutes.");
 			
 			for (Player online : Bukkit.getOnlinePlayers()) {
 				online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 			}
 
-			for (World world : Game.getInstance().getWorlds()) {
+			for (World world : game.getWorlds()) {
 				world.getWorldBorder().setSize(size, 600);
 			}
 			break;
@@ -74,14 +75,14 @@ public class BorderRunnable extends BukkitRunnable {
 				online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Border has stopped shrinking.");
+			PlayerUtils.broadcast(Main.BORDER_PREFIX + "Border has stopped shrinking.");
 			
 			if (borderSize == 100) {
 				cancel();
 				return;
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Next shrink is in §a10§7 minutes.");
+			PlayerUtils.broadcast(Main.BORDER_PREFIX + "Next shrink is in §a10§7 minutes.");
 			
 			next = 600;
 			break;
