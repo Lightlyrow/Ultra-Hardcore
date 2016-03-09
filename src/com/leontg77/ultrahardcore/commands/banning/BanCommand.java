@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -48,22 +48,26 @@ public class BanCommand extends UHCCommand {
     	if (target == null) {
 			PlayerUtils.broadcast(Main.PREFIX + "§6" + args[0] + " §7has been banned for §a" + message + "§7.");
 			
+	    	for (Player online : Bukkit.getOnlinePlayers()) {
+	    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
+	    	}
+			
     		banList.addBan(args[0], message, null, sender.getName());
 			board.resetScore(args[0]);
             return true;
 		}
     	
     	if (target.hasPermission("uhc.staff") && !sender.hasPermission("uhc.ban.bypass")) {
-	    	throw new CommandException("You cannot ban this player.");
+	    	throw new CommandException("You can't ban this player.");
     	}
 
     	PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been banned for §a" + message + "§7.");
-    	BanEntry ban = banList.addBan(target.getName(), message, null, sender.getName());
-
-    	board.resetScore(target.getName());
-		board.resetScore(args[0]);
+		
+    	for (Player online : Bukkit.getOnlinePlayers()) {
+    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
+    	}
     	
-    	target.setWhitelisted(false);
+    	banList.addBan(target.getName(), message, null, sender.getName());
     	
     	PlayerDeathEvent deathEvent = new PlayerDeathEvent(target, new ArrayList<ItemStack>(), 0, null);
     	Bukkit.getPluginManager().callEvent(deathEvent);
@@ -71,11 +75,12 @@ public class BanCommand extends UHCCommand {
     	target.kickPlayer(
     	"§8» §7You have been §4banned §7from §6Arctic UHC §8«" +
     	"\n" + 
-    	"\n§cReason §8» §7" + ban.getReason() +
-    	"\n§cBanned by §8» §7" + ban.getSource() +
+    	"\n§cReason §8» §7" + message +
+    	"\n§cBanned by §8» §7" + sender.getName() +
     	"\n" +
    		"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
     	);
+    	
 		return true;
 	}
 
