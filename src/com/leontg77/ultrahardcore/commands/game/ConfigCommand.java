@@ -39,21 +39,29 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ConfigCommand extends UHCCommand {
+	private final FeatureManager feat;
+	private final InvGUI gui;
 
 	/**
-	 * ConfigValue class
-	 * <p>
-	 * Class used for the config command to 
-	 * get all the possible config options.
+	 * Config command class constructor.
+	 * 
+	 * @param feat The feature manager class.
+	 * @param gui The inventory gui class.
+	 */
+	public ConfigCommand(FeatureManager feat, InvGUI gui) {
+		super("config", "<option> <value>");
+		
+		this.feat = feat;
+		this.gui = gui;
+	}
+	
+	/**
+	 * Config value class.
 	 * 
 	 * @author LeonTG77
 	 */
 	public enum ConfigValue {
 		APPLERATES, BORDERSHRINK, FLINTRATES, HEADSHEAL, HOST, MATCHPOST, MAXPLAYERS, MEETUP, PEARLDAMAGE, PVP, SCENARIOS, STALKING, SHEARRATES, STATE, TEAMSIZE, WORLD;
-	}
-
-	public ConfigCommand() {
-		super("config", "<option> <value>");
 	}
 	
 	@Override
@@ -64,9 +72,7 @@ public class ConfigCommand extends UHCCommand {
 			}
 			
 			Player player = (Player) sender;
-
-			InvGUI inv = InvGUI.getInstance();
-			inv.openConfigOptions(player);
+			gui.openConfig(player);
 			return true;
 		}
 		
@@ -99,14 +105,12 @@ public class ConfigCommand extends UHCCommand {
 			return true;
 		}
 		
-		final FeatureManager featMan = FeatureManager.getInstance();
-		
 		switch (type) {
 		case APPLERATES:
 			double appleRate = parseDouble(args[1], "apple rate");
 			
-			if (appleRate < 0) {
-				throw new CommandException("Apple rates cannot be lower than 0%");
+			if (appleRate < 0.55) {
+				throw new CommandException("Apple rates cannot be lower than vanilla (0.55%)");
 			}
 			
 			if (appleRate > 100) {
@@ -115,7 +119,7 @@ public class ConfigCommand extends UHCCommand {
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + NumberUtils.formatDouble(appleRate) + "%");
 			
-			featMan.getFeature(AppleRatesFeature.class).setAppleRates(appleRate);
+			feat.getFeature(AppleRatesFeature.class).setAppleRates(appleRate);
 			break;
 		case BORDERSHRINK:
 			BorderShrink border;
@@ -132,7 +136,7 @@ public class ConfigCommand extends UHCCommand {
 				PlayerUtils.broadcast(Main.PREFIX + "Border will now shrink " + border.getPreText() + border.name().toLowerCase());
 			}
 			
-			featMan.getFeature(BorderShrinkFeature.class).setBorderShrink(border);
+			feat.getFeature(BorderShrinkFeature.class).setBorderShrink(border);
 			break;
 		case STALKING:
 			StalkingRule rule;
@@ -145,7 +149,7 @@ public class ConfigCommand extends UHCCommand {
 
 			PlayerUtils.broadcast(Main.PREFIX + "Stalking is now " + rule.getMessage());
 			
-			featMan.getFeature(StalkingFeature.class).setStalkingRule(rule);
+			feat.getFeature(StalkingFeature.class).setStalkingRule(rule);
 			break;
 		case STATE:
 			State state;
@@ -162,8 +166,8 @@ public class ConfigCommand extends UHCCommand {
 		case FLINTRATES:
 			double flintRate = parseDouble(args[1], "flint rate");
 			
-			if (flintRate < 0) {
-				throw new CommandException("Flint rates cannot be lower than 0%");
+			if (flintRate < 10) {
+				throw new CommandException("Flint rates cannot be lower than vanilla (10%)");
 			}
 			
 			if (flintRate > 100) {
@@ -172,14 +176,14 @@ public class ConfigCommand extends UHCCommand {
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Flint rates has been changed to §a" + NumberUtils.formatDouble(flintRate) + "%");
 			
-			featMan.getFeature(FlintRatesFeature.class).setFlintRates(flintRate);
+			feat.getFeature(FlintRatesFeature.class).setFlintRates(flintRate);
 			break;
 		case HEADSHEAL:
 			double headheals = parseDouble(args[1], "heal amount");
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + NumberUtils.formatDouble(headheals) + "§7 hearts.");
 			
-			featMan.getFeature(GoldenHeadsFeature.class).setHealAmount(headheals);
+			feat.getFeature(GoldenHeadsFeature.class).setHealAmount(headheals);
 			break;
 		case HOST:
 			PlayerUtils.broadcast(Main.PREFIX + "The host has been changed to §a" + args[1] + "§7.");
@@ -226,7 +230,7 @@ public class ConfigCommand extends UHCCommand {
 				PlayerUtils.broadcast(Main.PREFIX + "Ender pearls will now deal §a" + NumberUtils.formatDouble(damage) + "§7 hearts.");
 			}
 			
-			featMan.getFeature(PearlDamageFeature.class).setPearlDamage(damage);
+			feat.getFeature(PearlDamageFeature.class).setPearlDamage(damage);
 			break;
 		case SCENARIOS:
 			String scens = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
@@ -247,7 +251,7 @@ public class ConfigCommand extends UHCCommand {
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Shear rates has been changed to §a" + NumberUtils.formatDouble(shearRate) + "%");
 			
-			featMan.getFeature(ShearsFeature.class).setShearRates(shearRate);
+			feat.getFeature(ShearsFeature.class).setShearRates(shearRate);
 			break;
 		case TEAMSIZE:
 			game.setTeamSize(args[1]);
