@@ -19,6 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -29,15 +30,21 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BestBTC extends Scenario implements Listener, CommandExecutor {
-	private final Set<String> list = new HashSet<String>();
-	private BukkitRunnable task = null;
+	private final Timer timer;
+	private final Main plugin;
 
-	public BestBTC() {
+	public BestBTC(Main plugin, Timer timer) {
 		super("BestBTC", "After PvP enables, for every 10 minutes you are under Y=50, you gain a heart. Going above Y=50 will take you off the list. To get back on, you must mine a diamond.");
 		
-		Bukkit.getPluginCommand("btc").setExecutor(this);
-		Bukkit.getPluginCommand("btclist").setExecutor(this);
+		plugin.getCommand("btc").setExecutor(this);
+		plugin.getCommand("btclist").setExecutor(this);
+
+		this.plugin = plugin;
+		this.timer = timer;
 	}
+	
+	private final Set<String> list = new HashSet<String>();
+	private BukkitRunnable task = null;
 	
 	@Override
 	public void onDisable() {
@@ -80,7 +87,7 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 12000, 12000);
+		task.runTaskTimer(plugin, 12000, 12000);
 	}
 	
 	/**

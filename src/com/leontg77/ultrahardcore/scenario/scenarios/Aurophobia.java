@@ -13,26 +13,31 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 
 /**
- * Aurophobia scenario class
+ * Aurophobia scenario class.
  * 
  * @author LeonTG77
  */
 public class Aurophobia extends Scenario implements Listener {
+	private final Game game;
 	
-	public Aurophobia() {
+	/**
+	 * Aurophobia scenario class constructor.
+	 * 
+	 * @param game The game class.
+	 */
+	public Aurophobia(Game game) {
 		super("Aurophobia", "Whenever you mine Gold you have a chance of getting damaged by a heart, getting spawned 2 silverfish on you, losing the gold, getting blindness for 10 seconds, or gettting a cave spider spawned on you.");
+	
+		this.game = game;
 	}
-
-	@Override
-	public void onDisable() {}
-
-	@Override
-	public void onEnable() {}
+	
+	private final Random rand = new Random();
 
 	@EventHandler
     public void on(BlockBreakEvent event) {
@@ -40,8 +45,8 @@ public class Aurophobia extends Scenario implements Listener {
 			return;
 		}
 		
-		final Player player = event.getPlayer();
-		final Block block = event.getBlock();
+		Player player = event.getPlayer();
+		Block block = event.getBlock();
     	
 		if (block.getType() != Material.GOLD_ORE) {
 			return;
@@ -51,15 +56,13 @@ public class Aurophobia extends Scenario implements Listener {
 			return;
 		}
 		
-		final Random rand = new Random();
-		
 		if (rand.nextDouble() <= 0.05) {
 			player.damage(2);
 		}
 		
 		if (rand.nextDouble() <= 0.05) {
-			player.getWorld().spawn(block.getLocation().add(0.5, 0.1, 0.5), Silverfish.class);
-			player.getWorld().spawn(block.getLocation().add(0.5, 0.1, 0.5), Silverfish.class);
+			player.getWorld().spawn(block.getLocation().add(0.5, 0.3, 0.5), Silverfish.class);
+			player.getWorld().spawn(block.getLocation().add(0.5, 0.3, 0.5), Silverfish.class);
 		}
 		
 		if (rand.nextDouble() <= 0.05) {

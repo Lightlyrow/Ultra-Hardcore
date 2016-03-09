@@ -27,12 +27,19 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class AntiIPvPFeature extends Feature implements Listener {
 	private static final String PREFIX = "§8[§4§liPvP§8] §7";
+	
+    private final Game game;
 
-	private final TeamManager manager = TeamManager.getInstance();
-    private final SpecManager spec = SpecManager.getInstance();
+	private final TeamManager manager;
+    private final SpecManager spec;
 
-	public AntiIPvPFeature() {
+	public AntiIPvPFeature(Game game, TeamManager manager, SpecManager spec) {
 		super("Anti-iPvP", "Disable all players to indirect damage other players before pvp.");
+		
+		this.game = game;
+		
+		this.manager = manager;
+		this.spec = spec;
 	}
     
     @EventHandler

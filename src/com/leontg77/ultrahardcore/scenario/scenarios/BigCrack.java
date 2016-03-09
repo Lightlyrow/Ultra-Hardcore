@@ -27,22 +27,22 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author dans1988
  */
 public class BigCrack extends Scenario implements Listener, CommandExecutor {
-	private static final int CHUNK_HEIGHT_LIMIT = 128;
-    private static final int BLOCKS_PER_CHUNK = 16;
-
     public static final String PREFIX = "§b§lBigCrack §8» §7";
-	private boolean generation = false;
+	
+	private final Main plugin;
 
-	public BigCrack() {
+	public BigCrack(Main plugin) {
 		super("BigCrack", "A Chunk Error running on the Z axis splits the world in half.");
-		Bukkit.getPluginCommand("bigcrack").setExecutor(this);
+		
+		plugin.getCommand("bigcrack").setExecutor(this);
+		
+		this.plugin = plugin;
 	}
 	
-	@Override
-	public void onDisable() {}
-
-	@Override
-	public void onEnable() {}
+	private static final int CHUNK_HEIGHT_LIMIT = 128;
+    private static final int BLOCKS_PER_CHUNK = 16;
+    
+	private boolean generation = false;
 
 	@EventHandler
     public void on(BlockFromToEvent event) {
@@ -60,7 +60,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
 			return true;
 		}
 		
-		final Player player = (Player) sender;
+		Player player = (Player) sender;
 		
 		if (!isEnabled()) {
 			sender.sendMessage(PREFIX + "Bigcrack is not enabled.");
@@ -78,26 +78,12 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
         }
 
         int width;
-        
-        try {
-            width = parseInt(args[0], "width");
-        } catch (Exception e) {
-        	player.sendMessage(ChatColor.RED + e.getMessage());
-            return true;
-        }
-
         int length;
-        
-        try {
-            length = parseInt(args[1], "length");
-        } catch (Exception e) {
-        	player.sendMessage(ChatColor.RED + e.getMessage());
-            return true;
-        }
-
         int speed;
         
         try {
+            width = parseInt(args[0], "width");
+            length = parseInt(args[1], "length");
             speed = parseInt(args[2], "speed");
         } catch (Exception e) {
         	player.sendMessage(ChatColor.RED + e.getMessage());
@@ -154,7 +140,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
 							PacketUtils.sendAction(online, PREFIX + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
 						}
                     }
-                }.runTaskLater(Main.plugin, delayMultiplier * speed);
+                }.runTaskLater(plugin, delayMultiplier * speed);
                 
                 delayMultiplier++;
             }
@@ -165,7 +151,7 @@ public class BigCrack extends Scenario implements Listener, CommandExecutor {
             	generation = false;
                 PlayerUtils.broadcast(PREFIX + "Bigcrack generation finished!");
             }
-        }.runTaskLater(Main.plugin, delayMultiplier * speed);
+        }.runTaskLater(plugin, delayMultiplier * speed);
     }
 
 	/**

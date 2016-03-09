@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 import com.leontg77.ultrahardcore.utils.TreeUtils;
@@ -25,13 +26,17 @@ import com.leontg77.ultrahardcore.utils.TreeUtils.TreeType;
  */
 public class ShearsFeature extends ToggleableFeature implements Listener {
 	private static final String RATE_PATH = "feature.shears.rate";
+	
+	private final Settings settings;
     private double shearRate;
 
-	public ShearsFeature() {
+	public ShearsFeature(Settings settings) {
 		super("Shears", "Using shears on leaves gives an increased rate of apples.");
 		
 		icon.setType(Material.SHEARS);
 		slot = 37;
+		
+		this.settings = settings;
 	}
 
 	/**

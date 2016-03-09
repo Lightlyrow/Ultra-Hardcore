@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
-import com.leontg77.ultrahardcore.Timers;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
@@ -35,13 +34,10 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * @author LeonTG77
  */
 public class InvGUI {
+	private final Main plugin;
 	
-
-	protected final Timers timer = Timers.getInstance();
-	protected final Game game = Game.getInstance();
-	
-	public InvGUI() {
-		
+	public InvGUI(Main plugin) {
+		this.plugin = plugin;
 	}
 	
 	public HashMap<Player, HashMap<Integer, Inventory>> pagesForPlayer = new HashMap<Player, HashMap<Integer, Inventory>>();
@@ -71,15 +67,14 @@ public class InvGUI {
 		return hof;
 	}
 	
-	public void setup() {
+	public void setup(Settings settings) {
 		PluginManager manager = Bukkit.getPluginManager();
-		Settings settings = Settings.getInstance();
 		
-		manager.registerEvents(gameInfo, Main.plugin);
-		manager.registerEvents(topStats, Main.plugin);
-		manager.registerEvents(stats, Main.plugin);
-		manager.registerEvents(hof, Main.plugin);
-		manager.registerEvents(config, Main.plugin);
+		manager.registerEvents(gameInfo, plugin);
+		manager.registerEvents(topStats, plugin);
+		manager.registerEvents(stats, plugin);
+		manager.registerEvents(hof, plugin);
+		manager.registerEvents(config, plugin);
 		
 		gameInfo.update();
 		gameInfo.updateStaff();
@@ -96,7 +91,7 @@ public class InvGUI {
 			public void run() {
 				gameInfo.updateTimer();
 			}
-		}.runTaskTimer(Main.plugin, 1, 1);
+		}.runTaskTimer(plugin, 1, 1);
 	}
 	
 	/**
@@ -105,7 +100,7 @@ public class InvGUI {
 	 * @param player the player opening for.
 	 * @return The opened inventory.
 	 */
-	public Inventory openSelector(Player player) {
+	public Inventory openSelector(Game game, Player player) {
 		List<Player> list = game.getPlayers();
 		Inventory inv = null;
 		
@@ -234,7 +229,7 @@ public class InvGUI {
 			}
 		});
 		
-		invsee.get(inv).runTaskTimer(Main.plugin, 1, 1);
+		invsee.get(inv).runTaskTimer(plugin, 1, 1);
 		player.openInventory(inv);
 		
 		return inv;
@@ -289,7 +284,7 @@ public class InvGUI {
 	 * @param player The player opening for.
 	 * @return The opened inventory.
 	 */
-	public Inventory openConfigOptions(Player player) {
+	public Inventory openConfig(Player player) {
 		Inventory inv = config.get();
 		
 		player.openInventory(inv);
@@ -358,7 +353,7 @@ public class InvGUI {
 		for (int i = 0; i < inv.getSize(); i++) {
 			bool = !bool;
 			
-			if (inv.getItem(i) != null || inv.getItem(i).getType() == Material.AIR) {
+			if (inv.getItem(i) != null || inv.getItem(i).getType() != Material.AIR) {
 				continue;
 			}
 			

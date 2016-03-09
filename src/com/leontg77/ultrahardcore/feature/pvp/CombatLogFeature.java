@@ -26,14 +26,18 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class CombatLogFeature extends Feature implements Listener {
-	private final SpecManager spec = SpecManager.getInstance();
+	private final SpecManager spec;
+	private final Main plugin;
+	
+	public CombatLogFeature(Main plugin, SpecManager spec) {
+		super("Combat Log", "Kills people that log out in combat.");
+		
+		this.plugin = plugin;
+		this.spec = spec;
+	}
 	
 	public static Map<UUID, BukkitRunnable> combatTask = new HashMap<UUID, BukkitRunnable>();
 	public static Map<UUID, Integer> combat = new HashMap<UUID, Integer>();
-	
-	public CombatLogFeature() {
-		super("Combat Log", "Kills people that log out in combat.");
-	}
 	  
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void on(PlayerQuitEvent event) {
@@ -97,7 +101,7 @@ public class CombatLogFeature extends Feature implements Listener {
 					}
 				});
 				
-				combatTask.get(killerUUID).runTaskTimer(Main.plugin, 20L, 20L);
+				combatTask.get(killerUUID).runTaskTimer(plugin, 20L, 20L);
 			}
 		} 
 		
@@ -134,7 +138,7 @@ public class CombatLogFeature extends Feature implements Listener {
 					}
 				});
 				
-				combatTask.get(killerUUID).runTaskTimer(Main.plugin, 20L, 20L);
+				combatTask.get(killerUUID).runTaskTimer(plugin, 20L, 20L);
 			}
 		}
 		
@@ -156,7 +160,7 @@ public class CombatLogFeature extends Feature implements Listener {
 				}
 			});
 			
-			combatTask.get(playerUUID).runTaskTimer(Main.plugin, 20L, 20L);
+			combatTask.get(playerUUID).runTaskTimer(plugin, 20L, 20L);
 		}
 	}
 }

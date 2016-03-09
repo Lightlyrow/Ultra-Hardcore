@@ -9,7 +9,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 
 /**
@@ -18,9 +17,12 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  * @author LeonTG77
  */
 public class Diamondless extends Scenario implements Listener {
-
-	public Diamondless() {
-		super("Diamondless", "You can't mine diamonds.");
+	private final CutClean cc;
+	
+	public Diamondless(CutClean cc) {
+		super("Diamondless", "Mining diamond ore will result in dropping iron.");
+		
+		this.cc = cc;
 	}
 
 	@Override
@@ -38,8 +40,7 @@ public class Diamondless extends Scenario implements Listener {
 			return;
 		}
     	
-		boolean cutclean = ScenarioManager.getInstance().getScenario(CutClean.class).isEnabled();
-		ItemStack replace = new ItemStack(cutclean ? Material.IRON_INGOT : Material.IRON_ORE);
+		ItemStack replace = new ItemStack(cc.isEnabled() ? Material.IRON_INGOT : Material.IRON_ORE);
 		
 		BlockUtils.blockBreak(player, block);
 		BlockUtils.degradeDurabiliy(player);

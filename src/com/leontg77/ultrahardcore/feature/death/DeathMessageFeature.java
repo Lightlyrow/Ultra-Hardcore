@@ -19,6 +19,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.Arena;
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -31,11 +32,19 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class DeathMessageFeature extends Feature implements Listener {
 	private final Arena arena;
+	private final Game game;
 
-	public DeathMessageFeature(Arena arena) {
+	/**
+	 * Death Messages feature class contructor.
+	 * 
+	 * @param arena The arena class.
+	 * @param game The game class.
+	 */
+	public DeathMessageFeature(Arena arena, Game game) {
 		super("Death Messages", "Modified death messages.");
 		
 		this.arena = arena;
+		this.game = game;
 	}
 
 	@EventHandler
@@ -56,12 +65,11 @@ public class DeathMessageFeature extends Feature implements Listener {
 	    String deathMessage = event.getDeathMessage();
 	    event.setDeathMessage(null);
 	    
-	    // I don't care about the rest if it hasn't started or they're not in a game world.
 	    if (!State.isState(State.INGAME) || !worlds.contains(player.getWorld())) {
 	    	return;
 	    }
 
-		final Player killer = player.getKiller();
+		Player killer = player.getKiller();
 		
 		if (deathMessage == null || deathMessage.isEmpty()) {
 			return;
@@ -72,10 +80,10 @@ public class DeathMessageFeature extends Feature implements Listener {
 			return;
 		}
 		
-		final ItemStack item = killer.getItemInHand();
+		ItemStack item = killer.getItemInHand();
 		
-		final double distance = killer.getLocation().distance(player.getLocation());
-		final String shotDistance = " §8(§6" + NumberUtils.formatDouble(distance) + " §7blocks§8)";
+		double distance = killer.getLocation().distance(player.getLocation());
+		String shotDistance = " §8(§6" + NumberUtils.formatDouble(distance) + " §7blocks§8)";
 		
 		if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !deathMessage.contains(killer.getName()) || (!deathMessage.contains("slain") && !deathMessage.contains("shot"))) {
 			if (deathMessage.contains("shot")) {
@@ -86,12 +94,12 @@ public class DeathMessageFeature extends Feature implements Listener {
 			return;
 		}
 			
-		final String name = item.getItemMeta().getDisplayName();
+		String name = item.getItemMeta().getDisplayName();
 		
-		final ComponentBuilder builder = new ComponentBuilder("§8» §f" + deathMessage.replace("[" + name + "]", ""));
-		final String color = killer.getItemInHand().getEnchantments().isEmpty() ? "§f" : "§b";
+		ComponentBuilder builder = new ComponentBuilder("§8» §f" + deathMessage.replace("[" + name + "]", ""));
+		String color = killer.getItemInHand().getEnchantments().isEmpty() ? "§f" : "§b";
 
-		final StringBuilder colored = new StringBuilder();
+		StringBuilder colored = new StringBuilder();
 		
 		for (String entry : name.split(" ")) {
 			colored.append(color + "§o" + entry).append(" ");
@@ -104,7 +112,7 @@ public class DeathMessageFeature extends Feature implements Listener {
 			builder.append(shotDistance, FormatRetention.NONE);
 		}
 		
-		final BaseComponent[] result = builder.create();
+		BaseComponent[] result = builder.create();
 
 		for (Player online : Bukkit.getOnlinePlayers()) {
 			online.spigot().sendMessage(result);

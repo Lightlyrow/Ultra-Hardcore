@@ -29,11 +29,15 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class DragonRush extends Scenario implements Listener {
-	private int placed = 0;
+	private final SpecManager spec;
 	
-	public DragonRush() {
+	public DragonRush(SpecManager spec) {
 		super("DragonRush", "The first team to kill the dragon wins the game.");
+		
+		this.spec = spec;
 	}
+	
+	private int placed = 0;
 
 	@Override
 	public void onDisable() {
@@ -62,7 +66,6 @@ public class DragonRush extends Scenario implements Listener {
         Player player = event.getPlayer();
     	
     	Location loc = new Location(block.getWorld(), 0, block.getLocation().getY(), 0);
-        SpecManager spec = SpecManager.getInstance();
         
         if (spec.isSpectating(player)) {
         	return;

@@ -24,17 +24,6 @@ public class BoardManager {
 		this.plugin = plugin;
 	}
 	
-	private Game game;
-	
-	/**
-	 * Set the instance of the game to the givne instance.
-	 * 
-	 * @param game The game instance.
-	 */
-	public void setGame(Game game) {
-		this.game = game;
-	}
-	
 	private final Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 
 	private Objective nameHealth = board.getObjective("nameHealth");
@@ -101,7 +90,7 @@ public class BoardManager {
 	/**
 	 * Setup the scoreboard objectives.
 	 */
-	public void setup() {
+	public void setup(Game game) {
 		if (board.getObjective("kills") == null) {
 			kills = board.registerNewObjective("kills", "dummy");
 		}

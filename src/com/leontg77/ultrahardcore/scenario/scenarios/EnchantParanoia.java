@@ -15,8 +15,6 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.protocol.EnchantPreview;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -36,12 +34,12 @@ public class EnchantParanoia extends Scenario implements Listener {
 	public void onDisable() {
 		task.cancel();
 		
-		EnchantPreview.disable();
+//		EnchantPreview.disable();
 	}
 
 	@Override
 	public void onEnable() {
-		EnchantPreview.enable();
+//		EnchantPreview.enable();
 		
 		task = new BukkitRunnable() {
 			public void run() {
@@ -115,7 +113,7 @@ public class EnchantParanoia extends Scenario implements Listener {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 20, 20);
+//		task.runTaskTimer(Main.plugin, 20, 20);
 	}
 
 	@EventHandler

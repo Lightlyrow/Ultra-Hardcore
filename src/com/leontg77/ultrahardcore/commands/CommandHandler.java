@@ -86,6 +86,7 @@ import com.leontg77.ultrahardcore.commands.world.PregenCommand;
 import com.leontg77.ultrahardcore.commands.world.PvPCommand;
 import com.leontg77.ultrahardcore.commands.world.WorldCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -94,6 +95,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class CommandHandler implements CommandExecutor, TabCompleter {
+	private final Main plugin;
+	
+	public CommandHandler(Main plugin) {
+		this.plugin = plugin;
+	}
+	
 	private List<UHCCommand> cmds = new ArrayList<UHCCommand>();
 
 	@Override
@@ -214,13 +221,13 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	/**
 	 * Register all the commands.
 	 */
-	public void registerCommands() {
+	public void registerCommands(BoardManager board, SpecManager spec) {
 		// arena
 		cmds.add(new ArenaCommand());
 		cmds.add(new HotbarCommand());
 		
 		// banning
-		cmds.add(new BanCommand(BoardManager.getInstance()));
+		cmds.add(new BanCommand(board));
 		cmds.add(new BanIPCommand());
 		cmds.add(new DQCommand());
 		cmds.add(new KickCommand());

@@ -22,7 +22,6 @@ import com.leontg77.ultrahardcore.utils.LocationUtils;
  * @author LeonTG77
  */
 public class NetherFeature extends ToggleableFeature implements Listener {
-	private static final String WORLD_SUFFIX = "_nether";
 
 	public NetherFeature() {
 		super("Nether", "A dimension where everything is hot and full of lava.");
@@ -30,6 +29,8 @@ public class NetherFeature extends ToggleableFeature implements Listener {
 		icon.setType(Material.NETHER_STALK);
 		slot = 18;
 	}
+	
+	private static final String WORLD_SUFFIX = "_nether";
 
 	@EventHandler
     public void on(PlayerPortalEvent event) {

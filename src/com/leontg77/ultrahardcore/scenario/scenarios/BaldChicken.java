@@ -36,10 +36,6 @@ public class BaldChicken extends Scenario implements Listener {
 		
 		Entity entity = event.getEntity();
 		
-		if (!game.getWorlds().contains(entity.getWorld())) {
-			return;
-		}
-		
 		switch (entity.getType()) {
 		case CHICKEN:
 			for (ItemStack drop : event.getDrops()) {

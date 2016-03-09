@@ -1,13 +1,10 @@
 package com.leontg77.ultrahardcore.feature.health;
 
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
@@ -29,10 +26,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.Arena;
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
-import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.VengefulSpirits;
 
 /**
@@ -48,9 +46,17 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 	
 	private static final ItemStack PLAYER_SKULL = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_HEAD_DATA);
 	
+	private final Main plugin;
+	
+	private final VengefulSpirits spirit;
+	private final Settings settings;
+	
+	private final Arena arena;
+	private final Game game;
+	
     private int healAmount;
 
-	public GoldenHeadsFeature() {
+	public GoldenHeadsFeature(Main plugin, Settings settings, Arena arena, Game game, VengefulSpirits spirit) {
 		super("Golden Heads", "Crafted like a golden apple just with a head in the middle and heals more hearts.");
 
 		final ShapedRecipe recipe = new ShapedRecipe(new ItemStack(Material.GOLDEN_APPLE, 1))
@@ -66,6 +72,14 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 		icon.setDurability(PLAYER_HEAD_DATA);
 		
 		slot = 1;
+		
+		this.plugin = plugin;
+		
+		this.settings = settings;
+		this.spirit = spirit;
+		
+		this.arena = arena;
+		this.game = game;
 	}
 
 	/**
@@ -97,16 +111,12 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 
 		final Player player = event.getEntity();
 		
-		final List<World> worlds = game.getWorlds();
-		final Arena arena = Arena.getInstance();
-		
 		// the arena has it's own way of doing deaths.
 		if (arena.isEnabled() && arena.hasPlayer(player)) {
 			return;
 		} 
 	    
-	    // I don't care about the rest if it hasn't started or they're not in a game world.
-	    if (!State.isState(State.INGAME) || !worlds.contains(player.getWorld())) {
+	    if (!State.isState(State.INGAME) || !game.getWorlds().contains(player.getWorld())) {
 	    	return;
 	    }
 		
@@ -120,7 +130,7 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 				block = block.getRelative(BlockFace.UP);
 				block.setType(Material.SKULL);
 			    
-				final Skull skull;
+				Skull skull;
 				
 				try {
 			        skull = (Skull) block.getState();
@@ -137,21 +147,18 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 			    
 			    block.setData((byte) 0x1, true);
 			}
-		}.runTaskLater(Main.plugin, 1);
+		}.runTaskLater(plugin, 1);
 	}
 
     @EventHandler
     public void on(final PlayerItemConsumeEvent event) {
-    	final ScenarioManager scenMan = ScenarioManager.getInstance();
-    	final VengefulSpirits vengefulSpirits = scenMan.getScenario(VengefulSpirits.class);
-    	
     	// heads should be useable if vengeful spirits is enabled.
-        if (!isEnabled() && !vengefulSpirits.isEnabled()) {
+        if (!isEnabled() && !spirit.isEnabled()) {
         	return;
         }
         
-    	final Player player = event.getPlayer();
-    	final ItemStack item = event.getItem();
+    	Player player = event.getPlayer();
+    	ItemStack item = event.getItem();
 
         if (!isGoldenHead(item)) {
         	return;
@@ -162,29 +169,26 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 
     @EventHandler
     public void on(final PrepareItemCraftEvent event) {
-    	final ScenarioManager scenMan = ScenarioManager.getInstance();
-    	final VengefulSpirits vengefulSpirits = scenMan.getScenario(VengefulSpirits.class);
-    	
-    	final CraftingInventory inv = event.getInventory();
-    	final Recipe recipe = event.getRecipe();
+    	CraftingInventory inv = event.getInventory();
+    	Recipe recipe = event.getRecipe();
     	
         if (recipe.getResult().getType() != Material.GOLDEN_APPLE) {
         	return;
         }
 
-        final ItemStack centre = inv.getMatrix()[4];
+        ItemStack centre = inv.getMatrix()[4];
 
         if (centre == null || centre.getType() != Material.SKULL_ITEM) {
         	return;
         }
 
     	// heads should be craftable if vengeful spirits is enabled.
-        if (!isEnabled() && !vengefulSpirits.isEnabled()) {
+        if (!isEnabled() && !spirit.isEnabled()) {
         	inv.setResult(new ItemStack(Material.AIR));
             return;
         }
 
-        final SkullMeta meta = (SkullMeta) centre.getItemMeta();
+        SkullMeta meta = (SkullMeta) centre.getItemMeta();
         inv.setResult(getGoldenHeadItem(meta.hasOwner() ? meta.getOwner() : "Manually Crafted"));
     }
 

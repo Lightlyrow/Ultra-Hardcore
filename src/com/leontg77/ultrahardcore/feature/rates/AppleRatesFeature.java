@@ -14,6 +14,7 @@ import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 import com.leontg77.ultrahardcore.utils.TreeUtils;
@@ -28,12 +29,15 @@ public class AppleRatesFeature extends Feature implements Listener {
 	private static final String RATE_PATH = "rates.apple.rate";
 	private static final double SAPLING_RATE = 0.05;
 	
+	private final Settings settings;
     private double appleRate;
 
-	public AppleRatesFeature() {
+	public AppleRatesFeature(Settings settings) {
 		super("Apple rates", "Modifies the vanilla apple rates to a higher rate.");
 		
 		appleRate = settings.getConfig().getDouble(RATE_PATH, 0.0055);
+		
+		this.settings = settings;
 	}
 
 	/**

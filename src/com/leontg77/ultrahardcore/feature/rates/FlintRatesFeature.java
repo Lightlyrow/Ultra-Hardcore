@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 
@@ -22,12 +23,16 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  */
 public class FlintRatesFeature extends Feature implements Listener {
 	private static final String RATE_PATH = "rates.flint.rate";
+	
+	private final Settings settings;
     private double flintRate;
 
-	public FlintRatesFeature() {
+	public FlintRatesFeature(Settings settings) {
 		super("Flint rates", "Modifies the vanilla flint rates to a higher rate.");
 		
 		flintRate = settings.getConfig().getDouble(RATE_PATH, 0.0055);
+		
+		this.settings = settings;
 	}
 
 	/**

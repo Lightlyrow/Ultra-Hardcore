@@ -18,13 +18,15 @@ import com.leontg77.ultrahardcore.feature.ToggleableFeature;
  * @author LeonTG77
  */
 public class AbsorptionFeature extends ToggleableFeature implements Listener {
+	private final Main plugin;
 
-	public AbsorptionFeature() {
+	public AbsorptionFeature(Main plugin) {
 		super("Absorption", "Golden apples gives absorption when consumed.");
 		
 		icon.setType(Material.GOLDEN_APPLE);
-		
 		slot = 0;
+		
+		this.plugin = plugin;
 	}
 	
 	@EventHandler
@@ -44,6 +46,6 @@ public class AbsorptionFeature extends ToggleableFeature implements Listener {
 			public void run() {
 				player.removePotionEffect(PotionEffectType.ABSORPTION);
 			}
-        }.runTask(Main.plugin);
+        }.runTask(plugin);
 	}
 }

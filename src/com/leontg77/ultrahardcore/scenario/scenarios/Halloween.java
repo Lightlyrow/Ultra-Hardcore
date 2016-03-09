@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Bat;
@@ -24,6 +25,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
@@ -36,19 +38,26 @@ import com.leontg77.ultrahardcore.utils.LocationUtils;
  * @author LeonTG77
  */
 public class Halloween extends Scenario implements Listener {
-	private BukkitRunnable task;
+	private final Main plugin;
+	private final Game game;
 	
-	public Halloween() {
+	public Halloween(Main plugin, Game game) {
 		super("Halloween", "Random lightnining strikes around the player at random intervals causing bats to spawn around you and giving you nausea for 10 seconds if you get hit. Getting hit by a hostile mob causes 15 seconds of blindness. All spiders are replaced with cave spiders, witch rates are upped at last Zombies and Skellies spawn with jack o' lanterns.");
+		
+		this.plugin = plugin;
+		this.game = game;
 	}
+	
+	private BukkitRunnable task = null;
 
 	@Override
 	public void onDisable() {
-		task.cancel();
+		if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+			task.cancel();
+		}
+		
+		task = null;
 	}
-
-	@Override
-	public void onEnable() {}
 	
 	@EventHandler
 	public void on(GameStartEvent event) {
@@ -71,16 +80,16 @@ public class Halloween extends Scenario implements Listener {
 						public void run() {
 							hitLoc.setY(LocationUtils.highestTeleportableYAtLocation(hitLoc) + 1);
 							
-							for (int i = 0; i < 15; i++) {
+							for (int i = 0; i < 4; i++) {
 								hitLoc.getWorld().spawn(hitLoc, Bat.class).addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0));
 							}
 						}
-					}.runTaskLater(Main.plugin, 15);
+					}.runTaskLater(plugin, 15);
 				}
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 6000, 700);
+		task.runTaskTimer(plugin, 6000, 700);
 	}
 
 	@EventHandler

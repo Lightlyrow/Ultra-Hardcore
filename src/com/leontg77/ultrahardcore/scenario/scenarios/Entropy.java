@@ -6,9 +6,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
-import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -18,15 +18,24 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Entropy extends Scenario implements Listener {
-	private BukkitRunnable task;
+	private final Main plugin;
+	private final Game game;
 	
-	public Entropy() {
+	public Entropy(Main plugin, Game game) {
 		super("Entropy", "Every 10 min 1XP level is \"drained\" from you. If you don't have any levels when the drain occurs, you die.");
+		
+		this.plugin = plugin;
+		this.game = game;
 	}
 
+	private BukkitRunnable task;
+	
 	@Override
 	public void onDisable() {
-		task.cancel();
+		if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+			task.cancel();
+		}
+		
 		task = null;
 	}
 
@@ -37,11 +46,7 @@ public class Entropy extends Scenario implements Listener {
 	public void on(GameStartEvent event) {
 		task = new BukkitRunnable() {
 			public void run() {
-				for (Player online : Bukkit.getOnlinePlayers()) {
-					if (SpecManager.getInstance().isSpectating(online)) {
-						continue;
-					}
-					
+				for (Player online : game.getPlayers()) {
 					if (online.getLevel() == 0) {
 						PlayerUtils.broadcast("§c" + online.getName() + " ran out of energy!");
 						
@@ -59,6 +64,6 @@ public class Entropy extends Scenario implements Listener {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 12000, 12000);
+		task.runTaskTimer(plugin, 12000, 12000);
 	}
 }

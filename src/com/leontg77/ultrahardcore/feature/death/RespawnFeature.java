@@ -20,15 +20,17 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  * @author LeonTG77
  */
 public class RespawnFeature extends Feature implements Listener {
+	private final SpecManager spec;
 	private final Main plugin;
 	
 	private final Arena arena;
 	private final Game game;
 
-	public RespawnFeature(Main plugin, Arena arena, Game game) {
+	public RespawnFeature(Main plugin, SpecManager spec, Arena arena, Game game) {
 		super("Respawn", "Messages and auto spec mode when someone respawn!");
 
 		this.plugin = plugin;
+		this.spec = spec;
 		
 		this.arena = arena;
 		this.game = game;
@@ -38,7 +40,7 @@ public class RespawnFeature extends Feature implements Listener {
 	public void on(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
 		
-		event.setRespawnLocation(Main.getSpawn());
+		event.setRespawnLocation(plugin.getSpawn());
 		player.setMaxHealth(20);
 		
 		if (arena.isEnabled() || !State.isState(State.INGAME) || game.isRecordedRound()) {
@@ -63,9 +65,11 @@ public class RespawnFeature extends Feature implements Listener {
 		
 		new BukkitRunnable() {
 			public void run() {
-				final SpecManager spec = SpecManager.getInstance();
+				if (!State.isState(State.INGAME) && !State.isState(State.ENDING)) {
+					return;
+				}
 				
-				if (!State.isState(State.INGAME) || !player.isOnline() || spec.isSpectating(player)) {
+				if (!player.isOnline() || spec.isSpectating(player)) {
 					return;
 				}
 				

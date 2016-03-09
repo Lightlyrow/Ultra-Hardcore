@@ -2,8 +2,10 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -14,13 +16,19 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class Fallout extends Scenario {
-	private BukkitRunnable task;
+public class Fallout extends Scenario implements Listener {
+	private final Main plugin;
+	private final Game game;
 	
-	public Fallout() {
+	public Fallout(Main plugin, Game game) {
 		super("Fallout", "After a certain amount of time, any player above y: 60 will begin to take half a heart of damage every 30 seconds.");
+		
+		this.plugin = plugin;
+		this.game = game;
 	}
 
+	private BukkitRunnable task;
+	
 	@Override
 	public void onDisable() {
 		task.cancel();
@@ -44,6 +52,6 @@ public class Fallout extends Scenario {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 600, 600);
+		task.runTaskTimer(plugin, 600, 600);
 	}
 }

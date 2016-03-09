@@ -21,9 +21,12 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author LeonTG77
  */
 public class Coco extends Scenario implements Listener {
+	private final Main plugin;
 
-	public Coco() {
+	public Coco(Main plugin) {
 		super("Coco", "Everyone starts out with 5 cocoa beans. If you right click the cocoa bean, you 'eat' it and receive speed I for 30 seconds and strength I for 10 seconds. After 30 seconds, you receive 15 seconds of slowness I and 5 seconds of weakness I.");
+	
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -73,6 +76,6 @@ public class Coco extends Scenario implements Listener {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 300, 0));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100, 0));
 			}
-		}.runTaskLater(Main.plugin, 600);
+		}.runTaskLater(plugin, 600);
 	}
 }

@@ -1,6 +1,7 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -24,29 +25,29 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Captains extends Scenario implements Listener, CommandExecutor {
-	private ArrayList<String> captains = new ArrayList<String>();
+	public static final String PREFIX = "§6Captains §8» §7";
+	
+	private final TeamManager teams;
+	private final SpecManager spec;
+
+	public Captains(Main plugin, TeamManager teams, SpecManager spec) {
+		super("Captains", "Theres X amount of captains, there will be rounds where one captain will choose a player until it reaches the teamsize.");
+		
+		this.teams = teams;
+		this.spec = spec;
+		
+		plugin.getCommand("addcaptain").setExecutor(this);
+		plugin.getCommand("removecaptain").setExecutor(this);
+		plugin.getCommand("randomcaptain").setExecutor(this);
+		plugin.getCommand("cycle").setExecutor(this);
+		plugin.getCommand("choose").setExecutor(this);
+	}
+
+	private List<String> captains = new ArrayList<String>();
 	private String chooser = "none";
 	
 	private boolean cycle = false;
 	private int current = -1;
-	
-	public static final String PREFIX = "§8[§6Captains§8] §f";
-
-	public Captains() {
-		super("Captains", "Theres X amount of captains, there will be rounds where one captain will choose a player until it reaches the teamsize.");
-		
-		Bukkit.getPluginCommand("addcaptain").setExecutor(this);
-		Bukkit.getPluginCommand("removecaptain").setExecutor(this);
-		Bukkit.getPluginCommand("randomcaptain").setExecutor(this);
-		Bukkit.getPluginCommand("cycle").setExecutor(this);
-		Bukkit.getPluginCommand("choose").setExecutor(this);
-	}
-
-	@Override
-	public void onDisable() {}
-	
-	@Override
-	public void onEnable() {}
 
 	public boolean onCommand(CommandSender player, Command cmd, String label, String[] args) {
 		if (!isEnabled()) {
@@ -72,7 +73,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 
-			Team team = TeamManager.getInstance().findAvailableTeam();
+			Team team = teams.findAvailableTeam();
 			
 			if (team == null) {
 				player.sendMessage(ChatColor.RED + "No more available teams.");
@@ -106,7 +107,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				return true;
 			}
 			
-			Team t = TeamManager.getInstance().getTeam(args[0]);
+			Team t = teams.getTeam(args[0]);
 			
 			if (t != null) {
 				t.removeEntry(args[0]);
@@ -148,7 +149,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 						continue;
 					}
 					
-					if (SpecManager.getInstance().isSpectating(online)) {
+					if (spec.isSpectating(online)) {
 						continue;
 					}
 					
@@ -158,7 +159,7 @@ public class Captains extends Scenario implements Listener, CommandExecutor {
 				String s = list.get(new Random().nextInt(list.size()));
 				captains.add(s);
 				
-				Team t = TeamManager.getInstance().findAvailableTeam();
+				Team t = teams.findAvailableTeam();
 				
 				if (t == null) {
 					return true;

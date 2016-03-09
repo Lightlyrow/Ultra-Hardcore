@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
@@ -21,17 +22,24 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * @author LeonTG77
  */
 public class ShootHealthFeature extends Feature implements Listener {
+	private final Main plugin;
+	
+	private final ScenarioManager scen;
+	private final Game game;
 
-	public ShootHealthFeature() {
+	public ShootHealthFeature(Main plugin, Game game, ScenarioManager scen) {
 		super("Shoot Health", "Displays the shot persons health to the shooter.");
+
+		this.plugin = plugin;
+		
+		this.scen = scen;
+		this.game = game;
 	}
 	
 	@EventHandler(ignoreCancelled = true)
 	public void on(EntityDamageByEntityEvent event) {
-		final Entity attacked = event.getEntity();
-		final Entity attacker = event.getDamager();
-		
-		final ScenarioManager scen = ScenarioManager.getInstance();
+		Entity attacked = event.getEntity();
+		Entity attacker = event.getDamager();
 		
     	if (game.isRecordedRound() || scen.getScenario(TeamHealth.class).isEnabled() || scen.getScenario(Paranoia.class).isEnabled()) {
 			return;
@@ -50,15 +58,15 @@ public class ShootHealthFeature extends Feature implements Listener {
 		
 		new BukkitRunnable() {
 			public void run() {
-				final Player killer = (Player) arrow.getShooter();
+				Player killer = (Player) arrow.getShooter();
 				
-				final double health = player.getHealth();
-				final String percent = NumberUtils.makePercent(health);
+				double health = player.getHealth();
+				String percent = NumberUtils.makePercent(health);
 				
 				if (health > 0.0000) {
 					killer.sendMessage(Main.PREFIX + "§6" + player.getName() + " §7is now at §a" + percent + "%");
 				}
 			}
-		}.runTaskLater(Main.plugin, 1);
+		}.runTaskLater(plugin, 1);
 	}
 }

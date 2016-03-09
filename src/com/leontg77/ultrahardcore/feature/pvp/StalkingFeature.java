@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.feature.pvp;
 
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.feature.Feature;
 
 /**
@@ -9,16 +10,20 @@ import com.leontg77.ultrahardcore.feature.Feature;
  */
 public class StalkingFeature extends Feature {
 	private static final String PATH = "feature.stalking.rule";
+	
+	private final Settings settings;
 	private StalkingRule rule;
 
-	public StalkingFeature() {
+	public StalkingFeature(Settings settings) {
 		super("Stalking", "Change what types of stalking is allowed.");
 		
 		try {
-			rule = StalkingRule.valueOf(settings.getConfig().getString(PATH, "ALLOWED_NOT_EXCESSIVE").toUpperCase());
+			rule = StalkingRule.valueOf(settings.getConfig().getString(PATH).toUpperCase());
 		} catch (Exception e) {
 			rule = StalkingRule.ALLOWED_NOT_EXCESSIVE;
 		}
+		
+		this.settings = settings;
 	}
 	
 	/**

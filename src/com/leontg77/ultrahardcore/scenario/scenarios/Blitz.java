@@ -5,7 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.events.MeetupEvent;
@@ -17,13 +19,15 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author LeonTG77
  */
 public class Blitz extends Scenario implements Listener {
+	private final Timer timer;
+	private final Game game;
 	
-	public Blitz() {
+	public Blitz(Timer timer, Game game) {
 		super("Blitz", "Players start at 0.5 hearts. The game lasts a maximum of 1 hour. Players will normally be healed before meetup/sudden death.");
+		
+		this.timer = timer;
+		this.game = game;
 	}
-	
-	@Override
-	public void onDisable() {}
 
 	@Override
 	public void onEnable() {

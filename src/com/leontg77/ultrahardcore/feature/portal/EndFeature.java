@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
@@ -21,14 +22,20 @@ import com.leontg77.ultrahardcore.utils.LocationUtils;
  * @author LeonTG77
  */
 public class EndFeature extends ToggleableFeature implements Listener {
-	private static final String WORLD_SUFFIX = "_end";
+	private final Main plugin;
+	private final Game game;
 
-	public EndFeature() {
+	public EndFeature(Main plugin, Game game) {
 		super("The End", "A dimension with a floating island where the dragon lives.");
 
 		icon.setType(Material.ENDER_PORTAL_FRAME);
 		slot = 19;
+
+		this.plugin = plugin;
+		this.game = game;
 	}
+	
+	private static final String WORLD_SUFFIX = "_end";
 
 	@EventHandler
     public void onPlayerPortal(PlayerPortalEvent event) {
@@ -51,7 +58,7 @@ public class EndFeature extends ToggleableFeature implements Listener {
         switch (from.getWorld().getEnvironment()) {
 		case THE_END:
 			if (game.getWorld() == null) {
-	        	event.setTo(Main.getSpawn());
+	        	event.setTo(plugin.getSpawn());
 			} else {
 				event.setTo(game.getWorld().getSpawnLocation());
 			}

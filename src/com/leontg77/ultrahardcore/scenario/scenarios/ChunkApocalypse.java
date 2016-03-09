@@ -29,26 +29,25 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ChunkApocalypse extends Scenario implements Listener, CommandExecutor {
+	public static final String PREFIX = "§b[§2ChunkApoc§b] §3";
+	
+	private final Main plugin;
+	
+	public ChunkApocalypse(Main plugin) {
+		super("ChunkApocalypse", "Every chunk has a 30% chance of being replaced with air");
+		
+		plugin.getCommand("chunkapo").setExecutor(this);
+		
+		this.plugin = plugin;
+	}
+	
 	private ArrayList<Location> locations = new ArrayList<Location>();
 	private int totalChunks;
 	
-	public static final String PREFIX = "§b[§2ChunkApoc§b] §3";
-	public static BukkitRunnable task = null;
-	
-	public ChunkApocalypse() {
-		super("ChunkApocalypse", "Every chunk has a 30% chance of being replaced with air");
-		
-		Bukkit.getPluginCommand("chunkapo").setExecutor(this);
-	}
-
-	@Override
-	public void onDisable() {}
-	
-	@Override
-	public void onEnable() {}
+	private BukkitRunnable task = null;
 
 	@EventHandler
-    public void onFlow(BlockFromToEvent event) {
+    public void on(BlockFromToEvent event) {
 		if (task == null) {
 			return;
 		}
@@ -132,7 +131,7 @@ public class ChunkApocalypse extends Scenario implements Listener, CommandExecut
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 1, 1);
+		task.runTaskTimer(plugin, 1, 1);
 		return true;
 	}
 }

@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.feature.Feature;
 
 /**
@@ -15,12 +16,17 @@ import com.leontg77.ultrahardcore.feature.Feature;
  */
 public class PearlDamageFeature extends Feature implements Listener {
 	private static final String PATH = "feature.pearldamage.enabled";
+	
+	private final Settings settings;
+	
 	private double pearlDamage;
 
-	public PearlDamageFeature() {
+	public PearlDamageFeature(Settings settings) {
 		super("Pearl Damage", "Modify how much damage enderpearls do.");
 
 		pearlDamage = settings.getConfig().getDouble(PATH, 0);
+		
+		this.settings = settings;
 	}
 	
 	/**
@@ -46,7 +52,7 @@ public class PearlDamageFeature extends Feature implements Listener {
 	
 	@EventHandler
 	public void on(EntityDamageByEntityEvent event) {
-		final Entity attacker = event.getDamager();
+		Entity attacker = event.getDamager();
 		
 		if (!(attacker instanceof EnderPearl)) {
 			return;

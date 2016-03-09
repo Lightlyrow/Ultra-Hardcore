@@ -39,8 +39,10 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
@@ -51,6 +53,19 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  * @author Bergasms, modified by LeonTG77
  */
 public class Astrophobia extends Scenario implements Listener {
+	private final Main plugin;
+	
+	private final Timer timer;
+	private final Game game;
+
+	public Astrophobia(Main plugin, Timer timer, Game game) {
+		super("Astrophobia", "The sun is gone, and the world is in eternal night. Deadly meteors impact the surface at random, leaving craters and flames, and sometimes ores. Aliens arrive from the sky wearing protective armor and shooting powerful weapons. Their tracking bombs (charged creepers) are fired onto the world to target any players that come near them. After defeating one, players can spawn a charged creeper of their own.");
+	
+		this.plugin = plugin;
+		this.timer = timer;
+		this.game = game;
+	}
+	
 	private BukkitRunnable task = null;
 
 	private static final long TICKS_TO_START = 6000;
@@ -62,10 +77,6 @@ public class Astrophobia extends Scenario implements Listener {
 	private static final double CHANCE_PER_DIAMOND = 0.1;
 	private static final double CHANCE_PER_GOLD = 0.3;
 	private static final double CHANCE_PER_IRON = 0.6;
-
-	public Astrophobia() {
-		super("Astrophobia", "The sun is gone, and the world is in eternal night. Deadly meteors impact the surface at random, leaving craters and flames, and sometimes ores. Aliens arrive from the sky wearing protective armor and shooting powerful weapons. Their tracking bombs (charged creepers) are fired onto the world to target any players that come near them. After defeating one, players can spawn a charged creeper of their own.");
-	}
 
 	@Override
 	public void onDisable() {
@@ -100,7 +111,7 @@ public class Astrophobia extends Scenario implements Listener {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, Math.max(0, TICKS_TO_START - (timer.getTimeSinceStartInSeconds() * 20)), TICK_INTERVAL);
+		task.runTaskTimer(plugin, Math.max(0, TICKS_TO_START - (timer.getTimeSinceStartInSeconds() * 20)), TICK_INTERVAL);
 	}
 
 	@EventHandler
@@ -327,7 +338,7 @@ public class Astrophobia extends Scenario implements Listener {
 			meteor.setFallDistance(150.0F);
 			meteor.setFuseTicks(FUSE);
 			
-			meteor.setMetadata("meteor", new FixedMetadataValue(Main.plugin, "isMeteor"));
+			meteor.setMetadata("meteor", new FixedMetadataValue(plugin, "isMeteor"));
 			
 			meteor.setIsIncendiary(rand.nextBoolean());
 			meteor.setYield(Math.max((float) ((1000.0D - loc.distance(new Location(game.getWorld(), 0.0D, 63.0D, 0.0D))) / 100.0D), 7.0F));

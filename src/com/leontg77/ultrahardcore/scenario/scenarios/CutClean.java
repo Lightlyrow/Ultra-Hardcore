@@ -32,16 +32,13 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  */
 @SuppressWarnings("deprecation")
 public class CutClean extends Scenario implements Listener {
+	private final ScenarioManager scen;
 	
-	public CutClean() {
+	public CutClean(ScenarioManager scen) {
 		super("CutClean", "No furnaces required! Iron, gold and food drop their cooked variety.");
+		
+		this.scen = scen;
 	}
-	
-	@Override
-	public void onDisable() {}
-
-	@Override
-	public void onEnable() {}
 	
 	@EventHandler
 	public void on(EntityDeathEvent event) {
@@ -93,8 +90,6 @@ public class CutClean extends Scenario implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
-		
-		ScenarioManager scen = ScenarioManager.getInstance();
 		
 		if (player.getGameMode() == GameMode.CREATIVE) {
 			return;

@@ -12,25 +12,34 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.leontg77.ultrahardcore.Arena;
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
 
 /**
- * DeathLightninig feature class.
+ * Death Lightninig feature class.
  * 
  * @author LeonTG77
  */
 public class DeathLightningFeature extends ToggleableFeature implements Listener {
 	private final Arena arena;
+	private final Game game;
 
-	public DeathLightningFeature(Arena arena) {
+	/**
+	 * Death Lightninig feature class contructor.
+	 * 
+	 * @param arena The arena class.
+	 * @param game The game class.
+	 */
+	public DeathLightningFeature(Arena arena, Game game) {
 		super("Death Lightning", "A fake lightning that will strike when a player dies.");
 		
 		icon.setType(Material.BLAZE_ROD);
 		slot = 49;
 		
 		this.arena = arena;
+		this.game = game;
 	}
 
 	@EventHandler
@@ -53,7 +62,6 @@ public class DeathLightningFeature extends ToggleableFeature implements Listener
 		player.setWhitelisted(false);
 		user.setDeathLocation(player.getLocation());
 	    
-	    // I don't care about the rest if it hasn't started or they're not in a game world.
 	    if (!State.isState(State.INGAME) || !worlds.contains(player.getWorld())) {
 	    	return;
 	    }

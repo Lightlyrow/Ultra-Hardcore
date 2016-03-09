@@ -17,9 +17,12 @@ import com.leontg77.ultrahardcore.feature.Feature;
  * @author LeonTG77
  */
 public class PortalTravelSoundFeature extends Feature implements Listener {
+	private final Main plugin;
 
-	public PortalTravelSoundFeature() {
+	public PortalTravelSoundFeature(Main plugin) {
 		super("Portal Travel Sound", "Play a sound when a player uses a portal.");
+		
+		this.plugin = plugin;
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -34,6 +37,6 @@ public class PortalTravelSoundFeature extends Feature implements Listener {
 			public void run() {
 		    	player.playSound(event.getTo(), Sound.PORTAL_TRAVEL, 0.3f, 1);
 			}
-		}.runTask(Main.plugin);
+		}.runTask(plugin);
     }
 }

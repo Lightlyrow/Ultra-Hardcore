@@ -34,15 +34,17 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Kings extends Scenario implements Listener, CommandExecutor {
-	private Set<String> kings = new HashSet<String>();
-	private TeamManager teams = TeamManager.getInstance();
+	private final TeamManager teams;
 	
-	public Kings() {
+	public Kings(Main plugin, TeamManager teams) {
 		super("Kings", "Theres a king on each team, the king has 20 max hearts and resistance, if the king dies the teammates will be poisoned.");
-		Main main = Main.plugin;
 		
-		main.getCommand("kings").setExecutor(this);
+		plugin.getCommand("kings").setExecutor(this);
+		
+		this.teams = teams;
 	}
+	
+	private final Set<String> kings = new HashSet<String>();
 
 	@Override
 	public void onDisable() {

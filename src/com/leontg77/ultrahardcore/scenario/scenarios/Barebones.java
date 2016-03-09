@@ -17,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
 
 /**
@@ -26,9 +25,14 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  * @author LeonTG77
  */
 public class Barebones extends Scenario implements Listener {
+	private final CutClean cc;
+	private final Game game;
 	
-	public Barebones() {
+	public Barebones(Game game, CutClean cc) {
 		super("Barebones", "The Nether is disabled, and iron is the highest tier you can obtain through gearing up. When a player dies, they will drop 1 diamond, 1 golden apple, 32 arrows, and 2 string. You cannot craft an enchantment table, anvil, or golden apple. Mining any ore except coal or iron will drop an iron ingot.");
+	
+		this.game = game;
+		this.cc = cc;
 	}
 
 	@Override
@@ -54,12 +58,12 @@ public class Barebones extends Scenario implements Listener {
 			return;
 		}
 		
-		final boolean cutclean = ScenarioManager.getInstance().getScenario(CutClean.class).isEnabled();
-		final ItemStack replaced = new ItemStack (cutclean ? Material.IRON_INGOT : Material.IRON_ORE);
+		ItemStack replaced = new ItemStack(cc.isEnabled() ? Material.IRON_INGOT : Material.IRON_ORE);
 		
 		switch (block.getType()) {
 		case EMERALD_ORE:
 		case REDSTONE_BLOCK:
+		case GLOWING_REDSTONE_ORE:
 		case LAPIS_ORE:
 		case GOLD_ORE:
 		case DIAMOND_ORE:
@@ -82,13 +86,13 @@ public class Barebones extends Scenario implements Listener {
 			return;
 		}
 		
-		final Player player = event.getEntity();
+		Player player = event.getEntity();
 		
 		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 		
-		final List<ItemStack> drops = event.getDrops();
+		List<ItemStack> drops = event.getDrops();
 
 		drops.add(new ItemStack(Material.GOLDEN_APPLE, 1));
 		drops.add(new ItemStack(Material.DIAMOND, 1));
@@ -104,7 +108,7 @@ public class Barebones extends Scenario implements Listener {
 		
 		final Player player = (Player) event.getWhoClicked();
 		
-		if (!Game.getInstance().getWorlds().contains(player.getWorld())) {
+		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 		

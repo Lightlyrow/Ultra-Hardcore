@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
@@ -21,17 +22,20 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class LongshotFeature extends Feature implements Listener {
+	private final ScenarioManager scen;
+	private final Game game;
 
-	public LongshotFeature() {
+	public LongshotFeature(Game game, ScenarioManager scen) {
 		super("Longshot", "Displays in the chat if someone gets a long shot of 50+ blocks.");
+		
+		this.scen = scen;
+		this.game = game;
 	}
 	
 	@EventHandler(ignoreCancelled = true)
 	public void on(EntityDamageByEntityEvent event) {
-		final Entity attacked = event.getEntity();
-		final Entity attacker = event.getDamager();
-		
-		final ScenarioManager scen = ScenarioManager.getInstance();
+		Entity attacked = event.getEntity();
+		Entity attacker = event.getDamager();
 		
     	if (game.isRecordedRound() || scen.getScenario(RewardingLongshots.class).isEnabled() || scen.getScenario(RewardingLongshotsPlus.class).isEnabled()) {
 			return;

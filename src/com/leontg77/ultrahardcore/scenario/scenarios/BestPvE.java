@@ -19,6 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -30,15 +31,21 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BestPvE extends Scenario implements Listener, CommandExecutor {
-	private final Set<String> list = new HashSet<String>();
-	private BukkitRunnable task;
+	private final Timer timer;
+	private final Main plugin;
 
-	public BestPvE() {
+	public BestPvE(Main plugin, Timer timer) {
 		super("BestPvE", "Everyone starts on a list called bestpve list, if you take damage you are removed from the list. The only way to get back on the list is getting a kill, All players on the bestpve list gets 1 extra heart each 10 minutes.");
 	
-		Bukkit.getPluginCommand("pve").setExecutor(this);
-		Bukkit.getPluginCommand("pvelist").setExecutor(this);
+		plugin.getCommand("pve").setExecutor(this);
+		plugin.getCommand("pvelist").setExecutor(this);
+
+		this.plugin = plugin;
+		this.timer = timer;
 	}
+	
+	private final Set<String> list = new HashSet<String>();
+	private BukkitRunnable task;
 	
 	@Override
 	public void onDisable() {
@@ -80,7 +87,7 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 12000, 12000);
+		task.runTaskTimer(plugin, 12000, 12000);
 	}
 	
 	@EventHandler
@@ -119,7 +126,7 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 			public void run() {
 				list.add(player.getName());
 			}
-		}.runTaskLater(Main.plugin, 40);
+		}.runTaskLater(plugin, 40);
 	}
 
 	@EventHandler(ignoreCancelled = true)

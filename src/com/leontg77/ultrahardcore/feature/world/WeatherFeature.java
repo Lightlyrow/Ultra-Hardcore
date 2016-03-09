@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore.feature.world;
 
-import java.util.List;
-
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,11 +21,11 @@ public class WeatherFeature extends Feature implements Listener {
 
 	private final Timer timer;
 
-	public WeatherFeature(Game game, Timer timer) {
+	public WeatherFeature(Timer timer, Game game) {
 		super("Weather", "Disable thunder storms completly and disable rain before pvp and after meetup.");
-		
-		this.game = game;
+
 		this.timer = timer;
+		this.game = game;
 	}
 
 	@EventHandler
@@ -35,11 +33,10 @@ public class WeatherFeature extends Feature implements Listener {
 		if (!event.toWeatherState()) {
 			return;
 		}
-
-		List<World> worlds = game.getWorlds();
+		
 		World world = event.getWorld();
 
-		if (!worlds.contains(world)) {
+		if (!game.getWorlds().contains(world)) {
 			event.setCancelled(true);
 			return;
 		}

@@ -67,6 +67,12 @@ import com.leontg77.ultrahardcore.feature.world.WorldUpdaterFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedQuartzXPFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedXPFeature;
 import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.managers.SpecManager;
+import com.leontg77.ultrahardcore.managers.TeamManager;
+import com.leontg77.ultrahardcore.protocol.EnchantPreview;
+import com.leontg77.ultrahardcore.protocol.HardcoreHearts;
+import com.leontg77.ultrahardcore.scenario.ScenarioManager;
+import com.leontg77.ultrahardcore.scenario.scenarios.VengefulSpirits;
 
 /**
  * Scenario management class.
@@ -148,22 +154,22 @@ public class FeatureManager {
 	/**
 	 * Setup all the feature classes.
 	 */
-	public void setup(Arena arena, Game game, Timer timer, BoardManager board) {
+	public void registerFeatures(Arena arena, Game game, Timer timer, BoardManager board, TeamManager team, SpecManager spec, EnchantPreview ench, HardcoreHearts heart, ScenarioManager scen) {
 		final PotionFuelListener listener = new PotionFuelListener();
 		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	    
 		// permanent
-		addFeature(new BorderShrinkFeature());
+		addFeature(new BorderShrinkFeature(plugin, settings, timer, game));
 		
 		// death
-		addFeature(new DeathLightningFeature(arena));
-		addFeature(new DeathMessageFeature(arena));
-		addFeature(new RespawnFeature(plugin, arena, game));
+		addFeature(new DeathLightningFeature(arena, game));
+		addFeature(new DeathMessageFeature(arena, game));
+		addFeature(new RespawnFeature(plugin, spec, arena, game));
 		
 		// enchants
 		addFeature(new AnvilsFeature());
 		addFeature(new BookshelfFeature());
-		addFeature(new EnchantmentPreviewFeature());
+		addFeature(new EnchantmentPreviewFeature(ench));
 		
 		// entity
 		addFeature(new MobRatesFeature(timer, game));
@@ -171,12 +177,12 @@ public class FeatureManager {
 		addFeature(new WitchHealthPotionFeature());
 		
 		// food
-		addFeature(new SaturationFixFeature());
+		addFeature(new SaturationFixFeature(plugin));
 		
 		// health
-		addFeature(new AbsorptionFeature());
-		addFeature(new GoldenHeadsFeature());
-		addFeature(new HardcoreHeartsFeature());
+		addFeature(new AbsorptionFeature(plugin));
+		addFeature(new GoldenHeadsFeature(plugin, settings, arena, game, scen.getScenario(VengefulSpirits.class)));
+		addFeature(new HardcoreHeartsFeature(plugin, heart));
 		addFeature(new HealthRegenFeature());
 		
 		// horses
@@ -185,14 +191,14 @@ public class FeatureManager {
 		addFeature(new HorseHealingFeature());
 		
 		// pearl
-		addFeature(new PearlDamageFeature());
+		addFeature(new PearlDamageFeature(settings));
 		
 		// portal
-		addFeature(new EndFeature());
+		addFeature(new EndFeature(plugin, game));
 		addFeature(new NetherFeature());
 		addFeature(new PortalCampingFeature());
 		addFeature(new PortalTrappingFeature());
-		addFeature(new PortalTravelSoundFeature());
+		addFeature(new PortalTravelSoundFeature(plugin));
 		
 		// potions
 		addFeature(new NerfedStrengthFeature());
@@ -202,19 +208,19 @@ public class FeatureManager {
 		addFeature(new Tier2PotionFeature(listener));
 		
 		// pvp
-		addFeature(new AntiIPvPFeature());
-		addFeature(new CombatLogFeature());
-		addFeature(new LongshotFeature());
-		addFeature(new ShootHealthFeature());
-		addFeature(new StalkingFeature());
+		addFeature(new AntiIPvPFeature(game, team, spec));
+		addFeature(new CombatLogFeature(plugin, spec));
+		addFeature(new LongshotFeature(game, scen));
+		addFeature(new ShootHealthFeature(plugin, game, scen));
+		addFeature(new StalkingFeature(settings));
 		
 		// rainbow
 		addFeature(new RainbowArmorFeature(plugin));
 		
 		// rates
-		addFeature(new AppleRatesFeature());
-		addFeature(new FlintRatesFeature());
-		addFeature(new ShearsFeature());
+		addFeature(new AppleRatesFeature(settings));
+		addFeature(new FlintRatesFeature(settings));
+		addFeature(new ShearsFeature(settings));
 		
 		// recipes.
 		addFeature(new GlisteringMelonRecipeFeature());
@@ -224,8 +230,8 @@ public class FeatureManager {
 		addFeature(new NotchApplesFeature());
 		
 		// scoreboard
-		addFeature(new KillBoardFeature());
-		addFeature(new SidebarResetFeature());
+		addFeature(new KillBoardFeature(arena, game, board, team));
+		addFeature(new SidebarResetFeature(arena, game, board, team));
 		
 		// serverlist
 		addFeature(new ServerMOTDFeature(game));
@@ -233,10 +239,10 @@ public class FeatureManager {
 		// tablist
 		addFeature(new HeartsOnTabFeature(board));
 		addFeature(new PercentOnTabFeature(plugin, board));
-		addFeature(new TabHealthColorFeature(plugin));
+		addFeature(new TabHealthColorFeature(plugin, spec));
 		
 		// world
-		addFeature(new WeatherFeature(game, timer));
+		addFeature(new WeatherFeature(timer, game));
 		addFeature(new WorldUpdaterFeature(plugin));
 		
 		// xp

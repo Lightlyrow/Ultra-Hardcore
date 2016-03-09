@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 
@@ -22,11 +23,16 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  */
 public class BenchBlitz extends Scenario implements Listener {
 	private static final String PREFIX = "§6§lBenchBlitz §8» §7";
-	private final Set<UUID> hasCrafted = new HashSet<UUID>();
+
+	private final Game game;
 	
-	public BenchBlitz() {
+	public BenchBlitz(Game game) {
 		super("BenchBlitz", "You can only craft one crafting table.");
+		
+		this.game = game;
 	}
+	
+	private final Set<UUID> hasCrafted = new HashSet<UUID>();
 	
 	@Override
 	public void onDisable() {

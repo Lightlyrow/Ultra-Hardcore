@@ -27,9 +27,14 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author TheRCPanda, modified by LeonTG77
  */
 public class Compensation extends Scenario implements Listener {
+	private final TeamManager teams;
+	private final Arena arena;
 	
-	public Compensation() {
+	public Compensation(Arena arena, TeamManager teams) {
 		super("Compensation", "When a player on a team dies, the player's max health is divided up and added to the max health of the player's teammates. The extra health received will regenerate in 30 seconds.");
+	
+		this.teams = teams;
+		this.arena = arena;
 	}
 
 	@Override
@@ -57,14 +62,13 @@ public class Compensation extends Scenario implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
-		if (Arena.getInstance().isEnabled()) {
+		if (arena.isEnabled()) {
 			return;
 		}
 		
 		Player player = event.getEntity();
         double maxHealth = player.getMaxHealth();
         
-        TeamManager teams = TeamManager.getInstance();
         Team team = teams.getTeam(player);
 
         if (team == null) {

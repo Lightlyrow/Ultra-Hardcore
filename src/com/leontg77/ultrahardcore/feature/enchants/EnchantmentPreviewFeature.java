@@ -11,21 +11,29 @@ import com.leontg77.ultrahardcore.protocol.EnchantPreview;
  * @author LeonTG77
  */
 public class EnchantmentPreviewFeature extends ToggleableFeature {
+	private final EnchantPreview preview;
 
-	public EnchantmentPreviewFeature() {
+	/**
+	 * Enchant Preview feature class constructor.
+	 * 
+	 * @param preview The enchantment preview protocol class.
+	 */
+	public EnchantmentPreviewFeature(EnchantPreview preview) {
 		super("Enchant Preview", "A preview of 1 of the enchants you'll get on your enchanting weapon.");
 		
 		icon.setType(Material.ENCHANTMENT_TABLE);
 		slot = 47;
+		
+		this.preview = preview;
 	}
 
 	@Override
 	public void onDisable() {
-		EnchantPreview.enable();
+		preview.enable();
 	}
 	
 	@Override
 	public void onEnable() {
-		EnchantPreview.disable();
+		preview.disable();
 	}
 }

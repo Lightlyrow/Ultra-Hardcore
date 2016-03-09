@@ -1,14 +1,9 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
  * Cloud9 scenario class
@@ -30,20 +25,20 @@ public class GoodGame extends Scenario implements Listener {
 	@Override
 	public void onEnable() {}
 	
-	@EventHandler
-	public void on(PvPEnableEvent event) {
-		task = new BukkitRunnable() {
-			public void run() {
-				for (Player online : game.getPlayers()) {
-					if (online.getLocation().getY() > 200) {
-						continue;
-					}
-
-					PlayerUtils.damage(online, 1);
-				}
-			}
-		};
-		
-		task.runTaskTimer(Main.plugin, 600, 600);
-	}
+//	@EventHandler
+//	public void on(PvPEnableEvent event) {
+//		task = new BukkitRunnable() {
+//			public void run() {
+//				for (Player online : game.getPlayers()) {
+//					if (online.getLocation().getY() > 200) {
+//						continue;
+//					}
+//
+//					PlayerUtils.damage(online, 1);
+//				}
+//			}
+//		};
+//		
+//		task.runTaskTimer(Main.plugin, 600, 600);
+//	}
 }

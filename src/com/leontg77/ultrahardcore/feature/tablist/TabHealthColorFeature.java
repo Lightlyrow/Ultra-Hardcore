@@ -16,11 +16,12 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * @author LeonTG77
  */
 public class TabHealthColorFeature extends ToggleableFeature {
+	private final SpecManager spec;
 	private final Main plugin;
 	
 	private BukkitRunnable task;
 
-	public TabHealthColorFeature(Main plugin) {
+	public TabHealthColorFeature(Main plugin, SpecManager spec) {
 		super("Tab Health Color", "Your tab name is colored after how high you are on health.");
 		
 		icon.setType(Material.INK_SACK);
@@ -29,6 +30,7 @@ public class TabHealthColorFeature extends ToggleableFeature {
 		slot = 6;
 		
 		this.plugin = plugin;
+		this.spec = spec;
 	}
 	
 	@Override
@@ -52,7 +54,7 @@ public class TabHealthColorFeature extends ToggleableFeature {
 				for (Player online : Bukkit.getOnlinePlayers()) {
 					final String percentString = NumberUtils.makePercent(online.getHealth());
 					
-					if (SpecManager.getInstance().isSpectating(online)) {
+					if (spec.isSpectating(online)) {
 						continue;
 					}
 					

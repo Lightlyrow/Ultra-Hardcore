@@ -18,22 +18,27 @@ import com.leontg77.ultrahardcore.protocol.HardcoreHearts;
  * @author LeonTG77
  */
 public class HardcoreHeartsFeature extends ToggleableFeature implements Listener {
+	private final HardcoreHearts heart;
+	private final Main plugin;
 
-	public HardcoreHeartsFeature() {
+	public HardcoreHeartsFeature(Main plugin, HardcoreHearts heart) {
 		super("Hardcore Hearts", "Players hearts are like hardcore mode hearts and it features auto respawn when someone dies.");
 		
 		icon.setType(Material.REDSTONE);
 		slot = 8;
+		
+		this.plugin = plugin;
+		this.heart = heart;
 	}
 
 	@Override
 	public void onDisable() {
-		HardcoreHearts.disable();
+		heart.disable();
 	}
 	
 	@Override
 	public void onEnable() {
-		HardcoreHearts.enable();
+		heart.enable();
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
@@ -48,6 +53,6 @@ public class HardcoreHeartsFeature extends ToggleableFeature implements Listener
 			public void run() {
 				player.spigot().respawn();
 			}
-		}.runTaskLater(Main.plugin, 18);
+		}.runTaskLater(plugin, 18);
 	}
 }

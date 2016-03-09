@@ -1,6 +1,5 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,38 +11,45 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.Inventory;
 
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 
 /**
- * Backpacks scenario class
+ * Backpacks scenario class.
  * 
  * @author LeonTG77
  */
 public class Backpacks extends Scenario implements Listener, CommandExecutor {
-	private static final String PREFIX = "§6§lBackpacks §8» §7";
+	private final Game game;
 	
-	public Backpacks() {
+	/**
+	 * Backpacks scenario class constructor.
+	 * 
+	 * @param plugin The main class.
+	 * @param game The game class.
+	 */
+	public Backpacks(Main plugin, Game game) {
 		super("Backpacks", "Players can type /bp to open up a backpack inventory.");
 		
-		Bukkit.getPluginCommand("bp").setExecutor(this);
+		this.game = game;
+		
+		plugin.getCommand("bp").setExecutor(this);
 	}
 
-	@Override
-	public void onDisable() {}
-
-	@Override
-	public void onEnable() {}
+	private static final String PREFIX = "§6Backpacks §8» §7";
 	
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
+	public void on(PlayerDeathEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
-		final Player player = event.getEntity();
-		final Block block = player.getLocation().subtract(0, 1, 0).getBlock();
+		Player player = event.getEntity();
+		Block block = player.getLocation().subtract(0, 1, 0).getBlock();
 		
 		if (!game.getPlayers().contains(player)) {
 			return;
@@ -51,10 +57,11 @@ public class Backpacks extends Scenario implements Listener, CommandExecutor {
 		
 		block.setType(Material.CHEST);
 		
-		final Chest chest = (Chest) block.getState();
+		Inventory ender = player.getEnderChest();
+		Chest chest = (Chest) block.getState();
 		
-		chest.getInventory().setContents(player.getEnderChest().getContents());
-		player.getEnderChest().clear();
+		chest.getInventory().setContents(ender.getContents());
+		ender.clear();
 	}
 
 	@Override

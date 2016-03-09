@@ -54,6 +54,16 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  * @author Bergasms
  */
 public class Cryophobia extends Scenario implements Listener {
+	private final Main plugin;
+	private final Game game;
+	
+	public Cryophobia(Main plugin, Game game) {
+		super("Cryophobia", "A layer of ice will rise slowly from the bottom of the map, faster as the game goes on, filling caves and eventually reaching high up above the surface. Breaking ice causes damage and ill effects. Creepers explode into a ball of ice, while skeletons have geared up for the winter. The biome of the entire map has also been switched to a cold taiga, meaning snow falls and water freezes everywhere on the map.");
+	
+		this.plugin = plugin;
+		this.game = game;
+	}
+
 	private int heightCountdown = 150;
 	private int levelHeight = 0;
 	private int maxheight = 80;
@@ -69,11 +79,7 @@ public class Cryophobia extends Scenario implements Listener {
 	private LinkedList<String> priorityQueue = new LinkedList<String>();;
 	
 	private World world;
-
-	public Cryophobia() {
-		super("Cryophobia", "A layer of ice will rise slowly from the bottom of the map, faster as the game goes on, filling caves and eventually reaching high up above the surface. Breaking ice causes damage and ill effects. Creepers explode into a ball of ice, while skeletons have geared up for the winter. The biome of the entire map has also been switched to a cold taiga, meaning snow falls and water freezes everywhere on the map.");
-	}
-
+	
 	@Override
 	public void onDisable() {
 		if (heightUpdateTimer != -1) {
@@ -89,7 +95,7 @@ public class Cryophobia extends Scenario implements Listener {
 
 	@Override
 	public void onEnable() {
-		world = Game.getInstance().getWorld();
+		world = game.getWorld();
 	}
 
 	@EventHandler
@@ -107,7 +113,7 @@ public class Cryophobia extends Scenario implements Listener {
 		
 		processTimer = -1;
 		
-		heightUpdateTimer = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+		heightUpdateTimer = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			public void run() {
 				heightCountdown -= 1;
 				
@@ -280,7 +286,7 @@ public class Cryophobia extends Scenario implements Listener {
 					world.getBlockAt(l.add(rand.nextInt(4) - 2, rand.nextInt(2), rand.nextInt(4) - 2)).setType(Material.ICE);
 				}
 			}
-		}.runTaskLater(Main.plugin, 1);
+		}.runTaskLater(plugin, 1);
 	}
 
 	@EventHandler
@@ -388,7 +394,7 @@ public class Cryophobia extends Scenario implements Listener {
 		priorityQueue.addLast("sentinel");
 		
 		if (processTimer == -1) {
-			processTimer = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+			processTimer = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 				public void run() {
 					processChunkIfRequired();
 				}

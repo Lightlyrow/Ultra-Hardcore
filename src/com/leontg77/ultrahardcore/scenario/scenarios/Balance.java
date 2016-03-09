@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
@@ -21,14 +22,18 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  * @author LeonTG77
  */
 public class Balance extends Scenario implements Listener {
-	private static final String PREFIX = "§3§lBalance §8» §7";
+	private static final String PREFIX = "§3Balance §8» §7";
+	
+	private final Game game;
+	
+	public Balance(Game game) {
+		super("Balance", "After the 5th diamond, it gets progressively harder to obtain diamonds.");
+		
+		this.game = game;
+	}
 	
 	private final Map<String, Integer> minedAmount = new HashMap<String, Integer>();
 	private final Map<String, Integer> chance = new HashMap<String, Integer>();
-	
-	public Balance() {
-		super("Balance", "After the 5th diamond, it gets progressively harder to obtain diamonds.");
-	}
 
 	@Override
 	public void onDisable() {

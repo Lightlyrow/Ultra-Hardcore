@@ -1,7 +1,7 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.block.Biome;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,7 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NameUtils;
@@ -22,12 +22,16 @@ import com.leontg77.ultrahardcore.utils.NameUtils;
  * @author LeonTG77
  */
 public class BiomeParanoia extends Scenario implements Listener, CommandExecutor {
-	public static final String PREFIX = "§5§lBiomeParanoia §8» §7";
+	public static final String PREFIX = "§5BiomeParanoia §8» §7";
+	
+	private final SpecManager spec;
 
-	public BiomeParanoia() {
+	public BiomeParanoia(Main plugin, SpecManager spec) {
 		super("BiomeParanoia", "Your tab name color is the color of the biome you are in, /bl for biome colors.");
 		
-		Bukkit.getPluginCommand("bl").setExecutor(this);
+		plugin.getCommand("bl").setExecutor(this);
+		
+		this.spec = spec;
 	}
 	
 	@Override
@@ -38,19 +42,29 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 	
 	@EventHandler(ignoreCancelled = true)
 	public void on(PlayerMoveEvent event) {
-		if (!State.isState(State.INGAME)) {
+		Location from = event.getFrom();
+		Location to = event.getTo();
+			
+		// if they move their head or pixels on the block I don't care, I only care if its a new block.
+		if (from.getBlockX() == to.getBlockX() && from.getBlockZ() == to.getBlockZ()) {
 			return;
 		}
 		
 		Player player = event.getPlayer();
-		Biome biome = player.getLocation().getBlock().getBiome();
 		
-		if (SpecManager.getInstance().isSpectating(player)) {
-			player.setPlayerListName(null);
+		if (spec.isSpectating(player)) {
 			return;
 		}
 		
-		player.setPlayerListName(biomeColor(biome) + player.getName());
+		Biome oldBiome = from.getBlock().getBiome();
+		Biome newBiome = to.getBlock().getBiome();
+		
+		// no need to set it if its the same biome, that would just lag.
+		if (oldBiome == newBiome) {
+			return;
+		}
+
+		player.setPlayerListName(biomeColor(newBiome) + player.getName());
 	}
 
 	@Override
@@ -136,7 +150,7 @@ public class BiomeParanoia extends Scenario implements Listener, CommandExecutor
 		case MEGA_SPRUCE_TAIGA_HILLS:
 		case MEGA_TAIGA:
 		case MEGA_TAIGA_HILLS:
-			return ChatColor.BLUE.toString() + ChatColor.BOLD;
+			return ChatColor.DARK_AQUA.toString() + ChatColor.BOLD;
 		case MESA:
 		case MESA_BRYCE:
 		case MESA_PLATEAU:

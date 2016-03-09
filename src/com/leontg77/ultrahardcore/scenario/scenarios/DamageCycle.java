@@ -36,16 +36,20 @@ public class DamageCycle extends Scenario implements Listener, CommandExecutor {
 	private static final String PREFIX = "§7[§8DamageCycle§7] ";
 	private static final int DAMAGE_AMOUNT = 10000;
 	
+	private final Main plugin;
+	
+	public DamageCycle(Main plugin) {
+		super("DamageCycle", "Every 10 minutes the damage type changes, during the next 10 minutes if you take damage from that type you die.");
+		
+		plugin.getCommand("current").setExecutor(this);
+		
+		this.plugin = plugin;
+	}
+	
 	private BukkitRunnable task;
 	private DamageType current;
 	
 	private int seconds = 600;
-	
-	public DamageCycle() {
-		super("DamageCycle", "Every 10 minutes the damage type changes, during the next 10 minutes if you take damage from that type you die.");
-		
-		Bukkit.getPluginCommand("current").setExecutor(this);
-	}
 
 	@Override
 	public void onDisable() {
@@ -106,7 +110,7 @@ public class DamageCycle extends Scenario implements Listener, CommandExecutor {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 0, 20);
+		task.runTaskTimer(plugin, 0, 20);
 	}
 	
 	@EventHandler(ignoreCancelled = true)

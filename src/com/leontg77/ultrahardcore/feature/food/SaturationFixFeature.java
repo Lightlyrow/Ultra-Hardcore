@@ -18,13 +18,18 @@ import com.leontg77.ultrahardcore.feature.Feature;
  * @author LeonTG77
  */
 public class SaturationFixFeature extends Feature implements Listener {
+	private final Main plugin;
 
-	public SaturationFixFeature() {
+	public SaturationFixFeature(Main plugin) {
 		super("SaturationFix", "Saturation fix makes you lose less hunger over time.");
+		
+		this.plugin = plugin;
 	}
+	
+	private final Random rand = new Random();
 
 	@EventHandler
-	public void on(final PlayerItemConsumeEvent event) {
+	public void on(PlayerItemConsumeEvent event) {
 		final Player player = event.getPlayer();
 		final float before = player.getSaturation();
 
@@ -34,13 +39,12 @@ public class SaturationFixFeature extends Feature implements Listener {
 				
 				player.setSaturation((float) (before + change * 2.5D));
 			}
-        }.runTaskLater(Main.plugin, 1);
+        }.runTaskLater(plugin, 1);
 	}
 	
 	@EventHandler
-	public void on(final FoodLevelChangeEvent event) {
-		final Player player = (Player) event.getEntity();
-		final Random rand = new Random();
+	public void on(FoodLevelChangeEvent event) {
+		Player player = (Player) event.getEntity();
 		
 		if (event.getFoodLevel() < player.getFoodLevel()) {
 			event.setCancelled(rand.nextInt(100) < 66);
