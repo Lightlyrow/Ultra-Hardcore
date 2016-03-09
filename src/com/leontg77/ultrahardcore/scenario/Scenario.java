@@ -106,10 +106,10 @@ public abstract class Scenario extends Parser {
 	/**
 	 * Called when the scenario is disabled.
 	 */
-	public abstract void onDisable();
+	public void onDisable() {}
 	
 	/**
 	 * Called when the scenario is enabled.
 	 */
-	public abstract void onEnable();
+	public void onEnable() {}
 }
