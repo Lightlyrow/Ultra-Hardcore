@@ -69,7 +69,7 @@ public class SpectatorListener implements Listener {
 		}
 		
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-			inv.openSelector(player);
+			inv.openSelector(game, player);
 			return;
 		} 
 		
@@ -146,7 +146,7 @@ public class SpectatorListener implements Listener {
 		
 		if (item.getType() == Material.COMPASS) {
 			if (event.isRightClick()) {
-				inv.openSelector(player);
+				inv.openSelector(game, player);
 				event.setCancelled(true);
 				return;
 			}
