@@ -1,7 +1,5 @@
 package com.leontg77.ultrahardcore;
 
-import java.util.ArrayList;
-
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
@@ -180,7 +179,7 @@ public class Timer {
 
 		new BukkitRunnable() {
 			public void run() {
-				new InvGUI().openGameInfo(new ArrayList<Player>(Bukkit.getOnlinePlayers()));
+				new InvGUI(plugin).openGameInfo(ImmutableList.copyOf(Bukkit.getOnlinePlayers()));
 			}
 		}.runTaskLater(plugin, 100);
 
