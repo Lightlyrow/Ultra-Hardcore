@@ -24,7 +24,7 @@ public class BoardManager {
 		this.plugin = plugin;
 	}
 	
-	private final Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
+	private Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
 
 	private Objective nameHealth = board.getObjective("nameHealth");
 	private Objective tabHealth = board.getObjective("tabHealth");
