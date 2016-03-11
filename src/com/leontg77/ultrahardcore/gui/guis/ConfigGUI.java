@@ -1,0 +1,110 @@
+package com.leontg77.ultrahardcore.gui.guis;
+
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Settings;
+import com.leontg77.ultrahardcore.feature.Feature;
+import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.feature.ToggleableFeature;
+import com.leontg77.ultrahardcore.gui.GUI;
+import com.leontg77.ultrahardcore.utils.PlayerUtils;
+
+/**
+ * Config inventory GUI class.
+ * 
+ * @author LeonTG77.
+ */
+public class ConfigGUI extends GUI implements Listener {
+	private final FeatureManager feat;
+	private final Settings settings;
+	
+	/**
+	 * Config inventory GUI class constructor.
+	 * 
+	 * @param settings The settings class.
+	 * @param feat The feature manager class.
+	 */
+	public ConfigGUI(Settings settings, FeatureManager feat) {
+		super("Config", "A inventory to toggle options for a game.");
+		
+		this.settings = settings;
+		this.feat = feat;
+	}
+
+	private final Inventory inv = Bukkit.createInventory(null, 54, "§4Game configuration.");
+
+	@Override
+	public void onSetup() { // add items but glass first.
+		glassify(inv); 
+		update();
+	}
+
+	/**
+	 * Get the config inventory.
+	 * 
+	 * @return The inventory.
+	 */
+	public Inventory get() {
+		return inv;
+	}
+
+	/**
+	 * Update the config inventory.
+	 */
+	public void update() {
+		for (ToggleableFeature feature : feat.getToggleableFeatures()) {
+			final int slot = feature.getInventorySlot();
+			
+			if (slot > 53 || slot < 0) {
+				continue;
+			}
+			
+			inv.setItem(slot, feature.getToggleItem());
+		}
+	}
+
+	@EventHandler
+	public void on(InventoryClickEvent event) {
+		ItemStack item = event.getCurrentItem();
+		Inventory inv = event.getInventory();
+		
+		if (item == null) {
+			return;
+		}
+
+		if (!this.inv.getTitle().equals(inv.getTitle())) {
+			return;
+		}
+
+		event.setCancelled(true);
+
+		if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) {
+			return;
+		}
+		
+		// the substring is just getting the name since theres some things before and after the name
+		String name = item.getItemMeta().getDisplayName().substring(6, item.getItemMeta().getDisplayName().length() - 4);
+		
+		Feature feature = feat.getFeature(name);
+		
+		if (feature == null || !(feature instanceof ToggleableFeature)) {
+			return;
+		}
+		
+		ToggleableFeature toggle = (ToggleableFeature) feature;
+		toggle.toggle(settings);
+
+		ItemMeta meta = item.getItemMeta();
+		meta.setLore(toggle.getToggleItem().getItemMeta().getLore());
+		item.setItemMeta(meta);
+		
+		PlayerUtils.broadcast(Main.PREFIX + "§6" + name + " §7has been " + (toggle.isEnabled() ? "§aenabled" : "§cdisabled") + "§7.");
+	}
+}
