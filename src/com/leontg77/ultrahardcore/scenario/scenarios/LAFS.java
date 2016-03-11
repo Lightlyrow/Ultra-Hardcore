@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -18,10 +19,16 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class LAFS extends Scenario implements Listener {
-	public static final String PREFIX = "§d§lLAFS §8» §7";
+	public static final String PREFIX = "§dLAFS §8» §7";
+	
+	private final TeamManager teams;
+	private final Game game;
 
-	public LAFS() {
+	public LAFS(Game game, TeamManager teams) {
 		super("LAFS", "Stands for love at first sight, you team with the first player you see in the game, in order to get on a team with them right click the player.");
+		
+		this.teams = teams;
+		this.game = game;
 	}
 
 	@Override
@@ -43,8 +50,6 @@ public class LAFS extends Scenario implements Listener {
 		Player clicked = (Player) event.getRightClicked();
 		Player player = event.getPlayer();
 		
-		TeamManager teams = TeamManager.getInstance();
-		
 		if (!game.getPlayers().contains(player) && !game.getPlayers().contains(clicked)) {
 			return;
 		}
@@ -62,7 +67,6 @@ public class LAFS extends Scenario implements Listener {
 		Team team = teams.findAvailableTeam();
 		
 		if (team == null) {
-			clicked.sendMessage(ChatColor.RED + "There are no more teams for you to join.");
 			player.sendMessage(ChatColor.RED + "There are no more teams for you to join.");
 			return;
 		}

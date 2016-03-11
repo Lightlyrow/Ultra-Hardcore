@@ -41,8 +41,6 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 @SuppressWarnings("deprecation")
 public class Moles extends Scenario implements Listener, CommandExecutor {
-	private ArrayList<String> hasUsedKit = new ArrayList<String>();
-	private ArrayList<String> moles = new ArrayList<String>();
 
 	public Moles() {
 		super("Moles", "There are a mole on each team, moles on each team work together to take out the normal teams.");
@@ -52,14 +50,16 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 		Bukkit.getPluginCommand("mcl").setExecutor(this);
 		Bukkit.getPluginCommand("mcp").setExecutor(this);
 	}
+	
+	private final Random rand = new Random();
+	
+	private final List<String> hasUsedKit = new ArrayList<String>();
+	private final List<String> moles = new ArrayList<String>();
 
 	@Override
 	public void onDisable() {
 		moles.clear();
 	}
-
-	@Override
-	public void onEnable() {}
 
 	/**
 	 * Get a list of the moles.
@@ -76,96 +76,96 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			int i = 9;
 			
 			public void run() {
-				if (i == 0) {
-					ArrayList<String> players = new ArrayList<String>();
-					cancel();
+				if (i != 0) {
+					PlayerUtils.broadcast(Main.PREFIX + "Moles are being set in §a" + i + "§7 " + (i == 1 ? "second." : "seconds."));
+					PlayerUtils.broadcast(Main.PREFIX + "§4§lCLEAR YOUR TOP ROWS!");
 					
 					for (Player online : Bukkit.getOnlinePlayers()) {
-						online.playSound(online.getLocation(), Sound.WOLF_HOWL, 1, 1);
+						online.playSound(online.getLocation(), Sound.FIRE_IGNITE, 1, 0);
 					}
 					
-					for (Team team : TeamManager.getInstance().getTeamsWithPlayers()) {
-						if (ScenarioManager.getInstance().getScenario("PotentialMoles").isEnabled()) {
-							if (new Random().nextInt(99) < 50) {
-								continue;
-							}
-						}
-						
-						for (String entry : team.getEntries()) {
-							if (Bukkit.getPlayer(entry) != null) {
-								players.add(entry);
-							}
-						}
-						
-						if (players.size() > 0) {
-							moles.add(players.get(new Random().nextInt(players.size())));
-						}
-						
-						players.clear();
-					}
-
-					PlayerUtils.broadcast(Main.PREFIX + "Moles has been set.");
-					
-					for (String mole : moles) {
-						Player theMole = Bukkit.getServer().getPlayer(mole);
-						theMole.sendMessage(Main.PREFIX + "You are the mole! Use §a/molehelp §7for help");
-						
-						ItemStack wool1 = new ItemStack (Material.WOOL, 1, (short) 8);
-						ItemMeta wool1meta = wool1.getItemMeta();
-						wool1meta.setDisplayName("§aThe Mobber");
-						wool1meta.setLore(Arrays.asList("§7MONSTER_EGG x 1", "§7MONSTER_EGG x 2", "§7MONSTER_EGG x 1", "§7COBBLESTONE x 1", "§7TNT x 5", "§7ENDER_PEARL x 2"));
-						wool1.setItemMeta(wool1meta);
-						
-						ItemStack wool2 = new ItemStack (Material.WOOL, 1, (short) 10);
-						ItemMeta wool2meta = wool2.getItemMeta();
-						wool2meta.setDisplayName("§aThe Potter");
-						wool2meta.setLore(Arrays.asList("§7POTION x 1", "§7POTION x 1", "§7POTION x 1", "§7POTION x 1", "§7ENDER_PEARL x 1", "§7COBBLESTONE x 1"));
-						wool2.setItemMeta(wool2meta);
-						
-						ItemStack wool3 = new ItemStack (Material.WOOL, 1, (short) 14);
-						ItemMeta wool3meta = wool3.getItemMeta();
-						wool3meta.setDisplayName("§aThe Pyro");
-						wool3meta.setLore(Arrays.asList("§7LAVA_BUCKET x 1", "§7MONSTER_EGG x 5", "§7FLINT_AND_STEEL x 1", "§7POTION x 1", "§7TNT x 5", "§7COBBLESTONE x 1"));
-						wool3.setItemMeta(wool3meta);
-						
-						ItemStack wool4 = new ItemStack (Material.WOOL, 1, (short) 12);
-						ItemMeta wool4meta = wool4.getItemMeta();
-						wool4meta.setDisplayName("§aThe Trapper");
-						wool4meta.setLore(Arrays.asList("§7TNT x 3", "§7LAVA_BUCKET x 1", "§7POTION x 1", "§7COBBLESTONE x 1", "§7COBBLESTONE x 1", "§7COBBLESTONE x 2"));
-						wool4.setItemMeta(wool4meta);
-						
-						ItemStack wool5 = new ItemStack (Material.WOOL, 1, (short) 1);
-						ItemMeta wool5meta = wool5.getItemMeta();
-						wool5meta.setDisplayName("§aThe Troll");
-						wool5meta.setLore(Arrays.asList("§7FIREWORK x 64", "§7ENCHANTED_BOOK x 10", "§7EXPLOSIVE_MINECART x 8", "§7COBBLESTONE x 10", "§7WEB x 4", "§7ENDER_PORTAL x 1"));
-						wool5.setItemMeta(wool5meta);
-						
-						ItemStack wool6 = new ItemStack (Material.WOOL, 1, (short) 13);
-						ItemMeta wool6meta = wool6.getItemMeta();
-						wool6meta.setDisplayName("§aThe Fighter");
-						wool6meta.setLore(Arrays.asList("§7GOLDEN_APPLE x 1", "§7DIAMOND_SWORD x 1", "§7MONSTER_EGG x 1", "§7BOW x 1", "§7ARROW x 64", "§7POTION x 1"));
-						wool6.setItemMeta(wool6meta);
-						
-						PlayerInventory inv = theMole.getInventory();
-						
-						inv.setItem(9, wool1);
-						inv.setItem(10, wool2);
-						inv.setItem(11, wool3);
-						inv.setItem(12, wool4);
-						inv.setItem(13, wool5);
-						inv.setItem(14, wool6);
-					}
+					i--;
 					return;
 				}
 				
-				PlayerUtils.broadcast(Main.PREFIX + "Moles are being set in §a" + i + "§7 " + (i == 1 ? "second" : "seconds"));
-				PlayerUtils.broadcast(Main.PREFIX + "§4§lCLEAR YOUR TOP ROWS!");
+				List<String> players = new ArrayList<String>();
+				cancel();
 				
 				for (Player online : Bukkit.getOnlinePlayers()) {
-					online.playSound(online.getLocation(), Sound.FIRE_IGNITE, 1, 0);
+					online.playSound(online.getLocation(), Sound.WOLF_HOWL, 1, 1);
 				}
 				
-				i--;
+				for (Team team : TeamManager.getInstance().getTeamsWithPlayers()) {
+					if (ScenarioManager.getInstance().getScenario("PotentialMoles").isEnabled()) {
+						if (rand.nextInt(100) < 50) {
+							continue;
+						}
+					}
+					
+					for (String entry : team.getEntries()) {
+						if (Bukkit.getPlayer(entry) != null) {
+							players.add(entry);
+						}
+					}
+					
+					if (players.size() > 0) {
+						moles.add(players.get(rand.nextInt(players.size())));
+					}
+					
+					players.clear();
+				}
+
+				PlayerUtils.broadcast(Main.PREFIX + "Moles has been set.");
+				
+				for (String mole : moles) {
+					Player theMole = Bukkit.getServer().getPlayer(mole);
+					theMole.sendMessage(Main.PREFIX + "You are the mole! Use §a/molehelp §7for help");
+					
+					ItemStack wool1 = new ItemStack (Material.WOOL, 1, (short) 8);
+					ItemMeta wool1meta = wool1.getItemMeta();
+					wool1meta.setDisplayName("§aThe Mobber");
+					wool1meta.setLore(Arrays.asList("§7MONSTER_EGG x 1", "§7MONSTER_EGG x 2", "§7MONSTER_EGG x 1", "§7COBBLESTONE x 1", "§7TNT x 5", "§7ENDER_PEARL x 2"));
+					wool1.setItemMeta(wool1meta);
+					
+					ItemStack wool2 = new ItemStack (Material.WOOL, 1, (short) 10);
+					ItemMeta wool2meta = wool2.getItemMeta();
+					wool2meta.setDisplayName("§aThe Potter");
+					wool2meta.setLore(Arrays.asList("§7POTION x 1", "§7POTION x 1", "§7POTION x 1", "§7POTION x 1", "§7ENDER_PEARL x 1", "§7COBBLESTONE x 1"));
+					wool2.setItemMeta(wool2meta);
+					
+					ItemStack wool3 = new ItemStack (Material.WOOL, 1, (short) 14);
+					ItemMeta wool3meta = wool3.getItemMeta();
+					wool3meta.setDisplayName("§aThe Pyro");
+					wool3meta.setLore(Arrays.asList("§7LAVA_BUCKET x 1", "§7MONSTER_EGG x 5", "§7FLINT_AND_STEEL x 1", "§7POTION x 1", "§7TNT x 5", "§7COBBLESTONE x 1"));
+					wool3.setItemMeta(wool3meta);
+					
+					ItemStack wool4 = new ItemStack (Material.WOOL, 1, (short) 12);
+					ItemMeta wool4meta = wool4.getItemMeta();
+					wool4meta.setDisplayName("§aThe Trapper");
+					wool4meta.setLore(Arrays.asList("§7TNT x 3", "§7LAVA_BUCKET x 1", "§7POTION x 1", "§7COBBLESTONE x 1", "§7COBBLESTONE x 1", "§7COBBLESTONE x 2"));
+					wool4.setItemMeta(wool4meta);
+					
+					ItemStack wool5 = new ItemStack (Material.WOOL, 1, (short) 1);
+					ItemMeta wool5meta = wool5.getItemMeta();
+					wool5meta.setDisplayName("§aThe Troll");
+					wool5meta.setLore(Arrays.asList("§7FIREWORK x 64", "§7ENCHANTED_BOOK x 10", "§7EXPLOSIVE_MINECART x 8", "§7COBBLESTONE x 10", "§7WEB x 4", "§7ENDER_PORTAL x 1"));
+					wool5.setItemMeta(wool5meta);
+					
+					ItemStack wool6 = new ItemStack (Material.WOOL, 1, (short) 13);
+					ItemMeta wool6meta = wool6.getItemMeta();
+					wool6meta.setDisplayName("§aThe Fighter");
+					wool6meta.setLore(Arrays.asList("§7GOLDEN_APPLE x 1", "§7DIAMOND_SWORD x 1", "§7MONSTER_EGG x 1", "§7BOW x 1", "§7ARROW x 64", "§7POTION x 1"));
+					wool6.setItemMeta(wool6meta);
+					
+					PlayerInventory inv = theMole.getInventory();
+					
+					inv.setItem(9, wool1);
+					inv.setItem(10, wool2);
+					inv.setItem(11, wool3);
+					inv.setItem(12, wool4);
+					inv.setItem(13, wool5);
+					inv.setItem(14, wool6);
+				}
 			}
 		}.runTaskTimer(Main.plugin, 20, 20);
 	}
