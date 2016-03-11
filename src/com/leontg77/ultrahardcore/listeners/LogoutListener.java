@@ -15,7 +15,7 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.msg.MsgCommand;
-import com.leontg77.ultrahardcore.inventory.InvGUI;
+import com.leontg77.ultrahardcore.gui.InvGUI;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;

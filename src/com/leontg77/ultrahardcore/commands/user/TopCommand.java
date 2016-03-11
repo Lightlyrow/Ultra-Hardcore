@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.inventory.InvGUI;
+import com.leontg77.ultrahardcore.gui.InvGUI;
 
 /**
  * Top command class.

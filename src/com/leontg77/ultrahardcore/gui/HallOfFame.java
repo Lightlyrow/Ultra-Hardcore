@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.inventory;
+package com.leontg77.ultrahardcore.gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.utils.NameUtils;
@@ -30,6 +31,11 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class HallOfFame extends InvGUI implements Listener {
+	public HallOfFame(Main plugin) {
+		super(plugin);
+		// TODO Auto-generated constructor stub
+	}
+
 	private Map<String, HashMap<Integer, Inventory>> hostInvs = new HashMap<String, HashMap<Integer, Inventory>>();
 	
 	public Map<String, Integer> currentPage = new HashMap<String, Integer>();
@@ -130,7 +136,7 @@ public class HallOfFame extends InvGUI implements Listener {
 					continue;
 				}
 				
-				if (noItem(slot)) {
+				if (isSide(slot)) {
 					continue;
 				}
 				

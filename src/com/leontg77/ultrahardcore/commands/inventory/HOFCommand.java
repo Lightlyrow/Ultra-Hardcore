@@ -13,7 +13,7 @@ import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.inventory.InvGUI;
+import com.leontg77.ultrahardcore.gui.InvGUI;
 
 /**
  * Hall of fame command class.

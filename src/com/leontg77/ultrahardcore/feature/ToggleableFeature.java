@@ -78,7 +78,16 @@ public abstract class ToggleableFeature extends Feature {
 		this.enabled = false;
 		onDisable();
 		return true;
-	}     
+	}    
+	
+	/**
+	 * Toggle the scenario.
+	 * 
+	 * @return True if successful, false otherwise.
+	 */
+	public boolean toggle(Settings settings) {
+		return isEnabled() ? disable(settings) : enable(settings);
+	} 
 	
 	/**
 	 * Check if the feature is enabled

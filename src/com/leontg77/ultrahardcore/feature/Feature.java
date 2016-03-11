@@ -23,16 +23,16 @@ public abstract class Feature {
 	/**
 	 * Get the name of the feature
 	 * 
-	 * @return the name.
+	 * @return The name.
 	 */
 	public String getName() {
 		return name;
 	}
 	
 	/**
-	 * Get the description of the feature.
+	 * Get a description of the feature.
 	 * 
-	 * @return the description.
+	 * @return The description.
 	 */
 	public String getDescription() {
 		return description;

@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.inventory.listener;
+package com.leontg77.ultrahardcore.gui.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -9,7 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.inventory.InvGUI;
+import com.leontg77.ultrahardcore.gui.InvGUI;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**

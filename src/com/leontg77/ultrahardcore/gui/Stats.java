@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.inventory;
+package com.leontg77.ultrahardcore.gui;
 
 import java.util.ArrayList;
 import java.util.HashMap;

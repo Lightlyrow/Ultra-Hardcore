@@ -261,12 +261,12 @@ public class ScenarioManager {
 		scenarios.add(new HundredHearts());
 		scenarios.add(new InfiniteEnchanter());
 		scenarios.add(new Inventors());
-		scenarios.add(new Kings());
+		scenarios.add(new Kings(plugin, teams));
 		scenarios.add(new Krenzinator());
-		scenarios.add(new LAFS());
-		scenarios.add(new Landmines());
-		scenarios.add(new Lootcrates());
-		scenarios.add(new MeleeFun());
+		scenarios.add(new LAFS(game, teams));
+		scenarios.add(new Landmines(plugin, game, spec));
+		scenarios.add(new Lootcrates(plugin, game));
+		scenarios.add(new MeleeFun(plugin));
 		scenarios.add(new Moles());
 		scenarios.add(new MonstersInc());
 		scenarios.add(new MysteryTeams());
@@ -282,7 +282,7 @@ public class ScenarioManager {
 		scenarios.add(new Pyrophobia());
 		scenarios.add(new RewardingLongshots());
 		scenarios.add(new RewardingLongshotsPlus());
-		scenarios.add(new SharedHealth(plugin, null));
+		scenarios.add(new SharedHealth(plugin, teams));
 		scenarios.add(new SkyClean());
 		scenarios.add(new Skyhigh());
 		scenarios.add(new SlaveMarket());

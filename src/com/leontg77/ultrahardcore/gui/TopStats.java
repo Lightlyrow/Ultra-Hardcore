@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.inventory;
+package com.leontg77.ultrahardcore.gui;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -28,6 +29,11 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * @author LeonTG77
  */
 public class TopStats extends InvGUI implements Listener {
+	public TopStats(Main plugin) {
+		super(plugin);
+		// TODO Auto-generated constructor stub
+	}
+
 	private Inventory inv = Bukkit.createInventory(null, 45, "Top 10 Stats");
 	
 	@EventHandler

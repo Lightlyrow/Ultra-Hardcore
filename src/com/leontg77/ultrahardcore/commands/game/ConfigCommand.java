@@ -27,7 +27,7 @@ import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature.StalkingRule;
 import com.leontg77.ultrahardcore.feature.rates.AppleRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.FlintRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.ShearsFeature;
-import com.leontg77.ultrahardcore.inventory.InvGUI;
+import com.leontg77.ultrahardcore.gui.InvGUI;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.NumberUtils;

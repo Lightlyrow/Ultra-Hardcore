@@ -20,9 +20,9 @@ import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
 import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
-import com.leontg77.ultrahardcore.inventory.InvGUI;
-import com.leontg77.ultrahardcore.inventory.listener.InvseeListener;
-import com.leontg77.ultrahardcore.inventory.listener.SelectorListener;
+import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.listener.InvseeListener;
+import com.leontg77.ultrahardcore.gui.listener.SelectorListener;
 import com.leontg77.ultrahardcore.listeners.ChatListener;
 import com.leontg77.ultrahardcore.listeners.LoginListener;
 import com.leontg77.ultrahardcore.listeners.LogoutListener;
@@ -189,7 +189,7 @@ public class Main extends JavaPlugin {
 		board.setup(game);
 		teams.setup();
 
-		scen.registerScenarios(arena, game, timer, teams, spec);
+		scen.registerScenarios(arena, game, timer, teams, spec, settings, feat);
 		feat.registerFeatures(arena, game, timer, board, teams, spec, enchPreview, hardHearts, scen);
 		cmd.registerCommands(board, spec);
 	    

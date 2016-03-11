@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.inventory;
+package com.leontg77.ultrahardcore.gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +22,8 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.gui.guis.ConfigGUI;
+import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -36,8 +38,20 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
 public class InvGUI {
 	private final Main plugin;
 	
+	private final TopStats topStats;
+	private final GameInfoGUI gameInfo;
+	private final HallOfFame hof;
+	private final ConfigGUI config;
+	private final Stats stats;
+	
 	public InvGUI(Main plugin) {
 		this.plugin = plugin;
+		
+		topStats = new TopStats(plugin);
+		gameInfo = new GameInfoGUI(plugin);
+		hof = new HallOfFame(plugin);
+		config = new ConfigGUI(plugin);
+		stats = new Stats(plugin);
 	}
 	
 	public HashMap<Player, HashMap<Integer, Inventory>> pagesForPlayer = new HashMap<Player, HashMap<Integer, Inventory>>();
@@ -45,13 +59,8 @@ public class InvGUI {
 	
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
 
-	private static TopStats topStats = new TopStats();
-	private static GameInfo gameInfo = new GameInfo();
-	private static HallOfFame hof = new HallOfFame();
-	private static Config config = new Config();
-	private static Stats stats = new Stats();
 	
-	public GameInfo getGameInfo() {
+	public GameInfoGUI getGameInfo() {
 		return gameInfo;
 	}
 	
@@ -59,11 +68,11 @@ public class InvGUI {
 		return topStats;
 	}
 	
-	protected static Stats getStats() {
+	protected  Stats getStats() {
 		return stats;
 	}
 	
-	protected static HallOfFame getHOF() {
+	protected  HallOfFame getHOF() {
 		return hof;
 	}
 	
@@ -116,7 +125,7 @@ public class InvGUI {
 					continue;
 				}
 				
-				if (noItem(i)) {
+				if (isSide(i)) {
 					continue;
 				}
 				
@@ -306,62 +315,6 @@ public class InvGUI {
 		
 		for (Player player : players) {
 			player.openInventory(inv);
-		}
-	}
-	
-	/**
-	 * Check if this slot shall have no items.
-	 * 
-	 * @param slot The slot.
-	 * @return True if it shouldn't, false otherwise.
-	 */
-	protected boolean noItem(int slot) {
-		switch (slot) {
-		case 0:
-		case 8:
-		case 9:
-		case 17:
-		case 18:
-		case 26:
-		case 27:
-		case 35:
-		case 36:
-			return true;
-		default:
-			return false;
-		}
-	}
-	
-	/**
-	 * Fill the given inventory with class.
-	 * 
-	 * @param inv The inventory to fill.
-	 */
-	protected void glassify(Inventory inv) {
-		ItemStack black = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
-		ItemMeta blackMeta = black.getItemMeta();
-		blackMeta.setDisplayName("§0");
-		black.setItemMeta(blackMeta);
-		
-		ItemStack gray = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
-		ItemMeta grayMeta = black.getItemMeta();
-		grayMeta.setDisplayName("§0");
-		gray.setItemMeta(grayMeta);
-		
-		boolean bool = true;
-		
-		for (int i = 0; i < inv.getSize(); i++) {
-			bool = !bool;
-			
-			if (inv.getItem(i) != null || inv.getItem(i).getType() != Material.AIR) {
-				continue;
-			}
-			
-			if (bool) {
-				inv.setItem(i, gray);
-			} else {
-				inv.setItem(i, black);
-			}
 		}
 	}
 }

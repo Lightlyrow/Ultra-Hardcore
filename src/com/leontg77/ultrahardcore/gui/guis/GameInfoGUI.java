@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.inventory;
+package com.leontg77.ultrahardcore.gui.guis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User.Rank;
@@ -45,6 +46,7 @@ import com.leontg77.ultrahardcore.feature.rates.ShearsFeature;
 import com.leontg77.ultrahardcore.feature.recipes.NotchApplesFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedQuartzXPFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedXPFeature;
+import com.leontg77.ultrahardcore.gui.GUI;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.Moles;
 import com.leontg77.ultrahardcore.utils.DateUtils;
@@ -52,8 +54,27 @@ import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
-public class GameInfo extends InvGUI implements Listener {
-	private Inventory inv = Bukkit.createInventory(null, 45, "» §7Game Information");
+public class GameInfoGUI extends GUI implements Listener {
+
+	public GameInfoGUI(String name, String description) {
+		super(name, description);
+		// TODO Auto-generated constructor stub
+	}
+
+	private Inventory inv = Bukkit.createInventory(null, 45, "§4Game Information");
+	
+	@Override
+	public void onSetup() {
+		glassify(inv);
+		updateStaff();
+		update();
+		
+		new BukkitRunnable() {
+			public void run() {
+				updateTimer();
+			}
+		}.runTaskTimer(plugin, 1, 1);
+	}
 	
 	@EventHandler
     public void onInventoryClick(InventoryClickEvent event) {	
@@ -83,7 +104,6 @@ public class GameInfo extends InvGUI implements Listener {
 	 * Update the item lores in the inventory.
 	 */
 	public void update() {
-		glassify(inv);
 		
 		final FeatureManager feat = FeatureManager.getInstance();
 		final List<String> lore = new ArrayList<String>();
@@ -403,7 +423,7 @@ public class GameInfo extends InvGUI implements Listener {
 			lore.add("§8» §7The game has not started yet.");
 		} else {
 			lore.add("§8» §7Time since start: §a" + DateUtils.ticksToString(timePassed));
-			lore.add("§8» " + (finalheal <= 0 ? "§eFinal heal has passed!" : "§7Final heal is given in: §a" + DateUtils.ticksToString(timePassed)));
+			lore.add("§8» " + (finalheal <= 0 ? "§eFinal heal has passed!" : "§7Final heal is given in: §a" + DateUtils.ticksToString(finalheal)));
 			lore.add("§8» " + (pvp <= 0 ? "§aPvP is enabled!" : "§7PvP enables in: §a" + DateUtils.ticksToString(pvp)));
 			lore.add("§8» " + (meetup <= 0 ? "§cMeetup is NOW!" : "§7Meetup in: §a" + DateUtils.ticksToString(meetup)));
 		}

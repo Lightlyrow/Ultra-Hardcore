@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -19,9 +20,18 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author LeonTG77
  */
 public class Landmines extends Scenario implements Listener {
+	private final Main plugin;
+	
+	private final SpecManager spec;
+	private final Game game;
 
-	public Landmines() {
+	public Landmines(Main plugin, Game game, SpecManager spec) {
 		super("Landmines", "When walked on, a block deteriorates. Grass, when stepped on, turns into stone. Stone, when stepped on turns into cobble. Cobble, when stepped on twice turns into netherrack. Netherrack, when stepped on ONCE, explodes, dealing 3-6 hearts of damage");
+		
+		this.plugin = plugin;
+		
+		this.game = game;
+		this.spec = spec;
 	}
 	
 	@Override
@@ -31,14 +41,14 @@ public class Landmines extends Scenario implements Listener {
 	public void onEnable() {}
 	
 	@EventHandler(ignoreCancelled = true)
-	public void onPlayerMove(PlayerMoveEvent event) {
+	public void on(PlayerMoveEvent event) {
 		if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
 			return;
 		}
 		
 		Player player = event.getPlayer();
 		
-		if (SpecManager.getInstance().isSpectating(player)) {
+		if (spec.isSpectating(player)) {
 			return;
 		}
 		
@@ -53,7 +63,7 @@ public class Landmines extends Scenario implements Listener {
 				public void run() {
 					block.setType(Material.STONE);
 				}
-			}.runTaskLater(Main.plugin, 5);
+			}.runTaskLater(plugin, 5);
 			return;
 		}
 		
@@ -62,7 +72,7 @@ public class Landmines extends Scenario implements Listener {
 				public void run() {
 					block.setType(Material.COBBLESTONE);
 				}
-			}.runTaskLater(Main.plugin, 5);
+			}.runTaskLater(plugin, 5);
 			return;
 		}
 		
@@ -71,12 +81,14 @@ public class Landmines extends Scenario implements Listener {
 				public void run() {
 					block.setType(Material.NETHERRACK);
 				}
-			}.runTaskLater(Main.plugin, 5);
+			}.runTaskLater(plugin, 5);
 			return;
 		}
 		
 		if (block.getType() == Material.NETHERRACK) {
 			Location loc = block.getLocation();
+			loc = loc.clone().add(0.5, 0, 0.5);
+			
 			block.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 10, false, true);
 		}
 	}

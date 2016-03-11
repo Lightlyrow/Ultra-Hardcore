@@ -32,16 +32,16 @@ public abstract class Scenario extends Parser {
 	/**
 	 * Get the name of the scenario
 	 * 
-	 * @return the name.
+	 * @return The name.
 	 */
 	public String getName() {
 		return name;
 	}
 	
 	/**
-	 * Get the description of the scenario.
+	 * Get a description of the scenario.
 	 * 
-	 * @return the description.
+	 * @return The description.
 	 */
 	public String getDescription() {
 		return description;
