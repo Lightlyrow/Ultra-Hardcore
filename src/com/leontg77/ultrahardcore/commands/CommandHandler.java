@@ -50,7 +50,7 @@ import com.leontg77.ultrahardcore.commands.game.WhitelistCommand;
 import com.leontg77.ultrahardcore.commands.give.GiveCommand;
 import com.leontg77.ultrahardcore.commands.give.GiveallCommand;
 import com.leontg77.ultrahardcore.commands.inventory.HOFCommand;
-import com.leontg77.ultrahardcore.commands.inventory.UHCCmd;
+import com.leontg77.ultrahardcore.commands.inventory.GameInfoCommand;
 import com.leontg77.ultrahardcore.commands.lag.MsCommand;
 import com.leontg77.ultrahardcore.commands.lag.TpsCommand;
 import com.leontg77.ultrahardcore.commands.msg.MsgCommand;
@@ -270,7 +270,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		
 		// inventory
 		cmds.add(new HOFCommand());
-		cmds.add(new UHCCmd());
+		cmds.add(new GameInfoCommand());
 		
 		// lag
 		cmds.add(new MsCommand());
