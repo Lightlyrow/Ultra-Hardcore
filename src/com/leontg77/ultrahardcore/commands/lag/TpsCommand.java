@@ -20,16 +20,19 @@ import com.leontg77.ultrahardcore.utils.DateUtils;
  * @author LeonTG77
  */
 public class TpsCommand extends UHCCommand {
+	private final Main plugin;
 	
-	public TpsCommand() {
+	public TpsCommand(Main plugin) {
 		super("tps", "");
+		
+		this.plugin = plugin;
 	}
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) {
 		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 		
-		double tps = Main.getTps();
+		double tps = plugin.getTps();
 		long maxRAM = 4096;
 		
 		long ramUsage = (Runtime.getRuntime().totalMemory() / 1024 / 1024);
@@ -65,8 +68,7 @@ public class TpsCommand extends UHCCommand {
 		sender.sendMessage(Main.PREFIX + "Server performance:");
 		sender.sendMessage("§8§l» §7Current TPS: " + color + tps + " §8(§6" + status + "§8)");
 		sender.sendMessage("§8§l» §7Uptime: §a" + DateUtils.formatDateDiff(startTime));
-		sender.sendMessage("§8§l» §7RAM Usage: §a" + ramUsage + " MB");
-		sender.sendMessage("§8§l» §7Max Memory: §a" + maxRAM + " MB");
+		sender.sendMessage("§8§l» §7RAM Usage: §a" + ramUsage + "/" + maxRAM + " MB");
 		sender.sendMessage("§8§l» §7Entities: §a" + entities);
 		sender.sendMessage("§8§l» §7Loaded chunks: §a" + chunks);
 		return true;
