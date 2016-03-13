@@ -24,6 +24,7 @@ import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.gui.guis.ConfigGUI;
 import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
+import com.leontg77.ultrahardcore.gui.guis.HallOfFameGUI;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -38,70 +39,14 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
 public class InvGUI {
 	private final Main plugin;
 	
-	private final TopStats topStats;
-	private final GameInfoGUI gameInfo;
-	private final HallOfFame hof;
-	private final ConfigGUI config;
-	private final Stats stats;
-	
 	public InvGUI(Main plugin) {
 		this.plugin = plugin;
-		
-		topStats = new TopStats(plugin);
-		gameInfo = new GameInfoGUI(plugin);
-		hof = new HallOfFame(plugin);
-		config = new ConfigGUI(plugin);
-		stats = new Stats(plugin);
 	}
 	
 	public HashMap<Player, HashMap<Integer, Inventory>> pagesForPlayer = new HashMap<Player, HashMap<Integer, Inventory>>();
 	public HashMap<Player, Integer> currentPage = new HashMap<Player, Integer>();
 	
 	public static HashMap<Inventory, BukkitRunnable> invsee = new HashMap<Inventory, BukkitRunnable>();
-
-	
-	public GameInfoGUI getGameInfo() {
-		return gameInfo;
-	}
-	
-	protected TopStats getTopStats() {
-		return topStats;
-	}
-	
-	protected  Stats getStats() {
-		return stats;
-	}
-	
-	protected  HallOfFame getHOF() {
-		return hof;
-	}
-	
-	public void setup(Settings settings) {
-		PluginManager manager = Bukkit.getPluginManager();
-		
-		manager.registerEvents(gameInfo, plugin);
-		manager.registerEvents(topStats, plugin);
-		manager.registerEvents(stats, plugin);
-		manager.registerEvents(hof, plugin);
-		manager.registerEvents(config, plugin);
-		
-		gameInfo.update();
-		gameInfo.updateStaff();
-		
-		topStats.update();
-		
-		config.update();
-		
-		for (String host : settings.getHOF().getKeys(false)) {
-			getHOF().update(host);
-		}
-		
-		new BukkitRunnable() {
-			public void run() {
-				gameInfo.updateTimer();
-			}
-		}.runTaskTimer(plugin, 1, 1);
-	}
 	
 	/**
 	 * Opens an inventory of all the online players that is playing.
@@ -242,79 +187,5 @@ public class InvGUI {
 		player.openInventory(inv);
 		
 		return inv;
-	}
-	
-	/**
-	 * Opens an inventory of the given hosts hall of fame.
-	 * 
-	 * @param player the player opening for.
-	 * @param host The owner of the hall of fame.
-	 * @return The opened inventory.
-	 */
-	public Inventory openHOF(Player player, String host) {
-		HallOfFame hof = getHOF();
-		Inventory inv = hof.get(host);
-		
-		hof.currentHost.put(player.getName(), host);
-		hof.currentPage.put(player.getName(), 1);
-		
-		player.openInventory(inv);
-		return inv;
-	}
-	
-	/**
-	 * Opens stats inventory of the given user.
-	 * 
-	 * @param target The owner of the stats.
-	 * @return The opened inventory.
-	 */
-	public Inventory openStats(Player player, User target) {
-		Inventory inv = stats.get(target);
-		
-		player.openInventory(inv);
-		return inv;
-	}
-	
-	/**
-	 * Opens top tats inventory.
-	 * 
-	 * @return The opened inventory.
-	 */
-	public Inventory openTopStats(Player player) {
-		Inventory inv = topStats.get();
-		
-		player.openInventory(inv);
-		return inv;
-	}
-	
-	/**
-	 * Open the config option inventory for the given player.
-	 * 
-	 * @param player The player opening for.
-	 * @return The opened inventory.
-	 */
-	public Inventory openConfig(Player player) {
-		Inventory inv = config.get();
-		
-		player.openInventory(inv);
-		
-		return inv;
-	}
-	
-	public void openGameInfo(Player player) {
-		openGameInfo(ImmutableList.of(player));
-	}
-	
-	/**
-	 * Opens the game information inventory.
-	 * 
-	 * @param players player to open for.
-	 */
-	public void openGameInfo(List<Player> players) {
-		Inventory inv = gameInfo.get();
-		
-		for (Player player : players) {
-			player.openInventory(inv);
-		}
 	}
 }
