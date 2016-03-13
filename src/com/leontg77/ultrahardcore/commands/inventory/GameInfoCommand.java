@@ -8,17 +8,21 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
 
 /**
  * UHC command class.
  * 
  * @author LeonTG77
  */
-public class UHCCmd extends UHCCommand {	
+public class GameInfoCommand extends UHCCommand {
+	private final GUIManager gui;
 
-	public UHCCmd() {
+	public GameInfoCommand(GUIManager gui) {
 		super("uhc", "");
+		
+		this.gui = gui;
 	}
 
 	@Override
@@ -28,9 +32,8 @@ public class UHCCmd extends UHCCommand {
 		}
 		
 		Player player = (Player) sender;
-		InvGUI inv = InvGUI.getInstance();
 		
-		inv.openGameInfo(player);
+		player.openInventory(gui.getGUI(GameInfoGUI.class).get());
 		return true;
 	}
 
