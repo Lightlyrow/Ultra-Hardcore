@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.gui;
+package com.leontg77.ultrahardcore.gui.guis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,30 +19,45 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.gui.GUI;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
- * HallOfFame inventory class.
+ * HallOfFame inventory GUI class.
  * 
  * @author LeonTG77
  */
-public class HallOfFame extends InvGUI implements Listener {
-	public HallOfFame(Main plugin) {
-		super(plugin);
-		// TODO Auto-generated constructor stub
+public class HallOfFameGUI extends GUI implements Listener {
+	private final Settings settings;
+	
+	/**
+	 * HallOfFame inventory GUI class constructor.
+	 * 
+	 * @param settings The settings class.
+	 */
+	public HallOfFameGUI(Settings settings) {
+		super("HOF", "A inventory with all games of hosts and it's winners and game information.");
+		
+		this.settings = settings;
 	}
 
-	private Map<String, HashMap<Integer, Inventory>> hostInvs = new HashMap<String, HashMap<Integer, Inventory>>();
+	private Map<String, Map<Integer, Inventory>> hostInvs = new HashMap<String, Map<Integer, Inventory>>();
 	
-	public Map<String, Integer> currentPage = new HashMap<String, Integer>();
-	public Map<String, String> currentHost = new HashMap<String, String>();
+	private Map<String, Integer> currentPage = new HashMap<String, Integer>();
+	private Map<String, String> currentHost = new HashMap<String, String>();
+
+	@Override
+	public void onSetup() {
+		for (String host : settings.getHOF().getKeys(false)) {
+			update(host);
+		}
+	}
 	
 	@EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {	
+    public void on(InventoryClickEvent event) {	
 		if (event.getCurrentItem() == null) {
         	return;
         }
@@ -63,7 +78,7 @@ public class HallOfFame extends InvGUI implements Listener {
 		String host = currentHost.get(player.getName());
 		int page = currentPage.get(player.getName());
 		
-		HashMap<Integer, Inventory> pages = hostInvs.get(host);
+		Map<Integer, Inventory> pages = hostInvs.get(host);
 		
 		if (item.getItemMeta().getDisplayName().equalsIgnoreCase("§aNext page")) {
 			page++;
@@ -117,8 +132,6 @@ public class HallOfFame extends InvGUI implements Listener {
 	 * @param host The host.
 	 */
 	public void update(String host) {
-		Settings settings = Settings.getInstance();
-		
 		Set<String> keys = settings.getHOF().getConfigurationSection(host + ".games").getKeys(false);
 		List<String> list = new ArrayList<String>(keys);
 		
@@ -129,7 +142,7 @@ public class HallOfFame extends InvGUI implements Listener {
 		hostInvs.put(host, new HashMap<Integer, Inventory>());
 		
 		for (int current = 1; current <= pages; current++) {
-			inv = Bukkit.createInventory(null, 54, "» §7" + host + "'s HoF, Page " + current);
+			inv = Bukkit.createInventory(null, 54, "§4" + host + "'s HoF, Page " + current);
 			
 			for (int slot = 0; slot < 35; slot++) {
 				if (list.isEmpty()) {
@@ -205,7 +218,11 @@ public class HallOfFame extends InvGUI implements Listener {
 			ArrayList<String> headLore = new ArrayList<String>();
 			headLore.add(" ");
 			headLore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host + ".games").getKeys(false).size());
-			headLore.add("§8» §7Rank: §6" + NameUtils.capitalizeString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+			try {
+				headLore.add("§8» §7Rank: §6" + NameUtils.capitalizeString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+			} catch (Exception e) {
+				headLore.add("§8» §7Rank: §6This host has never joined the server.");
+			}
 			headLore.add(" ");
 			headLore.add("§8» §7Host name: §6" + host);
 			headLore.add("§8» §7IGN: §6" + name);
