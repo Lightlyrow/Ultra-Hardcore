@@ -27,42 +27,44 @@ public class BorderCommand extends UHCCommand {
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
+		World world;
+
 		if (args.length == 0) {
 			if (!(sender instanceof Player)) {
 				return false;
 			}
 
 			Player player = (Player) sender;
-			World world = player.getWorld();
-			
-			WorldBorder border = world.getWorldBorder();
-			int size = (int) border.getSize();
-			
-			sender.sendMessage(Main.PREFIX + "The border is currently: §a" + size + "x" + size);
+			world = player.getWorld();
 			return true;
+		} else {
+			world = Bukkit.getWorld(args[0]);
+			
+			if (world == null) {
+				throw new CommandException("The world '" + args[0] + "' does not exist.");
+			}
 		}
 		
-		if (!sender.hasPermission("uhc.border.set")) {
+		if (args.length < 2) {
+			WorldBorder border = world.getWorldBorder();
+			
+			int diameter = (int) border.getSize();
+			int radius = diameter / 2;
+			
+			sender.sendMessage(Main.PREFIX + "The border is currently: §a" + diameter + "x" + diameter + " §8(§a+" + radius + " -" + radius + "§8)");
+		}
+		
+		if (!sender.hasPermission(getPermission() + ".set")) {
 			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
-		}
-		
-		if (args.length == 1) {
-			return false;
-		}
-		
-		World world = Bukkit.getWorld(args[0]);
-		
-		if (world == null) {
-			throw new CommandException("The world '" + args[0] + "' does not exist.");
 		}
 
 		WorldBorder border = world.getWorldBorder();
 		
-		int radius = parseInt(args[1], "radius");
-		border.setSize(radius);
+		int diameter = parseInt(args[1], "radius");
+		border.setSize(diameter);
 		
-		PlayerUtils.broadcast(Main.PREFIX + "Borders in world '§6" + world.getName() + "§7' has been setup with radius §a" + radius + "x" + radius + "§7.");
+		PlayerUtils.broadcast(Main.PREFIX + "Borders in world '§6" + world.getName() + "§7' has been setup with diameter §a" + diameter + "x" + diameter + "§7.");
 		return true;
 	}
 
