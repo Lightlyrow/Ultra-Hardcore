@@ -29,7 +29,6 @@ import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -39,6 +38,19 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	private static final String PREFIX = "§2§lMarket §8» §7";
+	
+	private final TeamManager teams;
+	private final Main plugin;
+	
+	public SlaveMarket(Main plugin, TeamManager teams) {
+		super("SlaveMarket", "8 slave owners are chosen and they get 30 diamonds to bid on players as they choose. Any spare diamonds will be kept by the slaveowner for use ingame.");
+		
+		plugin.getCommand("market").setExecutor(this);
+		plugin.getCommand("bid").setExecutor(this);
+		
+		this.plugin = plugin;
+		this.teams = teams;
+	}
 
 	private final Set<String> owners = new HashSet<String>(); 
 	private int bidTime = 0, biggestBid = -1;
@@ -48,13 +60,6 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 
 	private boolean bidProgressing = false;
 	private BukkitRunnable task = null;
-	
-	public SlaveMarket() {
-		super("SlaveMarket", "8 slave owners are chosen and they get 30 diamonds to bid on players as they choose. Any spare diamonds will be kept by the slaveowner for use ingame.");
-		
-		Bukkit.getPluginCommand("market").setExecutor(this);
-		Bukkit.getPluginCommand("bid").setExecutor(this);
-	}
 
 	@Override
 	public void onDisable() {
@@ -72,8 +77,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 	
 	@EventHandler
     public void on(GameStartEvent event) {	
-        ScenarioManager manager = ScenarioManager.getInstance();
-        manager.getScenario(this.getClass()).setEnabled(false);
+       	disable();
 	}
 	
 	@EventHandler
@@ -161,8 +165,6 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 			return true;
 		}
 		
-		final TeamManager teams = TeamManager.getInstance();
-		
 		if (args[0].equalsIgnoreCase("reset")) {
 			bidProgressing = false;
 			bidWinner = null;
@@ -172,7 +174,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 			
 			owners.clear();
 			
-			for (Team team : TeamManager.getInstance().getTeamsWithPlayers()) {
+			for (Team team : teams.getTeamsWithPlayers()) {
 				for (OfflinePlayer entry : teams.getPlayers(team)) {
 					teams.leaveTeam(entry, false);
 				}
@@ -374,7 +376,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 				    		}
 				    	};
 				    	
-				    	task.runTaskTimer(Main.plugin, 0, 20);
+				    	task.runTaskTimer(plugin, 0, 20);
 				    	cancel();
 				    	return;
 					}
@@ -387,7 +389,7 @@ public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
 			    	
 			    	timeLeft--;
 				}
-			}.runTaskTimer(Main.plugin, 0, 20);
+			}.runTaskTimer(plugin, 0, 20);
 		}
 		
 		if (args[0].equalsIgnoreCase("stop")) {

@@ -26,13 +26,17 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author LeonTG77
  */
 public class MonstersInc extends Scenario implements Listener {
-	public static final String PREFIX = "§a[§bMonster's Inc§a] §f";
+	public static final String PREFIX = "§bMonster's Inc §8» §7";
 	
-	private List<Location> doors = new ArrayList<Location>();
+	private final ScatterManager scatter;
 
-	public MonstersInc() {
+	public MonstersInc(ScatterManager scatter) {
 		super("MonstersInc", "If you place a door on the map, go through it and there's 2 or more doors on the map, you will be teleported to one of those doors. If there's no doors other than your door, you will be teleported to a random spot on the map.");
+	
+		this.scatter = scatter;
 	}
+	
+	private final List<Location> doors = new ArrayList<Location>();
 
 	@Override
 	public void onDisable() {}
@@ -110,7 +114,7 @@ public class MonstersInc extends Scenario implements Listener {
 		Location loc;
 		
 		if (door.isEmpty()) {
-			List<Location> locs = ScatterManager.getInstance().findScatterLocations(block.getWorld(), 500, 1);
+			List<Location> locs = scatter.findScatterLocations(block.getWorld(), 500, 1);
 			
 			if (locs.isEmpty()) {
 				player.sendMessage(PREFIX + "There are no other doors or random locations.");

@@ -23,6 +23,7 @@ import org.bukkit.potion.PotionEffect;
 
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 
@@ -259,12 +260,11 @@ public class User {
 	 * 
 	 * @param rank The new rank.
 	 */
-	public void setRank(final Rank rank) {
+	public void setRank(Rank rank, GameInfoGUI info) {
 		config.set("rank", rank.name());
 		saveFile();
 		
-		FileUtils.updateUserFiles(plugin);
-		gui.getGameInfo().updateStaff();
+		info.updateStaff();
 		
 		if (player != null) {
 			perm.removePermissions(player);

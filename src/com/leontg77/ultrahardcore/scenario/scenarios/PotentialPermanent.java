@@ -16,6 +16,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.health.AbsorptionFeature;
@@ -28,9 +29,14 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author LeonTG77
  */
 public class PotentialPermanent extends Scenario implements Listener {
+	private final FeatureManager feat;
+	private final Settings settings;
 
-	public PotentialPermanent() {
+	public PotentialPermanent(Settings settings, FeatureManager feat) {
 		super("PotentialPermanent", "You start the game with the normal 10(permanent) hearts and 10 absorption hearts. If you heal- when you have full health- the absorption hearts become the \"permanent\" hearts(potential). However, if you take damage, the absorption hearts will be gone forever. Say you took 1 heart of damage, you now have 10 normal hearts and 9 absorption hearts. Once you have enough to heal, you will only heal up to 19 hearts.");
+	
+		this.settings = settings;
+		this.feat = feat;
 	}
 
 	@Override
@@ -43,10 +49,8 @@ public class PotentialPermanent extends Scenario implements Listener {
 
 	@Override
 	public void onEnable() {
-		final FeatureManager manager = FeatureManager.getInstance();
-		
-		manager.getFeature(AbsorptionFeature.class).enable();
-		manager.getFeature(GoldenHeadsFeature.class).setHealAmount(2);
+		feat.getFeature(AbsorptionFeature.class).enable(settings);
+		feat.getFeature(GoldenHeadsFeature.class).setHealAmount(2);
 	}
 	
 	@EventHandler
@@ -60,7 +64,7 @@ public class PotentialPermanent extends Scenario implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+	public void on(PlayerItemConsumeEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
 		

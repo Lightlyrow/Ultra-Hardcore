@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -27,20 +28,26 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Paranoia extends Scenario implements Listener {
-	public static final String PREFIX = "§c§lParanoia §8» §f";
+	public static final String PREFIX = "§cParanoia §8» §f";
 	
-	public Paranoia() {
+	private final BoardManager board;
+	private final Game game;
+	
+	public Paranoia(Game game, BoardManager board) {
 		super("Paranoia", "Your coordinates are broadcasted when you mine diamonds/gold, craft or eat an golden apple, you craft an anvil or enchantment table or you die");
+		
+		this.board = board;
+		this.game = game;
 	}
 
 	@Override
 	public void onDisable() {
-		BoardManager.getInstance().setup();
+		board.setup(game);
 	}
 
 	@Override
 	public void onEnable() {
-		Scoreboard board = BoardManager.getInstance().getBoard();
+		Scoreboard board = this.board.getBoard();
 		
 		board.clearSlot(DisplaySlot.PLAYER_LIST);
 		board.clearSlot(DisplaySlot.BELOW_NAME);

@@ -27,19 +27,23 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author dans1988
  */
 public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
+    public static final String PREFIX = "§aSlimyCrack §8» §f";
+    
 	private static final int CHUNK_HEIGHT_LIMIT = 128;
     private static final int BLOCKS_PER_CHUNK = 16;
     private static final int STAIRCASE_START = 16;
     
-    public static final String PREFIX = "§c[§dSlimyCrack§c] §e";
-	private boolean generation = false;
+    private final Main plugin;
 
-	public SlimyCrack() {
+	public SlimyCrack(Main plugin) {
 		super("SlimyCrack", "There is a giant fissure generated through natural terrain which exposes ores, caves mineshafts and the like but at the bottom there are slime blocks except at the sides where there are gaps that players are still able to fall down. The crack goes through 0,0 and is parallel to the x axis.");
-		Main main = Main.plugin;
 		
-		main.getCommand("slimecrack").setExecutor(this);
+		plugin.getCommand("slimecrack").setExecutor(this);
+		
+		this.plugin = plugin;
 	}
+	
+	private boolean generation = false;
 	
 	@Override
 	public void onDisable() {}
@@ -186,7 +190,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
 							PacketUtils.sendAction(online, PREFIX + "Populated chunk at x = §a" + chunk.getX() + "§7, z = §a" + chunk.getZ() + "§7.");
 						}
                     }
-                }.runTaskLater(Main.plugin, delayMultiplier * speed);
+                }.runTaskLater(plugin, delayMultiplier * speed);
                 
                 delayMultiplier++;
             }
@@ -197,7 +201,7 @@ public class SlimyCrack extends Scenario implements Listener, CommandExecutor {
             	generation = false;
                 PlayerUtils.broadcast(PREFIX + "SlimyCrack generation finished!");
             }
-        }.runTaskLater(Main.plugin, delayMultiplier * speed);
+        }.runTaskLater(plugin, delayMultiplier * speed);
     }
 
 	/**

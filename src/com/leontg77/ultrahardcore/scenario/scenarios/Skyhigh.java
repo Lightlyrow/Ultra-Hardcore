@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
@@ -19,16 +21,27 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Skyhigh extends Scenario implements Listener {
-	public static final String PREFIX = "§f[§bSkyhigh§f] §7";
-	private BukkitRunnable task;
+	public static final String PREFIX = "§bSkyhigh §8» §7";
 	
-	public Skyhigh() {
+	private final Main plugin;
+	private final Game game;
+	
+	public Skyhigh(Main plugin, Game game) {
 		super("Skyhigh", "After 45 minutes, any player below y: 101 will begin to take half a heart of damage every 30 seconds.");
+		
+		this.plugin = plugin;
+		this.game = game;
 	}
 
+	private BukkitRunnable task = null;
+	
 	@Override
 	public void onDisable() {
-		task.cancel();
+		if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+			task.cancel();
+		}
+		
+		task = null;
 	}
 
 	@Override
@@ -64,6 +77,6 @@ public class Skyhigh extends Scenario implements Listener {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 600, 600);
+		task.runTaskTimer(plugin, 600, 600);
 	}
 }

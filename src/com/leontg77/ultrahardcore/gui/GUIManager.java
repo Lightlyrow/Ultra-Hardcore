@@ -7,15 +7,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
 import com.google.common.collect.ImmutableList;
-import com.leontg77.ultrahardcore.Arena;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.gui.guis.ConfigGUI;
-import com.leontg77.ultrahardcore.managers.SpecManager;
-import com.leontg77.ultrahardcore.managers.TeamManager;
+import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
+import com.leontg77.ultrahardcore.gui.guis.HallOfFameGUI;
+import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 
 /**
  * GUI manager class.
@@ -81,8 +81,10 @@ public class GUIManager {
 	/**
 	 * Setup all the GUI inventories.
 	 */
-	public void registerScenarios(Arena arena, Game game, Timer timer, TeamManager teams, SpecManager spec, Settings settings, FeatureManager feat) {
+	public void registerGUIs(Game game, Timer timer, Settings settings, FeatureManager feat, ScenarioManager scen) {
 		addGUI(new ConfigGUI(settings, feat));
+		addGUI(new GameInfoGUI(plugin, game, timer, feat, scen));
+		addGUI(new HallOfFameGUI(settings));
 		
 		plugin.getLogger().info("All inventories has been setup.");
 	}

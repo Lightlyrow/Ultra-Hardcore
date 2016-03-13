@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -22,9 +23,16 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Timebomb extends Scenario implements Listener {
+	public static final String PREFIX = "§4Timebomb §8» §7";
+	
+	private final Main plugin;
+	private final Game game;
 
-	public Timebomb() {
+	public Timebomb(Main plugin, Game game) {
 		super("Timebomb", "After killing a player all of their items will appear in a double chest rather than dropping on the ground. You then have 30 seconds to loot what you want and get the hell away from it. This is because the chest explodes after the time is up.");
+	
+		this.plugin = plugin;
+		this.game = game;
 	}
 
 	@Override
@@ -41,7 +49,7 @@ public class Timebomb extends Scenario implements Listener {
 			return;
 		}
 		
-		final User user = User.get(player);
+		User user = User.get(player);
 		
 		final Location loc = player.getLocation().add(0, -1, 0);
 		event.setKeepInventory(true);
@@ -70,7 +78,7 @@ public class Timebomb extends Scenario implements Listener {
 		
 		user.resetInventory();
 		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
 				PlayerUtils.broadcast(Main.PREFIX.replaceAll("UHC", "Timebomb") + ChatColor.GREEN + player.getName() + "'s §7corpse has exploded!");
 				loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 10, false, true);
@@ -79,7 +87,7 @@ public class Timebomb extends Scenario implements Listener {
 			}
 		}, 600);
 		
-		Bukkit.getServer().getScheduler().runTaskLater(Main.plugin, new Runnable() {
+		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
 				loc.getWorld().strikeLightning(loc);
 			}

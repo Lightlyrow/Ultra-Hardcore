@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -23,8 +24,8 @@ import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.Lists;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
-import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -36,13 +37,17 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Superheroes extends Scenario implements Listener, CommandExecutor {
-	private HashMap<String, HeroType> types = new HashMap<String, HeroType>();
+	private final TeamManager teams;
 	
-	public Superheroes() {
+	public Superheroes(Main plugin, TeamManager teams) {
 		super("Superheroes", "Each player on the team receives a special \"super\" power such as jump boost, health boost, strength, speed, invis, or resistance.");
 		
-		Bukkit.getPluginCommand("super").setExecutor(this);
+		plugin.getCommand("super").setExecutor(this);
+		
+		this.teams = teams;
 	}
+	
+	private final Map<String, HeroType> types = new HashMap<String, HeroType>();
 
 	@Override
 	public void onDisable() {
@@ -55,12 +60,16 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 
 	@Override
 	public void onEnable() {
-		PlayerUtils.broadcast(Main.PREFIX + "Superhero types will be set at final heal!");
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		on(new FinalHealEvent());
 	}
 	
 	@EventHandler
 	public void on(FinalHealEvent event) {
-		PlayerUtils.broadcast(Main.PREFIX + "Setting hero types...");
+		PlayerUtils.broadcast(Main.PREFIX + "Setting superhero types...");
 		
 		for (Player online : Bukkit.getOnlinePlayers()) {
 			HeroType type = getRandomType(online);
@@ -106,9 +115,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 			return true;
 		}
 		
-		SpecManager spec = SpecManager.getInstance();
-		
-		if (!sender.hasPermission("uhc.superheroes") && !spec.isSpectating(sender.getName())) {
+		if (!sender.hasPermission("uhc.superheroes")) {
 			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
@@ -123,11 +130,6 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		}
 		
 		if (args[0].equalsIgnoreCase("apply")) {
-			if (!sender.hasPermission("uhc.superheroes")) {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
-				return true;
-			}
-			
 			for (Player online : Bukkit.getOnlinePlayers()) {
 				addEffects(online, types.get(online.getName()));
 			}
@@ -137,11 +139,6 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		} 
 
 		if (args[0].equalsIgnoreCase("set")) {
-			if (!sender.hasPermission("uhc.superheroes")) {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
-				return true;
-			}
-			
 			if (args.length == 1) {
 				sender.sendMessage(Main.PREFIX + "Usage: /super set <player>");
 				return true;
@@ -169,11 +166,6 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		}
 
 		if (args[0].equalsIgnoreCase("clear")) {
-			if (!sender.hasPermission("uhc.superheroes")) {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
-				return true;
-			}
-			
 			if (args.length == 1) {
 				sender.sendMessage(Main.PREFIX + "Usage: /super clear <player>");
 				return true;
@@ -194,11 +186,6 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 		}
 		
 		if (args[0].equalsIgnoreCase("list")) {
-			if (!spec.isSpectating(sender.getName())) {
-				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
-				return true;
-			}
-			
 			StringBuilder health = new StringBuilder("");
 			StringBuilder invis = new StringBuilder("");
 			StringBuilder jump = new StringBuilder("");
@@ -315,7 +302,7 @@ public class Superheroes extends Scenario implements Listener, CommandExecutor {
 	 */
     private HeroType getRandomType(Player player) {
         List<HeroType> available = Lists.newArrayList(HeroType.values());
-        Team team = TeamManager.getInstance().getTeam(player);
+        Team team = teams.getTeam(player);
 
         if (team != null) {
             available.remove(HeroType.INVIS);

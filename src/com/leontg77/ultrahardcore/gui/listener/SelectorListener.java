@@ -28,9 +28,6 @@ public class SelectorListener implements Listener {
         }
         
 		Player player = (Player) event.getWhoClicked();
-		InvGUI manager = InvGUI.getInstance();
-		
-		SpecManager spec = SpecManager.getInstance();
 		
 		Inventory inv = event.getInventory();
 		ItemStack item = event.getCurrentItem();

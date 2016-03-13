@@ -1,6 +1,7 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -24,12 +25,16 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  * @author LeonTG77
  */
 public class TripleOres extends Scenario implements Listener {
-	private HashSet<Location> locs = new HashSet<Location>();
+	private final ScenarioManager scen;
 	
-	public TripleOres() {
+	public TripleOres(ScenarioManager scen) {
 		super("TripleOres", "When mining an ore it drops 3 of the dropped item.");
+		
+		this.scen = scen;
 	}
 
+	private final Set<Location> locs = new HashSet<Location>();
+	
 	@Override
 	public void onDisable() {}
 
@@ -49,7 +54,6 @@ public class TripleOres extends Scenario implements Listener {
 			return;
 		}
 		
-		ScenarioManager scen = ScenarioManager.getInstance();
 		boolean cutclean = scen.getScenario(CutClean.class).isEnabled();
 		
 		if (block.getType() == Material.COAL_ORE) {
@@ -141,7 +145,7 @@ public class TripleOres extends Scenario implements Listener {
 	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (ScenarioManager.getInstance().getScenario(CutClean.class).isEnabled()) {
+		if (scen.getScenario(CutClean.class).isEnabled()) {
 			return;
 		}
 		

@@ -29,6 +29,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 
 import com.google.common.collect.ImmutableSet;
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -40,14 +42,21 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class MysteryTeams extends Scenario implements Listener, CommandExecutor {
 	private static final String PREFIX = "§6[§cMysteryTeams§6] §f";
+	
+	private final Game game;
 
-	protected static List<MysteryTeam> teams = Arrays.asList(MysteryTeam.values());
-	protected static Map<MysteryTeam, List<UUID>> orgTeams = new HashMap<MysteryTeam, List<UUID>>();
+	private static Map<MysteryTeam, List<UUID>> orgTeams;
+	private static List<MysteryTeam> teams;
 
-	public MysteryTeams() {
+	public MysteryTeams(Main plugin, Game game) {
 		super("MysteryTeams", "Teams are unknown until meeting and comparing banners.");
 		
-		Bukkit.getPluginCommand("mt").setExecutor(this);
+		plugin.getCommand("mt").setExecutor(this);
+		
+		this.game = game;
+		
+		orgTeams = new HashMap<MysteryTeam, List<UUID>>();
+		teams = Arrays.asList(MysteryTeam.values());
 	}
 
 	@Override
@@ -93,18 +102,18 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 			int teamSize;
 			
 			try {
-				teamSize = Integer.parseInt(args[1]);
+				teamSize = parseInt(args[1]);
 			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + "'" + args[2] + "' is not a vaild teamsize.");
+				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
 			
 			int amount;
 			
 			try {
-				amount = Integer.parseInt(args[2]);
+				amount = parseInt(args[2]);
 			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + "'" + args[2] + "' is not a vaild amount.");
+				sender.sendMessage(ChatColor.RED + e.getMessage());
 				return true;
 			}
 			
@@ -229,7 +238,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 	 * 
 	 * @return The fake team created.
 	 */
-	public static MysteryTeam findAvailableTeam() {
+	public MysteryTeam findAvailableTeam() {
 		for (MysteryTeam team : teams) {
 			if (team.getSize() == 0) {
 				return team;

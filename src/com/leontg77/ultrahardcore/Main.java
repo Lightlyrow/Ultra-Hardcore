@@ -20,6 +20,7 @@ import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
 import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
+import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.gui.InvGUI;
 import com.leontg77.ultrahardcore.gui.listener.InvseeListener;
 import com.leontg77.ultrahardcore.gui.listener.SelectorListener;
@@ -77,15 +78,15 @@ public class Main extends JavaPlugin {
 	
 	private final PermissionsManager perm;
 	private final FireworkManager firework;
+	
 	private final HOFManager HOF;
+	private final GUIManager gui;
 
 	private final Game game;
 	private final Arena arena;
 	
 	private final Announcer announcer;
-
 	private final Parkour parkour;
-	private final InvGUI gui;
 
 	private final EnchantPreview enchPreview;
 	private final HardcoreHearts hardHearts;
@@ -112,10 +113,11 @@ public class Main extends JavaPlugin {
 		
 		perm = new PermissionsManager(this);	
 		firework = new FireworkManager(this);
+		
 		HOF = new HOFManager(this);	
+		gui = new GUIManager(this);
 		
 		parkour = new Parkour(this, settings);
-		gui = new InvGUI(this);
 		
 		spec = new SpecManager(this, teams);
 		game = new Game(settings, gui, board, spec);
@@ -189,7 +191,7 @@ public class Main extends JavaPlugin {
 		board.setup(game);
 		teams.setup();
 
-		scen.registerScenarios(arena, game, timer, teams, spec, settings, feat);
+		scen.registerScenarios(arena, game, timer, teams, spec, settings, feat, scatter, board);
 		feat.registerFeatures(arena, game, timer, board, teams, spec, enchPreview, hardHearts, scen);
 		cmd.registerCommands(board, spec);
 	    
@@ -202,7 +204,7 @@ public class Main extends JavaPlugin {
 		
 		FileUtils.updateUserFiles(this);
 		
-		gui.setup(settings);
+		gui.registerGUIs(game, timer, settings, feat, scen);
 		data.restore(teams, scen);
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));

@@ -16,7 +16,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.border.BorderShrinkFeature;
@@ -49,19 +52,48 @@ import com.leontg77.ultrahardcore.feature.xp.NerfedXPFeature;
 import com.leontg77.ultrahardcore.gui.GUI;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.Moles;
+import com.leontg77.ultrahardcore.scenario.scenarios.PotentialMoles;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
+/**
+ * GameInfo inventory GUI class.
+ * 
+ * @author LeonTG77.
+ */
 public class GameInfoGUI extends GUI implements Listener {
+	private final Main plugin;
+	
+	private final Timer timer;
+	private final Game game;
+	
+	private final FeatureManager feat;
+	private final ScenarioManager scen;
 
-	public GameInfoGUI(String name, String description) {
-		super(name, description);
-		// TODO Auto-generated constructor stub
+	/** 
+	 * GameInfo inventory GUI class constructor.
+	 * 
+	 * @param plugin The main class.
+	 * @param game The game class
+	 * @param timer The timer class.
+	 * @param feat The feature manager class.
+	 * @param scen The scenario manager class.
+	 */
+	public GameInfoGUI(Main plugin, Game game, Timer timer, FeatureManager feat, ScenarioManager scen) {
+		super("GameInfo", "A inventory with informative items.");
+		
+		this.plugin = plugin;
+		
+		this.timer = timer;
+		this.game = game;
+		
+		this.feat = feat;
+		this.scen = scen;
 	}
 
-	private Inventory inv = Bukkit.createInventory(null, 45, "§4Game Information");
+	private final Inventory inv = Bukkit.createInventory(null, 45, "§4UHC Game Information");
 	
 	@Override
 	public void onSetup() {
@@ -77,14 +109,14 @@ public class GameInfoGUI extends GUI implements Listener {
 	}
 	
 	@EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {	
+    public void on(InventoryClickEvent event) {	
         if (event.getCurrentItem() == null) {
         	return;
         }
         
 		Inventory inv = event.getInventory();
 		
-		if (!inv.getTitle().equals(this.inv.getTitle())) {
+		if (!this.inv.getTitle().equals(inv.getTitle())) {
 			return;
 		}
 		
@@ -104,9 +136,7 @@ public class GameInfoGUI extends GUI implements Listener {
 	 * Update the item lores in the inventory.
 	 */
 	public void update() {
-		
-		final FeatureManager feat = FeatureManager.getInstance();
-		final List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<String>();
 		
 		// general info item
 		ItemStack general = new ItemStack(Material.SIGN);
@@ -132,7 +162,7 @@ public class GameInfoGUI extends GUI implements Listener {
 		String teamKilling;
 		
 		if (game.getTeamSize().startsWith("rTo")) {
-			if (ScenarioManager.getInstance().getScenario(Moles.class).isEnabled()) {
+			if (scen.getScenario(Moles.class).isEnabled() || scen.getScenario(PotentialMoles.class).isEnabled()) {
 				teamKilling = "§aAllowed";
 			} else {
 				teamKilling = "§cNot Allowed";
@@ -448,29 +478,29 @@ public class GameInfoGUI extends GUI implements Listener {
 		lore.add(" ");
 		lore.add("§8» §4Owners:");
 		
-		for (String split : getRankList(Rank.OWNER).toString().split("-")) {
-			lore.add("  §7" + split);
+		for (String split : getRankList(Rank.OWNER).split("-")) {
+			lore.add("§8» §7" + split);
 		}
 		
 		lore.add(" ");
 		lore.add("§8» §4Hosts:");
 		
-		for (String split : getRankList(Rank.TRIAL, Rank.HOST).toString().split("-")) {
-			lore.add("  §7" + split);
+		for (String split : getRankList(Rank.TRIAL, Rank.HOST).split("-")) {
+			lore.add("§8» §7" + split);
 		}
 		
 		lore.add(" ");
 		lore.add("§8» §cStaff:");
 		
-		for (String split : getRankList(Rank.STAFF).toString().split("-")) {
-			lore.add("  §7" + split);
+		for (String split : getRankList(Rank.STAFF).split("-")) {
+			lore.add("§8» §7" + split);
 		}
 		
 		lore.add(" ");
 		lore.add("§8» §9Specs:");
 		
 		for (String split : getRankList(Rank.SPEC).split("-")) {
-			lore.add("  §7" + split);
+			lore.add("§8» §7" + split);
 		}
 		
 		lore.add(" ");
@@ -496,7 +526,7 @@ public class GameInfoGUI extends GUI implements Listener {
 		for (FileConfiguration config : FileUtils.getUserFiles()) {
 			for (Rank rank : ranks) {
 				if (config.getString("rank", "USER").equals(rank.name())) {
-					peopleWithRank.add(config.getString("username"));
+					peopleWithRank.add(config.getString("username", "null"));
 				}
 			}
 		}

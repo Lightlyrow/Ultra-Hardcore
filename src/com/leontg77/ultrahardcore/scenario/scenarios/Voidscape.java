@@ -1,6 +1,7 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,17 +29,20 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class Voidscape extends Scenario implements Listener, CommandExecutor {
-	private ArrayList<Location> locations = new ArrayList<Location>();
+	private final Main plugin;
+	
+	public Voidscape(Main plugin) {
+		super("Voidscape", "All stone and bedrock is replaced with air");
+		
+		plugin.getCommand("void").setExecutor(this);
+		
+		this.plugin = plugin;
+	}
+	
+	private List<Location> locations = new ArrayList<Location>();
 	private int totalChunks;
 	
-	public static BukkitRunnable task = null;
-	
-	public Voidscape() {
-		super("Voidscape", "All stone and bedrock is replaced with air");
-		Main main = Main.plugin;
-		
-		main.getCommand("void").setExecutor(this);
-	}
+	public BukkitRunnable task = null;
 
 	@Override
 	public void onDisable() {}
@@ -127,7 +131,7 @@ public class Voidscape extends Scenario implements Listener, CommandExecutor {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 1, 1);
+		task.runTaskTimer(plugin, 1, 1);
 		return true;
 	}
 }

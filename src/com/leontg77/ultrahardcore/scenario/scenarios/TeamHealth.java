@@ -12,9 +12,9 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -28,12 +28,27 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
 public class TeamHealth extends Scenario implements Listener {
 	public BukkitRunnable task = null;
 
-	private Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-	private Objective teamHealthName = board.getObjective("teamHealthName");
-	private Objective teamHealth = board.getObjective("teamHealth");
+	private final BoardManager manager;
+	private final TeamManager teams;
 	
-	public TeamHealth() {
+	private final Main plugin;
+	private final Game game;
+	
+	private final Scoreboard board;
+	
+	private Objective teamHealthName;
+	private Objective teamHealth;
+	
+	public TeamHealth(Main plugin, Game game, BoardManager manager, TeamManager teams) {
 		super("TeamHealth", "The percent health shown in tab/bellow the name is all the teammates health combined.");
+
+		this.manager = manager;
+		this.teams = teams;
+		
+		this.plugin = plugin;
+		this.game = game;
+		
+		this.board = manager.getBoard();
 		
 		teamHealthName = board.getObjective("teamHealthName");
 		teamHealth = board.getObjective("teamHealth");
@@ -53,18 +68,11 @@ public class TeamHealth extends Scenario implements Listener {
 		task = null;
 		
 		// setup the original scoreboard.
-		BoardManager.getInstance().setup();
+		manager.setup(game);
 	}
 
 	@Override
 	public void onEnable() {
-		if (State.isState(State.INGAME)) {
-			on(new GameStartEvent());
-		}
-	}
-	
-	@EventHandler
-    public void on(GameStartEvent event) {
 		if (teamHealthName == null) {
 			teamHealthName = board.registerNewObjective("teamHealthName", "dummy");
 		}
@@ -81,7 +89,7 @@ public class TeamHealth extends Scenario implements Listener {
 		task = new BukkitRunnable() {
 			public void run() {
 				for (Player online : Bukkit.getOnlinePlayers()) {	
-					Team team = TeamManager.getInstance().getTeam(online);
+					Team team = teams.getTeam(online);
 					
 					double health = 0;
 
@@ -91,9 +99,11 @@ public class TeamHealth extends Scenario implements Listener {
 						for (String entry : team.getEntries()) {
 							Player target = Bukkit.getServer().getPlayer(entry);
 							
-							if (target != null) {
-								health = health + target.getHealth();
+							if (target == null) {
+								continue;
 							}
+							
+							health = health + target.getHealth();
 						}
 					}
 					
@@ -112,8 +122,8 @@ public class TeamHealth extends Scenario implements Listener {
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 1, 1);
-    }
+		task.runTaskTimer(plugin, 1, 1);
+	}
 	
 	@EventHandler
     public void on(PlayerDeathEvent event) {
@@ -122,14 +132,12 @@ public class TeamHealth extends Scenario implements Listener {
 		}
 		
 		Player player = event.getEntity();
-		
-		TeamManager manager = TeamManager.getInstance();
-		Team team = manager.getTeam(player);
+		Team team = teams.getTeam(player);
 
         if (team == null) {
         	return;
         }
         
-        manager.leaveTeam(player, false);
+        teams.leaveTeam(player, false);
     }
 }

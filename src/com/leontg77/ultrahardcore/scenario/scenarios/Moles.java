@@ -41,14 +41,25 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 @SuppressWarnings("deprecation")
 public class Moles extends Scenario implements Listener, CommandExecutor {
+	private final Main plugin;
+	
+	private final ScenarioManager scen;
+	private final TeamManager teams;
+	private final SpecManager spec;
 
-	public Moles() {
+	public Moles(Main plugin, ScenarioManager scen, TeamManager teams, SpecManager spec) {
 		super("Moles", "There are a mole on each team, moles on each team work together to take out the normal teams.");
 		
-		Bukkit.getPluginCommand("molehelp").setExecutor(this);
-		Bukkit.getPluginCommand("mcc").setExecutor(this);
-		Bukkit.getPluginCommand("mcl").setExecutor(this);
-		Bukkit.getPluginCommand("mcp").setExecutor(this);
+		plugin.getCommand("molehelp").setExecutor(this);
+		plugin.getCommand("mcc").setExecutor(this);
+		plugin.getCommand("mcl").setExecutor(this);
+		plugin.getCommand("mcp").setExecutor(this);
+		
+		this.plugin = plugin;
+		this.scen = scen;
+		
+		this.teams = teams;
+		this.spec = spec;
 	}
 	
 	private final Random rand = new Random();
@@ -95,8 +106,8 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 					online.playSound(online.getLocation(), Sound.WOLF_HOWL, 1, 1);
 				}
 				
-				for (Team team : TeamManager.getInstance().getTeamsWithPlayers()) {
-					if (ScenarioManager.getInstance().getScenario("PotentialMoles").isEnabled()) {
+				for (Team team : teams.getTeamsWithPlayers()) {
+					if (scen.getScenario("PotentialMoles").isEnabled()) {
 						if (rand.nextInt(100) < 50) {
 							continue;
 						}
@@ -167,7 +178,7 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 					inv.setItem(14, wool6);
 				}
 			}
-		}.runTaskTimer(Main.plugin, 20, 20);
+		}.runTaskTimer(plugin, 20, 20);
 	}
 
 	@Override
@@ -226,8 +237,6 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 			for (int i = 0; i < args.length; i++) {
 				message.append(args[i]).append(" ");
 			}
-
-			SpecManager spec = SpecManager.getInstance();
 			
 			for (Player online : Bukkit.getOnlinePlayers()) {
 				if (!spec.isSpectating(online) && !moles.contains(online.getName())) {
@@ -239,8 +248,6 @@ public class Moles extends Scenario implements Listener, CommandExecutor {
 		}
 		
 		if (cmd.getName().equalsIgnoreCase("mcp")) {
-			SpecManager spec = SpecManager.getInstance();
-			
 			if (!spec.isSpectating(player) && !moles.contains(player.getName())) {
 				player.sendMessage(Main.PREFIX.replaceFirst("UHC", "Moles") + "You are not a mole.");
 				return true;

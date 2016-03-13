@@ -23,6 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
+import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.gui.InvGUI;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
@@ -38,7 +39,7 @@ public class SpectatorListener implements Listener {
 	private final Game game;
 
 	private final SpecManager spec;
-	private final InvGUI inv;
+	private final GUIManager gui;
 	
 	private final NetherFeature nether;
 	
@@ -47,14 +48,14 @@ public class SpectatorListener implements Listener {
 	 * 
 	 * @param game The game class.
 	 * @param spec The spectator manager class.
-	 * @param inv The inv gui class.
+	 * @param gui The inv gui class.
 	 * @param nether The nether feature class.
 	 */
-	public SpectatorListener(Game game, SpecManager spec, InvGUI inv, NetherFeature nether) {
+	public SpectatorListener(Game game, SpecManager spec, GUIManager gui, NetherFeature nether) {
 		this.game = game;
 		
 		this.spec = spec;
-		this.inv = inv;
+		this.gui = gui;
 		
 		this.nether = nether;
 	}
@@ -69,7 +70,7 @@ public class SpectatorListener implements Listener {
 		}
 		
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-			inv.openSelector(game, player);
+			gui.openSelector(game, player);
 			return;
 		} 
 		

@@ -28,14 +28,10 @@ public class Timber extends Scenario implements Listener {
 	public void onEnable() {}
 	
 	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
+	public void on(BlockBreakEvent event) {
 		Block block = event.getBlock();
 		
 		if (block.getType() != Material.LOG && block.getType() != Material.LOG_2) {
-			return;
-		}
-		
-		if (!game.getWorlds().contains(block.getWorld())) {
 			return;
 		}
 

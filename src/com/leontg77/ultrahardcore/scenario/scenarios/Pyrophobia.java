@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.scenario.scenarios;
+ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -37,18 +37,24 @@ import com.leontg77.ultrahardcore.utils.PacketUtils;
  * @author Bergasms
  */
 public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
+	private static final String PREFIX = "§4Pyrophobia §8» §7";
+	
 	private ArrayList<Location> locations;
 	private int generateTaskID;
 	private int totalChunks;
+	
+	private final Main plugin;
 
-	public Pyrophobia() {
+	public Pyrophobia(Main plugin) {
 		super("Pyrophobia", "All water and ice is replaced with lava, redstone and lapis is replaced by obsidian and leaves drop sugar canes.");
+		
 	    this.locations = new ArrayList<Location>();
 	    this.generateTaskID = -1;
 	    this.totalChunks = 0;
 	    
-	    Main main = Main.plugin;
-	    main.getCommand("genpyro").setExecutor(this);
+	    plugin.getCommand("genpyro").setExecutor(this);
+	    
+	    this.plugin = plugin;
 	}
 
 	@Override
@@ -134,7 +140,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 	private void completedPyro(final World w, int radius) {
 		Bukkit.getServer().getScheduler().cancelTask(this.generateTaskID);
 		this.generateTaskID = -1;
-		Bukkit.getServer().broadcastMessage(Main.PREFIX.replaceAll("UHC", "Pyrophobia") + "World mid Converted");
+		Bukkit.getServer().broadcastMessage(PREFIX + "World mid Converted");
 
 		this.locations = new ArrayList<Location>();
 		for (int i = -1 * radius; i < radius; i += 16) {
@@ -144,7 +150,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 		}
 		this.totalChunks = this.locations.size();
 
-		this.generateTaskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+		this.generateTaskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			public void run() {
 				if (locations.size() > 0) {
 					Location l = (Location) locations.remove(locations.size() - 1);
@@ -174,7 +180,7 @@ public class Pyrophobia extends Scenario implements Listener, CommandExecutor {
 		}
 		this.totalChunks = this.locations.size();
 
-		this.generateTaskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.plugin, new Runnable() {
+		this.generateTaskID = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			public void run() {
 				if (locations.size() > 0) {
 					Location l = locations.remove(locations.size() - 1);

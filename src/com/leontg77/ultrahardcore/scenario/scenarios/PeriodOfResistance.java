@@ -34,23 +34,28 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
 public class PeriodOfResistance extends Scenario implements Listener, CommandExecutor {
 	private static final String PREFIX = "§7[§6Resistance§7] §7";
 	
+	private final Main plugin;
+	
+	public PeriodOfResistance(Main plugin) {
+		super("PeriodOfResistance", "Every 10 minutes the resistance type changes, during the next 10 minutes you cannot take damage from what the type was.");
+		
+		plugin.getCommand("status").setExecutor(this);
+		
+		this.plugin = plugin;
+	}
+	
 	private BukkitRunnable task;
 	private DamageType current;
 	
 	private int seconds = 600;
-	
-	public PeriodOfResistance() {
-		super("PeriodOfResistance", "Every 10 minutes the resistance type changes, during the next 10 minutes you cannot take damage from what the type was.");
-		
-		Bukkit.getPluginCommand("status").setExecutor(this);
-	}
 
 	@Override
 	public void onDisable() {
 		if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
 			task.cancel();
-			task = null;
 		}
+		
+		task = null;
 		
 		current = null;
 		seconds = 600;
@@ -104,7 +109,7 @@ public class PeriodOfResistance extends Scenario implements Listener, CommandExe
 			}
 		};
 		
-		task.runTaskTimer(Main.plugin, 0, 20);
+		task.runTaskTimer(plugin, 0, 20);
 	}
 	
 	@EventHandler(ignoreCancelled = true)

@@ -7,7 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
@@ -21,7 +22,7 @@ import com.leontg77.ultrahardcore.utils.PacketUtils;
  */
 public class Game {
 	private final Settings settings;
-	private final InvGUI gui;
+	private final GUIManager gui;
 	
 	private final BoardManager board;
 	private final SpecManager spec;
@@ -34,7 +35,7 @@ public class Game {
 	 * @param board The board manager class.
 	 * @param spec The spectator manager clas.
 	 */
-	public Game(Settings settings, InvGUI gui, BoardManager board, SpecManager spec) {
+	public Game(Settings settings, GUIManager gui, BoardManager board, SpecManager spec) {
 		this.settings = settings;
 		this.gui = gui;
 
@@ -223,7 +224,7 @@ public class Game {
 			board.setScore("§8» §7" + getAdvancedTeamSize(true, false), 6);
 		}
 		
-		gui.getGameInfo().update();
+		gui.getGUI(GameInfoGUI.class).update();
 	}
 	
 	/**
@@ -258,7 +259,7 @@ public class Game {
 			PacketUtils.setTabList(online, this);
 		}
 		
-		gui.getGameInfo().update();
+		gui.getGUI(GameInfoGUI.class).update();
 	}
 
 	public String getScenarios() {
@@ -281,8 +282,8 @@ public class Game {
 		for (Player online : Bukkit.getOnlinePlayers()) {
 			PacketUtils.setTabList(online, this);
 		}
-		
-		gui.getGameInfo().update();
+
+		gui.getGUI(GameInfoGUI.class).update();
 	}
 
 	/**
@@ -302,8 +303,8 @@ public class Game {
 	public void setMaxPlayers(int maxplayers) {
 		settings.getConfig().set("maxplayers", maxplayers);
 		settings.saveConfig();
-		
-		gui.getGameInfo().update();
+
+		gui.getGUI(GameInfoGUI.class).update();
 	}
 	
 	/**
@@ -323,8 +324,8 @@ public class Game {
 	public void setMatchPost(String matchpost) {
 		settings.getConfig().set("matchpost", matchpost);
 		settings.saveConfig();
-		
-		gui.getGameInfo().update();
+
+		gui.getGUI(GameInfoGUI.class).update();
 	}
 
 	/**
@@ -347,8 +348,8 @@ public class Game {
 	public void setWorld(String name) {
 		settings.getConfig().set("world", name);
 		settings.saveConfig();
-		
-		gui.getGameInfo().update();
+
+		gui.getGUI(GameInfoGUI.class).update();
 	}
 
 	/**
@@ -370,7 +371,7 @@ public class Game {
 		settings.saveConfig();
 
 		timer.setPvP(pvp);
-		gui.getGameInfo().update();
+		gui.getGUI(GameInfoGUI.class).update();
 	}
 
 	/**
@@ -392,7 +393,7 @@ public class Game {
 		settings.saveConfig();
 		
 		timer.setMeetup(meetup);
-		gui.getGameInfo().update();
+		gui.getGUI(GameInfoGUI.class).update();
 	}
 
 	/**

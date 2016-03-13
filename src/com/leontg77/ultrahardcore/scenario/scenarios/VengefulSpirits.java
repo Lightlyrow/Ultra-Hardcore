@@ -14,6 +14,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
@@ -28,8 +29,14 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
 public class VengefulSpirits extends Scenario implements Listener {
 	private static final String PREFIX = "§fThe Spirit of ";
 	
-	public VengefulSpirits() {
+	private final FeatureManager feat;
+	private final Settings settings;
+	
+	public VengefulSpirits(Settings settings, FeatureManager feat) {
 		super("VengefulSpirits", "When a player dies, above y 60 a ghast spawns and bellow y 60 a blaze spawns, you can only get their head by killing that mob.");
+		
+		this.settings = settings;
+		this.feat = feat;
 	}
 
 	@Override
@@ -39,8 +46,7 @@ public class VengefulSpirits extends Scenario implements Listener {
 	public void onEnable() {
 		// I don't want the code to place the normal skulls so then
 		// I disable them instead since I have a custom dropping
-		final FeatureManager manager = FeatureManager.getInstance();
-		manager.getFeature(GoldenHeadsFeature.class).disable();
+		feat.getFeature(GoldenHeadsFeature.class).disable(settings);
 	}
 	
 	@EventHandler
@@ -83,13 +89,11 @@ public class VengefulSpirits extends Scenario implements Listener {
 		
 		// if the player is below y=60 we want to spawn a blaze.
 		if (loc.getBlockY() < 60) {
-			// spawn the blaze and name it.
 			Blaze blaze = world.spawn(loc, Blaze.class);
 			blaze.setCustomName(PREFIX + player.getName());
 			return;
 		} 
 
-		// they're above y=60, spawn a ghast and name it.
 		Ghast ghast = world.spawn(loc, Ghast.class);
 		ghast.setCustomName(PREFIX + player.getName());
 	}

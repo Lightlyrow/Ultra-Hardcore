@@ -1,6 +1,7 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,6 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -28,11 +30,15 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * @author LeonTG77
  */
 public class TrainingRabbits extends Scenario implements Listener {
-	public static HashMap<String, Integer> jump = new HashMap<String, Integer>();
+	private final Timer timer;
 
-	public TrainingRabbits() {
+	public TrainingRabbits(Timer timer) {
 		super("TrainingRabbits", "Everyone gets jump boost 2 for the entire game, and as you get kills, your level of jump boost will increase. Fall damage is disabled.");
+		
+		this.timer = timer;
 	}
+	
+	public final Map<String, Integer> jump = new HashMap<String, Integer>();
 
 	@Override
 	public void onDisable() {
@@ -57,7 +63,7 @@ public class TrainingRabbits extends Scenario implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+	public void on(PlayerItemConsumeEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}

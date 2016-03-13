@@ -10,6 +10,8 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.scenarios.AchievementParanoia;
@@ -96,7 +98,6 @@ import com.leontg77.ultrahardcore.scenario.scenarios.SkyClean;
 import com.leontg77.ultrahardcore.scenario.scenarios.Skyhigh;
 import com.leontg77.ultrahardcore.scenario.scenarios.SlaveMarket;
 import com.leontg77.ultrahardcore.scenario.scenarios.SlimyCrack;
-import com.leontg77.ultrahardcore.scenario.scenarios.Snowday;
 import com.leontg77.ultrahardcore.scenario.scenarios.Superheroes;
 import com.leontg77.ultrahardcore.scenario.scenarios.Switcheroo;
 import com.leontg77.ultrahardcore.scenario.scenarios.TeamHealth;
@@ -199,7 +200,7 @@ public class ScenarioManager {
 	/**
 	 * Setup all the scenario classes.
 	 */
-	public void registerScenarios(Arena arena, Game game, Timer timer, TeamManager teams, SpecManager spec, Settings settings, FeatureManager feat) {
+	public void registerScenarios(Arena arena, Game game, Timer timer, TeamManager teams, SpecManager spec, Settings settings, FeatureManager feat, ScatterManager scatter, BoardManager board) {
 		CutClean cc = new CutClean(this);
 		
 		scenarios.add(new AchievementParanoia(game));
@@ -267,37 +268,36 @@ public class ScenarioManager {
 		scenarios.add(new Landmines(plugin, game, spec));
 		scenarios.add(new Lootcrates(plugin, game));
 		scenarios.add(new MeleeFun(plugin));
-		scenarios.add(new Moles());
-		scenarios.add(new MonstersInc());
-		scenarios.add(new MysteryTeams());
+		scenarios.add(new Moles(plugin, this, teams, spec));
+		scenarios.add(new MonstersInc(scatter));
+		scenarios.add(new MysteryTeams(plugin, game));
 		scenarios.add(new NightmareMode());
 		scenarios.add(new NoFall());
 		scenarios.add(new NoSprint());
-		scenarios.add(new Paranoia());
-		scenarios.add(new PeriodOfResistance());
-		scenarios.add(new Permakill());
+		scenarios.add(new Paranoia(game, board));
+		scenarios.add(new PeriodOfResistance(plugin));
+		scenarios.add(new Permakill(game));
 		scenarios.add(new PotentialHearts());
-		scenarios.add(new PotentialMoles());
-		scenarios.add(new PotentialPermanent());
-		scenarios.add(new Pyrophobia());
+		scenarios.add(new PotentialMoles(plugin, getScenario(Moles.class)));
+		scenarios.add(new PotentialPermanent(settings, feat));
+		scenarios.add(new Pyrophobia(plugin));
 		scenarios.add(new RewardingLongshots());
 		scenarios.add(new RewardingLongshotsPlus());
 		scenarios.add(new SharedHealth(plugin, teams));
 		scenarios.add(new SkyClean());
-		scenarios.add(new Skyhigh());
-		scenarios.add(new SlaveMarket());
-		scenarios.add(new SlimyCrack());
-		scenarios.add(new Snowday());
-		scenarios.add(new Superheroes());
+		scenarios.add(new Skyhigh(plugin, game));
+		scenarios.add(new SlaveMarket(plugin, teams));
+		scenarios.add(new SlimyCrack(plugin));
+		scenarios.add(new Superheroes(plugin, teams));
 		scenarios.add(new Switcheroo());
-		scenarios.add(new TeamHealth());
+		scenarios.add(new TeamHealth(plugin, game, board, teams));
 		scenarios.add(new Timber());
-		scenarios.add(new Timebomb());
-		scenarios.add(new TrainingRabbits());
+		scenarios.add(new Timebomb(plugin, game));
+		scenarios.add(new TrainingRabbits(timer));
 		scenarios.add(new TripleArrows());
-		scenarios.add(new TripleOres());
-		scenarios.add(new VengefulSpirits());
-		scenarios.add(new Voidscape());
+		scenarios.add(new TripleOres(this));
+		scenarios.add(new VengefulSpirits(settings, feat));
+		scenarios.add(new Voidscape(plugin));
 		
 		plugin.getLogger().info("All scenarios has been setup.");
 	}
