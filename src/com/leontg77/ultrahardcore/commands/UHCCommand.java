@@ -4,9 +4,6 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.Timers;
-
 /**
  * Super class for commands.
  * 
@@ -14,9 +11,6 @@ import com.leontg77.ultrahardcore.Timers;
  */
 public abstract class UHCCommand extends Parser {
 	private String name, usage;
-	
-	protected Timers timer;
-	protected Game game;
 	
 	/**
 	 * Constructor for the uhc command super class.
@@ -27,9 +21,6 @@ public abstract class UHCCommand extends Parser {
 	public UHCCommand(String name, String usage) {
 		this.usage = usage;
 		this.name = name;
-		
-		this.timer = Timers.getInstance();
-		this.game = Game.getInstance();
 	}
 	
 	/**
