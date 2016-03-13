@@ -60,9 +60,9 @@ public class ConfigGUI extends GUI implements Listener {
 	 */
 	public void update() {
 		for (ToggleableFeature feature : feat.getToggleableFeatures()) {
-			final int slot = feature.getInventorySlot();
+			int slot = feature.getInventorySlot();
 			
-			if (slot > 53 || slot < 0) {
+			if (slot >= inv.getSize() || slot < 0) {
 				continue;
 			}
 			
