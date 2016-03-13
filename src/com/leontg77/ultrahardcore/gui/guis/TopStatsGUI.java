@@ -1,4 +1,4 @@
-package com.leontg77.ultrahardcore.gui;
+package com.leontg77.ultrahardcore.gui.guis;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User.Stat;
+import com.leontg77.ultrahardcore.gui.InvGUI;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
@@ -28,8 +29,8 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * 
  * @author LeonTG77
  */
-public class TopStats extends InvGUI implements Listener {
-	public TopStats(Main plugin) {
+public class TopStatsGUI extends InvGUI implements Listener {
+	public TopStatsGUI(Main plugin) {
 		super(plugin);
 		// TODO Auto-generated constructor stub
 	}
