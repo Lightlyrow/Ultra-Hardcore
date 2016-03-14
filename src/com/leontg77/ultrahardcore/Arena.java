@@ -55,8 +55,8 @@ public class Arena {
 	private final ArenaListener listener;
 	private final Set<UUID> players;
 	
-	private Scoreboard sb;
-	private Objective killboard;
+	public Scoreboard sb;
+	public Objective killboard;
 	
 	public Arena(Main plugin, Game game, BoardManager board, ScatterManager scatter, WorldManager manager) {
 		this.plugin = plugin;
