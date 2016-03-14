@@ -26,9 +26,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BanIPCommand extends UHCCommand {	
+	private final BoardManager board;
 
-	public BanIPCommand() {
+	public BanIPCommand(BoardManager board) {
 		super("banip", "<ip> <reason>");
+		
+		this.board = board;
 	}
 
 	@Override
@@ -37,7 +40,6 @@ public class BanIPCommand extends UHCCommand {
 			return false;
 		}
 		
-		final BoardManager board = BoardManager.getInstance();
     	final BanList list = Bukkit.getBanList(Type.IP);
 
 		final String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
