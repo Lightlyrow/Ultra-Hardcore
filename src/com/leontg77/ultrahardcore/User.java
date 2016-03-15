@@ -22,7 +22,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
 import com.leontg77.ultrahardcore.commands.CommandException;
-import com.leontg77.ultrahardcore.gui.InvGUI;
 import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.utils.FileUtils;
@@ -36,8 +35,6 @@ import com.leontg77.ultrahardcore.utils.FileUtils;
  */
 public class User {
 	private static Main plugin;
-	
-	private static InvGUI gui;
 	private static Game game;
 	
 	private static PermissionsManager perm;
@@ -49,11 +46,10 @@ public class User {
 	 * @param games The game class
 	 * @param guis The gui class.
 	 */
-	public User(Main plugins, Game games, InvGUI guis, PermissionsManager perms) {
+	public User(Main plugins, Game games, PermissionsManager perms) {
 		plugin = plugins;
 		
 		game = games;
-		gui = guis;
 		
 		perm = perms;
 	}
