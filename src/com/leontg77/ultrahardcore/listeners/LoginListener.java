@@ -214,26 +214,7 @@ public class LoginListener implements Listener {
 			
 			String adress = event.getAddress().getHostAddress();
 			
-			if (ip.getBanEntry(adress) != null) {
-				if (player.isOp()) {
-					ip.pardon(adress);
-					event.allow();
-					return;
-				}
-
-				BanEntry ban = ip.getBanEntry(adress);
-				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
-				
-				event.setKickMessage(
-				"§8» §7You have been §4IP banned §7from §6Arctic UHC §8«" +
-				"\n" + 
-				"\n§cReason §8» §7" + ban.getReason() +
-				"\n§cBanned by §8» §7" + ban.getSource() + 
-				"\n" +
-				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
-				);
-			}
-			else if (name.getBanEntry(player.getName()) != null) {
+			if (name.getBanEntry(player.getName()) != null) {
 				if (player.isOp()) {
 					name.pardon(player.getName());
 					event.allow();
@@ -249,6 +230,25 @@ public class LoginListener implements Listener {
 				"\n§cReason §8» §7" + ban.getReason() +
 				"\n§cBanned by §8» §7" + ban.getSource() + (ban.getExpiration() == null ? "" : "" +
 				"\n§cExpires in §8» §7" + DateUtils.formatDateDiff(ban.getExpiration().getTime())) +
+				"\n" +
+				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
+				);
+			}
+			else if (ip.getBanEntry(adress) != null) {
+				if (player.isOp()) {
+					ip.pardon(adress);
+					event.allow();
+					return;
+				}
+
+				BanEntry ban = ip.getBanEntry(adress);
+				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
+				
+				event.setKickMessage(
+				"§8» §7You have been §4IP banned §7from §6Arctic UHC §8«" +
+				"\n" + 
+				"\n§cReason §8» §7" + ban.getReason() +
+				"\n§cBanned by §8» §7" + ban.getSource() + 
 				"\n" +
 				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
 				);
@@ -321,7 +321,7 @@ public class LoginListener implements Listener {
 			
 			if (player.hasPermission("uhc.prelist") && !game.isRecordedRound()) {
 				if (!game.preWhitelists() && !State.isState(State.INGAME)) {
-					event.disallow(Result.KICK_WHITELIST, "§4Pre-whitelist has been disabled\n\n" + event.getKickMessage());
+					event.disallow(Result.KICK_WHITELIST, "§4Pre-whitelist has is currently disabled!\n\n" + event.getKickMessage());
 					return;
 				}
 				
