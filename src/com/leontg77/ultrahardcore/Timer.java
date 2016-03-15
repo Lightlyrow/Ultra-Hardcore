@@ -20,7 +20,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
@@ -28,7 +27,8 @@ import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.events.MeetupEvent;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
 import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
@@ -50,6 +50,8 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class Timer {
 	private final Main plugin;
+	
+	private final GUIManager gui;
 	private final Game game;
 	
 	private final ScenarioManager scen;
@@ -58,9 +60,11 @@ public class Timer {
 	private final BoardManager board;
 	private final SpecManager spec;
 	
-	public Timer(Main plugin, Game game, ScenarioManager scen, StalkingFeature stalk, BoardManager board, SpecManager spec) {
+	public Timer(Main plugin, Game game, GUIManager gui, ScenarioManager scen, StalkingFeature stalk, BoardManager board, SpecManager spec) {
 		this.plugin = plugin;
+		
 		this.game = game;
+		this.gui = gui;
 		
 		this.scen = scen;
 		this.stalk = stalk;
@@ -168,6 +172,8 @@ public class Timer {
 	 * Start the countdown for the game.
 	 */
 	public void start() {
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 30 &7Game starting in &8»&a");
+		
 		for (int i = 0; i < 150; i++) {
 			for (Player online : Bukkit.getOnlinePlayers()) {
 				online.sendMessage("§0");
@@ -179,7 +185,11 @@ public class Timer {
 
 		new BukkitRunnable() {
 			public void run() {
-				new InvGUI(plugin).openGameInfo(ImmutableList.copyOf(Bukkit.getOnlinePlayers()));
+				GameInfoGUI info = gui.getGUI(GameInfoGUI.class);
+				
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					online.openInventory(info.get());
+				}
 			}
 		}.runTaskLater(plugin, 100);
 
@@ -273,7 +283,13 @@ public class Timer {
 				Bukkit.getPluginManager().registerEvents(spec.getSpecInfo(), plugin);
 				
 				State.setState(State.INGAME);
+
+				game.setPregameBoard(false);
 				game.setArenaBoard(false);
+				
+				for (String entry : board.getBoard().getEntries()) {
+					board.resetScore(entry);
+				}
 				
 				board.setScore("§8» §c§oPvE", 1);
 				board.setScore("§8» §c§oPvE", 0);
@@ -286,12 +302,6 @@ public class Timer {
 				
 				Bukkit.getServer().setIdleTimeout(10);
 				timer();
-				
-				for (String entry : board.getBoard().getEntries()) {
-					if (entry.equals("§a§o@ArcticUHC") || board.getScore(entry) > 0) {
-						board.setScore(entry, board.getScore(entry) - 9);
-					}
-				}
 				
 				for (World world : game.getWorlds()) {
 					world.setDifficulty(Difficulty.HARD);
@@ -418,19 +428,11 @@ public class Timer {
 					
 					for (Player online : Bukkit.getOnlinePlayers()) {
 						PacketUtils.sendTitle(online, "", "§4PvP has been enabled!", 5, 10, 5);
-						online.playSound(online.getLocation(), "mob.wolf.howl", (float) 1, (float) 1);
+						online.playSound(online.getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
 					}
 					
 					for (World world : game.getWorlds()) {
 						world.setPVP(true);
-					}
-					
-					game.setPregameBoard(false);
-					
-					for (String entry : board.getBoard().getEntries()) {
-						if (board.getScore(entry) != 0 && !entry.equals("§8» §a§lPvE")) {
-							board.resetScore(entry);
-						}
 					}
 					return;
 				}
@@ -443,7 +445,6 @@ public class Timer {
 					PlayerUtils.broadcast(ChatColor.RED + " You may be do anything you want as long");
 					PlayerUtils.broadcast(ChatColor.RED + " as your inside 300x300 on the surface!");
 					PlayerUtils.broadcast(" ");
-					
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					
 					Bukkit.getPluginManager().callEvent(new MeetupEvent());
