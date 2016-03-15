@@ -23,20 +23,28 @@ import com.leontg77.ultrahardcore.utils.DateUtils;
  * @author LeonTG77
  */
 public class ParkourCommand extends UHCCommand {
-	private final Parkour parkour = Parkour.getInstance();
+	private final Main plugin;
 	
-	public ParkourCommand() {
+	private final Settings settings;
+	private final Parkour parkour;
+	
+	public ParkourCommand(Main plugin, Settings settings, Parkour parkour) {
 		super("parkour", "<timer|checkpoint|restart|leave>");
+
+		this.plugin = plugin;
+		
+		this.settings = settings;
+		this.parkour = parkour;
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
 			throw new CommandException("Only players can use the parkour.");
 		}
 		
-		final Player player = (Player) sender;
-		final State state = State.getState();
+		Player player = (Player) sender;
+		State state = State.getState();
 		
 		if (state == State.SCATTER || state == State.INGAME || state == State.ENDING) {
 			throw new CommandException("You can't do parkour commands while a game is running.");
@@ -79,7 +87,7 @@ public class ParkourCommand extends UHCCommand {
 			
 			player.sendMessage(Parkour.PREFIX + "You have left the parkour.");
 			
-			player.teleport(Main.getSpawn(), TeleportCause.UNKNOWN);
+			player.teleport(plugin.getSpawn(), TeleportCause.UNKNOWN);
 			parkour.removePlayer(player);
 			return true;
 		case "setstart":
@@ -138,8 +146,8 @@ public class ParkourCommand extends UHCCommand {
 	}
 
 	@Override
-	public List<String> tabComplete(final CommandSender sender, final String[] args) {
-		final List<String> toReturn = new ArrayList<String>();
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		List<String> toReturn = new ArrayList<String>();
 		
 		if (args.length == 1) {
 			toReturn.add("timer");
@@ -166,8 +174,7 @@ public class ParkourCommand extends UHCCommand {
 	 * @param loc The location to save.
 	 */
 	private void saveLocation(final String path, final Location loc) {
-		final Settings settings = Settings.getInstance();
-		final FileConfiguration data = settings.getData();
+		FileConfiguration data = settings.getData();
 		
 		data.set(path + ".world", loc.getWorld().getName());
 		

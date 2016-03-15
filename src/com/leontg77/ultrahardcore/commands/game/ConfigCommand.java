@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.base.Joiner;
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
@@ -27,7 +28,8 @@ import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature.StalkingRule;
 import com.leontg77.ultrahardcore.feature.rates.AppleRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.FlintRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.ShearsFeature;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.ConfigGUI;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -39,8 +41,11 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ConfigCommand extends UHCCommand {
+	private final GUIManager gui;
+	private final Game game;
+
 	private final FeatureManager feat;
-	private final InvGUI gui;
+	private final ScenarioManager scen;
 
 	/**
 	 * Config command class constructor.
@@ -48,11 +53,14 @@ public class ConfigCommand extends UHCCommand {
 	 * @param feat The feature manager class.
 	 * @param gui The inventory gui class.
 	 */
-	public ConfigCommand(FeatureManager feat, InvGUI gui) {
+	public ConfigCommand(Game game, GUIManager gui, FeatureManager feat, ScenarioManager scen) {
 		super("config", "<option> <value>");
 		
-		this.feat = feat;
+		this.game = game;
 		this.gui = gui;
+		
+		this.feat = feat;
+		this.scen = scen;
 	}
 	
 	/**
@@ -72,7 +80,9 @@ public class ConfigCommand extends UHCCommand {
 			}
 			
 			Player player = (Player) sender;
-			gui.openConfig(player);
+			ConfigGUI config = gui.getGUI(ConfigGUI.class);
+			
+			player.openInventory(config.get());
 			return true;
 		}
 		
@@ -310,7 +320,7 @@ public class ConfigCommand extends UHCCommand {
 				toReturn.add("https://redd.it/######");
 				break;
 			case SCENARIOS:
-	    		for (Scenario type : ScenarioManager.getInstance().getScenarios()) {
+	    		for (Scenario type : scen.getScenarios()) {
 	    			toReturn.add(type.getName());
 	    		}
 				break;

@@ -102,11 +102,11 @@ public class WhitelistCommand extends UHCCommand {
    			PlayerUtils.broadcast(Main.PREFIX + "The whitelist is now off");
    			
    			if (game.getTeamSize().startsWith("cTo")) {
-   	   			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 600 &7The game is starting in &8»&a");
+   	   			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 600 &7Whitelist is off for &8»&a");
    			}
    			
    			if (game.getTeamSize().startsWith("FFA")) {
-   	   			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 300 &7The game is starting in &8»&a");
+   	   			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "timer 300 &7Whitelist is off for &8»&a");
    			}
    			
    			Bukkit.setWhitelist(false);

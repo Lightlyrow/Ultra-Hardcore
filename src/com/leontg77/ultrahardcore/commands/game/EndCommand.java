@@ -19,10 +19,12 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.HallOfFameGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.FireworkManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
@@ -39,9 +41,42 @@ import com.leontg77.ultrahardcore.world.WorldManager;
  * @author LeonTG77
  */
 public class EndCommand extends UHCCommand {
+	private final Timer timer;
+	private final Main plugin;
+	
+	private final Settings settings;
+	private final Game game;
+	
+	private final ScenarioManager scen;
 
-	public EndCommand() {
+	private final BoardManager board;
+	private final TeamManager teams;
+	
+	private final SpecManager spec;
+	private final GUIManager gui;
+	
+	private final FireworkManager firework;
+	private final WorldManager manager;
+	
+	public EndCommand(Main plugin, Timer timer, Settings settings, Game game, ScenarioManager scen, BoardManager board, TeamManager teams, SpecManager spec, GUIManager gui, FireworkManager firework, WorldManager manager) {
 		super("end", "<winners>");
+		
+		this.plugin = plugin;
+		this.timer = timer;
+		
+		this.settings = settings;
+		this.game = game;
+		
+		this.scen = scen;
+		
+		this.board = board;
+		this.teams = teams;
+		
+		this.spec = spec;
+		this.gui = gui;
+		
+		this.firework = firework;
+		this.manager = manager;
 	}
 
 	@Override
@@ -50,15 +85,7 @@ public class EndCommand extends UHCCommand {
 			return false;
 		}
 		
-		final ScenarioManager scen = ScenarioManager.getInstance();
-
-		final BoardManager board = BoardManager.getInstance();
-		final TeamManager teams = TeamManager.getInstance();
-		
-		final SpecManager spec = SpecManager.getInstance();
-		
-		final List<String> winners = new ArrayList<String>();
-		final Settings settings = Settings.getInstance();
+		List<String> winners = new ArrayList<String>();
 		
 		PlayerUtils.broadcast(Main.PREFIX + "The game has ended!");
 		PlayerUtils.broadcast(" ");
@@ -67,16 +94,17 @@ public class EndCommand extends UHCCommand {
 		int totalKills = 0;
 		
 		for (int i = 0; i < args.length; i++) {
-			final OfflinePlayer winner = PlayerUtils.getOfflinePlayer(args[i]);
-			final User user = User.get(winner);
+			OfflinePlayer winner = PlayerUtils.getOfflinePlayer(args[i]);
+			User user = User.get(winner);
 
 			if (!game.isRecordedRound() && !game.isPrivateGame()) {
 				user.getFile().set("stats.wins", user.getFile().getInt("stats.wins") + 1);
 				user.saveFile();
 			}
 
-			final String color = teams.getTeam(winner) == null ? "§7" : teams.getTeam(winner).getPrefix();
-			final int kills = board.getActualScore(winner.getName());
+			String color = teams.getTeam(winner) == null ? "§7" : teams.getTeam(winner).getPrefix();
+			int kills = board.getActualScore(winner.getName());
+			
 			totalKills += kills;
 			
 			PlayerUtils.broadcast(Main.PREFIX + "§8- " + color + winner.getName() + "§8 (§a" + kills + " §7" + (kills == 1 ? "kill" : "kills") + "§8)");
@@ -88,13 +116,12 @@ public class EndCommand extends UHCCommand {
 		PlayerUtils.broadcast(Main.PREFIX + "Thanks for playing and congrats to the winners!");
 		PlayerUtils.broadcast(Main.PREFIX + "Remember to check out the hall of fame by using §6/hof§7.");
 		
-		final String host = game.getHostHOFName();
+		String host = game.getHostHOFName();
 		
-		final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		final Date date = new Date();
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date date = new Date();
 
-		final FireworkManager firework = FireworkManager.getInstance();
-		FileUtils.updateUserFiles();
+		FileUtils.updateUserFiles(null);
 		
 		int matchcount = 1;
 		
@@ -111,10 +138,10 @@ public class EndCommand extends UHCCommand {
 			settings.saveHOF();
 		}
 		
-		InvGUI.getInstance().setup();
+		gui.getGUI(HallOfFameGUI.class).update(host);
 		
 		for (Scenario scens : scen.getEnabledScenarios()) {
-			scens.setEnabled(false);
+			scens.disable();
 		}
 
 		for (Player online : Bukkit.getOnlinePlayers()) {
@@ -128,7 +155,7 @@ public class EndCommand extends UHCCommand {
 			}
 
 			online.setGameMode(GameMode.SURVIVAL);
-			online.teleport(Main.getSpawn());
+			online.teleport(plugin.getSpawn());
 			online.setMaxHealth(20.0);
 			online.setFireTicks(0);
 			
@@ -165,16 +192,14 @@ public class EndCommand extends UHCCommand {
 				}
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Reset scoreboards and teams.");
-
-				final WorldManager manager = WorldManager.getInstance();
 				
-				for (World world : Game.getInstance().getWorlds()) {
+				for (World world : game.getWorlds()) {
 					manager.deleteWorld(world);
 				}
 				
 				PlayerUtils.broadcast(Main.PREFIX + "Deleted used worlds.");
 			}
-		}.runTaskLater(Main.plugin, 300);
+		}.runTaskLater(plugin, 300);
 
 		new BukkitRunnable() {
 			public void run() {
@@ -192,15 +217,15 @@ public class EndCommand extends UHCCommand {
 				
 				Bukkit.shutdown();
 			}
-		}.runTaskLater(Main.plugin, 1200);
+		}.runTaskLater(plugin, 1200);
 		
 		timer.stopTimers();
 		return true;
 	}
 
 	@Override
-	public List<String> tabComplete(final CommandSender sender, final String[] args) {
-		final List<String> toReturn = new ArrayList<String>();
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		List<String> toReturn = new ArrayList<String>();
 
 		for (Player online : Bukkit.getOnlinePlayers()) {
 			toReturn.add(online.getName());

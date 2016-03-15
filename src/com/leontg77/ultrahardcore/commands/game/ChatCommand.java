@@ -18,9 +18,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ChatCommand extends UHCCommand {	
+	private final Game game;
 
-	public ChatCommand() {
+	public ChatCommand(Game game) {
 		super("chat", "<clear|mute>");
+		
+		this.game = game;
 	}
 
 	@Override
@@ -30,8 +33,6 @@ public class ChatCommand extends UHCCommand {
 		}
 		
 		if (args[0].equalsIgnoreCase("mute")) {
-			Game game = Game.getInstance();
-			
 			if (game.isMuted()) {
 				PlayerUtils.broadcast(Main.PREFIX + "The chat has been enabled.");
 				game.setMuted(false);

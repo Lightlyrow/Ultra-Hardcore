@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
@@ -20,9 +21,12 @@ import com.leontg77.ultrahardcore.utils.EntityUtils;
  * @author LeonTG77
  */
 public class ButcherCommand extends UHCCommand {
+	private final Game game;
 
-	public ButcherCommand() {
+	public ButcherCommand(Game game) {
 		super("butcher", "[mob]");
+		
+		this.game = game;
 	}
 
 	@Override

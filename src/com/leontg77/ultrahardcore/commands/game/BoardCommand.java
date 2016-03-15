@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.ultrahardcore.Arena;
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.commands.CommandException;
@@ -19,9 +20,18 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BoardCommand extends UHCCommand {	
+	private final BoardManager board;
+	
+	private final Arena arena;
+	private final Game game;
 
-	public BoardCommand() {
+	public BoardCommand(Arena arena, Game game, BoardManager board) {
 		super("board", "");
+
+		this.board = board;
+		
+		this.arena = arena;
+		this.game = game;
 	}
 
 	@Override
@@ -30,11 +40,9 @@ public class BoardCommand extends UHCCommand {
 			throw new CommandException("You cannot toggle the board when the game has started.");
 		}
 		
-		final BoardManager score = BoardManager.getInstance();
-		
 		if (game.pregameBoard()) {
-			for (String entry : score.getBoard().getEntries()) {
-				score.resetScore(entry);
+			for (String entry : board.getBoard().getEntries()) {
+				board.resetScore(entry);
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Cleared pregame board.");
@@ -42,36 +50,36 @@ public class BoardCommand extends UHCCommand {
 			return true;
 		}
 		
-		for (String entry : score.getBoard().getEntries()) {
-			score.resetScore(entry);
+		for (String entry : board.getBoard().getEntries()) {
+			board.resetScore(entry);
 		}
 		
 		PlayerUtils.broadcast(Main.PREFIX + "Generated pregame board.");
 		game.setPregameBoard(true);
 
 		if (game.teamManagement()) {
-			score.setScore("§e ", 14);
-			score.setScore("§8» §cTeam:", 13);
-			score.setScore("§8» §7/team", 12);
+			board.setScore("§e ", 14);
+			board.setScore("§8» §cTeam:", 13);
+			board.setScore("§8» §7/team", 12);
 		}
 		
-		if (Arena.getInstance().isEnabled()) {
-			score.setScore("§a ", 11);
-			score.setScore("§8» §cArena:", 10);
-			score.setScore("§8» §7/a ", 9);
+		if (arena.isEnabled()) {
+			board.setScore("§a ", 11);
+			board.setScore("§8» §cArena:", 10);
+			board.setScore("§8» §7/a ", 9);
 		}
 
-		score.setScore("§b ", 8);
-		score.setScore("§8» §cTeamsize:", 7);
-		score.setScore("§8» §7" + game.getAdvancedTeamSize(true, false), 6);
+		board.setScore("§b ", 8);
+		board.setScore("§8» §cTeamsize:", 7);
+		board.setScore("§8» §7" + game.getAdvancedTeamSize(true, false), 6);
 		
-		score.setScore("§c ", 5);
-		score.setScore("§8» §cScenarios:", 4);
-		score.setScore("§8» §7Use /scen", 3);
-		score.setScore("§d ", 2);
-		score.setScore("§8§m------------", 1);
-		score.setScore("§a§o@ArcticUHC", 1);
-		score.setScore("§a§o@ArcticUHC", 0);
+		board.setScore("§c ", 5);
+		board.setScore("§8» §cScenarios:", 4);
+		board.setScore("§8» §7Use /scen", 3);
+		board.setScore("§d ", 2);
+		board.setScore("§8§m------------", 1);
+		board.setScore("§a§o@ArcticUHC", 1);
+		board.setScore("§a§o@ArcticUHC", 0);
 		return true;
 	}
 

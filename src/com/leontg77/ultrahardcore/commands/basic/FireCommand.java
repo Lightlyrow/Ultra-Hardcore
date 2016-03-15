@@ -17,22 +17,23 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class FireCommand extends UHCCommand {
+	private final FireworkManager firework;
 
-	public FireCommand() {
+	public FireCommand(FireworkManager firework) {
 		super("fire", "");
+		
+		this.firework = firework;
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
-		FireworkManager fire = FireworkManager.getInstance();
-		
-		PlayerUtils.broadcast(Main.PREFIX + "The firework show has started.");
-		fire.startFireworkShow();
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
+		PlayerUtils.broadcast(Main.PREFIX + "The firework show has started by §6" + sender.getName() + "§7!");
+		firework.startFireworkShow();
 		return true;
 	}
 
 	@Override
-	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+	public List<String> tabComplete(CommandSender sender, String[] args) {
 		return new ArrayList<String>();
 	}
 }

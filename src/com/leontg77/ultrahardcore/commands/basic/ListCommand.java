@@ -21,9 +21,12 @@ import com.leontg77.ultrahardcore.commands.UHCCommand;
  * @author LeonTG77
  */
 public class ListCommand extends UHCCommand {
+	private final Game game;
 
-	public ListCommand() {
+	public ListCommand(Game game) {
 		super("list", "");
+		
+		this.game = game;
 	}
 
 	@Override
@@ -32,7 +35,7 @@ public class ListCommand extends UHCCommand {
 	    	throw new CommandException("There are no players online.");
 		}
 
-		final List<Player> players = new ArrayList<Player>();
+		List<Player> players = new ArrayList<Player>();
     	int playersOnline = 0;
     		
     	for (Player online : Bukkit.getOnlinePlayers()) {
@@ -43,14 +46,12 @@ public class ListCommand extends UHCCommand {
     		players.add(online);
 			playersOnline++;
 		}
-
-		final Game game = Game.getInstance();
 		
-		final String ownerList = getListOf(players, Rank.OWNER);
-		final String staffList = getListOf(players, Rank.HOST, Rank.TRIAL, Rank.STAFF);
+		String ownerList = getListOf(players, Rank.OWNER);
+		String staffList = getListOf(players, Rank.HOST, Rank.TRIAL, Rank.STAFF);
 		
-		final String donatorList = getListOf(players, Rank.DONATOR);
-		final String playerList = getListOf(players, Rank.SPEC, Rank.DEFAULT);
+		String donatorList = getListOf(players, Rank.DONATOR);
+		String playerList = getListOf(players, Rank.SPEC, Rank.DEFAULT);
     			
     	sender.sendMessage(Main.PREFIX + "There are §6" + playersOnline + " §7out of§6 " + game.getMaxPlayers() + " §7players online.");
     	

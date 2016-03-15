@@ -18,21 +18,22 @@ import com.leontg77.ultrahardcore.commands.UHCCommand;
  * @author LeonTG77
  */
 public class SetspawnCommand extends UHCCommand {
+	private final Settings settings;
 	
-	public SetspawnCommand() {
+	public SetspawnCommand(Settings settings) {
 		super("setspawn", "");
+		
+		this.settings = settings;
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
 			throw new CommandException("Only players can set the spawn point.");
 		}
 
-		final Player player = (Player) sender;
-
-		final Settings settings = Settings.getInstance();
-		final Location loc = player.getLocation();
+		Player player = (Player) sender;
+		Location loc = player.getLocation();
 		
 		settings.getData().set("spawn.world", loc.getWorld().getName());
 		settings.getData().set("spawn.x", loc.getX());
@@ -42,12 +43,12 @@ public class SetspawnCommand extends UHCCommand {
 		settings.getData().set("spawn.pitch", loc.getPitch());
         settings.saveData();
         
-        player.sendMessage(Main.PREFIX + "You have set the spawnpoint.");
+        player.sendMessage(String.format(Main.PREFIX + "You have set the spawnpoint to W: §a%s §7X: §a%s §7Y: §a%s §7Z: §a%s§7.", player.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ()));
 		return true;
 	}
 
 	@Override
-	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+	public List<String> tabComplete(CommandSender sender, String[] args) {
 		return new ArrayList<String>();
 	}
 }

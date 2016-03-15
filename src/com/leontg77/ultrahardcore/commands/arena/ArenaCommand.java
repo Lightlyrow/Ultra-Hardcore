@@ -20,16 +20,22 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ArenaCommand extends UHCCommand {	
+	private final BoardManager board;
+	
+	private final Arena arena;
+	private final Game game;
 
-	public ArenaCommand() {
+	public ArenaCommand(Arena arena, Game game, BoardManager board) {
 		super("arena", "[enable|disable|reset|board|leave]");
+		
+		this.board = board;
+		
+		this.arena = arena;
+		this.game = game;
 	}
 
 	@Override
 	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
-		Arena arena = Arena.getInstance();
-		Game game = Game.getInstance();
-		
 		if (sender.hasPermission("uhc.arena.admin")) {
 			if (args.length > 0) {
 				if (args[0].equalsIgnoreCase("enable")) {
@@ -58,6 +64,10 @@ public class ArenaCommand extends UHCCommand {
 				} 
 
 				if (args[0].equalsIgnoreCase("board")) {
+					if (!arena.isEnabled()) {
+						throw new CommandException("The arena is not enabled.");
+					}
+					
 					if (game.arenaBoard()) {
 						for (String entry : arena.sb.getEntries()) {
 							arena.resetScore(entry);
@@ -66,17 +76,16 @@ public class ArenaCommand extends UHCCommand {
 						PlayerUtils.broadcast(Arena.PREFIX + "The arena board has been disabled.");
 						game.setArenaBoard(false);
 						
-						BoardManager board = BoardManager.getInstance();
 						board.getKillsObjective().setDisplaySlot(DisplaySlot.SIDEBAR);
 					} else {
 						PlayerUtils.broadcast(Arena.PREFIX + "The arena board has been enabled.");
-						arena.arenaKills.setDisplaySlot(DisplaySlot.SIDEBAR);
+						arena.killboard.setDisplaySlot(DisplaySlot.SIDEBAR);
 						
 						game.setPregameBoard(false);
 						game.setArenaBoard(true);
 
-						arena.setScore("§8» §a§lPvE", 1);
-						arena.setScore("§8» §a§lPvE", 0);
+						arena.setScore("§8» §c§oPvE", 1);
+						arena.setScore("§8» §c§oPvE", 0);
 					}
 					return true;
 				}

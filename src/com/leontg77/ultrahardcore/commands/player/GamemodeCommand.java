@@ -20,9 +20,12 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  */
 @SuppressWarnings("deprecation")
 public class GamemodeCommand extends UHCCommand {
+	private final SpecManager spec;
 
-	public GamemodeCommand() {
+	public GamemodeCommand(SpecManager spec) {
 		super("gamemode", "<mode> [player]");
+		
+		this.spec = spec;
 	}
 
 	@Override
@@ -53,7 +56,6 @@ public class GamemodeCommand extends UHCCommand {
 				throw new CommandException("Only players can change their own gamemode.");
 			}
 
-			SpecManager spec = SpecManager.getInstance();
 			Player player = (Player) sender;
 			
 			if (spec.isSpectating(sender.getName())) {

@@ -26,7 +26,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BanCommand extends UHCCommand {	
-	private BoardManager board;
+	private final BoardManager board;
 
 	public BanCommand(BoardManager board) {
 		super("ban", "<player> <reason>");
