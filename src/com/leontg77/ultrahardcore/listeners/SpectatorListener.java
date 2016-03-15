@@ -24,7 +24,8 @@ import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
 import com.leontg77.ultrahardcore.gui.GUIManager;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.guis.InvseeGUI;
+import com.leontg77.ultrahardcore.gui.guis.SelectorGUI;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
 
@@ -59,6 +60,8 @@ public class SpectatorListener implements Listener {
 		
 		this.nether = nether;
 	}
+	
+	private final Random rand = new Random();
 
 	@EventHandler
     public void on(PlayerInteractEvent event) {	
@@ -70,7 +73,11 @@ public class SpectatorListener implements Listener {
 		}
 		
 		if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-			gui.openSelector(game, player);
+			SelectorGUI sel = gui.getGUI(SelectorGUI.class);
+			
+			sel.currentPage.put(player.getName(), 1);
+			
+			player.openInventory(sel.get());
 			return;
 		} 
 		
@@ -82,7 +89,6 @@ public class SpectatorListener implements Listener {
 				return;
 			}
 			
-			Random rand = new Random();
 			Player target = list.get(rand.nextInt(list.size()));
 			
 			player.sendMessage(Main.PREFIX + "Teleported to §a" + target.getName() + "§7.");
@@ -109,11 +115,11 @@ public class SpectatorListener implements Listener {
 			return;
 		}
 		
-		inv.openPlayerInventory(player, interacted);
+		player.openInventory(gui.getGUI(InvseeGUI.class).get(interacted));
     }
 	
 	@EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {	
+    public void on(InventoryClickEvent event) {	
         if (event.getCurrentItem() == null) {
         	return;
         }
@@ -137,7 +143,7 @@ public class SpectatorListener implements Listener {
 		}
 		
 		if (item.getType() == Material.FEATHER) {
-			Location loc = new Location(player.getWorld(), 0.5, 0, 0.5);
+			Location loc = new Location(game.getWorld(), 0.5, 0, 0.5);
 			loc.setY(LocationUtils.highestTeleportableYAtLocation(loc) + 1);
 			
 			player.teleport(loc);
@@ -147,28 +153,28 @@ public class SpectatorListener implements Listener {
 		
 		if (item.getType() == Material.COMPASS) {
 			if (event.isRightClick()) {
-				inv.openSelector(game, player);
+				SelectorGUI sel = gui.getGUI(SelectorGUI.class);
+				
+				sel.currentPage.put(player.getName(), 1);
+				
+				player.openInventory(sel.get());
 				event.setCancelled(true);
 				return;
 			}
 			
-			ArrayList<Player> players = new ArrayList<Player>();
-			
-			for (Player online : Bukkit.getOnlinePlayers()) {
-				if (!spec.isSpectating(online)) {
-					players.add(online);
-				}
-			}
-			
-			if (players.size() > 0) {
-				Player target = players.get(new Random().nextInt(players.size()));
-				player.teleport(target.getLocation());
-				player.sendMessage(Main.PREFIX + "You teleported to §a" + target.getName() + "§7.");
-			} else {
-				player.sendMessage(Main.PREFIX + "No players to teleport to.");
-			}
+			List<Player> players = game.getPlayers();
 			
 			event.setCancelled(true);
+			
+			if (players.isEmpty()) {
+				player.sendMessage(Main.PREFIX + "There are no players to teleport to.");
+				return;
+			}
+			
+			Player target = players.get(rand.nextInt(players.size()));
+			
+			player.sendMessage(Main.PREFIX + "You teleported to §a" + target.getName() + "§7.");
+			player.teleport(target.getLocation());
 			return;
 		}
 		
