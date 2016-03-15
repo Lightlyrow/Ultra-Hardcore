@@ -18,34 +18,41 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User.Stat;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUI;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
 /**
- * Top stats inventory class.
+ * Top Stats inventory GUI class.
  * 
  * @author LeonTG77
  */
-public class TopStatsGUI extends InvGUI implements Listener {
-	public TopStatsGUI(Main plugin) {
-		super(plugin);
-		// TODO Auto-generated constructor stub
+public class TopStatsGUI extends GUI implements Listener {
+	
+	/**
+	 * Top Stats inventory GUI class constructor.
+	 */
+	public TopStatsGUI() {
+		super("Top Stats", "A inventory containing all the top 10 players with a stat.");
 	}
 
-	private Inventory inv = Bukkit.createInventory(null, 45, "Top 10 Stats");
+	private final Inventory inv = Bukkit.createInventory(null, 45, "§4Top 10 Stats");
+	
+	@Override
+	public void onSetup() {
+		update();
+	}
 	
 	@EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {	
+    public void on(InventoryClickEvent event) {	
         if (event.getCurrentItem() == null) {
         	return;
         }
         
 		Inventory inv = event.getInventory();
 		
-		if (!inv.getTitle().equals(this.inv.getTitle())) {
+		if (!this.inv.getTitle().equals(inv.getTitle())) {
 			return;
 		}
 		
@@ -156,7 +163,7 @@ public class TopStatsGUI extends InvGUI implements Listener {
 		int number = 1;
 		
 		if (data.size() < 10) {
-			lore.add("§cLess than 10 players has joined the server");
+			lore.add("§cLess than 10 players has joined the server.");
 		} else {
 			for (int i = data.size() - 1; i >= data.size() - 10; i--) {
 				if (i >= data.size()) {

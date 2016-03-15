@@ -44,10 +44,10 @@ public class HallOfFameGUI extends GUI implements Listener {
 		this.settings = settings;
 	}
 
-	private Map<String, Map<Integer, Inventory>> hostInvs = new HashMap<String, Map<Integer, Inventory>>();
+	private final Map<String, Map<Integer, Inventory>> hostInvs = new HashMap<String, Map<Integer, Inventory>>();
 	
-	private Map<String, Integer> currentPage = new HashMap<String, Integer>();
-	private Map<String, String> currentHost = new HashMap<String, String>();
+	public final Map<String, Integer> currentPage = new HashMap<String, Integer>();
+	public final Map<String, String> currentHost = new HashMap<String, String>();
 
 	@Override
 	public void onSetup() {
@@ -142,7 +142,12 @@ public class HallOfFameGUI extends GUI implements Listener {
 		hostInvs.put(host, new HashMap<Integer, Inventory>());
 		
 		for (int current = 1; current <= pages; current++) {
-			inv = Bukkit.createInventory(null, 54, "§4" + host + "'s HoF, Page " + current);
+			if (hostInvs.get(host).containsKey(current)) {
+				inv = hostInvs.get(host).get(current);
+			} else {
+				inv = Bukkit.createInventory(null, 54, "§4" + host + "'s HoF, Page " + current);
+				hostInvs.get(host).put(current, inv);
+			}
 			
 			for (int slot = 0; slot < 35; slot++) {
 				if (list.isEmpty()) {
@@ -218,11 +223,13 @@ public class HallOfFameGUI extends GUI implements Listener {
 			ArrayList<String> headLore = new ArrayList<String>();
 			headLore.add(" ");
 			headLore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host + ".games").getKeys(false).size());
+			
 			try {
 				headLore.add("§8» §7Rank: §6" + NameUtils.capitalizeString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
 			} catch (Exception e) {
 				headLore.add("§8» §7Rank: §6This host has never joined the server.");
 			}
+			
 			headLore.add(" ");
 			headLore.add("§8» §7Host name: §6" + host);
 			headLore.add("§8» §7IGN: §6" + name);
@@ -239,8 +246,6 @@ public class HallOfFameGUI extends GUI implements Listener {
 			if (current != pages) {
 				inv.setItem(51, nextpage);
 			}
-			
-			hostInvs.get(host).put(current, inv);
 		}
 	}
 }

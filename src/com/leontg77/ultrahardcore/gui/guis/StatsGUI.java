@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.gui.guis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -16,27 +17,32 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Stat;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUI;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 
 /**
- * Stats inventory class.
+ * Stats inventory GUI class.
  * 
  * @author LeonTG77
  */
-public class StatsGUI extends InvGUI implements Listener {
-	public StatsGUI(Main plugin) {
-		super(plugin);
-		// TODO Auto-generated constructor stub
+public class StatsGUI extends GUI implements Listener {
+	
+	/**
+	 * Stats inventory GUI class constructor.
+	 */
+	public StatsGUI() {
+		super("Stats", "A inventory containing stats for a user.");
 	}
 
-	private Map<String, Inventory> invs = new HashMap<String, Inventory>();
+	private final Map<String, Inventory> inventories = new HashMap<String, Inventory>();
+	
+	@Override
+	public void onSetup() {}
 	
 	@EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {	
+    public void on(InventoryClickEvent event) {	
         if (event.getCurrentItem() == null) {
         	return;
         }
@@ -59,13 +65,13 @@ public class StatsGUI extends InvGUI implements Listener {
 	public Inventory get(User user) {
 		String name = user.getPlayer().getName();
 		
-		if (!invs.containsKey(name)) {
-			invs.put(name, Bukkit.createInventory(user.getPlayer(), InventoryType.HOPPER, "» §7" + name + "'s Stats"));
+		if (!inventories.containsKey(name)) {
+			inventories.put(name, Bukkit.createInventory(user.getPlayer(), InventoryType.HOPPER, "§4" + name + "'s Stats"));
 			update(user);
 		}
 		
-		return invs.get(name);
-	}
+		return inventories.get(name);
+	} 
 
 	/**
 	 * Update the stats inventory for the given user.
@@ -73,11 +79,12 @@ public class StatsGUI extends InvGUI implements Listener {
 	 * @param user The inventory owner.
 	 */
 	public void update(User user) {
-		Inventory inv = invs.get(user.getPlayer().getName());
-		ArrayList<String> lore = new ArrayList<String>(); 
+		Inventory inv = inventories.get(user.getPlayer().getName());
+		List<String> lore = new ArrayList<String>(); 
 		
 		ItemStack general = new ItemStack (Material.SIGN);
 		ItemMeta generalMeta = general.getItemMeta();
+		
 		generalMeta.setDisplayName("§8» §6General Stats §8«");
 		lore.add(" ");
 		lore.add("§8» §7Games played: §a" + user.getStat(Stat.GAMESPLAYED));
@@ -92,8 +99,9 @@ public class StatsGUI extends InvGUI implements Listener {
 		lore.add("§8» §7Damage taken: §a" + NumberUtils.formatInt(iDamage) + "%");
 		lore.add(" ");
 		lore.add("§8» §7Longest Shot: §a" + NumberUtils.formatDouble(user.getStatDouble(Stat.LONGESTSHOT)));
-		lore.add("§8» §7XP Earned: §a" + user.getStat(Stat.LEVELS));
+		lore.add("§8» §7Levels Earned: §a" + user.getStat(Stat.LEVELS));
 		lore.add(" ");
+		
 		generalMeta.setLore(lore);
 		general.setItemMeta(generalMeta);
 		inv.setItem(0, general);
@@ -101,6 +109,7 @@ public class StatsGUI extends InvGUI implements Listener {
 		
 		ItemStack pvpmining = new ItemStack (Material.DIAMOND_AXE);
 		ItemMeta pvpminingMeta = pvpmining.getItemMeta();
+		
 		pvpminingMeta.setDisplayName("§8» §6PvP & Mining Stats §8«");
 		lore.add(" ");
 		lore.add("§8» §7Highest Arena Killstreak: §a" + user.getStat(Stat.ARENAKILLSTREAK));
@@ -110,8 +119,9 @@ public class StatsGUI extends InvGUI implements Listener {
 		lore.add("§8» §7Deaths: §a" + user.getStat(Stat.DEATHS));
 		
 		double kdr;
+		
 		if (user.getStat(Stat.DEATHS) == 0) {
-			kdr = ((double) user.getStat(Stat.KILLS));
+			kdr = (double) user.getStat(Stat.KILLS);
 		} else {
 			kdr = ((double) user.getStat(Stat.KILLS)) / ((double) user.getStat(Stat.DEATHS));
 		}
@@ -125,8 +135,9 @@ public class StatsGUI extends InvGUI implements Listener {
 		lore.add("§8» §7Arena Deaths: §a" + user.getStat(Stat.ARENADEATHS));
 		
 		double arenakdr;
+		
 		if (user.getStat(Stat.ARENADEATHS) == 0) {
-			arenakdr = ((double) user.getStat(Stat.ARENAKILLS));
+			arenakdr = (double) user.getStat(Stat.ARENAKILLS);
 		} else {
 			arenakdr = ((double) user.getStat(Stat.ARENAKILLS)) / ((double) user.getStat(Stat.ARENADEATHS));
 		}
@@ -142,6 +153,7 @@ public class StatsGUI extends InvGUI implements Listener {
 		
 		ItemStack misc = new ItemStack (Material.NETHER_STALK);
 		ItemMeta miscMeta = misc.getItemMeta();
+		
 		miscMeta.setDisplayName("§8» §6Misc Stats §8«");
 		lore.add(" ");
 		lore.add("§8» §7Golden Apples eaten: §a" + user.getStat(Stat.GOLDENAPPLESEATEN));
@@ -154,6 +166,7 @@ public class StatsGUI extends InvGUI implements Listener {
 		lore.add("§8» §7Horses tamed: §a" + user.getStat(Stat.HORSESTAMED));
 		lore.add("§8» §7Wolves tamed: §a" + user.getStat(Stat.WOLVESTAMED));
 		lore.add(" ");
+		
 		miscMeta.setLore(lore);
 		misc.setItemMeta(miscMeta);
 		inv.setItem(4, misc);
