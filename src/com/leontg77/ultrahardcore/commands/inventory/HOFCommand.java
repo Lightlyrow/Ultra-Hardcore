@@ -6,14 +6,17 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.HallOfFameGUI;
 
 /**
  * Hall of fame command class.
@@ -21,14 +24,22 @@ import com.leontg77.ultrahardcore.gui.InvGUI;
  * @author LeonTG77
  */
 public class HOFCommand extends UHCCommand {
-	private final Settings settings = Settings.getInstance();
+	private final GUIManager gui;
+	
+	private final Settings settings;
+	private final Game game;
 
-	public HOFCommand() {
+	public HOFCommand(Game game, Settings settings, GUIManager gui) {
 		super("hof", "[host]");
+		
+		this.gui = gui;
+		
+		this.settings = settings;
+		this.game = game;
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		String host = game.getHostHOFName(game.getHost());
 		
 		if (args.length > 0) {
@@ -50,26 +61,31 @@ public class HOFCommand extends UHCCommand {
 			throw new CommandException("Only players can view the hall of fame.");
 		}
 		
-		final Player player = (Player) sender;
+		Player player = (Player) sender;
 		
 		if (settings.getHOF().getConfigurationSection(host) == null) {
 			throw new CommandException("'" + host + "' has never hosted any games here.");
 		}
 		
-		final InvGUI inv = InvGUI.getInstance();
-		inv.openHOF(player, host);
+		HallOfFameGUI hof = gui.getGUI(HallOfFameGUI.class);	
+		Inventory inv = hof.get(host);		
+						
+		hof.currentHost.put(player.getName(), host);		
+		hof.currentPage.put(player.getName(), 1);		
+						
+		player.openInventory(inv);
 		return true;
 	}
 	
 	@Override
-	public List<String> tabComplete(final CommandSender sender, final String[] args) {
-		final List<String> toReturn = new ArrayList<String>();
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		List<String> toReturn = new ArrayList<String>();
     	
 		if (args.length == 1) {
     		for (Player online : Bukkit.getOnlinePlayers()) {
     			Rank rank = User.get(online).getRank();
     			
-    			if (rank.getLevel() > 4) {
+    			if (rank.getLevel() > Rank.STAFF.getLevel()) {
     				toReturn.add(online.getName());
     			}
     		}
