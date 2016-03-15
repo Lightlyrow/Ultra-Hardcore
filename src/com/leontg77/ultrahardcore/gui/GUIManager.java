@@ -15,6 +15,10 @@ import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.gui.guis.ConfigGUI;
 import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
 import com.leontg77.ultrahardcore.gui.guis.HallOfFameGUI;
+import com.leontg77.ultrahardcore.gui.guis.InvseeGUI;
+import com.leontg77.ultrahardcore.gui.guis.SelectorGUI;
+import com.leontg77.ultrahardcore.gui.guis.StatsGUI;
+import com.leontg77.ultrahardcore.gui.guis.TopStatsGUI;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 
 /**
@@ -85,6 +89,10 @@ public class GUIManager {
 		addGUI(new ConfigGUI(settings, feat));
 		addGUI(new GameInfoGUI(plugin, game, timer, feat, scen));
 		addGUI(new HallOfFameGUI(settings));
+		addGUI(new InvseeGUI(plugin));
+		addGUI(new SelectorGUI(game));
+		addGUI(new StatsGUI());
+		addGUI(new TopStatsGUI());
 		
 		plugin.getLogger().info("All inventories has been setup.");
 	}
