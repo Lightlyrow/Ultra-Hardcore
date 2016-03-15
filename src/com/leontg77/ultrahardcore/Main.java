@@ -5,7 +5,6 @@ import java.util.TimeZone;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.commands.CommandHandler;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
@@ -21,9 +19,6 @@ import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
 import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
 import com.leontg77.ultrahardcore.gui.GUIManager;
-import com.leontg77.ultrahardcore.gui.InvGUI;
-import com.leontg77.ultrahardcore.gui.listener.InvseeListener;
-import com.leontg77.ultrahardcore.gui.listener.SelectorListener;
 import com.leontg77.ultrahardcore.listeners.ChatListener;
 import com.leontg77.ultrahardcore.listeners.LoginListener;
 import com.leontg77.ultrahardcore.listeners.LogoutListener;
@@ -46,7 +41,6 @@ import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.ubl.UBL;
 import com.leontg77.ultrahardcore.ubl.UBLListener;
 import com.leontg77.ultrahardcore.utils.FileUtils;
-import com.leontg77.ultrahardcore.utils.LocationUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.world.WorldManager;
 import com.leontg77.ultrahardcore.world.antistripmine.AntiStripmine;
@@ -136,7 +130,7 @@ public class Main extends JavaPlugin {
 		
 		cmd = new CommandHandler(this);
 		
-		timer = new Timer(this, game, scen, feat.getFeature(StalkingFeature.class), board, spec);
+		timer = new Timer(this, game, gui, scen, feat.getFeature(StalkingFeature.class), board, spec);
 	}
 	
 	public static final String NO_PERMISSION_MESSAGE = "§cYou don't have permission.";
@@ -193,7 +187,7 @@ public class Main extends JavaPlugin {
 
 		scen.registerScenarios(arena, game, timer, teams, spec, settings, feat, scatter, board);
 		feat.registerFeatures(arena, game, timer, board, teams, spec, enchPreview, hardHearts, scen);
-		cmd.registerCommands(board, spec);
+		cmd.registerCommands(game, arena, parkour, settings, gui, board, spec, feat, scen, worlds, timer, teams, firework);
 	    
 		worlds.loadWorlds();
 		swap.setup();
@@ -221,10 +215,6 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new StatsListener(this, arena, game, board, teams, feat.getFeature(GoldenHeadsFeature.class)), this);
 		manager.registerEvents(new WorldListener(arena), this);
 		manager.registerEvents(new UBLListener(ubl), this);
-
-		// register all inventory listeners.
-		manager.registerEvents(new InvseeListener(), this);
-		manager.registerEvents(new SelectorListener(), this);
 		
 		for (Player online : Bukkit.getOnlinePlayers()) {	
 			perm.addPermissions(online);
