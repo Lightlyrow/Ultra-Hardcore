@@ -98,6 +98,10 @@ public class AntiStripmine {
 	 * @return The newly created world data.
 	 */
 	public WorldData registerWorld(World world) {
+		if (worlds.containsKey(world.getName())) {
+			return worlds.get(world.getName());
+		}
+		
 		WorldData worldData = new WorldData(plugin, this, world);
 		worldData.load();
 		
