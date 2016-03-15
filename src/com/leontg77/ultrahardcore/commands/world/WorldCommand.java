@@ -12,10 +12,13 @@ import org.bukkit.WorldType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.WorldCreatorGUI;
 import com.leontg77.ultrahardcore.world.WorldManager;
 
 /**
@@ -24,10 +27,20 @@ import com.leontg77.ultrahardcore.world.WorldManager;
  * @author LeonTG77
  */
 public class WorldCommand extends UHCCommand {
-	private
+	private final Settings settings;
+	private final Game game;
+	
+	private final WorldManager manager;
+	private final GUIManager gui;
 
-	public WorldCommand() {
+	public WorldCommand(Game game, Settings settings, GUIManager gui, WorldManager manager) {
 		super("world", "");
+
+		this.settings = settings;
+		this.game = game;
+		
+		this.manager = manager;
+		this.gui = gui;
 	}
 
 	@Override
@@ -35,23 +48,26 @@ public class WorldCommand extends UHCCommand {
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("create")) {
 				if (args.length < 5) {
-					sender.sendMessage(Main.PREFIX + "Usage: /world create <host> <mapradius> <nether> <end> [seed]");
+					sender.sendMessage(Main.PREFIX + "Usage: /world create <name> <mapsize> [seed]");
 					return true;
+				}
+				
+				WorldCreatorGUI creator = gui.getGUI(WorldCreatorGUI.class);
+				
+				if (!creator.get().getViewers().isEmpty()) {
+					throw new CommandException("Someone else is currently making a world.");
 				}
 				
 				String worldname = args[1];
 				int radius = parseInt(args[2], "radius");
 				
-				boolean nether = parseBoolean(args[3], "nether");
-				boolean end = parseBoolean(args[4], "The End");
-				
 				long seed = new Random().nextLong();
 				
-				if (args.length > 5) {
+				if (args.length > 3) {
 					try {
-						seed = parseLong(args[5]);
+						seed = parseLong(args[3]);
 		            } catch (Exception e) {
-		                seed = (long) args[5].hashCode();
+		                seed = (long) args[3].hashCode();
 		            }
 				}
 				
@@ -59,8 +75,6 @@ public class WorldCommand extends UHCCommand {
 				sender.sendMessage("§8» §7Radius: §6" + radius);
 				sender.sendMessage("§8» §7Seed: §6" + seed);
 				sender.sendMessage("§8» §7Type: §6" + WorldType.NORMAL);
-				sender.sendMessage("§8» §7Nether: §6" + nether);
-				sender.sendMessage("§8» §7End: §6" + end);
 				
 				manager.createWorld(worldname, radius, seed, Environment.NORMAL, WorldType.NORMAL, end, end, end);
 				
@@ -227,7 +241,7 @@ public class WorldCommand extends UHCCommand {
 		if (args.length == 2) {
 			switch (args[0].toLowerCase()) {
 			case "create":
-				for (String path : Settings.getInstance().getHOF().getKeys(false)) {
+				for (String path : settings.getHOF().getKeys(false)) {
 					toReturn.add(path.toLowerCase());
 				}
 				break;
