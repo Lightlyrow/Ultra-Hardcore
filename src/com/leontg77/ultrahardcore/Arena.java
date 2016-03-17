@@ -70,7 +70,7 @@ public class Arena {
 		this.scatter = scatter;
 		this.manager = manager;
 
-		listener = new ArenaListener(this);
+		listener = new ArenaListener(plugin, this);
 		players = new HashSet<UUID>();
 	}
 	
@@ -171,7 +171,7 @@ public class Arena {
 		this.enabled = false;
 		
 		for (Player player : getPlayers()) {
-			User user = User.get(player);
+			User user = plugin.getUser(player);
 			user.reset();
 			
 			if (player.isDead()) {
@@ -223,7 +223,7 @@ public class Arena {
 		World world = Bukkit.getServer().getWorld("arena");
 		
 		manager.deleteWorld(world);
-		manager.createWorld("arena", 200, SEEDS.get(new Random().nextInt(SEEDS.size())), Environment.NORMAL, WorldType.NORMAL, false, false, false);
+		manager.createWorld("arena", 400, SEEDS.get(new Random().nextInt(SEEDS.size())), Environment.NORMAL, WorldType.NORMAL, false, false, false);
 		
 		PlayerUtils.broadcast(PREFIX + "World reset done, setting up world options...");
 
@@ -313,7 +313,7 @@ public class Arena {
 			PlayerUtils.broadcast(PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + getScore(player.getName()) + " §7was shut down from leaving!");
 		}
 		
-		User user = User.get(player);
+		User user = plugin.getUser(player);
 		user.reset();
 
 		player.teleport(plugin.getSpawn());
@@ -340,7 +340,7 @@ public class Arena {
 	 * @param player the player.
 	 */
 	private void giveKit(Player player) {
-		User user = User.get(player);
+		User user = plugin.getUser(player);
 		
 		ItemStack sword = new ItemStack(Material.IRON_SWORD);
 		ItemStack bow = new ItemStack(Material.BOW);
