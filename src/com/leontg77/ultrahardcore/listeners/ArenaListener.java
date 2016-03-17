@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.leontg77.ultrahardcore.Arena;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -33,18 +34,20 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ArenaListener implements Listener {
+	private final Main plugin;
 	private final Arena arena;
 	
 	private static final ItemStack THREE_LAPIS = new ItemStack(Material.INK_SACK, 3, (short) 4);
 	
-	public ArenaListener(Arena arena) {
+	public ArenaListener(Main plugin, Arena arena) {
+		this.plugin = plugin;
 		this.arena = arena;
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void on(PlayerDeathEvent event) {
 		Player player = event.getEntity();
-		User user = User.get(player);
+		User user = plugin.getUser(player);
 		
 		if (!arena.hasPlayer(player)) {
 			return;
@@ -93,7 +96,7 @@ public class ArenaListener implements Listener {
 		arena.resetScore(player.getName());
 		
 		killer.setLevel(killer.getLevel() + 1);
-		User kUser = User.get(killer);
+		User kUser = plugin.getUser(killer);
 		
 		kUser.increaseStat(Stat.ARENAKILLS);
 		
