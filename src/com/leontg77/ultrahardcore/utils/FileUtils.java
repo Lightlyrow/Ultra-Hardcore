@@ -9,7 +9,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.User;
 
 /**
  * File utilities class.
@@ -34,7 +33,7 @@ public class FileUtils {
 	 * Update the files storage.
 	 */
 	public static void updateUserFiles(Main plugin) {
-		final File folder = User.FOLDER;
+		File folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
 		
 		if (!folder.exists()) {
 			return;
