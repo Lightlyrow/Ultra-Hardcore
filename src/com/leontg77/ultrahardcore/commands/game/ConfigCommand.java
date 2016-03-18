@@ -14,7 +14,6 @@ import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
@@ -41,6 +40,8 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ConfigCommand extends UHCCommand {
+	private final Main plugin;
+	
 	private final GUIManager gui;
 	private final Game game;
 
@@ -53,8 +54,10 @@ public class ConfigCommand extends UHCCommand {
 	 * @param feat The feature manager class.
 	 * @param gui The inventory gui class.
 	 */
-	public ConfigCommand(Game game, GUIManager gui, FeatureManager feat, ScenarioManager scen) {
+	public ConfigCommand(Main plugin, Game game, GUIManager gui, FeatureManager feat, ScenarioManager scen) {
 		super("config", "<option> <value>");
+		
+		this.plugin = plugin;
 		
 		this.game = game;
 		this.gui = gui;
@@ -309,7 +312,7 @@ public class ConfigCommand extends UHCCommand {
 				break;
 			case HOST:
 	    		for (Player online : Bukkit.getOnlinePlayers()) {
-	    			Rank rank = User.get(online).getRank();
+	    			Rank rank = plugin.getUser(online).getRank();
 	    			
 	    			if (rank.getLevel() > 4) {
 	    				toReturn.add(online.getName());
