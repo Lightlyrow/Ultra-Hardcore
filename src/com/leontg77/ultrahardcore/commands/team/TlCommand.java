@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.SpecManager;
@@ -19,10 +20,19 @@ import com.leontg77.ultrahardcore.managers.TeamManager;
  * 
  * @author LeonTG77
  */
-public class TlCommand extends UHCCommand {
+public class TLCommand extends UHCCommand {
+	private final Game game;
+	
+	private final TeamManager teams;
+	private final SpecManager spec;
 
-	public TlCommand() {
+	public TLCommand(Game game, SpecManager spec, TeamManager teams) {
 		super("tl", "");
+		
+		this.game = game;
+		
+		this.teams = teams;
+		this.spec = spec;
 	}
 
 	@Override
@@ -31,16 +41,13 @@ public class TlCommand extends UHCCommand {
 			throw new CommandException("Only players can display their location to their team.");
 		}
 		
-		final Player player = (Player) sender;
+		Player player = (Player) sender;
 
 		if (!game.getPlayers().contains(player)) {
 			throw new CommandException("You are not playing a match.");
 		}
 		
-		final TeamManager teams = TeamManager.getInstance(); 
-		final SpecManager spec = SpecManager.getInstance();
-		
-		final Team team = teams.getTeam(player);
+		Team team = teams.getTeam(player);
 		
 		if (team == null || spec.isSpectating(player)) { 
 			throw new CommandException("You are not on a team.");
@@ -48,7 +55,7 @@ public class TlCommand extends UHCCommand {
 		
 		final Location loc = player.getLocation();
 		
-		teams.sendMessage(team, "§4§lTeam §8» §6§o" + player.getName() + "§8§o: §7X: §a" + loc.getBlockX() + " §7Y: §a" + loc.getBlockY() + " §7Z: §a" + loc.getBlockZ() + " §8(§c" + environment(loc.getWorld()) + "§8)");
+		teams.sendMessage(team, "§4Team §8» §6§o" + player.getName() + "§8§o: §7X: §a" + loc.getBlockX() + " §7Y: §a" + loc.getBlockY() + " §7Z: §a" + loc.getBlockZ() + " §8(§c" + environment(loc.getWorld()) + "§8)");
 		return true;
 	}
 
