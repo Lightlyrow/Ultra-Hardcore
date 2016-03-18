@@ -20,18 +20,27 @@ import com.leontg77.ultrahardcore.Main;
 public class BoardManager {
 	private final Main plugin;
 	
+	private final Scoreboard board;
+
+	private Objective nameHealth;
+	private Objective tabHealth;
+	private Objective hearts;
+	
+	private Objective backup;
+	private Objective kills;
+	
 	public BoardManager(Main plugin) {
 		this.plugin = plugin;
-	}
-	
-	private Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
-
-	private Objective nameHealth = board.getObjective("nameHealth");
-	private Objective tabHealth = board.getObjective("tabHealth");
-	private Objective hearts = board.getObjective("hearts");
-	
-	private Objective backup = board.getObjective("backup");
-	private Objective kills = board.getObjective("kills");	
+		
+		board = Bukkit.getScoreboardManager().getMainScoreboard();
+		
+		nameHealth = board.getObjective("nameHealth");
+		tabHealth = board.getObjective("tabHealth");
+		hearts = board.getObjective("hearts");
+		
+		backup = board.getObjective("backup");
+		kills = board.getObjective("kills");
+	}	
 
 	/**
 	 * Get the main scoreboard.
