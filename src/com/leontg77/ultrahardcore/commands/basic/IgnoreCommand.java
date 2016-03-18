@@ -22,9 +22,12 @@ import com.leontg77.ultrahardcore.utils.FileUtils;
  * @author LeonTG77
  */
 public class IgnoreCommand extends UHCCommand {
+	private final Main plugin;
 
-	public IgnoreCommand() {
+	public IgnoreCommand(Main plugin) {
 		super("ignore", "<player>");
+		
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -39,7 +42,7 @@ public class IgnoreCommand extends UHCCommand {
 		}
 		
 		Player player = (Player) sender;
-		User user = User.get(player);
+		User user = plugin.getUser(player);
 		
 		if (args.length == 0) {
 			StringBuilder list = new StringBuilder();
