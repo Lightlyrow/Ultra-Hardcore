@@ -36,7 +36,6 @@ public class BorderCommand extends UHCCommand {
 
 			Player player = (Player) sender;
 			world = player.getWorld();
-			return true;
 		} else {
 			world = Bukkit.getWorld(args[0]);
 			
@@ -52,6 +51,7 @@ public class BorderCommand extends UHCCommand {
 			int radius = diameter / 2;
 			
 			sender.sendMessage(Main.PREFIX + "The border is currently: §a" + diameter + "x" + diameter + " §8(§a+" + radius + " -" + radius + "§8)");
+			return true;
 		}
 		
 		if (!sender.hasPermission(getPermission() + ".set")) {
@@ -64,7 +64,7 @@ public class BorderCommand extends UHCCommand {
 		int diameter = parseInt(args[1], "radius");
 		border.setSize(diameter);
 		
-		PlayerUtils.broadcast(Main.PREFIX + "Borders in world '§6" + world.getName() + "§7' has been setup with diameter §a" + diameter + "x" + diameter + "§7.");
+		PlayerUtils.broadcast(Main.PREFIX + "Borders in world '§6" + world.getName() + "§7' has been setup with size §a" + diameter + "x" + diameter + "§7.");
 		return true;
 	}
 
