@@ -31,12 +31,14 @@ import com.leontg77.ultrahardcore.utils.DateUtils;
  * @author LeonTG77
  */
 public class ChatListener implements Listener {
+	private final Main plugin;
 	private final Game game;
 	
 	private final TeamManager teams;
 	private final SpecManager spec;
 	
-	public ChatListener(Game game, TeamManager teams, SpecManager spec) {
+	public ChatListener(Main plugin, Game game, TeamManager teams, SpecManager spec) {
+		this.plugin = plugin;
 		this.game = game;
 		
 		this.teams = teams;
@@ -46,7 +48,7 @@ public class ChatListener implements Listener {
 	@EventHandler
     public void on(final AsyncPlayerChatEvent event) {
 		final Player player = event.getPlayer();
-		final User user = User.get(player);
+		final User user = plugin.getUser(player);
 
 		final String message = event.getMessage();
 		final Team team = teams.getTeam(player);
@@ -113,7 +115,7 @@ public class ChatListener implements Listener {
 		// remove all people who ignore this player to see his message.
 		while (it.hasNext()) {
 			Player next = it.next();
-			User nextUser = User.get(next);
+			User nextUser = plugin.getUser(next);
 			
 			if (nextUser.isIgnoring(player)) {
 				it.remove();
