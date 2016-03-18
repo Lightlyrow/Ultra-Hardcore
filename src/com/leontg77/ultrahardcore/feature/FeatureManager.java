@@ -162,7 +162,7 @@ public class FeatureManager {
 		addFeature(new BorderShrinkFeature(plugin, settings, timer, game));
 		
 		// death
-		addFeature(new DeathLightningFeature(arena, game));
+		addFeature(new DeathLightningFeature(plugin, arena, game));
 		addFeature(new DeathMessageFeature(arena, game));
 		addFeature(new RespawnFeature(plugin, spec, arena, game));
 		
