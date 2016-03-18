@@ -13,6 +13,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.leontg77.ultrahardcore.Arena;
 import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
@@ -23,6 +24,8 @@ import com.leontg77.ultrahardcore.feature.ToggleableFeature;
  * @author LeonTG77
  */
 public class DeathLightningFeature extends ToggleableFeature implements Listener {
+	private final Main plugin;
+	
 	private final Arena arena;
 	private final Game game;
 
@@ -32,11 +35,13 @@ public class DeathLightningFeature extends ToggleableFeature implements Listener
 	 * @param arena The arena class.
 	 * @param game The game class.
 	 */
-	public DeathLightningFeature(Arena arena, Game game) {
+	public DeathLightningFeature(Main plugin, Arena arena, Game game) {
 		super("Death Lightning", "A fake lightning that will strike when a player dies.");
 		
 		icon.setType(Material.BLAZE_ROD);
 		slot = 49;
+		
+		this.plugin = plugin;
 		
 		this.arena = arena;
 		this.game = game;
@@ -49,7 +54,7 @@ public class DeathLightningFeature extends ToggleableFeature implements Listener
 		}
 
 		final Player player = event.getEntity();
-		final User user = User.get(player);
+		final User user = plugin.getUser(player);
 		
 		final List<World> worlds = game.getWorlds();
 		
