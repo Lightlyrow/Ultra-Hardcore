@@ -22,12 +22,19 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  * @author LeonTG77
  */
 public class HelpopCommand extends UHCCommand {
-	private static List<CommandSender> cooldown = new ArrayList<CommandSender>();
-	private static final String PREFIX = "§4§lHelp§8§l-§4§lOp §8» §7";
+	private static final String PREFIX = "§4Help§8-§4Op §8» §7";
 	
-	public HelpopCommand() {
+	private final SpecManager spec;
+	private final Main plugin;
+	
+	public HelpopCommand(Main plugin, SpecManager spec) {
 		super("helpop", "<message>");
+		
+		this.plugin = plugin;
+		this.spec = spec;
 	}
+	
+	private final List<CommandSender> cooldown = new ArrayList<CommandSender>();
 
 	@Override
 	public boolean execute(final CommandSender sender, String[] args) throws CommandException {
@@ -36,11 +43,10 @@ public class HelpopCommand extends UHCCommand {
 		}
 		
 		if (cooldown.contains(sender)) {
-			throw new CommandException("Do not spam helpops.");
+			throw new CommandException(PREFIX + "Please do not spam helpops.");
 		}
 		
 		String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
-		SpecManager spec = SpecManager.getInstance();
 
 		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (!online.hasPermission("uhc.staff") && !spec.isSpectating(online)) {
@@ -55,7 +61,7 @@ public class HelpopCommand extends UHCCommand {
 			online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 1);
 		}
 		
-		Bukkit.getLogger().info(PREFIX.replaceAll("§l", "") + sender.getName() + "§7: §6" + msg);
+		Bukkit.getLogger().info(PREFIX + sender.getName() + "§7: §6" + msg);
 		cooldown.add(sender);
 
 		sender.sendMessage(PREFIX + sender.getName() + "§7: §6" + msg);
@@ -66,7 +72,7 @@ public class HelpopCommand extends UHCCommand {
 			public void run() {
 				cooldown.remove(sender);
 			}
-		}.runTaskLater(Main.plugin, 100);
+		}.runTaskLater(plugin, 100);
 		return true;
 	}
 
