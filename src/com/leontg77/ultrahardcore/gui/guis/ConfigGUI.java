@@ -38,10 +38,12 @@ public class ConfigGUI extends GUI implements Listener {
 		this.feat = feat;
 	}
 
-	private final Inventory inv = Bukkit.createInventory(null, 54, "§4Game configuration.");
+	private Inventory inv;
 
 	@Override
 	public void onSetup() { // add items but glass first.
+		inv = Bukkit.createInventory(null, 54, "§4Game configuration.");
+		
 		glassify(inv); 
 		update();
 	}
@@ -85,7 +87,11 @@ public class ConfigGUI extends GUI implements Listener {
 
 		event.setCancelled(true);
 
-		if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) {
+		if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) {
+			return;
+		}
+		
+		if (item.getItemMeta().getDisplayName().length() < 10) {
 			return;
 		}
 		
