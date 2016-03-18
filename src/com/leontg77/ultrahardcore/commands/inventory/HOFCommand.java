@@ -11,7 +11,6 @@ import org.bukkit.inventory.Inventory;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
-import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
@@ -25,13 +24,15 @@ import com.leontg77.ultrahardcore.gui.guis.HallOfFameGUI;
  */
 public class HOFCommand extends UHCCommand {
 	private final GUIManager gui;
+	private final Main plugin;
 	
 	private final Settings settings;
 	private final Game game;
 
-	public HOFCommand(Game game, Settings settings, GUIManager gui) {
+	public HOFCommand(Main plugin, Game game, Settings settings, GUIManager gui) {
 		super("hof", "[host]");
 		
+		this.plugin = plugin;
 		this.gui = gui;
 		
 		this.settings = settings;
@@ -83,7 +84,7 @@ public class HOFCommand extends UHCCommand {
     	
 		if (args.length == 1) {
     		for (Player online : Bukkit.getOnlinePlayers()) {
-    			Rank rank = User.get(online).getRank();
+    			Rank rank = plugin.getUser(online).getRank();
     			
     			if (rank.getLevel() > Rank.STAFF.getLevel()) {
     				toReturn.add(online.getName());
