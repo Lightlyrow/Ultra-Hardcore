@@ -18,10 +18,15 @@ import com.leontg77.ultrahardcore.managers.TeamManager;
  * 
  * @author LeonTG77
  */
-public class PmCommand extends UHCCommand {
+public class PMCommand extends UHCCommand {
+	private final TeamManager teams;
+	private final SpecManager spec;
 
-	public PmCommand() {
+	public PMCommand(SpecManager spec, TeamManager teams) {
 		super("pm", "<message>");
+		
+		this.teams = teams;
+		this.spec = spec;
 	}
 
 	@Override
@@ -30,12 +35,8 @@ public class PmCommand extends UHCCommand {
 			throw new CommandException("Only players can talk in team chat.");
 		}
 		
-		final Player player = (Player) sender;
-		
-		final SpecManager spec = SpecManager.getInstance();
-		final TeamManager teams = TeamManager.getInstance();
-		
-		final Team team = teams.getTeam(player);
+		Player player = (Player) sender;
+		Team team = teams.getTeam(player);
 		
 		if (team == null || spec.isSpectating(player)) { 
 			throw new CommandException("You are not on a team.");
@@ -45,8 +46,8 @@ public class PmCommand extends UHCCommand {
 			return false;
 		}
 		
-		final String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
-        teams.sendMessage(team, "§4§lTeam §8» §6§o" + player.getName() + "§8§o: §f" + msg);
+		String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
+        teams.sendMessage(team, "§4Team §8» §6§o" + player.getName() + "§8§o: §f" + msg);
 		return true;
 	}
 
