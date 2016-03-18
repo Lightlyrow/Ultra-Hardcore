@@ -54,6 +54,10 @@ public abstract class GUI {
 	 * @param inv The inventory to fill.
 	 */
 	protected void glassify(Inventory inv) {
+		if (inv == null) {
+			return;
+		}
+	
 		ItemStack black = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
 		ItemMeta blackMeta = black.getItemMeta();
 		blackMeta.setDisplayName("§0:>"); // hidden easter egg :> 
@@ -69,7 +73,9 @@ public abstract class GUI {
 		for (int i = 0; i < inv.getSize(); i++) {
 			bool = !bool;
 			
-			if (inv.getItem(i) != null || inv.getItem(i).getType() != Material.AIR) {
+			ItemStack item = inv.getItem(i);
+			
+			if (item != null && inv.getItem(i).getType() != Material.AIR) {
 				continue;
 			}
 			
