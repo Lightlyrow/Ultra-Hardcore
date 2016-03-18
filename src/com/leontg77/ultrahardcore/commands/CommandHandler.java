@@ -76,11 +76,12 @@ import com.leontg77.ultrahardcore.commands.spectate.SpecChatCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpectateCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpeedCommand;
 import com.leontg77.ultrahardcore.commands.spectate.TpCommand;
-import com.leontg77.ultrahardcore.commands.team.PmCommand;
-import com.leontg77.ultrahardcore.commands.team.PmoresCommand;
+import com.leontg77.ultrahardcore.commands.team.PMCommand;
+import com.leontg77.ultrahardcore.commands.team.PMMinedOresCommand;
+import com.leontg77.ultrahardcore.commands.team.PMOresCommand;
 import com.leontg77.ultrahardcore.commands.team.RandomCommand;
+import com.leontg77.ultrahardcore.commands.team.TLCommand;
 import com.leontg77.ultrahardcore.commands.team.TeamCommand;
-import com.leontg77.ultrahardcore.commands.team.TlCommand;
 import com.leontg77.ultrahardcore.commands.user.InfoCommand;
 import com.leontg77.ultrahardcore.commands.user.InfoIPCommand;
 import com.leontg77.ultrahardcore.commands.user.RankCommand;
@@ -94,6 +95,7 @@ import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.FireworkManager;
+import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
@@ -232,7 +234,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	/**
 	 * Register all the commands.
 	 */
-	public void registerCommands(Game game, Arena arena, Parkour parkour, Settings settings, GUIManager gui, BoardManager board, SpecManager spec, FeatureManager feat, ScenarioManager scen, WorldManager manager, Timer timer, TeamManager teams, FireworkManager firework) {
+	public void registerCommands(Game game, Arena arena, Parkour parkour, Settings settings, GUIManager gui, BoardManager board, SpecManager spec, FeatureManager feat, ScenarioManager scen, WorldManager manager, Timer timer, TeamManager teams, FireworkManager firework, ScatterManager scatter) {
 		// arena
 		cmds.add(new ArenaCommand(arena, game, board));
 		cmds.add(new HotbarCommand());
@@ -242,7 +244,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new BanIPCommand(board));
 		cmds.add(new DQCommand(board));
 		cmds.add(new KickCommand());
-		cmds.add(new MuteCommand());
+		cmds.add(new MuteCommand(plugin));
 		cmds.add(new TempbanCommand(board));
 		cmds.add(new UnbanCommand());
 		cmds.add(new UnbanIPCommand());
@@ -252,8 +254,8 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new ButcherCommand(game));
 		cmds.add(new EditCommand());
 		cmds.add(new FireCommand(firework));
-		cmds.add(new IgnoreCommand());
-		cmds.add(new ListCommand(game));
+		cmds.add(new IgnoreCommand(plugin));
+		cmds.add(new ListCommand(plugin, game));
 		cmds.add(new ParkourCommand(plugin, settings, parkour));
 		cmds.add(new SetspawnCommand(settings));
 		cmds.add(new SkullCommand());
@@ -263,67 +265,69 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		// game
 		cmds.add(new BoardCommand(arena, game, board));
 		cmds.add(new ChatCommand(game));
-		cmds.add(new ConfigCommand(game, gui, feat, scen));
+		cmds.add(new ConfigCommand(plugin, game, gui, feat, scen));
 		cmds.add(new EndCommand(plugin, timer, settings, game, scen, board, teams, spec, gui, firework, manager));
-		cmds.add(new HelpopCommand());
-		cmds.add(new MatchpostCommand());
-		cmds.add(new ScenarioCommand());
-		cmds.add(new SpreadCommand());
-		cmds.add(new StartCommand());
-		cmds.add(new TimeLeftCommand());
-		cmds.add(new TimerCommand());
-		cmds.add(new VoteCommand());
-		cmds.add(new WhitelistCommand());
+		cmds.add(new HelpopCommand(plugin, spec));
+		cmds.add(new MatchpostCommand(game));
+		cmds.add(new ScenarioCommand(plugin, scen));
+		cmds.add(new SpreadCommand(game, settings, scatter, teams, parkour, arena));
+		cmds.add(new StartCommand(game, timer));
+		cmds.add(new TimeLeftCommand(game, timer));
+		cmds.add(new TimerCommand(plugin));
+		cmds.add(new VoteCommand(plugin));
+		cmds.add(new WhitelistCommand(game));
 		
 		// give
 		cmds.add(new GiveallCommand());
 		cmds.add(new GiveCommand());
 		
 		// inventory
-		cmds.add(new HOFCommand(game, settings, gui));
+		cmds.add(new HOFCommand(plugin, game, settings, gui));
 		cmds.add(new GameInfoCommand(gui));
 		
 		// lag
-		cmds.add(new MsCommand());
+		cmds.add(new MsCommand(plugin));
 		cmds.add(new TpsCommand(plugin));
 		
 		// msg
-		cmds.add(new MsgCommand());
-		cmds.add(new ReplyCommand());
+		MsgCommand msg = new MsgCommand(plugin);
+		cmds.add(msg);
+		cmds.add(new ReplyCommand(plugin, msg));
 		
 		// player
-		cmds.add(new ClearInvCommand());
-		cmds.add(new ClearXPCommand());
-		cmds.add(new FeedCommand());
+		cmds.add(new ClearInvCommand(plugin));
+		cmds.add(new ClearXPCommand(plugin));
+		cmds.add(new FeedCommand(plugin));
 		cmds.add(new FlyCommand());
-		cmds.add(new GamemodeCommand());
-		cmds.add(new HealCommand());
-		cmds.add(new HealthCommand());
+		cmds.add(new GamemodeCommand(spec));
+		cmds.add(new HealCommand(plugin));
+		cmds.add(new HealthCommand(scen));
 		cmds.add(new SethealthCommand());
 		cmds.add(new SetmaxhealthCommand());
 
 		// spectate
-		cmds.add(new BackCommand());
-		cmds.add(new InvseeCommand());
-		cmds.add(new NearCommand());
-		cmds.add(new SpectateCommand(spec));
-		cmds.add(new SpecChatCommand());
-		cmds.add(new SpeedCommand());
-		cmds.add(new TpCommand());
+		cmds.add(new BackCommand(plugin, spec));
+		cmds.add(new InvseeCommand(gui, spec));
+		cmds.add(new NearCommand(spec, teams));
+		cmds.add(new SpectateCommand(game, spec));
+		cmds.add(new SpecChatCommand(spec));
+		cmds.add(new SpeedCommand(spec));
+		cmds.add(new TpCommand(spec));
 		
 		// team
-		cmds.add(new PmCommand());
-		cmds.add(new PmoresCommand());
-		cmds.add(new RandomCommand());
-		cmds.add(new TeamCommand());
-		cmds.add(new TlCommand());
+		cmds.add(new PMCommand(spec, teams));
+		cmds.add(new PMMinedOresCommand(game, spec, teams));
+		cmds.add(new PMOresCommand(game, spec, teams));
+		cmds.add(new RandomCommand(teams));
+		cmds.add(new TeamCommand(game, spec, board, teams));
+		cmds.add(new TLCommand(game, spec, teams));
 
 		// user
-		cmds.add(new InfoCommand());
+		cmds.add(new InfoCommand(plugin));
 		cmds.add(new InfoIPCommand());
-		cmds.add(new RankCommand());
-		cmds.add(new StatsCommand());
-		cmds.add(new TopCommand());
+		cmds.add(new RankCommand(plugin));
+		cmds.add(new StatsCommand(plugin, game, gui));
+		cmds.add(new TopCommand(game, gui));
 		
 		// world
 		cmds.add(new BorderCommand());
