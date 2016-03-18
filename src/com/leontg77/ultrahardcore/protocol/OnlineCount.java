@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 
 /**
@@ -17,18 +18,23 @@ import com.leontg77.ultrahardcore.Main;
  * @author LeonTG77
  */
 public class OnlineCount extends PacketAdapter {
-	private final ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+	private final ProtocolManager manager;
+	
 	private final Main plugin;
+	private final Game game;
 
 	/**
 	 * Constructor for Online count.
 	 * 
 	 * @param plugin The main class of the plugin.
 	 */
-	public OnlineCount(Main plugin) {
+	public OnlineCount(Main plugin, Game game) {
 		super(plugin, ListenerPriority.NORMAL, PacketType.Status.Server.OUT_SERVER_INFO);
-		
+
 		this.plugin = plugin;
+		this.game = game;
+		
+		manager = ProtocolLibrary.getProtocolManager();
 	}
 
     @Override
@@ -37,8 +43,14 @@ public class OnlineCount extends PacketAdapter {
         	return;
         }
 
+        int count = plugin.getOnlineCount();
+        
+        if (game.isPrivateGame() || game.isRecordedRound()) {
+        	count = 0;
+        }
+        
         WrappedServerPing ping = event.getPacket().getServerPings().read(0);
-        ping.setPlayersOnline(plugin.getOnlineCount());
+        ping.setPlayersOnline(count);
         
         event.getPacket().getServerPings().write(0, ping);
     }

@@ -18,7 +18,7 @@ import com.leontg77.ultrahardcore.Main;
  * @author LeonTG77
  */
 public class EnchantPreview extends PacketAdapter {
-	private final ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+	private final ProtocolManager manager;
 
 	/**
 	 * Constructor for Enchant Preview.
@@ -27,6 +27,8 @@ public class EnchantPreview extends PacketAdapter {
 	 */
 	public EnchantPreview(Main plugin) {
 		super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.CRAFT_PROGRESS_BAR);
+		
+		manager = ProtocolLibrary.getProtocolManager();
 	}
 
     @Override

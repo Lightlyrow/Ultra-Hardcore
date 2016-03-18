@@ -16,7 +16,7 @@ import com.leontg77.ultrahardcore.Main;
  * @author ghowden
  */
 public class HardcoreHearts extends PacketAdapter {
-	private final ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+	private final ProtocolManager manager;
 
 	/**
 	 * Constructor for HardcoreHearts.
@@ -25,6 +25,8 @@ public class HardcoreHearts extends PacketAdapter {
 	 */
 	public HardcoreHearts(Main plugin) {
 		super(plugin, ListenerPriority.NORMAL, Play.Server.LOGIN);
+		
+		manager = ProtocolLibrary.getProtocolManager();
 	}
 
     @Override
