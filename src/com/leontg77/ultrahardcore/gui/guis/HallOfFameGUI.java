@@ -19,8 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
-import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.gui.GUI;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -32,16 +32,18 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class HallOfFameGUI extends GUI implements Listener {
 	private final Settings settings;
+	private final Main plugin;
 	
 	/**
 	 * HallOfFame inventory GUI class constructor.
 	 * 
 	 * @param settings The settings class.
 	 */
-	public HallOfFameGUI(Settings settings) {
+	public HallOfFameGUI(Main plugin, Settings settings) {
 		super("HOF", "A inventory with all games of hosts and it's winners and game information.");
 		
 		this.settings = settings;
+		this.plugin = plugin;
 	}
 
 	private final Map<String, Map<Integer, Inventory>> hostInvs = new HashMap<String, Map<Integer, Inventory>>();
@@ -225,7 +227,7 @@ public class HallOfFameGUI extends GUI implements Listener {
 			headLore.add("§8» §7Total games hosted: §6" + settings.getHOF().getConfigurationSection(host + ".games").getKeys(false).size());
 			
 			try {
-				headLore.add("§8» §7Rank: §6" + NameUtils.capitalizeString(User.get(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
+				headLore.add("§8» §7Rank: §6" + NameUtils.capitalizeString(plugin.getUser(PlayerUtils.getOfflinePlayer(name)).getRank().name(), false));
 			} catch (Exception e) {
 				headLore.add("§8» §7Rank: §6This host has never joined the server.");
 			}
