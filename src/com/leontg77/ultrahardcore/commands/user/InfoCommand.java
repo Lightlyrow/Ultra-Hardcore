@@ -26,9 +26,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class InfoCommand extends UHCCommand {	
+	private final Main plugin;
 
-	public InfoCommand() {
+	public InfoCommand(Main plugin) {
 		super("info", "<player>");
+		
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -39,11 +42,11 @@ public class InfoCommand extends UHCCommand {
         
 		OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[0]);
 		
-		if (!User.fileExist(target.getUniqueId())) {
+		if (!plugin.fileExist(target.getUniqueId())) {
 			throw new CommandException("'" + args[0] + "' has never joined this server.");
 		}
 		
-		User user = User.get(target);
+		User user = plugin.getUser(target);
 		
 		BanList list = Bukkit.getBanList(Type.NAME);
 		BanEntry entry = list.getBanEntry(target.getName());
