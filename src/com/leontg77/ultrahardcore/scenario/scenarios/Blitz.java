@@ -6,9 +6,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timer;
-import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.events.MeetupEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
@@ -19,11 +19,15 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author LeonTG77
  */
 public class Blitz extends Scenario implements Listener {
+	private final Main plugin;
+	
 	private final Timer timer;
 	private final Game game;
 	
-	public Blitz(Timer timer, Game game) {
+	public Blitz(Main plugin, Timer timer, Game game) {
 		super("Blitz", "Players start at 0.5 hearts. The game lasts a maximum of 1 hour. Players will normally be healed before meetup/sudden death.");
+
+		this.plugin = plugin;
 		
 		this.timer = timer;
 		this.game = game;
@@ -56,7 +60,7 @@ public class Blitz extends Scenario implements Listener {
 	@EventHandler
 	public void on(MeetupEvent event) {
 		for (Player online : Bukkit.getOnlinePlayers()) {
-			User.get(online).resetHealth();
+			plugin.getUser(online).resetHealth();
 		}
 	}
 }
