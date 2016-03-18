@@ -18,9 +18,14 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  * @author LeonTG77
  */
 public class BackCommand extends UHCCommand {
+	private final SpecManager spec;
+	private final Main plugin;
 
-	public BackCommand() {
+	public BackCommand(Main plugin, SpecManager spec) {
 		super("back", "");
+		
+		this.plugin = plugin;
+		this.spec = spec;
 	}
 
 	@Override
@@ -28,11 +33,9 @@ public class BackCommand extends UHCCommand {
 		if (!(sender instanceof Player)) {
 			throw new CommandException("Only players can teleport to their last location.");
 		}
-
-		SpecManager spec = SpecManager.getInstance();
 		
 		Player player = (Player) sender;
-		User user = User.get(player);
+		User user = plugin.getUser(player);
 		
 		if (!spec.isSpectating(player)) {
 			throw new CommandException("You can only do this while spectating.");
