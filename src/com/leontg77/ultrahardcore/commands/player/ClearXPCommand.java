@@ -19,9 +19,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ClearXPCommand extends UHCCommand {
+	private final Main plugin;
 
-	public ClearXPCommand() {
+	public ClearXPCommand(Main plugin) {
 		super("clearxp", "[player|*]");
+		
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -32,7 +35,7 @@ public class ClearXPCommand extends UHCCommand {
 			}
 			
 			Player player = (Player) sender;
-			User user = User.get(player);
+			User user = plugin.getUser(player);
 			
 			player.sendMessage(Main.PREFIX + "You cleared your own xp.");
 			user.resetExp();
@@ -45,7 +48,7 @@ public class ClearXPCommand extends UHCCommand {
 		
 		if (args[0].equals("*")) {
 			for (Player online : Bukkit.getOnlinePlayers()) {
-				User user = User.get(online);
+				User user = plugin.getUser(online);
 				user.resetExp();
 			}
 			
@@ -59,7 +62,7 @@ public class ClearXPCommand extends UHCCommand {
 			throw new CommandException("'"  + args[0] + "' is not online.");
 		}
 		
-		User user = User.get(target);
+		User user = plugin.getUser(target);
 		user.resetExp();
 
 		sender.sendMessage(Main.PREFIX + "You cleared §a" + target.getName() + "'s §7xp level.");

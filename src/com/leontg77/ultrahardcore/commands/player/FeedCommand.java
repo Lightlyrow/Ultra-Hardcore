@@ -19,9 +19,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class FeedCommand extends UHCCommand {
+	private final Main plugin;
 
-	public FeedCommand() {
+	public FeedCommand(Main plugin) {
 		super("feed", "[player]");
+		
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -32,7 +35,7 @@ public class FeedCommand extends UHCCommand {
 			}
 			
 			Player player = (Player) sender;
-			User user = User.get(player);
+			User user = plugin.getUser(player);
 			
 			player.sendMessage(Main.PREFIX + "You have been fed.");
 			user.resetFood();
@@ -41,7 +44,7 @@ public class FeedCommand extends UHCCommand {
 		
 		if (args[0].equals("*")) {
 			for (Player online : Bukkit.getOnlinePlayers()) {
-				User user = User.get(online);
+				User user = plugin.getUser(online);
 				user.resetFood();
 			}
 			
@@ -55,7 +58,7 @@ public class FeedCommand extends UHCCommand {
 			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
-		User user = User.get(target);
+		User user = plugin.getUser(target);
 		user.resetFood();
 
 		sender.sendMessage(Main.PREFIX + "You fed §a" + target.getName() + "§7.");

@@ -19,9 +19,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ClearInvCommand extends UHCCommand {
+	private final Main plugin;
 
-	public ClearInvCommand() {
+	public ClearInvCommand(Main plugin) {
 		super("clearinv", "[player|*]");
+		
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -32,7 +35,7 @@ public class ClearInvCommand extends UHCCommand {
 			}
 			
 			Player player = (Player) sender;
-			User user = User.get(player);
+			User user = plugin.getUser(player);
 			
 			player.sendMessage(Main.PREFIX + "You cleared your inventory.");
 			user.resetInventory();
@@ -45,7 +48,7 @@ public class ClearInvCommand extends UHCCommand {
 		
 		if (args[0].equals("*")) {
 			for (Player online : Bukkit.getOnlinePlayers()) {
-				User user = User.get(online);
+				User user = plugin.getUser(online);
 				user.resetInventory();
 			}
 			
@@ -59,7 +62,7 @@ public class ClearInvCommand extends UHCCommand {
 			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
-		User user = User.get(target);
+		User user = plugin.getUser(target);
 		user.resetInventory();
 
 		sender.sendMessage(Main.PREFIX + "You cleared §a" + target.getName() + "'s §7inventory.");
