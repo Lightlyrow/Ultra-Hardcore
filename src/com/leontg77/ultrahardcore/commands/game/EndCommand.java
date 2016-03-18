@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -95,14 +96,14 @@ public class EndCommand extends UHCCommand {
 		
 		for (int i = 0; i < args.length; i++) {
 			OfflinePlayer winner = PlayerUtils.getOfflinePlayer(args[i]);
-			User user = User.get(winner);
+			User user = plugin.getUser(winner);
 
 			if (!game.isRecordedRound() && !game.isPrivateGame()) {
 				user.getFile().set("stats.wins", user.getFile().getInt("stats.wins") + 1);
 				user.saveFile();
 			}
 
-			String color = teams.getTeam(winner) == null ? "§7" : teams.getTeam(winner).getPrefix();
+			String color = teams.getTeam(winner) == null ? "§f" : teams.getTeam(winner).getPrefix();
 			int kills = board.getActualScore(winner.getName());
 			
 			totalKills += kills;
@@ -118,10 +119,10 @@ public class EndCommand extends UHCCommand {
 		
 		String host = game.getHostHOFName();
 		
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		DateFormat dateFormat = new SimpleDateFormat("dd. MMM, yyyy", Locale.US);
 		Date date = new Date();
 
-		FileUtils.updateUserFiles(null);
+		FileUtils.updateUserFiles(plugin);
 		
 		int matchcount = 1;
 		
@@ -133,7 +134,7 @@ public class EndCommand extends UHCCommand {
 			settings.getHOF().set(host + ".games." + matchcount + ".date", dateFormat.format(date));
 			settings.getHOF().set(host + ".games." + matchcount + ".winners", winners);
 			settings.getHOF().set(host + ".games." + matchcount + ".kills", totalKills);
-			settings.getHOF().set(host + ".games." + matchcount + ".teamsize", game.getAdvancedTeamSize(true, false).trim());
+			settings.getHOF().set(host + ".games." + matchcount + ".teamsize", game.getAdvancedTeamSize(false, false).trim());
 			settings.getHOF().set(host + ".games." + matchcount + ".scenarios", game.getScenarios());
 			settings.saveHOF();
 		}
@@ -159,7 +160,7 @@ public class EndCommand extends UHCCommand {
 			online.setMaxHealth(20.0);
 			online.setFireTicks(0);
 			
-			User user = User.get(online);
+			User user = plugin.getUser(online);
 			user.reset();
 		}
 		
