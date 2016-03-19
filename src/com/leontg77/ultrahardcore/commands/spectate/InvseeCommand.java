@@ -9,7 +9,8 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.InvseeGUI;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**
@@ -18,9 +19,14 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  * @author LeonTG77
  */
 public class InvseeCommand extends UHCCommand {
+	private final SpecManager spec;
+	private final GUIManager gui;
 
-	public InvseeCommand() {
+	public InvseeCommand(GUIManager gui, SpecManager spec) {
 		super("invsee", "<player>");
+		
+		this.spec = spec;
+		this.gui = gui;
 	}
 
 	@Override
@@ -29,7 +35,6 @@ public class InvseeCommand extends UHCCommand {
 			throw new CommandException("Only players can open player invs.");
 		}
 
-		SpecManager spec = SpecManager.getInstance();
 		Player player = (Player) sender;
 		
 		if (!spec.isSpectating(player)) {
@@ -40,14 +45,14 @@ public class InvseeCommand extends UHCCommand {
     		return false;
 		}
 		
-		Player target = Bukkit.getServer().getPlayer(args[0]);
+		Player target = Bukkit.getPlayer(args[0]);
 		
 		if (target == null) {
 			throw new CommandException("'" + args[0] + "' is not online.");
 		} 
 		
-		InvGUI inv = InvGUI.getInstance();
-		inv.openPlayerInventory(player, target);
+		InvseeGUI inv = gui.getGUI(InvseeGUI.class);
+		player.openInventory(inv.get(target));
 		return true;
 	}
 
