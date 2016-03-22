@@ -29,6 +29,7 @@ import com.leontg77.ultrahardcore.feature.rates.FlintRatesFeature;
 import com.leontg77.ultrahardcore.feature.rates.ShearsFeature;
 import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.gui.guis.ConfigGUI;
+import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -81,16 +82,12 @@ public class ConfigCommand extends UHCCommand {
 			if (!(sender instanceof Player)) {
 				return false;
 			}
-			
-			Player player = (Player) sender;
+
 			ConfigGUI config = gui.getGUI(ConfigGUI.class);
+			Player player = (Player) sender;
 			
 			player.openInventory(config.get());
 			return true;
-		}
-		
-		if (args.length == 1) {
-			return false;
 		}
 		
 		ConfigValue type;
@@ -120,6 +117,11 @@ public class ConfigCommand extends UHCCommand {
 		
 		switch (type) {
 		case APPLERATES:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config applerates <rate>");
+				return true;
+			}
+			
 			double appleRate = parseDouble(args[1], "apple rate");
 			
 			if (appleRate < 0.55) {
@@ -133,8 +135,14 @@ public class ConfigCommand extends UHCCommand {
 			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + NumberUtils.formatDouble(appleRate) + "%");
 			
 			feat.getFeature(AppleRatesFeature.class).setAppleRates(appleRate);
+			gui.getGUI(GameInfoGUI.class).update();
 			break;
 		case BORDERSHRINK:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config bordershrink <shrinktime>");
+				return true;
+			}
+			
 			BorderShrink border;
 			
 			try {
@@ -150,8 +158,14 @@ public class ConfigCommand extends UHCCommand {
 			}
 			
 			feat.getFeature(BorderShrinkFeature.class).setBorderShrink(border);
+			gui.getGUI(GameInfoGUI.class).update();
 			break;
 		case STALKING:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config stalking <rule>");
+				return true;
+			}
+			
 			StalkingRule rule;
 			
 			try {
@@ -163,8 +177,14 @@ public class ConfigCommand extends UHCCommand {
 			PlayerUtils.broadcast(Main.PREFIX + "Stalking is now " + rule.getMessage());
 			
 			feat.getFeature(StalkingFeature.class).setStalkingRule(rule);
+			gui.getGUI(GameInfoGUI.class).update();
 			break;
 		case STATE:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config state <state>");
+				return true;
+			}
+			
 			State state;
 			
 			try {
@@ -177,6 +197,11 @@ public class ConfigCommand extends UHCCommand {
 			State.setState(state);
 			break;
 		case FLINTRATES:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config flintrates <rate>");
+				return true;
+			}
+			
 			double flintRate = parseDouble(args[1], "flint rate");
 			
 			if (flintRate < 10) {
@@ -190,24 +215,56 @@ public class ConfigCommand extends UHCCommand {
 			PlayerUtils.broadcast(Main.PREFIX + "Flint rates has been changed to §a" + NumberUtils.formatDouble(flintRate) + "%");
 			
 			feat.getFeature(FlintRatesFeature.class).setFlintRates(flintRate);
+			gui.getGUI(GameInfoGUI.class).update();
 			break;
 		case HEADSHEAL:
-			double headheals = parseDouble(args[1], "heal amount");
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config headsheal <amount>");
+				return true;
+			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + NumberUtils.formatDouble(headheals) + "§7 hearts.");
+			double healamount = parseDouble(args[1], "heal amount");
 			
-			feat.getFeature(GoldenHeadsFeature.class).setHealAmount(headheals);
+			if (healamount < 0) {
+				throw new CommandException("Heal amount cannot be negative.");
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "Golden heads now heal §a" + NumberUtils.formatDouble(healamount) + "§7 hearts.");
+			
+			feat.getFeature(GoldenHeadsFeature.class).setHealAmount(healamount);
+			gui.getGUI(GameInfoGUI.class).update();
 			break;
 		case HOST:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config host <name>");
+				return true;
+			}
+			
 			PlayerUtils.broadcast(Main.PREFIX + "The host has been changed to §a" + args[1] + "§7.");
 			game.setHost(args[1]);
 			break;
 		case MATCHPOST:
-			PlayerUtils.broadcast(Main.PREFIX + "The matchpost has been changed to §a" + args[1] + "§7.");
-			game.setMatchPost(args[1]);
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config matchpost <shortlink>");
+				return true;
+			}
+			
+			String matchpost = args[1];
+			
+			if (!matchpost.toLowerCase().contains("redd.it")) {
+				throw new CommandException("'" + args[1] + "' is not a valid match post.");
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "The matchpost has been changed to §a" + matchpost + "§7.");
+			game.setMatchPost(matchpost);
 			break;
 		case MAXPLAYERS:
-			int maxplayers = parseInt(args[1], "maxplayers time");
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config maxplayers <amount>");
+				return true;
+			}
+			
+			int maxplayers = parseInt(args[1], "amount");
 			
 			if (maxplayers > Bukkit.getMaxPlayers()) {
 				sender.sendMessage(ChatColor.RED + "You cannot set the slots higher than the servers max.");
@@ -223,19 +280,62 @@ public class ConfigCommand extends UHCCommand {
 			game.setMaxPlayers(maxplayers);
 			break;
 		case MEETUP:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config meetup <timeInMinutes>");
+				return true;
+			}
+			
 			int meetup = parseInt(args[1], "meetup time");
+			
+			if (meetup < 0) {
+				throw new CommandException("Meetup cannot be before the start.");
+			}
+			
+			if (game.getPvP() > meetup) {
+				throw new CommandException("Meetup cannot be after pvp.");
+			}
+			
+			if (game.getPvP() == meetup) {
+				throw new CommandException("Meetup and PvP cannot be at the same time.");
+			}
 
 			PlayerUtils.broadcast(Main.PREFIX + "Meetup is now §a" + meetup + " §7minutes in.");
 			game.setMeetup(meetup);
 			break;
 		case PVP:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config pvp <timeInMinutes>");
+				return true;
+			}
+			
 			int pvp = parseInt(args[1], "pvp time");
+			
+			if (pvp < 0) {
+				throw new CommandException("PvP cannot be enabled before the start.");
+			}
+			
+			if (game.getMeetup() < pvp) {
+				throw new CommandException("PvP cannot be enabled after meetup.");
+			}
+			
+			if (game.getMeetup() == pvp) {
+				throw new CommandException("PvP and Meetup cannot be at the same time.");
+			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "PvP will now be enabled §a" + pvp + " §7minutes in.");
 			game.setPvP(pvp);
 			break;
 		case PEARLDAMAGE:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config pearldamage <amount>");
+				return true;
+			}
+			
 			double damage = parseDouble(args[1], "damage amount");
+			
+			if (damage < 0) {
+				throw new CommandException("Pearl damage cannot be negative.");
+			}
 
 			if (damage == 0.0) {
 				PlayerUtils.broadcast(Main.PREFIX + "Ender pearls will no longer deal damage.");
@@ -244,18 +344,29 @@ public class ConfigCommand extends UHCCommand {
 			}
 			
 			feat.getFeature(PearlDamageFeature.class).setPearlDamage(damage);
+			gui.getGUI(GameInfoGUI.class).update();
 			break;
 		case SCENARIOS:
-			String scens = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config scenarios <scenario1>, <scenario2>...");
+				return true;
+			}
 			
-			game.setScenarios(scens);
-			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + game.getAdvancedTeamSize(true, true) + game.getScenarios() + "§7.");
+			String scenarios = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
+			
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + game.getAdvancedTeamSize(true, true) + scenarios + "§7.");
+			game.setScenarios(scenarios);
 			break;
 		case SHEARRATES:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config shearrates <rate>");
+				return true;
+			}
+			
 			double shearRate = parseDouble(args[1], "shear rate");
 			
-			if (shearRate < 0) {
-				throw new CommandException("Shear rates cannot be lower than 0%");
+			if (shearRate < 5) {
+				throw new CommandException("Shear rates cannot be lower than 5%");
 			}
 			
 			if (shearRate > 100) {
@@ -265,14 +376,37 @@ public class ConfigCommand extends UHCCommand {
 			PlayerUtils.broadcast(Main.PREFIX + "Shear rates has been changed to §a" + NumberUtils.formatDouble(shearRate) + "%");
 			
 			feat.getFeature(ShearsFeature.class).setShearRates(shearRate);
+			gui.getGUI(GameInfoGUI.class).update();
 			break;
 		case TEAMSIZE:
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config teamsize <#ToX>");
+				return true;
+			}
+			
+			String teamsize = game.getAdvancedTeamSize(args[1], true, true);
+			
+			if (teamsize == null) {
+				throw new CommandException("'" + args[1] + "' is not a valid teamsize.");
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + teamsize + game.getScenarios() + "§7.");
 			game.setTeamSize(args[1]);
-			PlayerUtils.broadcast(Main.PREFIX + "The gamemode is now §a" + game.getAdvancedTeamSize(true, true) + game.getScenarios() + "§7.");
 			break;
 		case WORLD:
-			PlayerUtils.broadcast(Main.PREFIX + "The game will now be played in '§a" + args[1] + "§7'.");
-			game.setWorld(args[1]);
+			if (args.length == 1) {
+				sender.sendMessage(Main.PREFIX + "Usage: /config world <world>");
+				return true;
+			}
+			
+			World world = Bukkit.getWorld(args[1]);
+			
+			if (world == null) {
+				throw new CommandException("'" + args[1] + "' is not an existing world.");
+			}
+			
+			PlayerUtils.broadcast(Main.PREFIX + "The game will now be played in '§a" + world.getName() + "§7'.");
+			game.setWorld(world.getName());
 			break;
 		default:
 			return true;
@@ -320,7 +454,7 @@ public class ConfigCommand extends UHCCommand {
 	    		}
 				break;
 			case MATCHPOST:
-				toReturn.add("https://redd.it/######");
+				toReturn.add("redd.it/######");
 				break;
 			case SCENARIOS:
 	    		for (Scenario type : scen.getScenarios()) {
