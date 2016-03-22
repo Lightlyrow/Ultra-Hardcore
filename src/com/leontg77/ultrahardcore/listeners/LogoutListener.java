@@ -53,7 +53,7 @@ public class LogoutListener implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
-		User user = User.get(player);
+		User user = plugin.getUser(player);
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Date date = new Date();
@@ -61,11 +61,13 @@ public class LogoutListener implements Listener {
 		user.getFile().set("lastlogout", date.getTime());
 		user.saveFile();
 		
+		user.setLastLoc(null);
+		
 		perm.removePermissions(player);
 		event.setQuitMessage(null);
 		
 		if (player.isInsideVehicle()) {
-			player.leaveVehicle();
+			player.leaveVehicle(); // sometimes dead players will take horses with them when they log out for some reason...
 		}
 		
 		if (!spec.isSpectating(player)) {
@@ -91,7 +93,7 @@ public class LogoutListener implements Listener {
 			event.setReason("Kicked for spamming");
 		}
 		
-		if (event.getReason().startsWith("§8»")) {
+		if (event.getReason().startsWith("§")) {
 			return;
 		}
 		
