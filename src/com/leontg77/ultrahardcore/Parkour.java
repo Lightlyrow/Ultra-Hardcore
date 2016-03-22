@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.listeners.ParkourListener;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 
 /**
  * The parkour class.
@@ -22,8 +23,10 @@ import com.leontg77.ultrahardcore.listeners.ParkourListener;
 public class Parkour {
 	public static final String PREFIX = "§9Parkour §8» §7";
 
-	private final Settings settings;
 	private final Main plugin;
+	
+	private final SpecManager spec;
+	private final Settings settings;
 	
 	/**
 	 * Parkour class constructor.
@@ -31,9 +34,11 @@ public class Parkour {
 	 * @param plugin The main class.
 	 * @param settings The settings class.
 	 */
-	protected Parkour(Main plugin, Settings settings) {
-		this.settings = settings;
+	protected Parkour(Main plugin, Settings settings, SpecManager spec) {
 		this.plugin = plugin;
+		
+		this.settings = settings;
+		this.spec = spec;
 	}
 
 	private Location spawnpoint;
@@ -46,8 +51,15 @@ public class Parkour {
 	 * Set up the checkpoints and listeners for the parkour
 	 */
 	public void setup() {
-		Bukkit.getPluginManager().registerEvents(new ParkourListener(plugin, this), plugin);
+		Bukkit.getPluginManager().registerEvents(new ParkourListener(plugin, this, spec), plugin);
 		
+		loadLocations();
+	}
+	
+	/**
+	 * Setup all locations.
+	 */
+	public void loadLocations() {
 		spawnpoint = loadLocation("parkour.spawnpoint");
 		endpoint = loadLocation("parkour.endpoint");
 		
@@ -63,23 +75,23 @@ public class Parkour {
 	 * @return The location if found, null otherwise.
 	 */
 	private Location loadLocation(final String path) {
-		final FileConfiguration data = settings.getData();
+		final FileConfiguration config = settings.getConfig();
 		
-		if (!data.contains(path)) {
+		if (!config.contains(path)) {
 			return null;
 		}
 		
-		World world = Bukkit.getWorld(data.getString(path + ".world"));
+		World world = Bukkit.getWorld(config.getString(path + ".world"));
 		
 		if (world == null) {
 			world = Bukkit.getWorlds().get(0);
 		}
 		
-		double x = data.getDouble(path + ".x", 0.5);
-		double y = data.getDouble(path + ".y", 33.0);
-		double z = data.getDouble(path + ".z", 0.5);
-		float yaw = (float) data.getDouble(path + ".yaw", 0);
-		float pitch = (float) data.getDouble(path + ".pitch", 0);
+		double x = config.getDouble(path + ".x", 0.5);
+		double y = config.getDouble(path + ".y", 33.0);
+		double z = config.getDouble(path + ".z", 0.5);
+		float yaw = (float) config.getDouble(path + ".yaw", 0);
+		float pitch = (float) config.getDouble(path + ".pitch", 0);
 		
 		Location loc = new Location(world, x, y, z, yaw, pitch);
 		return loc;
@@ -103,6 +115,8 @@ public class Parkour {
 	 */
 	public void addPlayer(final Player player) {
 		player.setGameMode(GameMode.SURVIVAL);
+		player.setAllowFlight(false);
+		player.setFlying(false);
 		
 		setCheckpoint(player, 0);
 		resetTime(player);

@@ -174,18 +174,18 @@ public class ParkourCommand extends UHCCommand {
 	 * @param loc The location to save.
 	 */
 	private void saveLocation(final String path, final Location loc) {
-		FileConfiguration data = settings.getData();
+		FileConfiguration config = settings.getConfig();
 		
-		data.set(path + ".world", loc.getWorld().getName());
+		config.set(path + ".world", loc.getWorld().getName());
 		
-		data.set(path + ".x", loc.getX());
-		data.set(path + ".y", loc.getY());
-		data.set(path + ".z", loc.getZ());
+		config.set(path + ".x", loc.getX());
+		config.set(path + ".y", loc.getY());
+		config.set(path + ".z", loc.getZ());
 		
-		data.set(path + ".yaw", loc.getYaw());
-		data.set(path + ".pitch", loc.getPitch());
+		config.set(path + ".yaw", loc.getYaw());
+		config.set(path + ".pitch", loc.getPitch());
 		
-		settings.saveData();
-		parkour.setup();
+		settings.saveConfig();
+		parkour.loadLocations();
 	}
 }
