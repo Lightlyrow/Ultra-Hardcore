@@ -1,6 +1,5 @@
 package com.leontg77.ultrahardcore.listeners;
 
-import java.util.Date;
 import java.util.Iterator;
 
 import org.bukkit.Bukkit;
@@ -46,15 +45,19 @@ public class ChatListener implements Listener {
 	}
 	
 	@EventHandler
-    public void on(final AsyncPlayerChatEvent event) {
-		final Player player = event.getPlayer();
-		final User user = plugin.getUser(player);
+    public void on(AsyncPlayerChatEvent event) {
+		Player player = event.getPlayer();
+		User user = plugin.getUser(player);
 
-		final String message = event.getMessage();
-		final Team team = teams.getTeam(player);
+		String message = event.getMessage();
+		Team team = teams.getTeam(player);
 	
-		final String name = (team == null || spec.isSpectating(player) ? "§f%s" : team.getPrefix() + "%s");
-		final String messageAndColor = name.startsWith("§f") ? "§7%s" : "§f%s";
+		String name = (team == null || spec.isSpectating(player) ? "§f%s" : team.getPrefix() + "%s");
+		String messageAndColor = name.startsWith("§f") ? "§7%s" : "§f%s";
+		
+		if (user.getRank().getLevel() >= Rank.DEFAULT.getLevel()) {
+			messageAndColor = "§f%s";
+		}
     	
     	if (game.isRecordedRound()) {
     		event.setFormat("§f<" + name + "§f> §f%s");
@@ -92,22 +95,14 @@ public class ChatListener implements Listener {
 		}
     	
 		if (user.isMuted()) {
-			Date date = new Date();
+			player.sendMessage(Main.PREFIX + "You have been muted for: §a" + user.getMutedReason());
+			event.setCancelled(true);
 			
-			if (user.getMuteExpiration() == null || user.getMuteExpiration().getTime() > date.getTime()) {
-				player.sendMessage(Main.PREFIX + "You have been muted for: §a" + user.getMutedReason());
-				event.setCancelled(true);
-				
-				if (user.getMuteExpiration() == null) {
-					player.sendMessage(Main.PREFIX + "Your mute is permanent.");
-				} else {
-					player.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getMuteExpiration().getTime()));
-				}
-				return;
+			if (user.getMuteExpiration() == null) {
+				player.sendMessage(Main.PREFIX + "Your mute is permanent.");
+			} else {
+				player.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getMuteExpiration().getTime()));
 			}
-			
-			event.setCancelled(false);
-			user.unmute();
 		}
 		
 		Iterator<Player> it = event.getRecipients().iterator();
@@ -122,7 +117,7 @@ public class ChatListener implements Listener {
 			}
 		}
 		
-		if (user.getRank().getLevel() > 3) {
+		if (user.getRank().getLevel() >= Rank.STAFF.getLevel()) {
 			event.setMessage(ChatColor.translateAlternateColorCodes('&', message));
 		}
 
