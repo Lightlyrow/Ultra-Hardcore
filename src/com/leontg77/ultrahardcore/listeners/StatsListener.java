@@ -85,7 +85,7 @@ public class StatsListener implements Listener {
 	    	return;
 	    }
 
-		final User user = User.get(player);
+		final User user = plugin.getUser(player);
 		
 		final Player killer = player.getKiller();
 
@@ -103,7 +103,7 @@ public class StatsListener implements Listener {
 		
 		user.increaseStat(Stat.DEATHS);
 		
-		final User killUser = User.get(killer);
+		final User killUser = plugin.getUser(killer);
 		killUser.increaseStat(Stat.KILLS);
 		
 		if (killUser.getStat(Stat.KILLSTREAK) < board.getScore(killer.getName())) {
@@ -120,7 +120,7 @@ public class StatsListener implements Listener {
     		return;
     	}
     	
-    	final User user = User.get(killer);
+    	final User user = plugin.getUser(killer);
 		
 		if (entity instanceof Monster) {
 			user.increaseStat(Stat.HOSTILEMOBKILLS);
@@ -146,7 +146,7 @@ public class StatsListener implements Listener {
 			public void run() {
 				final double damage = olddamage - player.getHealth();
 				
-				final User user = User.get(player);
+				final User user = plugin.getUser(player);
 				
 				if (game.isRecordedRound() || game.isPrivateGame()) {
 					return;
@@ -168,7 +168,7 @@ public class StatsListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
     public void on(BlockBreakEvent event) {
 		final Player player = event.getPlayer();
-    	final User user = User.get(player);
+    	final User user = plugin.getUser(player);
 		
 		final Block block = event.getBlock();
     	
@@ -213,7 +213,7 @@ public class StatsListener implements Listener {
 			return;
 		}
 		
-		final User user = User.get(killer);
+		final User user = plugin.getUser(killer);
 		
 		if (user.getStatDouble(Stat.LONGESTSHOT) <= distance) {
 			user.setStat(Stat.LONGESTSHOT, distance);
@@ -223,7 +223,7 @@ public class StatsListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void on(EntityTameEvent event) {
     	final Player player = (Player) event.getOwner();
-    	final User user = User.get(player);
+    	final User user = plugin.getUser(player);
     	
     	if (event.getEntity() instanceof Wolf) {
     		user.increaseStat(Stat.WOLVESTAMED);
@@ -238,7 +238,7 @@ public class StatsListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void on(PlayerLevelChangeEvent event) {
 		final Player player = event.getPlayer();
-    	final User user = User.get(player);
+    	final User user = plugin.getUser(player);
     	
     	int oldL = event.getOldLevel();
     	int newL = event.getNewLevel();
@@ -253,7 +253,7 @@ public class StatsListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void on(PlayerItemConsumeEvent event) {
 		final Player player = event.getPlayer();
-		final User user = User.get(player);
+		final User user = plugin.getUser(player);
 		
 		final ItemStack item = event.getItem();
 		
@@ -279,7 +279,7 @@ public class StatsListener implements Listener {
 		
 		final Player player = event.getPlayer();
 
-		final User user = User.get(player);
+		final User user = plugin.getUser(player);
     	final Location to = event.getTo();
 		
 		if (to == null) {
