@@ -18,6 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.User.Rank;
@@ -64,6 +65,7 @@ import com.leontg77.ultrahardcore.utils.NumberUtils;
  * @author LeonTG77.
  */
 public class GameInfoGUI extends GUI implements Listener {
+	private final Settings settings;
 	private final Main plugin;
 	
 	private final Timer timer;
@@ -76,14 +78,16 @@ public class GameInfoGUI extends GUI implements Listener {
 	 * GameInfo inventory GUI class constructor.
 	 * 
 	 * @param plugin The main class.
-	 * @param game The game class
+	 * @param settings The settings class.
+	 * @param game The game class.
 	 * @param timer The timer class.
 	 * @param feat The feature manager class.
 	 * @param scen The scenario manager class.
 	 */
-	public GameInfoGUI(Main plugin, Game game, Timer timer, FeatureManager feat, ScenarioManager scen) {
+	public GameInfoGUI(Main plugin, Settings settings, Game game, Timer timer, FeatureManager feat, ScenarioManager scen) {
 		super("GameInfo", "A inventory with informative items.");
-		
+
+		this.settings = settings;
 		this.plugin = plugin;
 		
 		this.timer = timer;
@@ -105,7 +109,7 @@ public class GameInfoGUI extends GUI implements Listener {
 			public void run() {
 				updateTimer();
 			}
-		}.runTaskTimer(plugin, 1, 1);
+		}.runTaskTimer(plugin, 15, 15);
 	}
 	
 	@EventHandler
@@ -201,8 +205,11 @@ public class GameInfoGUI extends GUI implements Listener {
 		ItemMeta miningMeta = mining.getItemMeta();
 		miningMeta.setDisplayName("§8» §6Mining Rules §8«");
 		lore.add(" ");
-		lore.add("§8» §4Important info:");
-		if (lore.equals(lore)) {
+		lore.add("§8» §4Information:");
+		if (game.getWorld() == null) {
+			lore.add("§8» §7No game world has been set yet");
+			lore.add("§8» §7for the rule to come up.");
+		} else if (settings.getWorlds().getBoolean(game.getWorld().getName() + ".antiStripmine", true)) {
 			lore.add("§8» §7Gold, diamonds and lapis only spawns near caves.");
 			lore.add(" ");
 			lore.add("§8» §7Stripmining: §aAllowed.");
@@ -216,6 +223,9 @@ public class GameInfoGUI extends GUI implements Listener {
 			lore.add("§8» §7Digging to sounds: §aAllowed.");
 			lore.add("§8» §7Digging to entities: §aAllowed.");
 			lore.add("§8» §7Digging to players: §aAllowed.");
+			lore.add(" ");
+			lore.add("§8» §7Digging straight down: §aAllowed.");
+			lore.add("§8» §7Digging around lava: §aAllowed.");
 		} else {
 			lore.add("§8» §7The \"ores in caves\" feature is disabled.");
 			lore.add(" ");
@@ -230,21 +240,35 @@ public class GameInfoGUI extends GUI implements Listener {
 			lore.add("§8» §7Digging to sounds: §aAllowed.");
 			lore.add("§8» §7Digging to entities: §aAllowed.");
 			lore.add("§8» §7Digging to players: §cOnly if you see them.");
+			lore.add(" ");
+			lore.add("§8» §7Digging straight down: §aAllowed.");
+			lore.add("§8» §7Digging around lava: §aAllowed.");
 		}
-		lore.add(" ");
-		lore.add("§8» §7Digging straight down: §aAllowed.");
-		lore.add("§8» §7Digging around lava: §aAllowed.");
 		lore.add(" ");
 		miningMeta.setLore(lore);
 		miningMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		mining.setItemMeta(miningMeta);
 		lore.clear();
+
+		BorderShrink border = feat.getFeature(BorderShrinkFeature.class).getBorderShrink();
 		
 		ItemStack meetup = new ItemStack (Material.EYE_OF_ENDER);
 		ItemMeta miscMeta = meetup.getItemMeta();
 		miscMeta.setDisplayName("§8» §6Meetup Rules §8«");
 		lore.add(" ");
-		lore.add("§8» §7BEING UPDATED, ASK THE STAFF!");
+		lore.add("§8» §7Strict Meetup: §cNo.");
+		lore.add(" ");
+		lore.add("§8» §7Towering: §eOnly allowed before meetup.");
+		lore.add("§8» §7Forting: §eOnly allowed before meetup.");
+		lore.add("§8» §7Digging down: §eOnly allowed before meetup.");
+		lore.add(" ");
+		lore.add("§8» §7At meetup you are allowed to do anything you may");
+		lore.add("§8» §7want to, but you have to be inside of the MC border");
+		lore.add("§8» §7and on the surface, rules above also apply.");
+		lore.add(" ");
+		lore.add("§8» §7Border shrinks: §6" + NameUtils.capitalizeString(border.getPreText(), false) + border.name().toLowerCase() + ".");
+		lore.add("§8» §7The border will damage you if you go");
+		lore.add("§8» §7outside, until it eventually kills you");
 		lore.add(" ");
 		miscMeta.setLore(lore);
 		meetup.setItemMeta(miscMeta);
@@ -292,8 +316,10 @@ public class GameInfoGUI extends GUI implements Listener {
 			lore.add(" ");
 		} else {
 			lore.add(" ");
-			lore.add("§8» §7Match post: §a" + game.getMatchPost());
+			lore.add("§8» §7Host: §a" + game.getHost());
+			lore.add(" ");
 			lore.add("§8» §7Max player slots: §a" + game.getMaxPlayers());
+			lore.add("§8» §7Match post: §a" + game.getMatchPost());
 			lore.add(" ");
 			lore.add("§8» §7PvP enabled after: §a" + game.getPvP() + " minutes.");
 			lore.add("§8» §7Meetup is after: §a" + game.getMeetup() + " minutes.");
@@ -353,6 +379,8 @@ public class GameInfoGUI extends GUI implements Listener {
 		healing.setItemMeta(healingMeta);
 		lore.clear();
 		
+		String shear = NumberUtils.formatDouble(feat.getFeature(ShearsFeature.class).getShearRates() * 100);
+		
 		ItemStack rates = new ItemStack (Material.FLINT);
 		ItemMeta ratesMeta = rates.getItemMeta();
 		ratesMeta.setDisplayName("§8» §6Rates Info §8«");
@@ -363,7 +391,7 @@ public class GameInfoGUI extends GUI implements Listener {
 		lore.add("§8» §7Witch Pot. Rate: " + (feat.getFeature(WitchHealthPotionFeature.class).isEnabled() ? "§630% (100% when poisoned)." : "§aVanilla."));
 		lore.add("§8» §7Mob Rates: §6Vanilla, Difficulty Hard.");
 		lore.add(" ");
-		lore.add("§8» §7Shears for apples: " + (feat.getFeature(ShearsFeature.class).isEnabled() ? "§aWork." : "§cDoes not work."));
+		lore.add("§8» §7Shears for apples: " + (feat.getFeature(ShearsFeature.class).isEnabled() ? "§aWork, " + shear + "%" : "§cDoes not work."));
 		lore.add("§8» §7Shears for leaves: §aWork.");
 		lore.add(" ");
 		ratesMeta.setLore(lore);
@@ -375,8 +403,8 @@ public class GameInfoGUI extends GUI implements Listener {
 		horseMeta.setDisplayName("§8» §6Horse Info §8«");
 		lore.add(" ");
 		lore.add("§8» §7Horses: " + (feat.getFeature(HorseFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
-		lore.add(" ");
 		if (feat.getFeature(HorseFeature.class).isEnabled()) {
+			lore.add(" ");
 			lore.add("§8» §7Horse Healing: " + (feat.getFeature(HorseHealingFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
 			lore.add("§8» §7Horse Armor: " + (feat.getFeature(HorseArmorFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
 		}
@@ -385,7 +413,6 @@ public class GameInfoGUI extends GUI implements Listener {
 		horse.setItemMeta(horseMeta);
 		lore.clear();
 
-		BorderShrink border = feat.getFeature(BorderShrinkFeature.class).getBorderShrink();
 		double pDamage = feat.getFeature(PearlDamageFeature.class).getPearlDamage();
 		
 		ItemStack misc = new ItemStack (Material.ENDER_PEARL);
@@ -404,8 +431,8 @@ public class GameInfoGUI extends GUI implements Listener {
 		lore.add(" ");
 		lore.add("§8» §7Nerfed XP: " + (feat.getFeature(NerfedXPFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
-		lore.add("§8» §7Border shrinks: §6" + NameUtils.capitalizeString(border.getPreText(), false) + border.name().toLowerCase() + ".");
-		lore.add("§8» §7The border will kill you if you go outside!");
+		lore.add("§8» §7Ore Limiter: §6" + (game.getWorld() == null ? "§cN/A" : settings.getWorlds().getBoolean(game.getWorld().getName() + ".oreLimiter", false) ? "§aEnabled." : "§cDisabled."));
+		lore.add("§8» §71.8 Stone: §6" + (game.getWorld() == null ? "§cN/A" : settings.getWorlds().getBoolean(game.getWorld().getName() + ".newStone", false) ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
 		miscIMeta.setLore(lore);
 		misc.setItemMeta(miscIMeta);
