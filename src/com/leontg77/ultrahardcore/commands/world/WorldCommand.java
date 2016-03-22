@@ -7,8 +7,6 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.WorldType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -47,8 +45,14 @@ public class WorldCommand extends UHCCommand {
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("create")) {
-				if (args.length < 5) {
-					sender.sendMessage(Main.PREFIX + "Usage: /world create <name> <mapsize> [seed]");
+				if (!(sender instanceof Player)) {
+					throw new CommandException("Only players can create worlds");
+				}
+				
+				Player player = (Player) sender;
+				
+				if (args.length < 3) {
+					player.sendMessage(Main.PREFIX + "Usage: /world create <name> <mapsize> [seed]");
 					return true;
 				}
 				
@@ -59,7 +63,7 @@ public class WorldCommand extends UHCCommand {
 				}
 				
 				String worldname = args[1];
-				int radius = parseInt(args[2], "radius");
+				int diameter = parseInt(args[2], "diameter");
 				
 				long seed = new Random().nextLong();
 				
@@ -71,22 +75,7 @@ public class WorldCommand extends UHCCommand {
 		            }
 				}
 				
-				sender.sendMessage(Main.PREFIX + "Starting creation of world '§a" + worldname + "§7'...");
-				sender.sendMessage("§8» §7Radius: §6" + radius);
-				sender.sendMessage("§8» §7Seed: §6" + seed);
-				sender.sendMessage("§8» §7Type: §6" + WorldType.NORMAL);
-				
-				manager.createWorld(worldname, radius, seed, Environment.NORMAL, WorldType.NORMAL, end, end, end);
-				
-				if (nether) {
-					manager.createWorld(worldname + "_nether", radius, seed, Environment.NETHER, WorldType.NORMAL, end, end, end);
-				}
-				
-				if (end) {
-					manager.createWorld(worldname + "_end", radius, seed, Environment.THE_END, WorldType.NORMAL, end, end, end);
-				}
-
-				sender.sendMessage(Main.PREFIX + "World creation finished.");
+				player.openInventory(creator.get(worldname, diameter, seed));
 				return true;
 			}
 			
@@ -258,26 +247,12 @@ public class WorldCommand extends UHCCommand {
 		
 		if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("create")) {
-				toReturn.add("1500");
-				toReturn.add("1000");
+				toReturn.add("2000");
+				toReturn.add("3000");
 			}
 		}
 		
 		if (args.length == 4) {
-			if (args[0].equalsIgnoreCase("create")) {
-				toReturn.add("true");
-				toReturn.add("false");
-			}
-		}
-		
-		if (args.length == 5) {
-			if (args[0].equalsIgnoreCase("create")) {
-				toReturn.add("true");
-				toReturn.add("false");
-			}
-		}
-		
-		if (args.length == 6) {
 			if (args[0].equalsIgnoreCase("create")) {
 				toReturn.add("" + new Random().nextLong());
 			}
