@@ -75,7 +75,11 @@ public class BoardCommand extends UHCCommand {
 		
 		board.setScore("§c ", 5);
 		board.setScore("§8» §cScenarios:", 4);
-		board.setScore("§8» §7Use /scen", 3);
+		
+		for (String scen : game.getScenarios().split(", ")) {
+			board.setScore("§8» §7" + scen, 3);
+		}
+		
 		board.setScore("§d ", 2);
 		board.setScore("§8§m------------", 1);
 		board.setScore("§a§o@ArcticUHC", 1);
