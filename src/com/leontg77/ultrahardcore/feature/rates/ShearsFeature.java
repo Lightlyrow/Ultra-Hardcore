@@ -37,7 +37,11 @@ public class ShearsFeature extends ToggleableFeature implements Listener {
 		slot = 37;
 		
 		this.settings = settings;
+		
+		shearRate = settings.getConfig().getDouble(RATE_PATH, 0.05);
 	}
+	
+	private final Random rand = new Random();
 
 	/**
 	 * Set the rate of shears to drop apples.
@@ -62,12 +66,8 @@ public class ShearsFeature extends ToggleableFeature implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
     public void on(BlockBreakEvent event) {
-		if (!isEnabled()) {
-			return;
-		}
-		
-    	final Player player = event.getPlayer();
-		final Block block = event.getBlock();
+    	Player player = event.getPlayer();
+		Block block = event.getBlock();
     	
 		// breaking leaves in creative shouldn't drop anything...
 		if (player.getGameMode() == GameMode.CREATIVE) {
@@ -78,17 +78,16 @@ public class ShearsFeature extends ToggleableFeature implements Listener {
 			return;
 		}
 		
-		final int damage = BlockUtils.getDurability(block);
+		int damage = BlockUtils.getDurability(block);
 		
-		final TreeType tree = TreeUtils.getTree(block.getType(), damage);
-		final Random rand = new Random();
+		TreeType tree = TreeUtils.getTree(block.getType(), damage);
 		
 		if (tree == TreeType.UNKNOWN) {
 			return;
 		}
 		
-		final Location toDrop = block.getLocation().add(0.5, 0.7, 0.5);
-		final ItemStack item = player.getItemInHand();
+		Location toDrop = block.getLocation().add(0.5, 0.7, 0.5);
+		ItemStack item = player.getItemInHand();
 		
 		if (tree != TreeType.OAK && tree != TreeType.DARK_OAK) {
 			return;
@@ -106,7 +105,9 @@ public class ShearsFeature extends ToggleableFeature implements Listener {
 		event.setCancelled(true);
 		block.setType(Material.AIR);
 		
-		if (rand.nextDouble() >= shearRate) {
+		double next = rand.nextDouble();
+		
+		if (!isEnabled() || next >= shearRate) {
 			return;
 		}
 		
