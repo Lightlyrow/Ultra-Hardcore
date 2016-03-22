@@ -141,9 +141,19 @@ public class Game {
 	 * @return The string format.
 	 */
 	public String getAdvancedTeamSize(boolean advancedFFA, boolean seperate) {
-		final String teamsize = getTeamSize();
-		
-		if (teamsize.startsWith("to")) {
+		return getAdvancedTeamSize(getTeamSize(), advancedFFA, seperate);
+	}
+
+	/**
+	 * Get the teamsize in a string format.
+	 * 
+	 * @param teamsize The teamsize to use.
+	 * @param advancedFFA Wether to spell it as "FFA" or "Free for all"
+	 * @param seperate Wether to have the returned string end with - or not.
+	 * @return The string format.
+	 */
+	public String getAdvancedTeamSize(String teamsize, boolean advancedFFA, boolean seperate) {
+		if (teamsize.startsWith("To")) {
 			setTeamSize("c" + getTeamSize());
 		}
 		
@@ -181,7 +191,7 @@ public class Game {
 			return teamsize + " ";
 		}
 		
-		return "INVAILD TEAMSIZE!!";
+		return null;
 	}
 
 	/**
