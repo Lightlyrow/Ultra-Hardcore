@@ -61,7 +61,7 @@ public class AppleRatesFeature extends Feature implements Listener {
         return appleRate;
     }
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
     public void on(BlockBreakEvent event) {
     	final Player player = event.getPlayer();
 		final Block block = event.getBlock();
