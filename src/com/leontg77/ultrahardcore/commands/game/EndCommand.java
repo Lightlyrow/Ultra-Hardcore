@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.ultrahardcore.Data;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
@@ -42,8 +43,10 @@ import com.leontg77.ultrahardcore.world.WorldManager;
  * @author LeonTG77
  */
 public class EndCommand extends UHCCommand {
-	private final Timer timer;
 	private final Main plugin;
+	
+	private final Timer timer;
+	private final Data data;
 	
 	private final Settings settings;
 	private final Game game;
@@ -59,11 +62,13 @@ public class EndCommand extends UHCCommand {
 	private final FireworkManager firework;
 	private final WorldManager manager;
 	
-	public EndCommand(Main plugin, Timer timer, Settings settings, Game game, ScenarioManager scen, BoardManager board, TeamManager teams, SpecManager spec, GUIManager gui, FireworkManager firework, WorldManager manager) {
+	public EndCommand(Main plugin, Data data, Timer timer, Settings settings, Game game, ScenarioManager scen, BoardManager board, TeamManager teams, SpecManager spec, GUIManager gui, FireworkManager firework, WorldManager manager) {
 		super("end", "<winners>");
 		
 		this.plugin = plugin;
+		
 		this.timer = timer;
+		this.data = data;
 		
 		this.settings = settings;
 		this.game = game;
@@ -182,6 +187,8 @@ public class EndCommand extends UHCCommand {
 
 		new BukkitRunnable() {
 			public void run() {
+				data.clearData();
+				
 				for (String entry : board.getBoard().getEntries()) {
 					board.getBoard().resetScores(entry);
 				}
