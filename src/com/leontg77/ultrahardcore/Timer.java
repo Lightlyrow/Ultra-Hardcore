@@ -26,6 +26,7 @@ import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.events.MeetupEvent;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
+import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
 import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
@@ -55,19 +56,19 @@ public class Timer {
 	private final Game game;
 	
 	private final ScenarioManager scen;
-	private final StalkingFeature stalk;
+	private final FeatureManager feat;
 	
 	private final BoardManager board;
 	private final SpecManager spec;
 	
-	public Timer(Main plugin, Game game, GUIManager gui, ScenarioManager scen, StalkingFeature stalk, BoardManager board, SpecManager spec) {
+	public Timer(Main plugin, Game game, GUIManager gui, ScenarioManager scen, FeatureManager feat, BoardManager board, SpecManager spec) {
 		this.plugin = plugin;
 		
 		this.game = game;
 		this.gui = gui;
 		
 		this.scen = scen;
-		this.stalk = stalk;
+		this.feat = feat;
 		
 		this.board = board;
 		this.spec = spec;
@@ -320,9 +321,7 @@ public class Timer {
 				}
 				
 				for (Player online : Bukkit.getOnlinePlayers()) {
-					if (!TimerCommand.isRunning()) {
-						PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
-					}
+					PacketUtils.sendAction(online, "§7Final heal is given in §8» §a" + DateUtils.ticksToString(20));
 					
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 
@@ -331,7 +330,7 @@ public class Timer {
 					
 					spec.getSpecInfo().getTotal(online).clear();
 					
-					final User user = User.get(online);
+					final User user = plugin.getUser(online);
 					
 					if (spec.isSpectating(online)) {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
@@ -486,7 +485,7 @@ public class Timer {
 					
 					if (pvpToString.equals("1") || pvpToString.endsWith("5") || pvpToString.endsWith("0")) {
 						PlayerUtils.broadcast(Main.PREFIX + "PvP will be enabled in §a" + DateUtils.advancedTicksToString(pvp * 60) + "§7.");
-						PlayerUtils.broadcast(Main.PREFIX + "Reminder: Stalking is " + stalk.getStalkingRule().getMessage().toLowerCase() + "§7.");
+						PlayerUtils.broadcast(Main.PREFIX + "Reminder: Stalking is " + feat.getFeature(StalkingFeature.class).getStalkingRule().getMessage().toLowerCase() + "§7.");
 						
 						for (Player online : Bukkit.getOnlinePlayers()) {
 							online.playSound(online.getLocation(), Sound.NOTE_PLING, 1, 0);
@@ -517,7 +516,7 @@ public class Timer {
 						
 						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 						
-						User user = User.get(online);
+						User user = plugin.getUser(online);
 						user.resetHealth();
 						user.resetFood();
 						
@@ -605,6 +604,8 @@ public class Timer {
 				pvp = 0;
 				meetup = 1;
 				
+				timeInSeconds = 30;
+				
 				timerRR();
 
 				Bukkit.getServer().setIdleTimeout(10);
@@ -652,7 +653,7 @@ public class Timer {
 						}
 					}
 					
-					final User user = User.get(online);
+					final User user = plugin.getUser(online);
 
 					user.resetEffects();
 					user.resetHealth();
@@ -715,7 +716,7 @@ public class Timer {
 					PacketUtils.sendTitle(online, "§6Final heal!", "", 5, 10, 5);
 					online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 					
-					final User user = User.get(online);
+					final User user = plugin.getUser(online);
 					user.resetHealth();
 					user.resetFood();
 				}
