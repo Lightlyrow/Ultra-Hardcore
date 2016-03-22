@@ -13,6 +13,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Arena;
+import com.leontg77.ultrahardcore.Data;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Parkour;
@@ -30,6 +31,7 @@ import com.leontg77.ultrahardcore.commands.banning.UnbanCommand;
 import com.leontg77.ultrahardcore.commands.banning.UnbanIPCommand;
 import com.leontg77.ultrahardcore.commands.basic.BroadcastCommand;
 import com.leontg77.ultrahardcore.commands.basic.ButcherCommand;
+import com.leontg77.ultrahardcore.commands.basic.CombatLogCommand;
 import com.leontg77.ultrahardcore.commands.basic.EditCommand;
 import com.leontg77.ultrahardcore.commands.basic.FireCommand;
 import com.leontg77.ultrahardcore.commands.basic.IgnoreCommand;
@@ -45,8 +47,9 @@ import com.leontg77.ultrahardcore.commands.game.ConfigCommand;
 import com.leontg77.ultrahardcore.commands.game.EndCommand;
 import com.leontg77.ultrahardcore.commands.game.HelpopCommand;
 import com.leontg77.ultrahardcore.commands.game.MatchpostCommand;
+import com.leontg77.ultrahardcore.commands.game.RespawnCommand;
 import com.leontg77.ultrahardcore.commands.game.ScenarioCommand;
-import com.leontg77.ultrahardcore.commands.game.SpreadCommand;
+import com.leontg77.ultrahardcore.commands.game.ScatterCommand;
 import com.leontg77.ultrahardcore.commands.game.StartCommand;
 import com.leontg77.ultrahardcore.commands.game.TimeLeftCommand;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
@@ -92,6 +95,7 @@ import com.leontg77.ultrahardcore.commands.world.PregenCommand;
 import com.leontg77.ultrahardcore.commands.world.PvPCommand;
 import com.leontg77.ultrahardcore.commands.world.WorldCommand;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.feature.pvp.CombatLogFeature;
 import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.FireworkManager;
@@ -234,7 +238,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	/**
 	 * Register all the commands.
 	 */
-	public void registerCommands(Game game, Arena arena, Parkour parkour, Settings settings, GUIManager gui, BoardManager board, SpecManager spec, FeatureManager feat, ScenarioManager scen, WorldManager manager, Timer timer, TeamManager teams, FireworkManager firework, ScatterManager scatter) {
+	public void registerCommands(Game game, Data data, Arena arena, Parkour parkour, Settings settings, GUIManager gui, BoardManager board, SpecManager spec, FeatureManager feat, ScenarioManager scen, WorldManager manager, Timer timer, TeamManager teams, FireworkManager firework, ScatterManager scatter) {
 		// arena
 		cmds.add(new ArenaCommand(arena, game, board));
 		cmds.add(new HotbarCommand());
@@ -252,6 +256,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		// basic
 		cmds.add(new BroadcastCommand());
 		cmds.add(new ButcherCommand(game));
+		cmds.add(new CombatLogCommand(feat.getFeature(CombatLogFeature.class)));
 		cmds.add(new EditCommand());
 		cmds.add(new FireCommand(firework));
 		cmds.add(new IgnoreCommand(plugin));
@@ -266,11 +271,12 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new BoardCommand(arena, game, board));
 		cmds.add(new ChatCommand(game));
 		cmds.add(new ConfigCommand(plugin, game, gui, feat, scen));
-		cmds.add(new EndCommand(plugin, timer, settings, game, scen, board, teams, spec, gui, firework, manager));
+		cmds.add(new EndCommand(plugin, data, timer, settings, game, scen, board, teams, spec, gui, firework, manager));
 		cmds.add(new HelpopCommand(plugin, spec));
 		cmds.add(new MatchpostCommand(game));
+		cmds.add(new RespawnCommand(plugin));
 		cmds.add(new ScenarioCommand(plugin, scen));
-		cmds.add(new SpreadCommand(game, settings, scatter, teams, parkour, arena));
+		cmds.add(new ScatterCommand(game, settings, spec, scatter, teams, parkour, arena));
 		cmds.add(new StartCommand(game, timer));
 		cmds.add(new TimeLeftCommand(game, timer));
 		cmds.add(new TimerCommand(plugin));
@@ -290,9 +296,8 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new TpsCommand(plugin));
 		
 		// msg
-		MsgCommand msg = new MsgCommand(plugin);
-		cmds.add(msg);
-		cmds.add(new ReplyCommand(plugin, msg));
+		cmds.add(new MsgCommand(plugin));
+		cmds.add(new ReplyCommand(plugin));
 		
 		// player
 		cmds.add(new ClearInvCommand(plugin));
