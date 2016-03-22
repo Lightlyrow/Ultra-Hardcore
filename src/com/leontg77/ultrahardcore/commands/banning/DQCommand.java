@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -16,6 +17,7 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
+import com.leontg77.ultrahardcore.utils.BlockUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -56,15 +58,35 @@ public class DQCommand extends UHCCommand {
     	String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
     	
     	PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been disqualified for §a" + message + "§7.");
-		
-    	for (Player online : Bukkit.getOnlinePlayers()) {
-    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
-    	}
 
     	board.resetScore(target.getName());
 		board.resetScore(args[0]);
     	
     	target.setWhitelisted(false);
+    	
+    	Location toDrop = target.getLocation().clone();
+
+    	toDrop.setX(toDrop.getBlockX() + 0.5);
+    	toDrop.setY(toDrop.getBlockY() + 0.7);
+    	toDrop.setZ(toDrop.getBlockZ() + 0.5);
+    	
+    	for (ItemStack item : target.getInventory().getContents()) {
+    		if (item == null || item.getType() == Material.AIR) {
+    			continue;
+    		}
+    		
+    		BlockUtils.dropItem(toDrop, item);
+    	}
+    	
+    	for (ItemStack item : target.getInventory().getArmorContents()) {
+    		if (item == null || item.getType() == Material.AIR) {
+    			continue;
+    		}
+    		
+    		BlockUtils.dropItem(toDrop, item);
+    	}
+    	
+    	target.getInventory().clear();
     	
     	PlayerDeathEvent event = new PlayerDeathEvent(target, new ArrayList<ItemStack>(), 0, null);
     	Bukkit.getPluginManager().callEvent(event);
@@ -73,6 +95,7 @@ public class DQCommand extends UHCCommand {
     	"§8» §7You have been §cdisqualified §7from this game §8«" +
     	"\n" + 
     	"\n§cReason §8» §7" + message + 
+    	"\n§cDQ'ed by §8» §7" + sender.getName() + 
     	"\n" + 
     	"\n§8» §7Don't worry, this is not a perma ban. §8«"
     	);
@@ -81,7 +104,7 @@ public class DQCommand extends UHCCommand {
 	}
 
 	@Override
-	public List<String> tabComplete(CommandSender sender, final String[] args) {
+	public List<String> tabComplete(CommandSender sender, String[] args) {
 		List<String> toReturn = new ArrayList<String>();
 		
 		if (args.length == 1) {
