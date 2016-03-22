@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.listeners;
 
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
@@ -84,11 +85,13 @@ public class ProtectionListener implements Listener {
     }
 	
 	@EventHandler
-    public void on(final PlayerInteractEvent event) {
-        final Action action = event.getAction();
+    public void on(PlayerInteractEvent event) {
+        Action action = event.getAction();
         
-       	final Player player = event.getPlayer();
-        final World world = player.getWorld();
+       	Player player = event.getPlayer();
+        World world = player.getWorld();
+        
+        Block block = event.getClickedBlock();
     	
     	if (State.isState(State.SCATTER)) {
     		event.setCancelled(true);
@@ -99,8 +102,16 @@ public class ProtectionListener implements Listener {
     		return;
     	}
     		
-    	// hopping on farms, etc..
+    	// hopping on farms
         if (action == Action.PHYSICAL) {
+        	if (block == null) {
+        		return;
+        	}
+        	
+        	if (block.getType() != Material.SOIL) {
+        		return;
+        	}
+        	
         	event.setCancelled(true);
         	return;
     	}
