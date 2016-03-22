@@ -56,12 +56,12 @@ public class WorldManager {
 	 * Create a world with the given settings.
 	 * 
 	 * @param name The name of the world.
-	 * @param radius The border size.
+	 * @param diameter The border size.
 	 * @param seed The seed of the world.
 	 * @param environment The world's environment.
 	 * @param type The world type.
 	 */
-	public void createWorld(String name, int radius, long seed, Environment environment, WorldType type, boolean antiStripmine, boolean oreLimiter, boolean newStone) {
+	public void createWorld(String name, int diameter, long seed, Environment environment, WorldType type, boolean antiStripmine, boolean oreLimiter, boolean newStone) {
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		creator.environment(environment);
@@ -84,7 +84,7 @@ public class WorldManager {
 
 		WorldBorder border = world.getWorldBorder();
 		
-		border.setSize(radius * 2);
+		border.setSize(diameter);
 		border.setCenter(0.0, 0.0);
 		border.setWarningDistance(0);
 		border.setWarningTime(60);
@@ -94,10 +94,17 @@ public class WorldManager {
 		world.save();
 
 		settings.getWorlds().set(world.getName() + ".name", name);
-		settings.getWorlds().set(world.getName() + ".radius", radius);
+		settings.getWorlds().set(world.getName() + ".radius", diameter);
 		settings.getWorlds().set(world.getName() + ".seed", seed);
+		
 		settings.getWorlds().set(world.getName() + ".environment", environment.name());
 		settings.getWorlds().set(world.getName() + ".worldtype", type.name());
+		settings.getWorlds().set(world.getName() + ".diameter", diameter);
+		
+		settings.getWorlds().set(world.getName() + ".antiStripmine", antiStripmine);
+		settings.getWorlds().set(world.getName() + ".oreLimiter", oreLimiter);
+		settings.getWorlds().set(world.getName() + ".newStone", newStone);
+		
 		settings.saveWorlds();
 	}
 	
@@ -108,6 +115,10 @@ public class WorldManager {
 	 * @return True if it was deleted, false otherwise.
 	 */
 	public boolean deleteWorld(World world) {
+		for (Player player : world.getPlayers()) {
+			player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+		}
+		
 		for (Player player : world.getPlayers()) {
 			player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
 		}
@@ -140,7 +151,7 @@ public class WorldManager {
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		
-		if (true) {
+		if (settings.getWorlds().getBoolean(name + ".newStone", true)) {
 			creator.generatorSettings("{\"graniteSize\":1,\"graniteCount\":0,\"graniteMinHeight\":0,\"graniteMaxHeight\":0,\"dioriteSize\":1,\"dioriteCount\":0,\"dioriteMinHeight\":0,\"dioriteMaxHeight\":0,\"andesiteSize\":1,\"andesiteCount\":0,\"andesiteMinHeight\":0,\"andesiteMaxHeight\":0}");
 		}
 		
