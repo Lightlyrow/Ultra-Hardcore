@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
@@ -21,11 +20,13 @@ import com.leontg77.ultrahardcore.commands.UHCCommand;
  * @author LeonTG77
  */
 public class ListCommand extends UHCCommand {
+	private final Main plugin;
 	private final Game game;
 
-	public ListCommand(Game game) {
+	public ListCommand(Main plugin, Game game) {
 		super("list", "");
 		
+		this.plugin = plugin;
 		this.game = game;
 	}
 
@@ -92,7 +93,7 @@ public class ListCommand extends UHCCommand {
     	List<Rank> rank = Arrays.asList(ranks);
     		
     	for (Player online : players) {
-    		if (!rank.contains(User.get(online).getRank())) {
+    		if (!rank.contains(plugin.getUser(online).getRank())) {
     			continue;
     		}
     		
