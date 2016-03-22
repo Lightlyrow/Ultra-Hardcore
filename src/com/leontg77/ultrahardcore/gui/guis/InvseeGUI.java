@@ -79,9 +79,8 @@ public class InvseeGUI extends GUI implements Listener {
 	 * @return Their inventory.
 	 */
 	public Inventory get(Player target) {
-		if (inventories.containsKey(target.getName())) {
+		if (!inventories.containsKey(target.getName())) {
 			inventories.put(target.getName(), Bukkit.createInventory(target, 54, "§4" + target.getName() + "'s Inventory"));
-			update(target);
 		}
 		
 		return inventories.get(target.getName());
@@ -94,6 +93,10 @@ public class InvseeGUI extends GUI implements Listener {
 	 */
 	public void update(Player target) {
 		Inventory inv = get(target);
+		
+		if (inv == null) {
+			return;
+		}
 		
 		inv.setItem(0, target.getInventory().getHelmet());
 		inv.setItem(1, target.getInventory().getChestplate());
