@@ -9,6 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.commands.CommandException;
@@ -21,9 +22,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class WhitelistCommand extends UHCCommand {
+	private final Game game;
 	
-	public WhitelistCommand() {
+	public WhitelistCommand(Game game) {
 		super("whitelist", "<on|off|add|remove|all|clear|list|prewl> [player]");
+		
+		this.game = game;
 	}
 	
 	@Override
