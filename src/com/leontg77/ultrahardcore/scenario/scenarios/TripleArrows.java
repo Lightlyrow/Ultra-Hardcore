@@ -17,7 +17,7 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
 public class TripleArrows extends Scenario implements Listener {
 	
 	public TripleArrows() {
-		super("TripleArrows", "When you shoot an arrow, not one but three get shot.");
+		super("3xArrows", "When you shoot an arrow, not one but three get shot.");
 	}
 
 	@Override
