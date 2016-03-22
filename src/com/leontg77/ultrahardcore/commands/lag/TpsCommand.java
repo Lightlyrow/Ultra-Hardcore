@@ -68,7 +68,7 @@ public class TpsCommand extends UHCCommand {
 		sender.sendMessage(Main.PREFIX + "Server performance:");
 		sender.sendMessage("§8§l» §7Current TPS: " + color + tps + " §8(§6" + status + "§8)");
 		sender.sendMessage("§8§l» §7Uptime: §a" + DateUtils.formatDateDiff(startTime));
-		sender.sendMessage("§8§l» §7RAM Usage: §a" + ramUsage + "/" + maxRAM + " MB");
+		sender.sendMessage("§8§l» §7RAM Usage: §a" + ramUsage + " MB §8/ §a" + maxRAM + " MB");
 		sender.sendMessage("§8§l» §7Entities: §a" + entities);
 		sender.sendMessage("§8§l» §7Loaded chunks: §a" + chunks);
 		return true;
