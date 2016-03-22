@@ -6,14 +6,14 @@ import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.feature.ToggleableFeature;
+import com.leontg77.ultrahardcore.feature.Feature;
 
 /**
  * Hearts on tab feature.
  * 
  * @author LeonTG77
  */
-public class WorldUpdaterFeature extends ToggleableFeature {
+public class WorldUpdaterFeature extends Feature {
 	private BukkitRunnable task;
 
 	public WorldUpdaterFeature(final Main plugin) {
