@@ -154,6 +154,7 @@ public class AntiIPvPFeature extends Feature implements Listener {
 		switch (block.getType()) {
 		case CACTUS:
 		case FIRE:
+		case TNT:
 			isiPvPBlock = true;
 			break;
 		default:
