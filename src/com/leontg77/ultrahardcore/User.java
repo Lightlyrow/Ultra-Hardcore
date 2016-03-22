@@ -3,14 +3,17 @@ package com.leontg77.ultrahardcore;
 import java.io.File;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
+import org.bukkit.BanList;
+import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -21,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
-import com.leontg77.ultrahardcore.commands.CommandException;
+import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.gui.guis.GameInfoGUI;
 import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.utils.FileUtils;
@@ -34,109 +37,46 @@ import com.leontg77.ultrahardcore.utils.FileUtils;
  * @author LeonTG77
  */
 public class User {
-	private static Main plugin;
-	private static Game game;
+	public static File folder;
 	
-	private static PermissionsManager perm;
+	private final Player player;
+	private final String uuid;
 	
-	/**
-	 * Setup the instances.
-	 * 
-	 * @param plugins The main class.
-	 * @param games The game class
-	 * @param guis The gui class.
-	 */
-	public User(Main plugins, Game games, PermissionsManager perms) {
-		plugin = plugins;
-		
-		game = games;
-		
-		perm = perms;
-	}
+	private final Main plugin;
+	private final Game game;
 	
-	public static final File FOLDER = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
-	
-	private Player player;
-	private String uuid;
+	private final PermissionsManager perm;
+	private final GUIManager gui;
 	
 	private FileConfiguration config;
 	private File file;
-    
-    private boolean creating = false;
-    
-    private Location deathLoc;
-    private Location lastLoc;
-	
-	/**
-	 * Gets the data of the given player.
-	 * <p>
-	 * If the data doesn't exist it will create a new data file and threat the player as a newly joined one.
-	 * 
-	 * @param player the player.
-	 * @return the data instance for the player.
-	 */
-	public static User get(Player player) {
-		return new User(player, player.getUniqueId().toString());
-	}
-
-	/**
-	 * Gets the data of the given OFFLINE player.
-	 * <p>
-	 * If the data doesn't exist it will create a new data file and threat the player as a newly joined one.
-	 * 
-	 * @param offline the offline player.
-	 * @return the data instance for the player.
-	 * 
-	 * @throws CommandException If the offline player has never joined this server.
-	 */
-	public static User get(OfflinePlayer offline) throws CommandException {
-		if (!fileExist(offline.getUniqueId())) {
-			throw new CommandException("'" + offline.getName() + "' has never joined this server.");
-		}
-		
-		return new User(offline.getPlayer(), offline.getUniqueId().toString());
-	}
-	
-	/**
-	 * Check if the userdata folder has a file with the given uuid.
-	 * 
-	 * @param uuid The uuid checking for.
-	 * @return True if it exist, false otherwise.
-	 */
-	public static boolean fileExist(UUID uuid) {
-		if (!FOLDER.exists() || !FOLDER.isDirectory()) {
-			return false;
-        }
-		
-		for (File file : FOLDER.listFiles()) {
-			String fileName = file.getName().substring(0, file.getName().length() - 4);
-			
-			if (fileName.equals(uuid.toString())) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
 	
 	/**
 	 * Constuctor for player data.
 	 * <p>
 	 * This will set up the data for the player and create missing data.
-	 * 
-	 * @param uuid the player.
-	 * @param uuid the uuid of the player.
 	 */
-	private User(Player player, String uuid) {
+	protected User(Main plugin, Game game, GUIManager gui, PermissionsManager perm, Player player, String uuid) {
+		folder = new File(plugin.getDataFolder() + File.separator + "users" + File.separator);
+		
+        this.player = player;
+        this.uuid = uuid;
+        
+		this.plugin = plugin;
+		this.game = game;
+        
+		this.gui = gui;
+		this.perm = perm;
+		
         if (!plugin.getDataFolder().exists()) {
         	plugin.getDataFolder().mkdir();
         }
         
-        if (!FOLDER.exists()) {
-        	FOLDER.mkdir(); 
+        if (!folder.exists()) {
+        	folder.mkdir(); 
         }
         
-        file = new File(FOLDER, uuid + ".yml");
+        file = new File(folder, uuid + ".yml");
         
         if (!file.exists()) {
         	try {
@@ -148,9 +88,6 @@ public class User {
         }
                
         config = YamlConfiguration.loadConfiguration(file);
-        
-        this.player = player;
-        this.uuid = uuid;
         
         if (creating) {
         	if (player != null) {
@@ -173,9 +110,10 @@ public class User {
 			}
 			
         	saveFile();
-    		FileUtils.getUserFiles().add(config);
         }
 	}
+    
+    private boolean creating = false;
 	
 	/**
 	 * Get the given player's ping.
@@ -256,9 +194,11 @@ public class User {
 	 * 
 	 * @param rank The new rank.
 	 */
-	public void setRank(Rank rank, GameInfoGUI info) {
+	public void setRank(Rank rank) {
 		config.set("rank", rank.name());
 		saveFile();
+		
+		GameInfoGUI info = gui.getGUI(GameInfoGUI.class);
 		
 		info.updateStaff();
 		
@@ -315,12 +255,65 @@ public class User {
 	}
 	
 	/**
+	 * Get all possible alt accounts of the user.
+	 * <p>
+	 * These are colored: Red = Banned, Green = Online and Gray = Offline.
+	 * 
+	 * @return A list of alt accounts.
+	 */
+	public Set<String> getAlts() {
+		Set<String> altList = new HashSet<String>();
+		
+		String thisName = config.getString("username", "none1");
+		String thisIP = config.getString("ip", "none1");
+		
+		BanList banlist = Bukkit.getBanList(Type.NAME);
+		
+		for (FileConfiguration file : FileUtils.getUserFiles()) {
+			String name = file.getString("username", "none2");
+			String IP = file.getString("ip", "none2");
+			
+			if (!thisIP.equals(IP)) {
+				continue;
+			}
+			
+			if (thisName.equals(name)) {
+				continue;
+			}
+			
+			Player check = Bukkit.getPlayerExact(name);
+			
+			if (banlist.getBanEntry(player.getName()) != null) {
+				altList.add("§4" + name + "§8");
+			}
+			else if (check != null) {
+				altList.add("§a" + name + "§8");
+			} 
+			else {
+				altList.add("§c" + name + "§8");
+			}
+		}
+		
+		return altList;
+	}
+	
+	/**
 	 * Set the death location of the player.
 	 * 
 	 * @param location The death loc.
 	 */
-	public void setDeathLocation(final Location location) {
-		deathLoc = location;
+	public void setDeathLoc(Location loc) {
+		if (loc == null) {
+			config.set("locs.death", null);
+	        saveFile();
+	        return;
+		}
+		
+		config.set("locs.death.world", loc.getWorld().getName());
+		config.set("locs.death.x", loc.getX());
+		config.set("locs.death.y", loc.getY());
+		config.set("locs.death.z", loc.getZ());
+        saveFile();
 	}
 	
 	/**
@@ -328,26 +321,72 @@ public class User {
 	 * 
 	 * @return The death location.
 	 */
-	public Location getDeathLocation() {
-		return deathLoc;
+	public Location getDeathLoc() {
+		if (!config.contains("locs.death")) {
+			return null;
+		}
+		
+		World world = Bukkit.getWorld(config.getString("locs.death.world"));
+		
+		if (world == null) {
+			return null;
+		}
+		
+		double x = config.getDouble("locs.death.x");
+		double y = config.getDouble("locs.death.y");
+		double z = config.getDouble("locs.death.z");
+		
+		Location loc = new Location(world, x, y, z);
+		
+		return loc;
 	}
 	
 	/**
-	 * Set the death location of the player.
+	 * Set the last location of the player.
 	 * 
-	 * @param location The death loc.
+	 * @param location The last loc.
 	 */
-	public void setLastLocation(final Location location) {
-		lastLoc = location;
+	public void setLastLoc(Location loc) {
+		if (loc == null) {
+			config.set("locs.last", null);
+	        saveFile();
+	        return;
+		}
+		
+		config.set("locs.last.world", loc.getWorld().getName());
+		config.set("locs.last.x", loc.getX());
+		config.set("locs.last.y", loc.getY());
+		config.set("locs.last.z", loc.getZ());
+		config.set("locs.last.yaw", loc.getYaw());
+		config.set("locs.last.pitch", loc.getPitch());
+        saveFile();
 	}
 	
 	/**
-	 * Get the death location of the player.
+	 * Get the last location of the player.
 	 * 
-	 * @return The death location.
+	 * @return The last location.
 	 */
-	public Location getLastLocation() {
-		return lastLoc;
+	public Location getLastLoc() {
+		if (!config.contains("locs.last")) {
+			return null;
+		}
+		
+		World world = Bukkit.getWorld(config.getString("locs.last.world"));
+		
+		if (world == null) {
+			return null;
+		}
+		
+		double x = config.getDouble("locs.last.x");
+		double y = config.getDouble("locs.last.y");
+		double z = config.getDouble("locs.last.z");
+		float yaw = (float) config.getDouble("locs.last.yaw", 0);
+		float pitch = (float) config.getDouble("locs.last.pitch", 0);
+		
+		Location loc = new Location(world, x, y, z, yaw, pitch);
+		
+		return loc;
 	}
 	
 	private static final String IGNORE_PATH = "ignoreList";
@@ -357,7 +396,7 @@ public class User {
 	 * 
 	 * @param player The player to ignore
 	 */
-	public void ignore(final Player player) {
+	public void ignore(Player player) {
 		final List<String> ignoreList = config.getStringList(IGNORE_PATH);
 		ignoreList.add(player.getUniqueId().toString());
 		
@@ -370,7 +409,7 @@ public class User {
 	 * 
 	 * @param player The player to stop ignoring
 	 */
-	public void unIgnore(final Player player) {
+	public void unIgnore(Player player) {
 		final List<String> ignoreList = config.getStringList(IGNORE_PATH);
 		ignoreList.remove(player.getUniqueId().toString());
 		
@@ -384,7 +423,7 @@ public class User {
 	 * @param player The player checking.
 	 * @return True if he is, false otherwise.
 	 */
-	public boolean isIgnoring(final Player player) {
+	public boolean isIgnoring(Player player) {
 		if (getRank().getLevel() >= Rank.STAFF.getLevel()) {
 			return false;
 		}
@@ -398,7 +437,7 @@ public class User {
 	 * @param reason The reason of the mute.
 	 * @param unmute The date of unmute, null if permanent.
 	 */
-	public void mute(final String reason, final Date unmute) {
+	public void mute(String reason, Date unmute) {
 		config.set("muted.status", true);
 		config.set("muted.reason", reason);
 		
@@ -427,6 +466,13 @@ public class User {
 	 * @return <code>true</code> if the player is muted, <code>false</code> otherwise.
 	 */
 	public boolean isMuted() {
+		Date date = new Date();
+		
+		// if the mute isnt permanent (perm == -1) and their mute time experied, return false and unmute.
+		if (getMuteExpiration() != null && getMuteExpiration().getTime() < date.getTime()) {
+			unmute();
+		} 
+		
 		return config.getBoolean("muted.status", false);
 	}
 	
@@ -436,10 +482,6 @@ public class User {
 	 * @return The reason of the mute, null if not muted.
 	 */
 	public String getMutedReason() {
-		if (!isMuted()) {
-			return "NOT_MUTED";
-		}
-		
 		return config.getString("muted.reason", "NOT_MUTED");
 	}
 	
@@ -449,10 +491,6 @@ public class User {
 	 * @return The unmute time.
 	 */
 	public Date getMuteExpiration() {
-		if (!isMuted()) {
-			return null;
-		}
-	
 		final long unmute = config.getLong("muted.time", -1);
 		
 		if (unmute == -1) {
