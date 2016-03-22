@@ -24,6 +24,7 @@ import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.ScatterManager;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.EntityUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -33,10 +34,31 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author LeonTG77
  */
-public class SpreadCommand extends UHCCommand {
-
-	public SpreadCommand() {
+public class ScatterCommand extends UHCCommand {
+	private final SpecManager spec;
+	
+	private final Settings settings;
+	private final Game game;
+	
+	private final ScatterManager scatter;
+	private final TeamManager teamMan;
+	
+	private final Parkour parkour;
+	private final Arena arena;
+	
+	public ScatterCommand(Game game, Settings settings, SpecManager spec, ScatterManager scatter, TeamManager teams, Parkour parkour, Arena arena) {
 		super("spread", "<teamspread> <player|*>");
+		
+		this.spec = spec;
+		
+		this.settings = settings;
+		this.game = game;
+		
+		this.scatter = scatter;
+		this.teamMan = teams;
+		
+		this.parkour = parkour;
+		this.arena = arena;
 	}
 
 	@Override
@@ -45,18 +67,13 @@ public class SpreadCommand extends UHCCommand {
 			return false;
 		}
 
-		final Settings settings = Settings.getInstance();
-		final Game game = Game.getInstance();
-		
-		final ScatterManager manager = ScatterManager.getInstance();
-		final World world = game.getWorld();
+		World world = game.getWorld();
 		
 		if (world == null) {
 			throw new CommandException("There are no worlds called '" + settings.getConfig().getString("world", "girhgqeruiogh") + "'.");
 		}
 		
-		final boolean teamSpread = parseBoolean(args[0], "Team Spread");
-		final TeamManager teamMan = TeamManager.getInstance();
+		boolean teamSpread = parseBoolean(args[0], "Team Spread");
 		
 		if (args[1].equalsIgnoreCase("*")) {
 			switch (State.getState()) {
@@ -84,11 +101,11 @@ public class SpreadCommand extends UHCCommand {
 				throw new CommandException("You can't scatter without muting the chat.");
 			}
 			
-			if (Arena.getInstance().isEnabled()) {
+			if (arena.isEnabled()) {
 				throw new CommandException("You can't scatter without disabling the arena.");
 			}
 			
-			Parkour.getInstance().reset();
+			parkour.reset();
 			State.setState(State.SCATTER);
 			
 			int teams = 0;
@@ -131,15 +148,19 @@ public class SpreadCommand extends UHCCommand {
 			
 			if (!teamSpread) {
 				for (OfflinePlayer whitelisted : Bukkit.getWhitelistedPlayers()) {
+					if (spec.isSpectating(whitelisted.getName())) {
+						continue;
+					}
+					
 					toScatter.add(whitelisted.getName());
 					solo++;
 				}
 			}
 			
-			manager.setTeamScatter(teamSpread);
-			manager.setWorld(world);
+			scatter.setTeamScatter(teamSpread);
+			scatter.setWorld(world);
 			
-			manager.scatter(ImmutableList.copyOf(toScatter));
+			scatter.scatter(ImmutableList.copyOf(toScatter));
 			
 			if (teamSpread) {
 				PlayerUtils.broadcast(Main.PREFIX + "Scattering §a" + teams + " §7teams and §a" + solo + " §7solos...");
@@ -151,7 +172,7 @@ public class SpreadCommand extends UHCCommand {
 				online.playSound(online.getLocation(), Sound.FIREWORK_LAUNCH, 1, 1);
 			}
 			
-			for (World worlds : Game.getInstance().getWorlds()) {
+			for (World worlds : game.getWorlds()) {
 				worlds.setDifficulty(Difficulty.HARD);
 				worlds.setPVP(false);
 				worlds.setTime(0);
@@ -167,7 +188,7 @@ public class SpreadCommand extends UHCCommand {
 				}
 			}
 		} else {
-			final Player target = Bukkit.getPlayer(args[1]);
+			Player target = Bukkit.getPlayer(args[1]);
 			
 			if (target == null) {
 				throw new CommandException("'" + args[1] + "' is not online.");
@@ -199,17 +220,16 @@ public class SpreadCommand extends UHCCommand {
 							}
 						}
 						
-						PlayerUtils.broadcast(Main.PREFIX + "Scattered §a" + target.getName() + "§7.");
 						target.teleport(teammate.getPlayer());
 						return true;
 					}
 				}
 			}
 			
-			manager.setTeamScatter(false);
-			manager.setWorld(world);
+			scatter.setTeamScatter(false);
+			scatter.setWorld(world);
 			
-			manager.scatter(ImmutableList.of(target.getName()));
+			scatter.scatter(ImmutableList.of(target.getName()));
 		}
 		return true;
 	}
