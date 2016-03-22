@@ -29,7 +29,7 @@ public class NumberUtils {
 	public static String formatDouble(final double number) {
 		final NumberFormat formater = new DecimalFormat("##.##");
 		
-		return formater.format(number);
+		return formater.format(number).replaceAll(",", ".");
 	}
 
 	/**
