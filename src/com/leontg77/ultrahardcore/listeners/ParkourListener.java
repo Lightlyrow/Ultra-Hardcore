@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Parkour;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -28,12 +29,16 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ParkourListener implements Listener {
-	private final Parkour parkour;
 	private final Main plugin;
 	
-	public ParkourListener(Main plugin, Parkour parkour) {
-		this.parkour = parkour;
+	private final SpecManager spec;
+	private final Parkour parkour;
+	
+	public ParkourListener(Main plugin, Parkour parkour, SpecManager spec) {
 		this.plugin = plugin;
+		
+		this.parkour = parkour;
+		this.spec = spec;
 	}
 	
 	@EventHandler
@@ -77,8 +82,6 @@ public class ParkourListener implements Listener {
 		}
 		
 		player.sendMessage(ChatColor.DARK_RED + "Parkour failed! §cYou cannot teleport while in the parkour!");
-
-		event.setTo(plugin.getSpawn());
 		parkour.removePlayer(player);
 	}
 	
@@ -103,6 +106,10 @@ public class ParkourListener implements Listener {
 		}
 		
 		final Player player = event.getPlayer();
+		
+		if (spec.isSpectating(player)) {
+			return;
+		}
 			
 		if (to.getBlockY() < 20) {
 			player.teleport(parkour.getLocation(parkour.getCheckpoint(player)), TeleportCause.UNKNOWN);
@@ -184,10 +191,11 @@ public class ParkourListener implements Listener {
 		// end point
 		if (LocationUtils.areEqual(to, parkour.getLocation(4))) {
 			PlayerUtils.broadcast(Parkour.PREFIX + "§a" + player.getName() + " §7completed the parkour in " + date + "!");
-			player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
 
 			player.teleport(plugin.getSpawn(), TeleportCause.UNKNOWN);
 			parkour.removePlayer(player);
+			
+			player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
 		}
 	}
 }
