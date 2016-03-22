@@ -19,9 +19,12 @@ import com.leontg77.ultrahardcore.commands.UHCCommand;
  * @author LeonTG77
  */
 public class MsCommand extends UHCCommand {
+	private final Main plugin;
 	
-	public MsCommand() {
+	public MsCommand(Main plugin) {
 		super("ms", "[player]");
+		
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class MsCommand extends UHCCommand {
 			throw new CommandException("'" + args[0] + "' is not online.");
 		}
 		
-		User user = User.get(target);
+		User user = plugin.getUser(target);
 		
 		ping = user.getPing();
 		
