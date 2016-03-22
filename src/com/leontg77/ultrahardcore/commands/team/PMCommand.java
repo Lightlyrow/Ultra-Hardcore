@@ -47,7 +47,7 @@ public class PMCommand extends UHCCommand {
 		}
 		
 		String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
-        teams.sendMessage(team, "ยง4Team ยง8ยป ยง6ยงo" + player.getName() + "ยง8ยงo: ยงf" + msg);
+        teams.sendMessage(team, "ง4Team ง8ป ง6งo" + player.getName() + "ง8งo: งf" + msg);
 		return true;
 	}
 
