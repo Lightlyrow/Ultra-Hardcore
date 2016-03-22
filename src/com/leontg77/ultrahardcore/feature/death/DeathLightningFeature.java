@@ -65,7 +65,7 @@ public class DeathLightningFeature extends ToggleableFeature implements Listener
 	    
 		// I know this isnt a death lightning thing, but they're dead, no more wl for them.
 		player.setWhitelisted(false);
-		user.setDeathLocation(player.getLocation());
+		user.setDeathLoc(player.getLocation());
 	    
 	    if (!State.isState(State.INGAME) || !worlds.contains(player.getWorld())) {
 	    	return;
