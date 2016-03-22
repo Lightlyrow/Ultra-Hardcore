@@ -23,9 +23,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class MuteCommand extends UHCCommand {
+	private final Main plugin;
 
-	public MuteCommand() {
+	public MuteCommand(Main plugin) {
 		super("mute", "<player> [time] [reason]");
+		
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -37,7 +40,7 @@ public class MuteCommand extends UHCCommand {
 		OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[0]);
 		Player player = target.getPlayer();
 		
-		if (!User.fileExist(target.getUniqueId())) {
+		if (!plugin.fileExist(target.getUniqueId())) {
 			throw new CommandException("'" + args[0] + "' has never joined this server.");
 		}
     	
@@ -45,7 +48,7 @@ public class MuteCommand extends UHCCommand {
     		throw new CommandException("You cannot mute this player.");
     	}
 		
-		User user = User.get(target);
+		User user = plugin.getUser(target);
 
 		if (user.isMuted()) {
 	    	if (!sender.hasPermission("uhc.unmute")) {
