@@ -4,18 +4,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.World.Environment;
+import org.bukkit.WorldType;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.gui.GUI;
+import com.leontg77.ultrahardcore.utils.NameUtils;
+import com.leontg77.ultrahardcore.world.WorldManager;
 
+/**
+ * World Creator inventory GUI class.
+ * 
+ * @author LeonTG77.
+ */
 public class WorldCreatorGUI extends GUI implements Listener {
-
-	public WorldCreatorGUI(String name, String description) {
-		super(name, description);
+	private final WorldManager manager;
+	
+	/**
+	 * World Creator inventory GUI class constructor.
+	 * 
+	 * @param manager The world manager.
+	 */
+	public WorldCreatorGUI(WorldManager manager) {
+		super("World Creator", "A inventory with options for world generation.");
+		
+		this.manager = manager;
 	}
 	
 	private final Inventory inv = Bukkit.createInventory(null, 45, "§4World Creator Options");
@@ -26,16 +48,300 @@ public class WorldCreatorGUI extends GUI implements Listener {
 		update();
 	}
 	
+	private String name;
+	private int diameter;
+	private long seed;
+	
+	private boolean newstone = false;
+	private boolean antiStripmine = true;
+	private boolean orelimiter = true;
+	
+	private boolean netherD = true;
+	private boolean endD = false;
+	
+	private WorldType type = WorldType.NORMAL;
+	
+	/**
+	 * Get the inventory.
+	 * 
+	 * @return The inventory.
+	 */
 	public Inventory get() {
-		return null;
+		if (inv.getViewers().isEmpty()) {
+			newstone = false;
+			antiStripmine = true;
+			orelimiter = false;
+			
+			netherD = true;
+			endD = false;
+			
+			type = WorldType.NORMAL;
+			update();
+		}
 		
+		return inv;
+	}
+	
+	/**
+	 * Get the inventory with the given settings.
+	 * 
+	 * @param name The world name.
+	 * @param diameter The world .size.
+	 * @param seed The world seed
+	 * @return The inventory.
+	 */
+	public Inventory get(String name, int diameter, long seed) {
+		this.name = name;
+		this.diameter = diameter;
+		this.seed = seed;
+		
+		update();
+		return get();
+	}
+	
+	@EventHandler
+	public void on(InventoryClickEvent event) {
+		Player player = (Player) event.getWhoClicked(); // safe cast
+		
+		ItemStack item = event.getCurrentItem();
+		Inventory inv = event.getInventory();
+		
+		if (item == null) {
+			return;
+		}
+		
+		if (!this.inv.getTitle().equals(inv.getTitle())) {
+			return;
+		}
+
+		event.setCancelled(true);
+
+		if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) {
+			return;
+		}
+		
+		// the substring is just getting the name since theres some things before and after the name
+		String itemName = item.getItemMeta().getDisplayName().substring(6, item.getItemMeta().getDisplayName().length() - 4);
+		
+		switch (itemName.toLowerCase()) {
+		case "1.8 stone":
+			newstone = !newstone;
+			update();
+			break;
+		case "stripmining":
+			antiStripmine = !antiStripmine;
+			update();
+			break;
+		case "ore limiter":
+			orelimiter = !orelimiter;
+			update();
+			break;
+		case "world type":
+			switch (type) {
+			case NORMAL:
+				type = WorldType.FLAT;
+				break;
+			case FLAT:
+				type = WorldType.LARGE_BIOMES;
+				break;
+			case LARGE_BIOMES:
+				type = WorldType.AMPLIFIED;
+				break;
+			case AMPLIFIED:
+				type = WorldType.NORMAL;
+				break;
+			default:
+				return;
+			}
+			
+			update();
+		case "nether":
+			netherD = !netherD;
+			update();
+			break;
+		case "the end":
+			endD = !endD;
+			update();
+			break;
+		case "confirm":
+			player.closeInventory();
+			player.sendMessage(Main.PREFIX + "Starting creation of world '§a" + name + "§7'...");
+			
+			manager.createWorld(name, diameter, seed, Environment.NORMAL, type, antiStripmine, orelimiter, newstone);
+			
+			if (netherD) {
+				manager.createWorld(name + "_nether", diameter, seed, Environment.NETHER, type, false, orelimiter, true);
+			}
+			
+			if (endD) {
+				manager.createWorld(name + "_end", diameter, seed, Environment.THE_END, type, false, orelimiter, true);
+			}
+
+			player.sendMessage(Main.PREFIX + "World creation finished.");
+			break;
+		case "cancel":
+			player.sendMessage(Main.PREFIX + "Cancelled world creation.");
+			player.closeInventory();
+			break;
+		}
 	}
 
-	@SuppressWarnings("unused")
+	/**
+	 * Update the GUI items.
+	 */
 	public void update() {
 		List<String> lore = new ArrayList<String>();
 		
 		ItemStack newStone = new ItemStack(Material.STONE, 1, (short) 2);
 		ItemMeta newStoneMeta = newStone.getItemMeta();
+		
+		newStoneMeta.setDisplayName("§8» §61.8 Stone §8«");
+		lore.add(" ");
+		lore.add("§8» §7Currently: " + (newstone ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+		lore.add(" ");
+		lore.add("§8» §cDescription:");
+		lore.add("§8» §7Granite, Diorite and Andesite in caves.");
+		lore.add(" ");
+		newStoneMeta.setLore(lore);
+		newStone.setItemMeta(newStoneMeta);
+		
+		inv.setItem(10, newStone);
+		lore.clear();
+		
+		ItemStack antiSM = new ItemStack(Material.DIAMOND_PICKAXE);
+		ItemMeta antiSMMeta = antiSM.getItemMeta();
+		
+		antiSMMeta.setDisplayName("§8» §6Stripmining §8«");
+		lore.add(" ");
+		lore.add("§8» §7Currently: " + (antiStripmine ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+		lore.add(" ");
+		lore.add("§8» §cDescription:");
+		lore.add("§8» §7If enabled it removes diamonds, lapis");
+		lore.add("§8» §7and gold outside of caves.");
+		lore.add(" ");
+		antiSMMeta.setLore(lore);
+		antiSM.setItemMeta(antiSMMeta);
+		
+		inv.setItem(12, antiSM);
+		lore.clear();
+		
+		ItemStack oreLimiter = new ItemStack(Material.DIAMOND_ORE);
+		ItemMeta oreLimiterMeta = oreLimiter.getItemMeta();
+		
+		oreLimiterMeta.setDisplayName("§8» §6Ore Limiter §8«");
+		lore.add(" ");
+		lore.add("§8» §7Currently: " + (orelimiter ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+		lore.add(" ");
+		lore.add("§8» §cDescription:");
+		lore.add("§8» §7Limit the amount of cave ores.");
+		lore.add(" ");
+		oreLimiterMeta.setLore(lore);
+		oreLimiter.setItemMeta(oreLimiterMeta);
+		
+		inv.setItem(14, oreLimiter);
+		lore.clear();
+		
+		ItemStack TBA = new ItemStack(Material.BARRIER);
+		ItemMeta TBAMeta = TBA.getItemMeta();
+		
+		TBAMeta.setDisplayName("§8» §6To be added §8«");
+		lore.add(" ");
+		lore.add("§8» §7Unknown.");
+		lore.add(" ");
+		TBAMeta.setLore(lore);
+		TBA.setItemMeta(TBAMeta);
+		
+		inv.setItem(16, TBA);
+		lore.clear();
+		
+		ItemStack worldType = new ItemStack(Material.GRASS);
+		ItemMeta typeMeta = worldType.getItemMeta();
+		
+		typeMeta.setDisplayName("§8» §6World Type §8«");
+		lore.add(" ");
+		lore.add("§8» §7Currently: §e" + NameUtils.capitalizeString(type.name(), true));
+		lore.add(" ");
+		lore.add("§8» §cDescription:");
+		lore.add("§8» §7The world type, duh.");
+		lore.add(" ");
+		typeMeta.setLore(lore);
+		worldType.setItemMeta(typeMeta);
+		
+		inv.setItem(28, worldType);
+		lore.clear();
+		
+		ItemStack nether = new ItemStack(Material.NETHER_STALK);
+		ItemMeta netherMeta = nether.getItemMeta();
+		
+		netherMeta.setDisplayName("§8» §6Nether §8«");
+		lore.add(" ");
+		lore.add("§8» §7Currently: " + (netherD ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+		lore.add(" ");
+		lore.add("§8» §cDescription:");
+		lore.add("§8» §7The nether dimention.");
+		lore.add(" ");
+		netherMeta.setLore(lore);
+		nether.setItemMeta(netherMeta);
+		
+		inv.setItem(30, nether);
+		lore.clear();
+		
+		ItemStack end = new ItemStack(Material.ENDER_PORTAL_FRAME);
+		ItemMeta newStoneMeta1 = end.getItemMeta();
+		
+		newStoneMeta1.setDisplayName("§8» §6The End §8«");
+		lore.add(" ");
+		lore.add("§8» §7Currently: " + (endD ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+		lore.add(" ");
+		lore.add("§8» §cDescription:");
+		lore.add("§8» §7The end dimention.");
+		lore.add(" ");
+		newStoneMeta1.setLore(lore);
+		end.setItemMeta(newStoneMeta1);
+		
+		inv.setItem(32, end);
+		lore.clear();
+		
+		ItemStack confirm = new ItemStack(Material.INK_SACK, 1, (short) 10);
+		ItemMeta confirmMeta = confirm.getItemMeta();
+		
+		confirmMeta.setDisplayName("§8» §aConfirm §8«");
+		lore.add(" ");
+		lore.add("§8» §7Create the world.");
+		lore.add(" ");
+		confirmMeta.setLore(lore);
+		confirm.setItemMeta(confirmMeta);
+		
+		inv.setItem(35, confirm);
+		lore.clear();
+		
+		ItemStack cancel = new ItemStack(Material.INK_SACK, 1, (short) 1);
+		ItemMeta cancelMeta = cancel.getItemMeta();
+		
+		cancelMeta.setDisplayName("§8» §cCancel §8«");
+		lore.add(" ");
+		lore.add("§8» §7Cancel the world creation.");
+		lore.add(" ");
+		cancelMeta.setLore(lore);
+		cancel.setItemMeta(cancelMeta);
+		
+		inv.setItem(43, cancel);
+		lore.clear();
+		
+		ItemStack info = new ItemStack(Material.BOOK);
+		ItemMeta infoMeta = info.getItemMeta();
+		
+		infoMeta.setDisplayName("§8» §6World Information §8«");
+		lore.add(" ");
+		lore.add("§8» §7Name: §a" + name);
+		lore.add(" ");
+		lore.add("§8» §7Map Size: §a" + diameter + "x" + diameter);
+		lore.add("§8» §7Seed: §a" + seed);
+		lore.add(" ");
+		infoMeta.setLore(lore);
+		info.setItemMeta(infoMeta);
+		
+		inv.setItem(44, info);
+		lore.clear();
 	}
 }
