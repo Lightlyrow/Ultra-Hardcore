@@ -18,15 +18,16 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  * @author LeonTG77
  */
 public class TpCommand extends UHCCommand {
+	private final SpecManager spec;
 
-	public TpCommand() {
+	public TpCommand(SpecManager spec) {
 		super("tp", "<player> [player]");
+	
+		this.spec = spec;
 	}
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
-		SpecManager spec = SpecManager.getInstance();
-		
 		if (!sender.hasPermission("uhc.tp.bypass") && !spec.isSpectating(sender.getName())) {
 			throw new CommandException("You can only do this while spectating.");
 		}
