@@ -211,7 +211,7 @@ public class FeatureManager {
 		
 		// pvp
 		addFeature(new AntiIPvPFeature(game, team, spec));
-		addFeature(new CombatLogFeature(plugin, spec));
+		addFeature(new CombatLogFeature(plugin, team, spec));
 		addFeature(new LongshotFeature(game, scen));
 		addFeature(new ShootHealthFeature(plugin, game, scen));
 		addFeature(new StalkingFeature(settings));
