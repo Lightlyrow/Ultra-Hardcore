@@ -35,19 +35,28 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class TeamCommand extends UHCCommand {
+	private final SpecManager spec;
+	private final Game game;
+	
+	private final BoardManager board;
+	private final TeamManager teams;
+	
+	public TeamCommand(Game game, SpecManager spec, BoardManager board, TeamManager teams) {
+		super("team", "");
+		
+		this.game = game;
+		this.spec = spec;
+
+		this.board = board;
+		this.teams = teams;
+	}
+	
 	public static Map<String, List<String>> invites = new HashMap<String, List<String>>();
 	
 	private int teamsize = 0;
 	
-	public TeamCommand() {
-		super("team", "");
-	}
-	
 	@Override
 	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
-		final BoardManager board = BoardManager.getInstance();
-		final TeamManager teams = TeamManager.getInstance();
-		
 		if (args.length == 0) {
 			// the method returns true but hey, one less line :D
 			return helpMenu(sender);
@@ -55,6 +64,32 @@ public class TeamCommand extends UHCCommand {
 		
 		if (args.length > 1) {
 			Player target = Bukkit.getPlayer(args[1]);
+			
+			if (args[0].equalsIgnoreCase("kickout")) {
+				if (!sender.hasPermission("uhc.team.admin")) {
+					return helpMenu(sender);
+				}
+				
+				int size = parseInt(args[1], "Team size");
+				
+				if (size == 0) {
+					for (Player online : Bukkit.getOnlinePlayers()) {
+						if (teams.getTeam(online) == null) {
+							online.kickPlayer("Your teamsize is not allowed!");
+							online.setWhitelisted(false);
+						}
+					}
+				} else {
+					for (Player online : Bukkit.getOnlinePlayers()) {
+						Team team = teams.getTeam(online);
+						
+						if (team != null && team.getSize() == size) {
+							online.kickPlayer("Your teamsize is not allowed!");
+							online.setWhitelisted(false);
+						}
+					}
+				}
+			}
 			
 			if (args[0].equalsIgnoreCase("info")) {
 				if (!sender.hasPermission("uhc.team.admin")) {
@@ -400,7 +435,7 @@ public class TeamCommand extends UHCCommand {
 			
 			Team team = teams.getTeam(player);
 			
-			if (team == null || SpecManager.getInstance().isSpectating(player)) {
+			if (team == null || spec.isSpectating(player)) {
 				throw new CommandException("You are not on a team.");
 			}
 			
@@ -569,7 +604,7 @@ public class TeamCommand extends UHCCommand {
 			toReturn.add("info");
 			toReturn.add("list");
 			
-			if (Game.getInstance().teamManagement()) {
+			if (game.teamManagement()) {
 				toReturn.add("create");
 				toReturn.add("leave");
 				toReturn.add("invite");
@@ -579,6 +614,7 @@ public class TeamCommand extends UHCCommand {
 			}
 			
 			if (sender.hasPermission("uhc.team.admin")) {
+				toReturn.add("kickout");
 				toReturn.add("enable");
 				toReturn.add("disable");
 				toReturn.add("add");
@@ -600,7 +636,7 @@ public class TeamCommand extends UHCCommand {
 				return null;
 			case "add":
 			case "delete":
-				for (Team team : TeamManager.getInstance().getTeams()) {
+				for (Team team : teams.getTeams()) {
 					toReturn.add(team.getName());
 				}
 				break;
@@ -642,6 +678,7 @@ public class TeamCommand extends UHCCommand {
 		if (sender.hasPermission("uhc.team.admin")) {
 			sender.sendMessage(Main.PREFIX + "Team admin help:");
 			sender.sendMessage("§8» §f/team info <player> §7- §f§oDisplay the targets team info.");
+			sender.sendMessage("§8» §f/team kickout <size> §7- §f§oKicks all players on a team with the size, 0 for people not on a team.");
 			sender.sendMessage("§8» §f/team enable <teamsize> §7- §f§oEnable team management.");
 			sender.sendMessage("§8» §f/team disable §7- §f§oDisable team management.");
 			sender.sendMessage("§8» §f/team add <team> <player> §7- §f§oAdd a player to a team.");
