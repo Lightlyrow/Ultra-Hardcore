@@ -21,14 +21,28 @@ public class Data {
 	private final Settings settings;
 	private final Main plugin;
 	
+	/**
+	 * Data class constructor.
+	 * 
+	 * @param plugin The main class.
+	 * @param settings The settings class.
+	 */
 	public Data(Main plugin, Settings settings) {
 		this.settings = settings;
 		this.plugin = plugin;
 	}
 
+	/**
+	 * Store all data to the data file.
+	 * 
+	 * @param teams The team manager for team saving.
+	 * @param scens The scenario manager for team saving.
+	 */
 	public void store(TeamManager teams, ScenarioManager scens) {
-		saveSet(scens.getScenario(BestBTC.class).getList());	
-		saveSet(scens.getScenario(BestPvE.class).getList());	
+		clearData();
+		
+		saveSet("bestbtc", scens.getScenario(BestBTC.class).getList());	
+		saveSet("bestpve", scens.getScenario(BestPvE.class).getList());	
 		
 		List<String> scenarios = new ArrayList<String>();
 		
@@ -45,9 +59,15 @@ public class Data {
 		settings.saveData();
 	}
 	
+	/**
+	 * Restore all data from the data file to where they are supposed to be.
+	 * 
+	 * @param teams The team manager for team saving.
+	 * @param scens The scenario manager for team saving.
+	 */
 	public void restore(TeamManager teams, ScenarioManager scens) {
-		restoreSet(scens.getScenario(BestBTC.class).getList());	
-		restoreSet(scens.getScenario(BestPvE.class).getList());
+		restoreSet("bestbtc", scens.getScenario(BestBTC.class).getList());	
+		restoreSet("bestpve", scens.getScenario(BestPvE.class).getList());
 		
 		try {
 			for (String name : settings.getData().getConfigurationSection("teams.data").getKeys(false)) {
@@ -55,6 +75,7 @@ public class Data {
 			}
 		} catch (Exception e) {
 			plugin.getLogger().warning("Could not recover team data.");
+			plugin.getLogger().warning(e.getClass().getName() + ": " + e.getMessage());
 		}
 		
 		try {
@@ -63,22 +84,59 @@ public class Data {
 			}
 		} catch (Exception e) {
 			plugin.getLogger().warning("Could not recover scenario data.");
+			plugin.getLogger().warning(e.getClass().getName() + ": " + e.getMessage());
 		}
 	}
 	
-	private void saveList(List<String> list) {
+	/**
+	 * Clear all data in the data file.
+	 */
+	public void clearData() {
+		for (String path : settings.getData().getKeys(false)) {
+			settings.getData().set(path, null);
+		}
 		
+		settings.saveData();
 	}
 	
-	private void restoreList(List<String> list) {
-		
+	/**
+	 * Save the given list into the data file.
+	 * 
+	 * @param name The name for the path.
+	 * @param list The list to save.
+	 */
+	private void saveList(String name, List<String> list) {
+		settings.getData().set("list." + name, list);
+		settings.saveData();
 	}
 	
-	private void saveSet(Set<String> list) {
-		saveList(new ArrayList<String>(list));
+	/**
+	 * Restore the given path name into the given list.
+	 * 
+	 * @param name The name for the path.
+	 * @param list The list to restore to.
+	 */
+	private void restoreList(String name, List<String> list) {
+		list.addAll(settings.getData().getStringList("list." + name));
 	}
 	
-	private void restoreSet(Set<String> list) {
-		restoreList(new ArrayList<String>(list));
+	/**
+	 * Save the given set into the data file.
+	 * 
+	 * @param name The name for the path.
+	 * @param list The set to save.
+	 */
+	private void saveSet(String name, Set<String> list) {
+		saveList(name, new ArrayList<String>(list));
+	}
+	
+	/**
+	 * Restore the given path name into the given set.
+	 * 
+	 * @param name The name for the path.
+	 * @param list The set to restore to.
+	 */
+	private void restoreSet(String name, Set<String> list) {
+		restoreList(name, new ArrayList<String>(list));
 	}
 }
