@@ -8,7 +8,6 @@ import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,7 +27,6 @@ import com.leontg77.ultrahardcore.managers.PermissionsManager;
 import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.utils.DateUtils;
-import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -77,6 +75,10 @@ public class LoginListener implements Listener {
 	public void on(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 		
+		if (player.hasPermission("uhc.cmdspy")) {
+			spec.getCommandSpies().add(player.getName());
+		}
+		
 		// update names (name changes)
 		for (String path : settings.getHOF().getKeys(false)) {
 			String confUUID = settings.getHOF().getString(path + ".uuid", "none");
@@ -88,7 +90,7 @@ public class LoginListener implements Listener {
 			}
 		}
 		
-		final User user = User.get(player);
+		final User user = plugin.getUser(player);
 		final Date date = new Date();
 		
 		user.getFile().set("ip", player.getAddress().getAddress().getHostAddress());
@@ -121,22 +123,18 @@ public class LoginListener implements Listener {
 			
 			spec.enableSpecmode(player);
 		} else {
-			if ((State.isState(State.INGAME) || State.isState(State.CLOSED) || State.isState(State.SCATTER)) && !player.isWhitelisted() && !spec.isSpectating(player)) {
-				player.sendMessage(Main.PREFIX + "You joined without being whitelisted, enabling spec mode...");
+			if ((State.isState(State.ENDING) || State.isState(State.INGAME) || State.isState(State.CLOSED) || State.isState(State.SCATTER)) && !player.isWhitelisted() && !spec.isSpectating(player)) {
+				player.sendMessage(Main.PREFIX + "You are not whitelisted, enabling spec mode...");
 
 				user.resetInventory();
 				user.resetExp();
 				
 				spec.enableSpecmode(player);
 			} else {
-				for (FileConfiguration file : FileUtils.getUserFiles()) {
-					final String name = file.getString("username", "none");
-					final String IP = file.getString("ip", "none");
+				if (!user.getAlts().isEmpty()) {
+					String alts = user.getAlts().toString();
 					
-					if (IP.equals(player.getAddress().getAddress().getHostAddress()) && !player.getName().equals(name)) {
-						PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7might be an alt of §c" + name + "§7.", "uhc.staff");
-						break;
-					}
+					PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7might be an alt of§8: " + alts.substring(1, alts.length() - 1) + "§8.", "uhc.staff");
 				}
 				
 				PlayerUtils.broadcast("§8[§a+§8] " + user.getRankColor() + player.getName() + " §7joined. §8(§a" + plugin.getOnlineCount() + "§8/§a" + game.getMaxPlayers() + "§8)");
