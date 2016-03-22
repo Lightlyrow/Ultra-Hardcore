@@ -15,10 +15,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.managers.SpecManager;
+import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -27,13 +29,17 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class CombatLogFeature extends Feature implements Listener {
-	private final SpecManager spec;
 	private final Main plugin;
+
+	private final TeamManager teams;
+	private final SpecManager spec;
 	
-	public CombatLogFeature(Main plugin, SpecManager spec) {
+	public CombatLogFeature(Main plugin, TeamManager teams, SpecManager spec) {
 		super("Combat Log", "Kills people that log out in combat.");
 		
 		this.plugin = plugin;
+		
+		this.teams = teams;
 		this.spec = spec;
 	}
 	
@@ -101,11 +107,19 @@ public class CombatLogFeature extends Feature implements Listener {
 			return;
 		}
 		
+		Team pteam = teams.getTeam(player);
+		
 		if (damager instanceof Player) {
 			Player killer = (Player) damager;
 			
 			// shouldn't work if killer is speccing.
 			if (spec.isSpectating(killer)) {
+				return;
+			}
+			
+			Team team = teams.getTeam(killer);
+			
+			if (pteam != null && pteam.equals(team)) {
 				return;
 			}
 			
@@ -140,6 +154,12 @@ public class CombatLogFeature extends Feature implements Listener {
 			}
 			
 			Player killer = (Player) source;
+			
+			Team team = teams.getTeam(killer);
+			
+			if (pteam != null && pteam.equals(team)) {
+				return;
+			}
 
 			// shouldn't work if killer is speccing.
 			if (spec.isSpectating(killer)) {
