@@ -19,6 +19,7 @@ import com.leontg77.ultrahardcore.feature.death.RespawnFeature;
 import com.leontg77.ultrahardcore.feature.enchants.AnvilsFeature;
 import com.leontg77.ultrahardcore.feature.enchants.BookshelfFeature;
 import com.leontg77.ultrahardcore.feature.enchants.EnchantmentPreviewFeature;
+import com.leontg77.ultrahardcore.feature.entity.EndermanBlockDropFeature;
 import com.leontg77.ultrahardcore.feature.entity.MobRatesFeature;
 import com.leontg77.ultrahardcore.feature.entity.PetFeature;
 import com.leontg77.ultrahardcore.feature.entity.WitchHealthPotionFeature;
@@ -155,7 +156,7 @@ public class FeatureManager {
 	 * Setup all the feature classes.
 	 */
 	public void registerFeatures(Arena arena, Game game, Timer timer, BoardManager board, TeamManager team, SpecManager spec, EnchantPreview ench, HardcoreHearts heart, ScenarioManager scen) {
-		final PotionFuelListener listener = new PotionFuelListener();
+		PotionFuelListener listener = new PotionFuelListener();
 		Bukkit.getPluginManager().registerEvents(listener, plugin);
 	    
 		// permanent
@@ -172,6 +173,7 @@ public class FeatureManager {
 		addFeature(new EnchantmentPreviewFeature(ench));
 		
 		// entity
+		addFeature(new EndermanBlockDropFeature());
 		addFeature(new MobRatesFeature(timer, game));
 		addFeature(new PetFeature());
 		addFeature(new WitchHealthPotionFeature());
