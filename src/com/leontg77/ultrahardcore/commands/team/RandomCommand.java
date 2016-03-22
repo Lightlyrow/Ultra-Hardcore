@@ -23,9 +23,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class RandomCommand extends UHCCommand {
+	private final TeamManager teams;
 
-	public RandomCommand() {
+	public RandomCommand(TeamManager teams) {
 		super("random", "<size> <amount>");
+		
+		this.teams = teams;
 	}
 
 	@Override
@@ -33,8 +36,6 @@ public class RandomCommand extends UHCCommand {
 		if (args.length < 2) {
 			return false;
 		}
-		
-		TeamManager teams = TeamManager.getInstance();
 		
 		int amount = parseInt(args[1], "amount");
 		int size = parseInt(args[0], "teamsize");
