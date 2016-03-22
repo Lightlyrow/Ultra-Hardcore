@@ -7,7 +7,9 @@ import java.util.List;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -48,10 +50,6 @@ public class BanCommand extends UHCCommand {
     	if (target == null) {
 			PlayerUtils.broadcast(Main.PREFIX + "§6" + args[0] + " §7has been banned for §a" + message + "§7.");
 			
-	    	for (Player online : Bukkit.getOnlinePlayers()) {
-	    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
-	    	}
-			
     		banList.addBan(args[0], message, null, sender.getName());
 			board.resetScore(args[0]);
             return true;
@@ -62,15 +60,17 @@ public class BanCommand extends UHCCommand {
     	}
 
     	PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been banned for §a" + message + "§7.");
-		
-    	for (Player online : Bukkit.getOnlinePlayers()) {
-    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
-    	}
     	
     	banList.addBan(target.getName(), message, null, sender.getName());
     	
     	PlayerDeathEvent deathEvent = new PlayerDeathEvent(target, new ArrayList<ItemStack>(), 0, null);
     	Bukkit.getPluginManager().callEvent(deathEvent);
+    	
+    	Block block = target.getLocation().getBlock();
+		
+		block.setType(Material.AIR);
+		block = block.getRelative(BlockFace.UP);
+		block.setType(Material.AIR);
 		
     	target.kickPlayer(
     	"§8» §7You have been §4banned §7from §6Arctic UHC §8«" +
