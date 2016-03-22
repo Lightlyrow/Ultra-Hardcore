@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.managers.SpecManager;
@@ -23,13 +24,15 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  */
 public class PlayerListener implements Listener {
 	private final SpecManager spec;
+	private final Main plugin;
 	
 	/**
 	 * Player listener class constructor.
 	 * 
 	 * @param spec The spectator manager class.
 	 */
-	public PlayerListener(SpecManager spec) {
+	public PlayerListener(Main plugin, SpecManager spec) {
+		this.plugin = plugin;
 		this.spec = spec;
 	}
 	
@@ -68,9 +71,20 @@ public class PlayerListener implements Listener {
 	
 	@EventHandler
 	public void on(PlayerTeleportEvent event) {
-		final Player player = event.getPlayer();
-		final User user = User.get(player);
+		Player player = event.getPlayer();
+		User user = plugin.getUser(player);
 		
-		user.setLastLocation(player.getLocation());
+		switch (event.getCause()) {
+		case ENDER_PEARL:
+		case END_PORTAL:
+		case NETHER_PORTAL:
+		case UNKNOWN:
+		case PLUGIN:
+			return;
+		default:
+			break;
+		}
+		
+		user.setLastLoc(player.getLocation());
 	}
 }
