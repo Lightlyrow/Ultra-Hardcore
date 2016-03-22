@@ -29,8 +29,8 @@ public enum State {
 	public static void setState(State state) {
 		currentState = state;
 		
-		settings.getData().set("state", state.name());
-		settings.saveData();
+		settings.getConfig().set("state", state.name());
+		settings.saveConfig();
 	}
 	
 	/**
@@ -53,7 +53,7 @@ public enum State {
 			State state;
 					
 			try {
-				state = State.valueOf(settings.getData().getString("state"));
+				state = State.valueOf(settings.getConfig().getString("state"));
 			} catch (Exception e) {
 				state = State.NOT_RUNNING;
 			}
