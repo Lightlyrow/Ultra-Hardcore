@@ -20,7 +20,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
 public class PregenCommand extends UHCCommand {
 
 	public PregenCommand() {
-		super("pregen", "<world|cancel|pause> <radius> [force]");
+		super("pregen", "<world|cancel|pause> <diameter> [force]");
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class PregenCommand extends UHCCommand {
 			throw new CommandException("The world '" + args[0] + "' does not exist.");
 		}
 		
-		int radius = parseInt(args[1], "radius");
+		int radius = parseInt(args[1], "diameter") / 2;
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " set " + radius + " 0 0");
 		
 		if (args.length > 2) {
@@ -58,7 +58,9 @@ public class PregenCommand extends UHCCommand {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420");
 		}
 		
-		PlayerUtils.broadcast(Main.PREFIX + "Starting pregen of world '§a" + world.getName() + "§7' with radius of §6" + radius + ".");
+		radius = radius * 2;
+		
+		PlayerUtils.broadcast(Main.PREFIX + "Starting pregen of world '§a" + world.getName() + "§7' with size of §6" + radius + "x" + radius + "§7.");
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload fill confirm");
 		return true;
 	}
@@ -80,7 +82,7 @@ public class PregenCommand extends UHCCommand {
 			World world = Bukkit.getWorld(args[0]);
 			
 			if (world != null) {
-				toReturn.add("" + (int) (world.getWorldBorder().getSize() / 2));
+				toReturn.add("" + ((int) world.getWorldBorder().getSize()));
 			}
 		}
 		
