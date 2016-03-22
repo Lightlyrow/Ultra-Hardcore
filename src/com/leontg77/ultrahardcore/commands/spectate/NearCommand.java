@@ -21,9 +21,14 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class NearCommand extends UHCCommand {
-
-	public NearCommand() {
+	private final TeamManager teams;
+	private final SpecManager spec;
+	
+	public NearCommand(SpecManager spec, TeamManager teams) {
 		super("near", "[radius]");
+		
+		this.teams = teams;
+		this.spec = spec;
 	}
 
 	@Override
@@ -32,7 +37,6 @@ public class NearCommand extends UHCCommand {
 			throw new CommandException("Only players can see nearby players.");
 		}
 
-		SpecManager spec = SpecManager.getInstance();
 		Player player = (Player) sender;
 		
 		if (!spec.isSpectating(player)) {
@@ -87,8 +91,7 @@ public class NearCommand extends UHCCommand {
 	 * @return The team color and the name
 	 */
 	private String getTeamColorAndName(Player player) {
-		TeamManager manager = TeamManager.getInstance();
-		Team team = manager.getTeam(player);
+		Team team = teams.getTeam(player);
 		
 		if (team == null) {
 			return "§f" + player.getName();
