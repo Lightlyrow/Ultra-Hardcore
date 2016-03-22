@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,20 +37,41 @@ public class CombatLogFeature extends Feature implements Listener {
 		this.spec = spec;
 	}
 	
-	public static Map<UUID, BukkitRunnable> combatTask = new HashMap<UUID, BukkitRunnable>();
-	public static Map<UUID, Integer> combat = new HashMap<UUID, Integer>();
+	public final Map<UUID, BukkitRunnable> combatTask = new HashMap<UUID, BukkitRunnable>();
+	public final Map<UUID, Integer> combat = new HashMap<UUID, Integer>();
+	  
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void on(PlayerDeathEvent event) {
+		Player player = event.getEntity();
+	    
+	    if (!combat.containsKey(player.getUniqueId())) {
+	    	return;
+	    }
+
+		combatTask.get(player.getUniqueId()).cancel();
+		combatTask.remove(player.getUniqueId());
+		combat.remove(player.getUniqueId());
+	}
 	  
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void on(PlayerQuitEvent event) {
-		final Player player = event.getPlayer();
+		Player player = event.getPlayer();
 	    
-	    if (!combat.containsKey(player)) {
+	    if (!combat.containsKey(player.getUniqueId())) {
 	    	return;
 	    }	
 	    
 		if (spec.isSpectating(player)) {
 			return;
 		}
+		
+		if (player.getWorld().getName().equals("lobby")) {
+			return;
+		}
+
+		combatTask.get(player.getUniqueId()).cancel();
+		combatTask.remove(player.getUniqueId());
+		combat.remove(player.getUniqueId());
 		
 		PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + "§7 left while in combat.");
 		
@@ -62,23 +84,27 @@ public class CombatLogFeature extends Feature implements Listener {
 			return;
 		}
 		
-		final Entity damager = event.getDamager();
-		final Entity entity = event.getEntity();
+		Entity damager = event.getDamager();
+		Entity entity = event.getEntity();
 		
-		if (!(entity instanceof Player) || !(damager instanceof Projectile || damager instanceof Player)) {
+		if (!(entity instanceof Player)) {
+			return;
+		}
+		
+		if (!(damager instanceof Projectile) && !(damager instanceof Player)) {
 			return;
 		}
 
-		final Player player = (Player) entity;
+		Player player = (Player) entity;
 	    
 		if (spec.isSpectating(player)) {
 			return;
 		}
 		
 		if (damager instanceof Player) {
-			final Player killer = (Player) damager;
+			Player killer = (Player) damager;
 			
-			// shouldn't work if killer is in god mode, fly mode, vanished or creative mode.
+			// shouldn't work if killer is speccing.
 			if (spec.isSpectating(killer)) {
 				return;
 			}
@@ -87,14 +113,14 @@ public class CombatLogFeature extends Feature implements Listener {
 			
 			combat.put(killerUUID, 25);
 			
-			if (!combat.containsKey(killerUUID)) {
+			if (!combatTask.containsKey(killerUUID)) {
 				combatTask.put(killerUUID, new BukkitRunnable() {
 					public void run() {
 						combat.put(killerUUID, combat.get(killerUUID) - 1);
 						
 						if (combat.get(killerUUID) == 0) {
-							combatTask.remove(killerUUID);
 							combat.remove(killerUUID);
+							combatTask.remove(killerUUID);
 							
 							cancel();
 						}
@@ -106,16 +132,16 @@ public class CombatLogFeature extends Feature implements Listener {
 		} 
 		
 		if (damager instanceof Projectile) {
-			final Projectile proj = (Projectile) damager;
-			final ProjectileSource source = proj.getShooter();
+			Projectile proj = (Projectile) damager;
+			ProjectileSource source = proj.getShooter();
 			
 			if (!(source instanceof Player)) {
 				return;
 			}
 			
-			final Player killer = (Player) source;
-			
-			// shouldn't work if killer is in god mode, fly mode, vanished or creative mode.
+			Player killer = (Player) source;
+
+			// shouldn't work if killer is speccing.
 			if (spec.isSpectating(killer)) {
 				return;
 			}
@@ -124,14 +150,14 @@ public class CombatLogFeature extends Feature implements Listener {
 			
 			combat.put(killerUUID, 25);
 			
-			if (!combat.containsKey(killerUUID)) {
+			if (!combatTask.containsKey(killerUUID)) {
 				combatTask.put(killerUUID, new BukkitRunnable() {
 					public void run() {
 						combat.put(killerUUID, combat.get(killerUUID) - 1);
 						
 						if (combat.get(killerUUID) == 0) {
-							combatTask.remove(killerUUID);
 							combat.remove(killerUUID);
+							combatTask.remove(killerUUID);
 							
 							cancel();
 						}
@@ -146,7 +172,7 @@ public class CombatLogFeature extends Feature implements Listener {
 		
 		combat.put(playerUUID, 25);
 		
-		if (!combat.containsKey(playerUUID)) {
+		if (!combatTask.containsKey(playerUUID)) {
 			combatTask.put(playerUUID, new BukkitRunnable() {
 				public void run() {
 					combat.put(playerUUID, combat.get(playerUUID) - 1);
