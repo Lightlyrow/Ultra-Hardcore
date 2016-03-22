@@ -1,6 +1,6 @@
 name: UHC
 main: com.leontg77.ultrahardcore.Main
-version: 1.10.1
+version: 1.10.3
 author: LeonTG77
 description: A private UHC plugin made for ArcticUHC ONLY.
 softdepend: [ProtocolLib, Pregenner]
@@ -37,6 +37,9 @@ commands:
   clearxp:
     description: Clear someones xp levels.
     aliases: [cxp]
+  combatlog:
+    description: Check if you are in combat.
+    aliases: [ct]
   dq:
     description: Ban someone for 1 game.
   edit:
@@ -100,6 +103,9 @@ commands:
   pmores:
     description: Send your ore count to your team.
     aliases: [sendores]
+  pmminedores:
+    description: Send your mined ore count to your team.
+    aliases: [sendminedores]
   pregen:
     description: Pregen a world.
   pvp:
@@ -134,6 +140,7 @@ commands:
     description: Change your fly/walk speed
   spread:
     description: Spread all players and freeze them.
+    aliases: [scatter]
   ac:
     description: Talk in StaffChat.
   start:
@@ -179,6 +186,8 @@ commands:
     description: Create and manage worlds.
     aliases: [w]
 # Scenario Commands.
+  alist:
+    description: View available achievements to hunt for.
   target:
     description: View your assassins target.
   class:
@@ -215,6 +224,8 @@ commands:
     description: Generate chunk apoclaypse.
   current:
     description: View the current damage type.
+  dtime:
+    description: View how long you got left of your life.
   genie:
     description: Genie command, check usage.
   kings:
@@ -229,6 +240,8 @@ commands:
     description: View your mole team.
   mt:
     description: Mystery teams command.
+  dodge:
+    description: Check the current needed death amount in damage dodgers.
   status:
     description: Check the current resistance type.
   genpyro:
