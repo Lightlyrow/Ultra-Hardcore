@@ -89,7 +89,7 @@ public class GUIManager {
 	 */
 	public void registerGUIs(Game game, Timer timer, Settings settings, FeatureManager feat, ScenarioManager scen, WorldManager manager) {
 		addGUI(new ConfigGUI(settings, feat));
-		addGUI(new GameInfoGUI(plugin, game, timer, feat, scen));
+		addGUI(new GameInfoGUI(plugin, settings, game, timer, feat, scen));
 		addGUI(new HallOfFameGUI(plugin, settings));
 		addGUI(new InvseeGUI(plugin));
 		addGUI(new SelectorGUI(game));
