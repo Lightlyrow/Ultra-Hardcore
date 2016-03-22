@@ -65,6 +65,18 @@ public class WorldData {
 
 		this.completedFile = new File(folder, "completed.log");
 		this.queuedFile = new File(folder, "queued.log");
+		
+		if (!completedFile.exists()) {
+			try {
+				completedFile.createNewFile();
+			} catch (Exception e) {}
+		}
+		
+		if (!queuedFile.exists()) {
+			try {
+				queuedFile.createNewFile();
+			} catch (Exception e) {}
+		}
 	}
 
 	/**
@@ -254,7 +266,7 @@ public class WorldData {
 							}
 						}
 					} catch (Exception ex) {
-						plugin.getLogger().log(Level.SEVERE, "Failed to save to " + WorldData.this.queuedFile.getPath() + ": " + record, ex);
+						plugin.getLogger().log(Level.SEVERE, "Failed to save to " + queuedFile.getPath() + ": " + record, ex);
 					}
 				}
 			}
