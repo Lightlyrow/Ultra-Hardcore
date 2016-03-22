@@ -1,11 +1,16 @@
 package com.leontg77.ultrahardcore;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -13,6 +18,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.CommandHandler;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
@@ -44,6 +50,8 @@ import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.world.WorldManager;
 import com.leontg77.ultrahardcore.world.antistripmine.AntiStripmine;
+import com.leontg77.ultrahardcore.world.antistripmine.listener.ChunkPopulateListener;
+import com.leontg77.ultrahardcore.world.antistripmine.listener.WorldInitListener;
 import com.leontg77.ultrahardcore.world.biomeswap.BiomeSwap;
 
 /**
@@ -55,52 +63,52 @@ import com.leontg77.ultrahardcore.world.biomeswap.BiomeSwap;
  */
 @SuppressWarnings("unused")
 public class Main extends JavaPlugin {
-	private final Settings settings;
-	private final Data data;
+	private Settings settings;
+	private Data data;
 
-	private final AntiStripmine antiSM;
-	private final BiomeSwap swap;
+	private AntiStripmine antiSM;
+	private BiomeSwap swap;
 	
-	private final WorldManager worlds;
-	private final UBL ubl;
+	private WorldManager worlds;
+	private UBL ubl;
 	
-	private final BoardManager board;
-	private final TeamManager teams;
+	private BoardManager board;
+	private TeamManager teams;
 	
-	private final ScatterManager scatter;
-	private final SpecManager spec;
+	private ScatterManager scatter;
+	private SpecManager spec;
 	
-	private final PermissionsManager perm;
-	private final FireworkManager firework;
+	private PermissionsManager perm;
+	private FireworkManager firework;
 	
-	private final HOFManager HOF;
-	private final GUIManager gui;
+	private HOFManager HOF;
+	private GUIManager gui;
 
-	private final Game game;
-	private final Arena arena;
+	private Game game;
+	private Arena arena;
 	
-	private final Announcer announcer;
-	private final Parkour parkour;
+	private Announcer announcer;
+	private Parkour parkour;
 
-	private final EnchantPreview enchPreview;
-	private final HardcoreHearts hardHearts;
-	private final OnlineCount counter;
+	private EnchantPreview enchPreview;
+	private HardcoreHearts hardHearts;
+	private OnlineCount counter;
 
-	private final CommandHandler cmd;
-	private final ScenarioManager scen;
-	private final FeatureManager feat;
+	private CommandHandler cmd;
+	private ScenarioManager scen;
+	private FeatureManager feat;
 	
-	private final Timer timer;
+	private Timer timer;
 	
-	public Main() {
+	private void instances() {
 		settings = new Settings(this);
 		data = new Data(this, settings);	
 		
-		worlds = new WorldManager(settings);	
-		ubl = new UBL(this);
-		
 		antiSM = new AntiStripmine(this);
 		swap = new BiomeSwap(this, settings);
+		
+		worlds = new WorldManager(settings);	
+		ubl = new UBL(this);
 
 		board = new BoardManager(this);	
 		teams = new TeamManager(this, board);
@@ -111,9 +119,9 @@ public class Main extends JavaPlugin {
 		HOF = new HOFManager(this);	
 		gui = new GUIManager(this);
 		
-		parkour = new Parkour(this, settings);
-		
 		spec = new SpecManager(this, teams);
+		parkour = new Parkour(this, settings, spec);
+		
 		game = new Game(settings, gui, board, spec);
 		
 		scatter = new ScatterManager(this, teams, game);	
@@ -123,14 +131,14 @@ public class Main extends JavaPlugin {
 
 		enchPreview = new EnchantPreview(this);
 		hardHearts = new HardcoreHearts(this);
-		counter = new OnlineCount(this);
+		counter = new OnlineCount(this, game);
 
 		scen = new ScenarioManager(this);
 		feat = new FeatureManager(this, settings);
 		
 		cmd = new CommandHandler(this);
 		
-		timer = new Timer(this, game, gui, scen, feat.getFeature(StalkingFeature.class), board, spec);
+		timer = new Timer(this, game, gui, scen, feat, board, spec);
 	}
 	
 	public static final String NO_PERMISSION_MESSAGE = "§cYou don't have permission.";
@@ -141,7 +149,8 @@ public class Main extends JavaPlugin {
 	public static final String SPEC_PREFIX = "§5Spec §8» §7";
 	public static final String INFO_PREFIX = "§bInfo §8» §7";
 	public static final String SCEN_PREFIX = "§9Scenario §8» §7";
-	public static final String PREFIX = "§4UHC §8» §7";
+	public static final String PREFIX = "§4§lUHC §8» §7";
+	public static final String ARROW = "§8» §7";
 	
 	@Override
 	public void onDisable() {
@@ -168,6 +177,8 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		instances();
+		
 		PluginDescriptionFile file = getDescription();
 		getLogger().info(file.getName() + " v" + file.getVersion() + " is now enabled.");
 		getLogger().info("The plugin was created by LeonTG77.");
@@ -175,9 +186,8 @@ public class Main extends JavaPlugin {
 		game.setTimer(timer);
 		
 		State.setSettings(settings);
-//		User.setupInstances(this, game, gui, perm);
 		
-//		counter.enable();
+		counter.enable();
 		
 		settings.setup();
 		ubl.reload();
@@ -187,7 +197,7 @@ public class Main extends JavaPlugin {
 
 		scen.registerScenarios(arena, game, timer, teams, spec, settings, feat, scatter, board);
 		feat.registerFeatures(arena, game, timer, board, teams, spec, enchPreview, hardHearts, scen);
-		cmd.registerCommands(game, arena, parkour, settings, gui, board, spec, feat, scen, worlds, timer, teams, firework);
+		cmd.registerCommands(game, data, arena, parkour, settings, gui, board, spec, feat, scen, worlds, timer, teams, firework, scatter);
 	    
 		worlds.loadWorlds();
 		swap.setup();
@@ -198,7 +208,7 @@ public class Main extends JavaPlugin {
 		
 		FileUtils.updateUserFiles(this);
 		
-		gui.registerGUIs(game, timer, settings, feat, scen);
+		gui.registerGUIs(game, timer, settings, feat, scen, worlds);
 		data.restore(teams, scen);
 		
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -206,15 +216,19 @@ public class Main extends JavaPlugin {
 		PluginManager manager = Bukkit.getPluginManager(); 
 		
 		// register all listeners.
-		manager.registerEvents(new ChatListener(game, teams, spec), this);
+		manager.registerEvents(new ChatListener(this, game, teams, spec), this);
 		manager.registerEvents(new LoginListener(this, game, settings, spec, scatter, perm), this);
 		manager.registerEvents(new LogoutListener(this, game, gui, spec, perm), this);
-		manager.registerEvents(new PlayerListener(spec), this);
+		manager.registerEvents(new PlayerListener(this, spec), this);
 		manager.registerEvents(new ProtectionListener(game), this);
 		manager.registerEvents(new SpectatorListener(game, spec, gui, feat.getFeature(NetherFeature.class)), this);
 		manager.registerEvents(new StatsListener(this, arena, game, board, teams, feat.getFeature(GoldenHeadsFeature.class)), this);
 		manager.registerEvents(new WorldListener(arena), this);
 		manager.registerEvents(new UBLListener(ubl), this);
+		
+		// register anti stripmine listeners.
+		manager.registerEvents(new ChunkPopulateListener(this, antiSM), this);
+		manager.registerEvents(new WorldInitListener(settings, antiSM), this);
 		
 		for (Player online : Bukkit.getOnlinePlayers()) {	
 			perm.addPermissions(online);
@@ -272,21 +286,75 @@ public class Main extends JavaPlugin {
 	 * @return The lobby spawnpoint.
 	 */
 	public Location getSpawn() {
-		final FileConfiguration data = settings.getData();
+		final FileConfiguration config = settings.getConfig();
 		
-		World world = Bukkit.getWorld(data.getString("spawn.world", "lobby"));
+		World world = Bukkit.getWorld(config.getString("spawn.world", "lobby"));
 		
 		if (world == null) {
 			world = Bukkit.getWorlds().get(0);
 		}
 		
-		double x = data.getDouble("spawn.x", 0.5);
-		double y = data.getDouble("spawn.y", 33.0);
-		double z = data.getDouble("spawn.z", 0.5);
-		float yaw = (float) data.getDouble("spawn.yaw", 0);
-		float pitch = (float) data.getDouble("spawn.pitch", 0);
+		double x = config.getDouble("spawn.x", 0.5);
+		double y = config.getDouble("spawn.y", 33.0);
+		double z = config.getDouble("spawn.z", 0.5);
+		float yaw = (float) config.getDouble("spawn.yaw", 0);
+		float pitch = (float) config.getDouble("spawn.pitch", 0);
 		
 		Location loc = new Location(world, x, y, z, yaw, pitch);
 		return loc;
+	}
+	
+	/**
+	 * Gets the data of the given player.
+	 * <p>
+	 * If the data doesn't exist it will create a new data file and threat the player as a newly joined one.
+	 * 
+	 * @param player the player.
+	 * @return the data instance for the player.
+	 */
+	public User getUser(Player player) {
+		return new User(this, game, gui, perm, player, player.getUniqueId().toString());
+	}
+
+	/**
+	 * Gets the data of the given OFFLINE player.
+	 * <p>
+	 * If the data doesn't exist it will create a new data file and threat the player as a newly joined one.
+	 * 
+	 * @param offline the offline player.
+	 * @return the data instance for the player.
+	 * 
+	 * @throws CommandException If the offline player has never joined this server.
+	 */
+	public User getUser(OfflinePlayer offline) throws CommandException {
+		if (!fileExist(offline.getUniqueId())) {
+			throw new CommandException("'" + offline.getName() + "' has never joined this server.");
+		}
+		
+		return new User(this, game, gui, perm, offline.getPlayer(), offline.getUniqueId().toString());
+	}
+	
+	private final File folder = new File(getDataFolder() + File.separator + "users" + File.separator);
+	
+	/**
+	 * Check if the userdata folder has a file with the given uuid.
+	 * 
+	 * @param uuid The uuid checking for.
+	 * @return True if it exist, false otherwise.
+	 */
+	public boolean fileExist(UUID uuid) {
+		if (!folder.exists() || !folder.isDirectory()) {
+			return false;
+        }
+		
+		for (File file : folder.listFiles()) {
+			String fileName = file.getName().substring(0, file.getName().length() - 4);
+			
+			if (fileName.equals(uuid.toString())) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
