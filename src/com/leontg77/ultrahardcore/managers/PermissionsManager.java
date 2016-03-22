@@ -56,8 +56,8 @@ public class PermissionsManager {
 		PermissionAttachment perm = permissions.get(player.getUniqueId());
 		Rank rank = Rank.DEFAULT;
 		
-		if (User.fileExist(player.getUniqueId())) {
-			User user = User.get(player);
+		if (plugin.fileExist(player.getUniqueId())) {
+			User user = plugin.getUser(player);
 			rank = user.getRank();
         }
 		
@@ -77,6 +77,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.tl", true);
 		perm.setPermission("uhc.pm", true);
 		perm.setPermission("uhc.pmores", true);
+		perm.setPermission("uhc.pmminedores", true);
 		perm.setPermission("uhc.health", true);
 		perm.setPermission("uhc.ms", true);
 		perm.setPermission("uhc.tps", true);
@@ -91,6 +92,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.arena", true);
 		perm.setPermission("uhc.hotbar", true);
 		perm.setPermission("uhc.parkour", true);
+		perm.setPermission("uhc.combatlog", true);
 		
 		// spectator perms, they can only use them if they're spectating.
 		perm.setPermission("uhc.spectate", true);
@@ -160,7 +162,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.setmaxhealth", true);
 		perm.setPermission("uhc.start", true);
 		perm.setPermission("uhc.spread", true);
-		perm.setPermission("uhc.spectate.other", true);
+		perm.setPermission("uhc.spectate.others", true);
 		perm.setPermission("uhc.timer", true);
 		perm.setPermission("uhc.vote", true);
 		perm.setPermission("uhc.mysteryteams", true);
@@ -169,6 +171,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.bigcrack", true);
 		perm.setPermission("uhc.slimycrack", true);
 		perm.setPermission("uhc.kings", true);
+		perm.setPermission("uhc.damagedodgers", true);
 		
 		perm.setPermission("uhc.pvp", true);
 		perm.setPermission("uhc.pregen", true);
