@@ -1,8 +1,11 @@
 package com.leontg77.ultrahardcore.commands.user;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.bukkit.BanEntry;
 import org.bukkit.BanList;
@@ -10,14 +13,12 @@ import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
-import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -75,33 +76,32 @@ public class InfoCommand extends UHCCommand {
 		} else {
 			banMessage = "§cFalse";
 		}
+		
+		Format date = new SimpleDateFormat("E, MMM. dd, yyyy 'at' HH:mm 'UTC'", Locale.US); 
 
 		sender.sendMessage(Main.PREFIX + "Info about §6" + target.getName() + "§8:");
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		sender.sendMessage("§8» §7Status: §6" + (target.getPlayer() == null ? "§cOffline" : "§aOnline"));
 		sender.sendMessage("§8» §7UUID: §6" + user.getFile().getString("uuid"));
-		sender.sendMessage("§8» §7IP: §6" + (sender.hasPermission("uhc.info.ip") ? user.getFile().getString("ip") : "§m" + user.getFile().getString("ip").replaceAll("[0-9]", "#")));
+		sender.sendMessage("§8» §7IP: §6" + (sender.hasPermission("uhc.info.ip") ? user.getFile().getString("ip") : "§m" + user.getFile().getString("ip", "Unknown").replaceAll("[0-9]", "#")));
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		sender.sendMessage("§8» §7Banned: §6" + banMessage);
 		sender.sendMessage("§8» §7Muted: §6" + muteMessage);
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
-		sender.sendMessage("§8» §7First Joined: §6" + new Date(user.getFile().getLong("firstjoined")));
+		sender.sendMessage("§8» §7First Joined: §6" + date.format(new Date(user.getFile().getLong("firstjoined"))));
 		sender.sendMessage("§8» §7Last login: §6" + DateUtils.formatDateDiff(user.getFile().getLong("lastlogin")));
 		sender.sendMessage("§8» §7Last logout: §6" + (lastlogout == -1l ? "§cHasn't logged out" : DateUtils.formatDateDiff(lastlogout)));
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		sender.sendMessage("§8» §7Possible alt accounts:");
         
-		for (FileConfiguration file : FileUtils.getUserFiles()) {
-			if (!file.getString("ip", "none").equals(user.getFile().get("ip", "none"))) {
-				continue;
-			}
-			
-			if (file.getString("username", "Unknown").equals(target.getName())) {
-				continue;
-			}
-			
-			sender.sendMessage("§8» §c" + file.getString("username", "Unknown"));
+		if (user.getAlts().isEmpty()) {
+			sender.sendMessage("§8» §6This player has no known alts.");
 		}
+		
+		for (String alt : user.getAlts()) {
+			sender.sendMessage("§8» §c" + alt);
+		}
+		
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		return true;
 	}
