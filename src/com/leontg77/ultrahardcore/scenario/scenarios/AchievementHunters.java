@@ -20,6 +20,7 @@ import org.bukkit.entity.Witch;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -128,6 +129,10 @@ public class AchievementHunters extends Scenario implements CommandExecutor, Lis
         Player player = event.getPlayer();
         
         if (!game.getPlayers().contains(player)) {
+        	return;
+        }
+        
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
         	return;
         }
         
