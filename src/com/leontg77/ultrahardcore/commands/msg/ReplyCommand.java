@@ -21,9 +21,12 @@ import com.leontg77.ultrahardcore.utils.DateUtils;
  * @author LeonTG77
  */
 public class ReplyCommand extends UHCCommand {
+	private final Main plugin;
 
-	public ReplyCommand() {
+	public ReplyCommand(Main plugin) {
 		super("reply", "<message>");
+		
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -34,14 +37,13 @@ public class ReplyCommand extends UHCCommand {
 		}
 		
 		Player player = (Player) sender;
+		User user = plugin.getUser(player);
 		
     	if (args.length == 0) {
         	return false;
         }
 		
-    	if (MsgCommand.isMuted(player)) {
-    		User user = User.get(player);
-    		
+    	if (user.isMuted()) {
 			sender.sendMessage(Main.PREFIX + "You have been muted for: §a" + user.getMutedReason());
 			
 			if (user.getMuteExpiration() == null) {
@@ -62,13 +64,13 @@ public class ReplyCommand extends UHCCommand {
         	throw new CommandException("You have no one to reply to.");
         }
         
-		User user = User.get(target);
+		User tUser = plugin.getUser(target);
 		
-		if (user.isIgnoring(player)) {
+		if (tUser.isIgnoring(player)) {
 			throw new CommandException("'" + player.getName() + "' have you ignored.");
 		}
 		
-    	if (MsgCommand.isMuted(target)) {
+    	if (tUser.isMuted()) {
     		player.sendMessage(ChatColor.RED + "'" + target.getName() + "' is muted and won't be able to respond.");
     	}
     	
