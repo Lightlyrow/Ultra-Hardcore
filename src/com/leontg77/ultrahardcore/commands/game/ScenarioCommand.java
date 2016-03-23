@@ -18,15 +18,18 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class ScenarioCommand extends UHCCommand {
-
-	public ScenarioCommand() {
+	private final ScenarioManager manager;
+	private final Main plugin;
+	
+	public ScenarioCommand(Main plugin, ScenarioManager manager) {
 		super("scenario", "<enable|disable|list|info> [scenario]");
+		
+		this.manager = manager;
+		this.plugin = plugin;
 	}
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
-		ScenarioManager manager = ScenarioManager.getInstance();
-		
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("enable")) {
 				if (sender.hasPermission("uhc.scenario.manage")) {
@@ -46,7 +49,7 @@ public class ScenarioCommand extends UHCCommand {
 					}
 
 					PlayerUtils.broadcast(Main.PREFIX + "§a" + scen.getName() + " §7has been enabled.");
-					scen.setEnabled(true);
+					scen.enable(plugin);
 					return true;
 				}
 			} 
@@ -69,7 +72,7 @@ public class ScenarioCommand extends UHCCommand {
 					}
 
 					PlayerUtils.broadcast(Main.PREFIX + "§a" + scen.getName() + " §7has been disabled.");
-					scen.setEnabled(false);
+					scen.disable();
 					return true;
 				}
 			} 
@@ -130,7 +133,6 @@ public class ScenarioCommand extends UHCCommand {
 	
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		ScenarioManager manager = ScenarioManager.getInstance();
     	List<String> toReturn = new ArrayList<String>();
     	
 		if (args.length == 1) {
