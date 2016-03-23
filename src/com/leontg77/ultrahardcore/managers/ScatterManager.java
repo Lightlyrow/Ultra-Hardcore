@@ -381,10 +381,6 @@ public class ScatterManager {
 		Material type = loc.add(0, -1, 0).getBlock().getType();
 		boolean vaild = true;
 		
-		if (loc.getBlockY() < 60) {
-			vaild = false;
-		}	
-		
 		for (Material no : INVAILD_SPAWN_BLOCKS) {
 			if (type == no) {
 				vaild = false;
