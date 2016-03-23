@@ -12,6 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,6 +23,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.gui.GUI;
 
 /**
@@ -45,6 +50,31 @@ public class SelectorGUI extends GUI implements Listener {
 
 	@Override
 	public void onSetup() {
+		update();
+	}
+	
+	@EventHandler
+	public void on(PlayerJoinEvent event) {
+		update();
+	}
+	
+	@EventHandler
+	public void on(PlayerQuitEvent event) {
+		update();
+	}
+	
+	@EventHandler
+	public void on(PlayerChangedWorldEvent event) {
+		update();
+	}
+	
+	@EventHandler
+	public void on(PlayerGameModeChangeEvent event) {
+		update();
+	}
+	
+	@EventHandler
+	public void on(GameStartEvent event) {
 		update();
 	}
 	
@@ -143,6 +173,8 @@ public class SelectorGUI extends GUI implements Listener {
 				inv = Bukkit.createInventory(null, 54, "§4Player Selector");
 				inventories.put(current, inv);
 			}
+			
+			inv.clear();
 			
 			for (int i = 0; i < 35; i++) {
 				if (players.isEmpty()) {
