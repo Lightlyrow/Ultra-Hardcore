@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
@@ -22,9 +21,12 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class RankCommand extends UHCCommand {	
+	private final Main plugin;
 
-	public RankCommand() {
+	public RankCommand(Main plugin) {
 		super("rank", "<player> <rank>");
+		
+		this.plugin = plugin;
 	}
 
 	@Override	
@@ -35,7 +37,7 @@ public class RankCommand extends UHCCommand {
 		
 		OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[0]);
 		
-		if (!User.fileExist(target.getUniqueId())) {
+		if (!plugin.fileExist(target.getUniqueId())) {
 			throw new CommandException("'" + args[0] + "' has never joined this server.");
 		}
 		
@@ -48,7 +50,7 @@ public class RankCommand extends UHCCommand {
 		}
 		
 		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been given §a" + NameUtils.capitalizeString(rank.name(), false) + " §7rank.");
-		User.get(target).setRank(rank);
+		plugin.getUser(target).setRank(rank);
 		return true;
 	}
 	
