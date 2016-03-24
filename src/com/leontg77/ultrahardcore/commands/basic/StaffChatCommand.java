@@ -15,19 +15,20 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class StaffChatCommand extends UHCCommand {
+	private static final String PREFIX = "§4Staff Chat §8» §c";
 
 	public StaffChatCommand() {
 		super("ac", "<message>");
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) {
+	public boolean execute(CommandSender sender, String[] args) {
 		if (args.length == 0) {
         	return false;
         } 
         
     	String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
-		PlayerUtils.broadcast("§8[§4StaffChat§8] §c" + sender.getName() + "§8 » §f" + message, "uhc.staff");
+		PlayerUtils.broadcast(PREFIX + sender.getName() + "§8: §7" + message, "uhc.staff");
 		return true;
 	}
 

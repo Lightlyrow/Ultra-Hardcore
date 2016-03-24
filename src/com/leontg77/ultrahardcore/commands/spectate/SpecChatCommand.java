@@ -18,10 +18,15 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  * @author LeonTG77
  */
 public class SpecChatCommand extends UHCCommand {
+	private final SpecManager spec;
 
-	public SpecChatCommand() {
+	public SpecChatCommand(SpecManager spec) {
 		super("specchat", "<message>");
+		
+		this.spec = spec;
 	}
+	
+	private static final String PREFIX = "§5Spec Chat §8» §d";
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
@@ -29,7 +34,6 @@ public class SpecChatCommand extends UHCCommand {
 			throw new CommandException("Only players can talk in the spectator chat.");
 		}
 		
-        SpecManager spec = SpecManager.getInstance();
         Player player = (Player) sender;
         
 		if (!spec.isSpectating(player)) {
@@ -40,14 +44,14 @@ public class SpecChatCommand extends UHCCommand {
         	return false;
         } 
         
-        String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
+        String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
         
         for (Player online : Bukkit.getOnlinePlayers()) {
         	if (!spec.isSpectating(online)) {
         		continue;
         	}
         	
-        	online.sendMessage("§8[§5SpecChat§8] §7" + sender.getName() + "§8 » §f" + msg);
+        	online.sendMessage(PREFIX + sender.getName() + "§8: §7" + message);
         }
 		return true;
 	}
