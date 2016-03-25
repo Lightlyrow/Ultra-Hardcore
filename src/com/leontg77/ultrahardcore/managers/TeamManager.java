@@ -15,7 +15,7 @@ import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.Main;
 
 /**
@@ -43,7 +43,7 @@ public class TeamManager {
 	}
 
 	private final Map<String, Set<String>> savedTeams = new HashMap<String, Set<String>>();
-	private final Set<Team> teams = new HashSet<Team>();
+	private final List<Team> teams = new ArrayList<Team>();
 	
 	/**
 	 * Find the first team with no players in it.
@@ -208,8 +208,8 @@ public class TeamManager {
 	 * 
 	 * @return A set of all teams.
 	 */
-	public Set<Team> getTeams() {
-		return ImmutableSet.copyOf(teams);
+	public List<Team> getTeams() {
+		return ImmutableList.copyOf(teams);
 	}
 	
 	/**
@@ -217,8 +217,8 @@ public class TeamManager {
 	 * 
 	 * @return A list of teams with players.
 	 */
-	public Set<Team> getTeamsWithPlayers() {
-		Set<Team> teamsWithPlayers = new HashSet<Team>();
+	public List<Team> getTeamsWithPlayers() {
+		List<Team> teamsWithPlayers = new ArrayList<Team>();
 		
 		for (Team team : getTeams()) {
 			if (team.getSize() > 0) {
@@ -226,7 +226,7 @@ public class TeamManager {
 			}
 		}
 
-		return ImmutableSet.copyOf(teamsWithPlayers);
+		return ImmutableList.copyOf(teamsWithPlayers);
 	}
 	
 	/**
