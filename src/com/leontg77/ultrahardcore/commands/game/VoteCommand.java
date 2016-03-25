@@ -22,15 +22,19 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class VoteCommand extends UHCCommand {
+	private final Main plugin;
+	
+	public VoteCommand(Main plugin) {
+		super("vote", "<message>");
+		
+		this.plugin = plugin;
+	}
+	
 	private static final List<UUID> voted = new ArrayList<UUID>();
 	private static BukkitRunnable run = null;
 	
 	private static int yes = 0;
 	private static int no = 0;
-	
-	public VoteCommand() {
-		super("vote", "<message>");
-	}
 	
 	@Override
 	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
@@ -65,7 +69,7 @@ public class VoteCommand extends UHCCommand {
 			}
 		};
 		
-		run.runTaskLater(Main.plugin, 600);
+		run.runTaskLater(plugin, 600);
 		return true;
 	}
 
