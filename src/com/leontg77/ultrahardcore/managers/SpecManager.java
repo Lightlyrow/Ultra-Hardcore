@@ -30,6 +30,7 @@ import com.leontg77.ultrahardcore.utils.BlockUtils;
  */
 public class SpecManager {
 	private final TeamManager teams;
+	private final Main plugin;
 	
 	private final SpecInfo specInfo;
 	
@@ -46,6 +47,8 @@ public class SpecManager {
 	 */
 	public SpecManager(Main plugin, TeamManager teams) {
 		this.specInfo = new SpecInfo(plugin, this);
+		
+		this.plugin = plugin;
 		this.teams = teams;
 		
 		this.compass = new ItemStack(Material.COMPASS);
@@ -155,7 +158,7 @@ public class SpecManager {
 			exp.setExperience(player.getTotalExperience());
 		}
 		
-		User user = User.get(player);
+		User user = plugin.getUser(player);
 		
 		user.resetInventory();
 		user.resetExp();
@@ -165,7 +168,7 @@ public class SpecManager {
 		player.setWalkSpeed(0.2f);
 		player.setFlySpeed(0.1f);
 		
-		player.setPlayerListName(null);
+		player.setPlayerListName("§7§o" + player.getName());
 		
 		// I don't want the sidebar to have spec team names if they're on a team off.
 		if (teams.getTeam(player) == null) {
@@ -208,15 +211,17 @@ public class SpecManager {
 		player.setFlySpeed(0.1f);
 
 		// If they're not on the spec team I won't wnat to remove them
-		if (teams.getTeam(player) != null && !teams.getTeam(player).getName().equals("spec")) {
-			teams.joinTeam("spec", player);
+		if (teams.getTeam(player) != null && teams.getTeam(player).getName().equals("spec")) {
+			teams.leaveTeam(player, true);
 		}
+		
+		player.setPlayerListName(null);
 
 		spectators.remove(player.getName());
 		specinfo.remove(player.getName());
 		cmdspy.remove(player.getName());
 		
-		User user = User.get(player);
+		User user = plugin.getUser(player);
 		
 		user.resetInventory();
 		user.resetExp();
