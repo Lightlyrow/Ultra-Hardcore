@@ -42,14 +42,14 @@ public class Timebomb extends Scenario implements Listener {
 	public void onEnable() {}
 	
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
+	public void on(PlayerDeathEvent event) {
 		final Player player = event.getEntity();
 		
 		if (!game.getWorlds().contains(player.getWorld())) {
 			return;
 		}
 		
-		User user = User.get(player);
+		User user = plugin.getUser(player);
 		
 		final Location loc = player.getLocation().add(0, -1, 0);
 		event.setKeepInventory(true);
