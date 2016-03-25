@@ -9,7 +9,9 @@ import org.bukkit.BanEntry;
 import org.bukkit.BanList;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -70,10 +72,6 @@ public class TempbanCommand extends UHCCommand {
     	}
 		
 		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been temp-banned for §a" + message + "§7. §8(§a" + DateUtils.formatDateDiff(time) + "§8)");
-		
-    	for (Player online : Bukkit.getOnlinePlayers()) {
-    		online.playSound(online.getLocation(), Sound.EXPLODE, 1, 1);
-    	}
     	
     	final BanEntry ban = list.addBan(target.getName(), message, date, sender.getName());
     	target.setWhitelisted(false);
@@ -81,8 +79,14 @@ public class TempbanCommand extends UHCCommand {
 		board.resetScore(args[0]);
     	board.resetScore(target.getName());
     	
-    	final PlayerDeathEvent event = new PlayerDeathEvent(target, new ArrayList<ItemStack>(), 0, null);
-		Bukkit.getServer().getPluginManager().callEvent(event);
+    	PlayerDeathEvent event = new PlayerDeathEvent(target, new ArrayList<ItemStack>(), 0, null);
+		Bukkit.getPluginManager().callEvent(event);
+    	
+    	Block block = target.getLocation().getBlock();
+		
+		block.setType(Material.AIR);
+		block = block.getRelative(BlockFace.UP);
+		block.setType(Material.AIR);
 		
 		target.kickPlayer(
 		"§8» §7You have been §4temp-banned §7from §6Arctic UHC §8«" +
