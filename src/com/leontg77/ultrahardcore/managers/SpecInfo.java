@@ -104,7 +104,7 @@ public class SpecInfo implements Listener {
 	 * @return True if its an ore, false otherwise.
 	 */
 	private boolean isOre(Material ore) {
-		return ore == Material.DIAMOND_ORE || ore == Material.GOLD_ORE;
+		return ore == Material.DIAMOND_ORE || ore == Material.GOLD_ORE || ore == Material.IRON_ORE;
 	}
 	
 	/**
@@ -118,7 +118,7 @@ public class SpecInfo implements Listener {
 				continue;
 			}
 			
-			online.sendMessage(Main.SPEC_PREFIX + message);
+			online.sendMessage("§8[§9S§8] §7" + message);
 		}
 	}
 
@@ -158,9 +158,9 @@ public class SpecInfo implements Listener {
 		total.put(type, total.get(type) + amount);
 		
 		if (block.getType() == Material.GOLD_ORE) {
-			broadcast("§7" + player.getName() + "§f:§6GOLD §f[V:§6" + amount + "§f] [T:§6" + total.get(type) + "§f]");
+			broadcast("§7" + player.getName() + "§8:§6GOLD §8[V:§6" + amount + "§8] [T:§6" + total.get(type) + "§8]");
 		} else if (block.getType() == Material.DIAMOND_ORE) {
-			broadcast("§7" + player.getName() + "§f:§3DIAMOND §f[V:§3" + amount + "§f] [T:§3" + total.get(type) + "§f]");
+			broadcast("§7" + player.getName() + "§8:§3DIAMOND §8[V:§3" + amount + "§8] [T:§3" + total.get(type) + "§8]");
 		}
 	}
 
