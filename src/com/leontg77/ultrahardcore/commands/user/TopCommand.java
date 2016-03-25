@@ -9,17 +9,23 @@ import org.bukkit.entity.Player;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.TopStatsGUI;
 
 /**
  * Top command class.
  * 
  * @author LeonTG77
  */
-public class TopCommand extends UHCCommand {	
+public class TopCommand extends UHCCommand {
+	private final GUIManager gui;
+	private final Game game;
 
-	public TopCommand() {
+	public TopCommand(Game game, GUIManager gui) {
 		super("top", "");
+		
+		this.game = game;
+		this.gui = gui;
 	}
 
 	@Override
@@ -28,16 +34,16 @@ public class TopCommand extends UHCCommand {
 			throw new CommandException("Only players can open the top 10 inventory.");
 		}
 		
-		Game game = Game.getInstance();
-		
 		if (game.isRecordedRound()) {
 			throw new CommandException("Stats are disabled in Recorded Rounds.");
 		}
-
-		InvGUI gui = InvGUI.getInstance();
-		Player player = (Player) sender;
 		
-		gui.openTopStats(player);
+		if (game.isPrivateGame()) {
+			throw new CommandException("Stats are disabled in Private Games.");
+		}
+		
+		Player player = (Player) sender;
+		player.openInventory(gui.getGUI(TopStatsGUI.class).get());
 		return true;
 	}
 

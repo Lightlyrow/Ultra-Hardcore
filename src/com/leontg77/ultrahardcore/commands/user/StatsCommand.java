@@ -8,10 +8,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
-import com.leontg77.ultrahardcore.gui.InvGUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
+import com.leontg77.ultrahardcore.gui.guis.StatsGUI;
 
 /**
  * Stats command class.
@@ -19,9 +21,18 @@ import com.leontg77.ultrahardcore.gui.InvGUI;
  * @author LeonTG77
  */
 public class StatsCommand extends UHCCommand {
+	private final Main plugin;
 	
-	public StatsCommand() {
+	private final GUIManager gui;
+	private final Game game;
+	
+	public StatsCommand(Main plugin, Game game, GUIManager gui) {
 		super("stats", "[player]");
+		
+		this.plugin = plugin;
+		
+		this.game = game;
+		this.gui = gui;
 	}
 
 	@Override
@@ -31,10 +42,13 @@ public class StatsCommand extends UHCCommand {
 		}
 		
 		Player player = (Player) sender;
-		Game game = Game.getInstance();
 		
 		if (game.isRecordedRound()) {
 			throw new CommandException("Stats are disabled in Recorded Rounds.");
+		}
+		
+		if (game.isPrivateGame()) {
+			throw new CommandException("Stats are disabled in Private Games.");
 		}
 
 		Player target;
@@ -43,16 +57,16 @@ public class StatsCommand extends UHCCommand {
 			target = player;
 		} else {
 			target = Bukkit.getPlayer(args[0]);
+			
+			if (target == null) {
+				throw new CommandException("'" + args[0] + "' is not online.");
+			}
 		}
 		
-		if (target == null) {
-			throw new CommandException("'" + args[0] + "' is not online.");
-		}
+		StatsGUI inv = gui.getGUI(StatsGUI.class);
+		User user = plugin.getUser(target);
 		
-		InvGUI gui = InvGUI.getInstance();
-		User user = User.get(target);
-		
-		gui.openStats(player, user);
+		player.openInventory(inv.get(user));
 		return true;
 	}
 
