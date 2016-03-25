@@ -23,12 +23,16 @@ import com.leontg77.ultrahardcore.utils.PacketUtils;
  * @author LeonTG77
  */
 public class TimerCommand extends UHCCommand {
+	private final Main plugin;
+	
+	public TimerCommand(Main plugin) {
+		super("timer", "<duration|cancel> [message...]");
+		
+		this.plugin = plugin;
+	}
+	
 	private static BukkitRunnable run = null;
 	private boolean countdown = true;
-	
-	public TimerCommand() {
-		super("timer", "<duration|cancel> [message...]");
-	}
 	
 	@Override
 	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
@@ -86,8 +90,8 @@ public class TimerCommand extends UHCCommand {
 			}
 		};
 
-		sender.sendMessage(Main.PREFIX + "The timer has started.");
-		run.runTaskTimer(Main.plugin, 0, 20);
+		sender.sendMessage(Main.PREFIX + "The timer has been started.");
+		run.runTaskTimer(plugin, 0, 20);
 		return true;
 	}
 	
@@ -100,7 +104,7 @@ public class TimerCommand extends UHCCommand {
         }
     	
     	if (args.length == 2) {
-        	toReturn.add("&7The game is starting in &8»&a");
+        	toReturn.add("&7Game is closing in &8»&a");
     	}
 
     	return toReturn;
