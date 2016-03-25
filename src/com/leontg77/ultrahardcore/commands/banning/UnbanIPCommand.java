@@ -27,34 +27,34 @@ public class UnbanIPCommand extends UHCCommand {
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
 			return false;
 		}
 
 		BanList list = Bukkit.getBanList(BANLIST_TYPE);
-		String ip = args[0];
+		String IP = args[0];
     	
-		if (!list.isBanned(ip)) {
+		if (!list.isBanned(IP)) {
 			throw new CommandException("That IP is not banned.");
 		}
 		
 		PlayerUtils.broadcast(Main.PREFIX + "An IP has been unbanned.");
-		list.pardon(ip);
+		list.pardon(IP);
 		return true;
 	}
 	
 	@Override
-	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+	public List<String> tabComplete(CommandSender sender, String[] args) {
 		List<String> toReturn = new ArrayList<String>();
+
+    	BanList list = Bukkit.getBanList(BANLIST_TYPE);
     	
 		if (args.length == 1) {
-        	BanList list = Bukkit.getBanList(BANLIST_TYPE);
-        	
     		for (BanEntry entry : list.getBanEntries()) {
-    			String ip = entry.getTarget();
+    			String IP = entry.getTarget();
     			
-    			toReturn.add(ip);
+    			toReturn.add(IP);
     		}
         }
 		
