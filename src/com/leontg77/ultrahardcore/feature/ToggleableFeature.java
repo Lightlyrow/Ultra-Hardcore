@@ -126,7 +126,7 @@ public abstract class ToggleableFeature extends Feature {
 		lore.add(" ");
 		lore.add("§8» §7Currently: " + (isEnabled() ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
 		lore.add(" ");
-		lore.add("§8» §cDescription: ");
+		lore.add("§8» §cDescription:");
 		
 		for (String split : newDesc.split(";")) {
 			lore.add("§8» §7" + split);
