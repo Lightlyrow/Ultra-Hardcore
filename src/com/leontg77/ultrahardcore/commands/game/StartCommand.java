@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 
@@ -15,13 +17,18 @@ import com.leontg77.ultrahardcore.commands.UHCCommand;
  * @author LeonTG77
  */
 public class StartCommand extends UHCCommand {
+	private final Timer timer;
+	private final Game game;
 
-	public StartCommand() {
+	public StartCommand(Game game, Timer timer) {
 		super("start", "<timefromstart> <timeuntilpvp> <timeuntilmeetup>");
+		
+		this.timer = timer;
+		this.game = game;
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		switch (State.getState()) {
 		case NOT_RUNNING:
 		case OPEN:
@@ -61,7 +68,7 @@ public class StartCommand extends UHCCommand {
 	}
 
 	@Override
-	public List<String> tabComplete(final CommandSender sender, final String[] args) {
+	public List<String> tabComplete(CommandSender sender, String[] args) {
 		return new ArrayList<String>();
 	}
 }
