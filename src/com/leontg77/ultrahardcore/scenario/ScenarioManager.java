@@ -14,100 +14,7 @@ import com.leontg77.ultrahardcore.managers.BoardManager;
 import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
-import com.leontg77.ultrahardcore.scenario.scenarios.AchievementParanoia;
-import com.leontg77.ultrahardcore.scenario.scenarios.Armageddon;
-import com.leontg77.ultrahardcore.scenario.scenarios.Assassins;
-import com.leontg77.ultrahardcore.scenario.scenarios.AssaultAndBattery;
-import com.leontg77.ultrahardcore.scenario.scenarios.Astrophobia;
-import com.leontg77.ultrahardcore.scenario.scenarios.Aurophobia;
-import com.leontg77.ultrahardcore.scenario.scenarios.Backpacks;
-import com.leontg77.ultrahardcore.scenario.scenarios.Balance;
-import com.leontg77.ultrahardcore.scenario.scenarios.BaldChicken;
-import com.leontg77.ultrahardcore.scenario.scenarios.Barebones;
-import com.leontg77.ultrahardcore.scenario.scenarios.BedBombs;
-import com.leontg77.ultrahardcore.scenario.scenarios.BenchBlitz;
-import com.leontg77.ultrahardcore.scenario.scenarios.BestBTC;
-import com.leontg77.ultrahardcore.scenario.scenarios.BestPvE;
-import com.leontg77.ultrahardcore.scenario.scenarios.BetaZombies;
-import com.leontg77.ultrahardcore.scenario.scenarios.BigCrack;
-import com.leontg77.ultrahardcore.scenario.scenarios.BiomeParanoia;
-import com.leontg77.ultrahardcore.scenario.scenarios.Birds;
-import com.leontg77.ultrahardcore.scenario.scenarios.Blitz;
-import com.leontg77.ultrahardcore.scenario.scenarios.BlockRush;
-import com.leontg77.ultrahardcore.scenario.scenarios.Blocked;
-import com.leontg77.ultrahardcore.scenario.scenarios.BloodCycle;
-import com.leontg77.ultrahardcore.scenario.scenarios.BloodDiamonds;
-import com.leontg77.ultrahardcore.scenario.scenarios.BloodEnchants;
-import com.leontg77.ultrahardcore.scenario.scenarios.BloodLapis;
-import com.leontg77.ultrahardcore.scenario.scenarios.Bombers;
-import com.leontg77.ultrahardcore.scenario.scenarios.BowFighters;
-import com.leontg77.ultrahardcore.scenario.scenarios.Captains;
-import com.leontg77.ultrahardcore.scenario.scenarios.CarrotCombo;
-import com.leontg77.ultrahardcore.scenario.scenarios.CatsEyes;
-import com.leontg77.ultrahardcore.scenario.scenarios.Chicken;
-import com.leontg77.ultrahardcore.scenario.scenarios.ChunkApocalypse;
-import com.leontg77.ultrahardcore.scenario.scenarios.Cloud9;
-import com.leontg77.ultrahardcore.scenario.scenarios.Cobblehaters;
-import com.leontg77.ultrahardcore.scenario.scenarios.Coco;
-import com.leontg77.ultrahardcore.scenario.scenarios.Compensation;
-import com.leontg77.ultrahardcore.scenario.scenarios.Cripple;
-import com.leontg77.ultrahardcore.scenario.scenarios.Cryophobia;
-import com.leontg77.ultrahardcore.scenario.scenarios.CutClean;
-import com.leontg77.ultrahardcore.scenario.scenarios.DamageCycle;
-import com.leontg77.ultrahardcore.scenario.scenarios.Depths;
-import com.leontg77.ultrahardcore.scenario.scenarios.Diamondless;
-import com.leontg77.ultrahardcore.scenario.scenarios.DragonRush;
-import com.leontg77.ultrahardcore.scenario.scenarios.Eggs;
-import com.leontg77.ultrahardcore.scenario.scenarios.EightLeggedFreaks;
-import com.leontg77.ultrahardcore.scenario.scenarios.EnchantedDeath;
-import com.leontg77.ultrahardcore.scenario.scenarios.Entropy;
-import com.leontg77.ultrahardcore.scenario.scenarios.Fallout;
-import com.leontg77.ultrahardcore.scenario.scenarios.FlowerPower;
-import com.leontg77.ultrahardcore.scenario.scenarios.Genie;
-import com.leontg77.ultrahardcore.scenario.scenarios.GoToHell;
-import com.leontg77.ultrahardcore.scenario.scenarios.GoldRush;
-import com.leontg77.ultrahardcore.scenario.scenarios.Goldless;
-import com.leontg77.ultrahardcore.scenario.scenarios.GoneFishing;
-import com.leontg77.ultrahardcore.scenario.scenarios.Halloween;
-import com.leontg77.ultrahardcore.scenario.scenarios.HundredHearts;
-import com.leontg77.ultrahardcore.scenario.scenarios.InfiniteEnchanter;
-import com.leontg77.ultrahardcore.scenario.scenarios.Inventors;
-import com.leontg77.ultrahardcore.scenario.scenarios.Kings;
-import com.leontg77.ultrahardcore.scenario.scenarios.Krenzinator;
-import com.leontg77.ultrahardcore.scenario.scenarios.LAFS;
-import com.leontg77.ultrahardcore.scenario.scenarios.Landmines;
-import com.leontg77.ultrahardcore.scenario.scenarios.Lootcrates;
-import com.leontg77.ultrahardcore.scenario.scenarios.MeleeFun;
-import com.leontg77.ultrahardcore.scenario.scenarios.Moles;
-import com.leontg77.ultrahardcore.scenario.scenarios.MonstersInc;
-import com.leontg77.ultrahardcore.scenario.scenarios.MysteryTeams;
-import com.leontg77.ultrahardcore.scenario.scenarios.NightmareMode;
-import com.leontg77.ultrahardcore.scenario.scenarios.NoFall;
-import com.leontg77.ultrahardcore.scenario.scenarios.NoSprint;
-import com.leontg77.ultrahardcore.scenario.scenarios.Paranoia;
-import com.leontg77.ultrahardcore.scenario.scenarios.PeriodOfResistance;
-import com.leontg77.ultrahardcore.scenario.scenarios.Permakill;
-import com.leontg77.ultrahardcore.scenario.scenarios.PotentialHearts;
-import com.leontg77.ultrahardcore.scenario.scenarios.PotentialMoles;
-import com.leontg77.ultrahardcore.scenario.scenarios.PotentialPermanent;
-import com.leontg77.ultrahardcore.scenario.scenarios.Pyrophobia;
-import com.leontg77.ultrahardcore.scenario.scenarios.RewardingLongshots;
-import com.leontg77.ultrahardcore.scenario.scenarios.RewardingLongshotsPlus;
-import com.leontg77.ultrahardcore.scenario.scenarios.SharedHealth;
-import com.leontg77.ultrahardcore.scenario.scenarios.SkyClean;
-import com.leontg77.ultrahardcore.scenario.scenarios.Skyhigh;
-import com.leontg77.ultrahardcore.scenario.scenarios.SlaveMarket;
-import com.leontg77.ultrahardcore.scenario.scenarios.SlimyCrack;
-import com.leontg77.ultrahardcore.scenario.scenarios.Superheroes;
-import com.leontg77.ultrahardcore.scenario.scenarios.Switcheroo;
-import com.leontg77.ultrahardcore.scenario.scenarios.TeamHealth;
-import com.leontg77.ultrahardcore.scenario.scenarios.Timber;
-import com.leontg77.ultrahardcore.scenario.scenarios.Timebomb;
-import com.leontg77.ultrahardcore.scenario.scenarios.TrainingRabbits;
-import com.leontg77.ultrahardcore.scenario.scenarios.TripleArrows;
-import com.leontg77.ultrahardcore.scenario.scenarios.TripleOres;
-import com.leontg77.ultrahardcore.scenario.scenarios.VengefulSpirits;
-import com.leontg77.ultrahardcore.scenario.scenarios.Voidscape;
+import com.leontg77.ultrahardcore.scenario.scenarios.*;
 
 /**
  * Scenario management class.
@@ -121,7 +28,7 @@ public class ScenarioManager {
 		this.plugin = plugin;
 	}
 
-	private List<Scenario> scenarios = new ArrayList<Scenario>();
+	private final List<Scenario> scenarios = new ArrayList<Scenario>();
 	
 	/**
 	 * Get a scenario by a name.
@@ -135,6 +42,7 @@ public class ScenarioManager {
 				return scen;
 			}
 		}
+		
 		return null;
 	}
 	
@@ -146,11 +54,12 @@ public class ScenarioManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getScenario(Class<T> scenarioClass) {
-		for (Scenario s : scenarios) {
-			if (s.getClass().equals(scenarioClass)) {
-				return (T) s;
+		for (Scenario scen : scenarios) {
+			if (scen.getClass().equals(scenarioClass)) {
+				return (T) scen;
 			}
 		}
+		
 		return null;
 	}
 
@@ -171,9 +80,9 @@ public class ScenarioManager {
 	public List<Scenario> getEnabledScenarios() {
 		List<Scenario> list = new ArrayList<Scenario>();
 		
-		for (Scenario s : scenarios) {
-			if (s.isEnabled()) {
-				list.add(s);
+		for (Scenario scen : scenarios) {
+			if (scen.isEnabled()) {
+				list.add(scen);
 			}
 		}
 		
@@ -188,9 +97,9 @@ public class ScenarioManager {
 	public List<Scenario> getDisabledScenarios() {
 		List<Scenario> list = new ArrayList<Scenario>();
 		
-		for (Scenario s : scenarios) {
-			if (!s.isEnabled()) {
-				list.add(s);
+		for (Scenario scen : scenarios) {
+			if (!scen.isEnabled()) {
+				list.add(scen);
 			}
 		}
 		
@@ -202,8 +111,12 @@ public class ScenarioManager {
 	 */
 	public void registerScenarios(Arena arena, Game game, Timer timer, TeamManager teams, SpecManager spec, Settings settings, FeatureManager feat, ScatterManager scatter, BoardManager board) {
 		CutClean cc = new CutClean(this);
-		
+
+		scenarios.add(new HalfOres());
+		scenarios.add(new TripleArrows());
+		scenarios.add(new AchievementHunters(plugin, game, timer));
 		scenarios.add(new AchievementParanoia(game));
+		scenarios.add(new Achievements(game));
 		scenarios.add(new Armageddon(plugin, game));
 		scenarios.add(new Assassins(timer, game));
 		scenarios.add(new AssaultAndBattery(game, teams));
@@ -221,7 +134,7 @@ public class ScenarioManager {
 		scenarios.add(new BigCrack(plugin));
 		scenarios.add(new BiomeParanoia(plugin, spec));
 		scenarios.add(new Birds());
-		scenarios.add(new Blitz(timer, game));
+		scenarios.add(new Blitz(plugin, timer, game));
 		scenarios.add(new Blocked());
 		scenarios.add(new BlockRush());
 		scenarios.add(new BloodCycle(plugin));
@@ -243,6 +156,8 @@ public class ScenarioManager {
 		scenarios.add(new Cryophobia(plugin, game));
 		scenarios.add(cc);
 		scenarios.add(new DamageCycle(plugin));
+		scenarios.add(new DamageDodgers(plugin));
+		scenarios.add(new DeathSentence(plugin, game));
 		scenarios.add(new Depths());
 		scenarios.add(new Diamondless(cc));
 		scenarios.add(new DragonRush(spec));
@@ -270,10 +185,12 @@ public class ScenarioManager {
 		scenarios.add(new MeleeFun(plugin));
 		scenarios.add(new Moles(plugin, this, teams, spec));
 		scenarios.add(new MonstersInc(scatter));
+		scenarios.add(new Mountaineering());
 		scenarios.add(new MysteryTeams(plugin, game));
 		scenarios.add(new NightmareMode());
 		scenarios.add(new NoFall());
 		scenarios.add(new NoSprint());
+		scenarios.add(new Overcook(plugin));
 		scenarios.add(new Paranoia(game, board));
 		scenarios.add(new PeriodOfResistance(plugin));
 		scenarios.add(new Permakill(game));
@@ -294,10 +211,10 @@ public class ScenarioManager {
 		scenarios.add(new Timber());
 		scenarios.add(new Timebomb(plugin, game));
 		scenarios.add(new TrainingRabbits(timer));
-		scenarios.add(new TripleArrows());
 		scenarios.add(new TripleOres(this));
 		scenarios.add(new VengefulSpirits(settings, feat));
 		scenarios.add(new Voidscape(plugin));
+		scenarios.add(new Webcage());
 		
 		plugin.getLogger().info("All scenarios has been setup.");
 	}
