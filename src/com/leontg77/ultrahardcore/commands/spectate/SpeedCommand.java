@@ -18,14 +18,17 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  * @author LeonTG77
  */
 public class SpeedCommand extends UHCCommand {
+	private final SpecManager spec;
 
-	public SpeedCommand() {
+	public SpeedCommand(SpecManager spec) {
 		super("speed", "<speed> [player]");
+		
+		this.spec = spec;
 	}
 
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
-		if (!SpecManager.getInstance().isSpectating(sender.getName())) {
+		if (!spec.isSpectating(sender.getName())) {
 			throw new CommandException("You can only do this while spectating.");
 		}
 		
