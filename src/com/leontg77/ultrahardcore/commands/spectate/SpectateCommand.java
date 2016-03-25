@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.commands.CommandException;
@@ -21,10 +22,12 @@ import com.leontg77.ultrahardcore.managers.SpecManager;
  */
 public class SpectateCommand extends UHCCommand {
 	private final SpecManager spec;
+	private final Game game;
 
-	public SpectateCommand(SpecManager spec) {
+	public SpectateCommand(Game game, SpecManager spec) {
 		super("spectate", "<on|off|toggle|list|cmdspy|info> [player]");
 		
+		this.game = game;
 		this.spec = spec;
 	}
 
@@ -35,6 +38,10 @@ public class SpectateCommand extends UHCCommand {
 		}
 		
 		if (args[0].equalsIgnoreCase("list")) {
+			if (!sender.hasPermission("uhc.staff") && !spec.isSpectating(sender.getName())) {
+				throw new CommandException("You are not spectating.");
+			}
+			
 			if (spec.getSpectators().isEmpty()) {
 		    	sender.sendMessage(Main.PREFIX + "There are no spectators.");
 				return true;
@@ -73,13 +80,18 @@ public class SpectateCommand extends UHCCommand {
 			target = (Player) sender;
 		} else {
 			target = Bukkit.getPlayer(args[1]);
-		}
-		
-		if (target == null) {
-			throw new CommandException("'" + args[1] + "' is not online.");
+			
+			if (target == null) {
+				throw new CommandException("'" + args[1] + "' is not online.");
+			}
 		}
 		
 		if (args[0].equalsIgnoreCase("toggle")) {
+			if (!sender.hasPermission("uhc.prelist")) {
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				return true;
+			}
+			
 			if (game.getWorlds().contains(target.getWorld())) {
 				throw new CommandException("You need to be in spawn to do this.");
 			}
@@ -94,6 +106,11 @@ public class SpectateCommand extends UHCCommand {
 		}
 		
 		if (args[0].equalsIgnoreCase("on")) {
+			if (!sender.hasPermission("uhc.prelist")) {
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				return true;
+			}
+			
 			if (spec.isSpectating(target)) {
 				throw new CommandException((target == sender ? "You are" : "'" + target.getName() + "' is") + " already spectating.");
 			}
@@ -112,6 +129,11 @@ public class SpectateCommand extends UHCCommand {
 		}
 		
 		if (args[0].equalsIgnoreCase("off")) {
+			if (!sender.hasPermission("uhc.prelist")) {
+				sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
+				return true;
+			}
+			
 			if (!spec.isSpectating(target)) {
 				throw new CommandException((target == sender ? "You are" : "'" + target.getName() + "' is") + " not spectating.");
 			}
@@ -130,6 +152,10 @@ public class SpectateCommand extends UHCCommand {
 		}
 
 		if (args[0].equalsIgnoreCase("info")) {
+			if (!spec.isSpectating(target)) {
+				throw new CommandException((target == sender ? "You are" : "'" + target.getName() + "' is") + " not spectating.");
+			}
+			
 			if (spec.getSpecInfoers().contains(target.getName())) {
 				spec.getSpecInfoers().remove(target.getName());
 				
