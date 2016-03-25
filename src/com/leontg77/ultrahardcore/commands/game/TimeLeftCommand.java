@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.DateUtils;
@@ -17,9 +19,14 @@ import com.leontg77.ultrahardcore.utils.DateUtils;
  * @author LeonTG77
  */
 public class TimeLeftCommand extends UHCCommand {
+	private final Timer timer;
+	private final Game game;
 
-	public TimeLeftCommand() {
+	public TimeLeftCommand(Game game, Timer timer) {
 		super("timeleft", "");
+		
+		this.timer = timer;
+		this.game = game;
 	}
 
 	@Override
