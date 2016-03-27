@@ -131,8 +131,8 @@ public class LoginListener implements Listener {
 				
 				spec.enableSpecmode(player);
 			} else {
-				if (!user.getAlts().isEmpty()) {
-					String alts = user.getAlts().toString();
+				if (!user.getAlts(player).isEmpty()) {
+					String alts = user.getAlts(player).toString();
 					
 					PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7might be an alt of§8: " + alts.substring(1, alts.length() - 1) + "§8.", "uhc.staff");
 				}

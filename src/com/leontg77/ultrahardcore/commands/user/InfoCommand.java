@@ -94,11 +94,11 @@ public class InfoCommand extends UHCCommand {
 		sender.sendMessage("§8» §m--------------------------------------§8 «");
 		sender.sendMessage("§8» §7Possible alt accounts:");
         
-		if (user.getAlts().isEmpty()) {
+		if (user.getAlts(target).isEmpty()) {
 			sender.sendMessage("§8» §6This player has no known alts.");
 		}
 		
-		for (String alt : user.getAlts()) {
+		for (String alt : user.getAlts(target)) {
 			sender.sendMessage("§8» §c" + alt);
 		}
 		
