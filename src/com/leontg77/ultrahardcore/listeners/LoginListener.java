@@ -206,12 +206,17 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		perm.addPermissions(player);
 		
+		BanList name = Bukkit.getBanList(Type.NAME);
+		BanList ip = Bukkit.getBanList(Type.IP);
+		
+		String IP = event.getAddress().getHostAddress();
+		
+		if (IP.startsWith("151.80.11.") || IP.startsWith("164.132.80.") || IP.startsWith("176.31.75.") || IP.startsWith("178.33.27.") || IP.startsWith("91.121.231.")) {
+			name.addBan(player.getName(), "MCLeaks", null, "CONSOLE");
+			event.setResult(Result.KICK_BANNED);
+		}
+		
 		if (event.getResult() == Result.KICK_BANNED) {
-			BanList name = Bukkit.getBanList(Type.NAME);
-			BanList ip = Bukkit.getBanList(Type.IP);
-			
-			String adress = event.getAddress().getHostAddress();
-			
 			if (name.getBanEntry(player.getName()) != null) {
 				if (player.isOp()) {
 					name.pardon(player.getName());
@@ -232,14 +237,14 @@ public class LoginListener implements Listener {
 				"\n§8» §7If you would like to appeal, DM our twitter §a@ArcticUHC §8«"
 				);
 			}
-			else if (ip.getBanEntry(adress) != null) {
+			else if (ip.getBanEntry(IP) != null) {
 				if (player.isOp()) {
-					ip.pardon(adress);
+					ip.pardon(IP);
 					event.allow();
 					return;
 				}
 
-				BanEntry ban = ip.getBanEntry(adress);
+				BanEntry ban = ip.getBanEntry(IP);
 				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being IP-banned for:§c " + ban.getReason(), "uhc.staff");
 				
 				event.setKickMessage(
