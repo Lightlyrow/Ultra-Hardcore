@@ -6,10 +6,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.leontg77.ultrahardcore.Main;
@@ -54,11 +52,6 @@ public class DamageDodgers extends Scenario implements Listener, CommandExecutor
 		} 
 		
 		Player player = (Player) entity;
-		
-		if (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof Snowball) {
-			return;
-		}
-		
 		deaths++;
 		
 		if (deaths > needed) {
