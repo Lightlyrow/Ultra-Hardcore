@@ -73,7 +73,7 @@ public class Timer {
 		this.board = board;
 		this.spec = spec;
 	}
-
+ 
 	private BukkitRunnable taskSeconds;
 	private BukkitRunnable taskMinutes;
 
@@ -371,7 +371,7 @@ public class Timer {
 								continue;
 							}
 							
-							if (item.getType() == Material.DIAMOND) {
+			 				if (item.getType() == Material.DIAMOND) {
 								continue;
 							}
 							
