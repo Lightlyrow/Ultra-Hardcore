@@ -164,7 +164,8 @@ public class PermissionsManager {
 		perm.setPermission("uhc.spread", true);
 		perm.setPermission("uhc.spectate.others", true);
 		perm.setPermission("uhc.timer", true);
-		perm.setPermission("uhc.vote", true);
+		perm.setPermission("uhc.timer", true);
+		perm.setPermission("uhc.slavemarket", true);
 		perm.setPermission("uhc.mysteryteams", true);
 		perm.setPermission("uhc.bestbtc", true);
 		perm.setPermission("uhc.bestpve", true);
