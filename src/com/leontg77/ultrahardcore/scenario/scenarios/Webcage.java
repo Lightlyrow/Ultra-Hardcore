@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 
 /**
@@ -16,17 +18,29 @@ import com.leontg77.ultrahardcore.scenario.Scenario;
  * @author LeonTG77
  */
 public class Webcage extends Scenario implements Listener {
+	private final Game game;
 	
 	/**
 	 * Webcage scenario class constructor.
 	 */
-	public Webcage() {
+	public Webcage(Game game) {
 		super("Webcage", "A small \"cage\" of cobweb is formed around you after you die. This makes it hard to get your items but creates an interesting situation for melee where you are \"trapped\" after killing someone.");
+	
+		this.game = game;
 	}
 
 	@EventHandler
 	public void on(PlayerDeathEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		Player player = event.getEntity();
+		
+		if (!game.getPlayers().contains(player)) {
+			return;
+		}
+		
 		Location loc = player.getLocation();
 		
 		int bX = loc.getBlockX();
