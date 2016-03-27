@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -261,7 +262,7 @@ public class User {
 	 * 
 	 * @return A list of alt accounts.
 	 */
-	public Set<String> getAlts() {
+	public Set<String> getAlts(OfflinePlayer player) {
 		Set<String> altList = new HashSet<String>();
 		
 		String thisName = config.getString("username", "none1");
