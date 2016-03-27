@@ -190,7 +190,7 @@ public class ScenarioManager {
 		scenarios.add(new NightmareMode());
 		scenarios.add(new NoFall());
 		scenarios.add(new NoSprint());
-		scenarios.add(new Overcook(plugin));
+		scenarios.add(new Overcook(plugin, game));
 		scenarios.add(new Paranoia(game, board));
 		scenarios.add(new PeriodOfResistance(plugin));
 		scenarios.add(new Permakill(game));
@@ -214,7 +214,7 @@ public class ScenarioManager {
 		scenarios.add(new TripleOres(this));
 		scenarios.add(new VengefulSpirits(settings, feat));
 		scenarios.add(new Voidscape(plugin));
-		scenarios.add(new Webcage());
+		scenarios.add(new Webcage(game));
 		
 		plugin.getLogger().info("All scenarios has been setup.");
 	}
