@@ -82,7 +82,7 @@ public class SpecManager {
 	
 	private final Set<String> spectators = new HashSet<String>();
 	private final Set<String> specinfo = new HashSet<String>();
-	private final Set<String> cmdspy = new HashSet<String>();
+	private final Set<String> cmdspies = new HashSet<String>();
 	
 	/**
 	 * Get the instance of the specinfo class.
@@ -117,7 +117,7 @@ public class SpecManager {
 	 * @return List of players with commandspy.
 	 */
 	public Set<String> getCommandSpies() {
-		return cmdspy;
+		return cmdspies;
 	}
 	
 	/**
@@ -179,8 +179,8 @@ public class SpecManager {
 		specinfo.add(player.getName());
 		
 		// check for permission before enabling commandspy.
-		if (player.hasPermission("uhc.cmdspy")) {
-			cmdspy.add(player.getName());
+		if (player.hasPermission("uhc.cmdspy") && cmdspies.contains(player.getName())) {
+			cmdspies.remove(player.getName());
 		}
 		
 		player.getInventory().setItem(1, tp);
@@ -219,7 +219,7 @@ public class SpecManager {
 
 		spectators.remove(player.getName());
 		specinfo.remove(player.getName());
-		cmdspy.remove(player.getName());
+		cmdspies.add(player.getName());
 		
 		User user = plugin.getUser(player);
 		
@@ -310,6 +310,6 @@ public class SpecManager {
 	 * @return <code>true</code> if the player has cmdspy, <code>false</code> otherwise.
 	 */
 	public boolean hasCommandSpy(Player player) {
-		return cmdspy.contains(player.getName());
+		return !cmdspies.contains(player.getName());
 	}
 }
