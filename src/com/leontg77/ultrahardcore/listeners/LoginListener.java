@@ -131,8 +131,8 @@ public class LoginListener implements Listener {
 				
 				spec.enableSpecmode(player);
 			} else {
-				if (!user.getAlts(player).isEmpty()) {
-					String alts = user.getAlts(player).toString();
+				if (!user.getAlts().isEmpty()) {
+					String alts = user.getAlts().toString();
 					
 					PlayerUtils.broadcast(Main.PREFIX + "§c" + player.getName() + " §7might be an alt of§8: " + alts.substring(1, alts.length() - 1) + "§8.", "uhc.staff");
 				}
@@ -179,10 +179,6 @@ public class LoginListener implements Listener {
 			player.removePotionEffect(PotionEffectType.INVISIBILITY);	
 		}
 		
-		if (!State.isState(State.INGAME) && !State.isState(State.SCATTER)) {
-			player.teleport(plugin.getSpawn());
-		}
-		
 		if (!game.isRecordedRound()) {
 			player.sendMessage("§8» §m-----------§8[ §4Arctic UHC §8]§m------------§8 «");
 			
@@ -199,6 +195,14 @@ public class LoginListener implements Listener {
 			
 			player.sendMessage("§8» §m---------------------------------§8 «");
 		}
+		
+		if (State.isState(State.INGAME) || State.isState(State.SCATTER) || State.isState(State.ENDING)) {
+			if (player.hasPlayedBefore()) {
+				return;
+			}
+		}
+		
+		player.teleport(plugin.getSpawn());
 	}
 	
 	@EventHandler
