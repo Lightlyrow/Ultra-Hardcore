@@ -27,7 +27,19 @@ public class NumberUtils {
 	 * @return The formated double.
 	 */
 	public static String formatDouble(final double number) {
-		final NumberFormat formater = new DecimalFormat("##.##");
+		NumberFormat formater = new DecimalFormat("##.##");
+		
+		return formater.format(number).replaceAll(",", ".");
+	}
+	
+	/**
+	 * Format the given double to a less lengthed one.
+	 * 
+	 * @param number the double to format.
+	 * @return The formated double.
+	 */
+	public static String formatPercentDouble(final double number) {
+		DecimalFormat formater = new DecimalFormat("0.00");
 		
 		return formater.format(number).replaceAll(",", ".");
 	}
