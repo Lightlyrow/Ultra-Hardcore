@@ -40,7 +40,7 @@ public class Announcer {
 			"You can find the match post by doing §e/post§7.",
 			"The server runs off a custom UHC plugin by §eLeonTG77§7.",
 			"Wonder if you are lagging? Use §e/ms.",
-			"Follow our twitter for games and updates, §atwitter.com/ArcticUHC§7!",
+			"Follow our twitter for games and updates, §6twitter.com/ArcticUHC§7!",
 			"You can apply for a rank at §6redd.it/45gxj0",
 			"You can report staff at §6redd.it/45gxj0",
 			"You can give us suggestions at §6redd.it/45gxj0",
