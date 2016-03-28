@@ -112,8 +112,11 @@ public class Main extends JavaPlugin {
 
 		board = new BoardManager(this);	
 		teams = new TeamManager(this, board);
+
+		scen = new ScenarioManager(this);
+		feat = new FeatureManager(this, settings);
 		
-		perm = new PermissionsManager(this);	
+		perm = new PermissionsManager(this, scen);	
 		firework = new FireworkManager(this);
 		
 		HOF = new HOFManager(this);	
@@ -132,9 +135,6 @@ public class Main extends JavaPlugin {
 		enchPreview = new EnchantPreview(this);
 		hardHearts = new HardcoreHearts(this);
 		counter = new OnlineCount(this, game);
-
-		scen = new ScenarioManager(this);
-		feat = new FeatureManager(this, settings);
 		
 		cmd = new CommandHandler(this);
 		
