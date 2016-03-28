@@ -47,10 +47,6 @@ public class HOFManager {
 		}
         
 		cfile = new File(plugin.getDataFolder(), "config.yml");
-		dfile = new File(plugin.getDataFolder(), "data.yml");
-		hfile = new File(plugin.getDataFolder(), "hof.yml");
-		sfile = new File(plugin.getDataFolder(), "swap.yml");
-		wfile = new File(plugin.getDataFolder(), "worlds.yml");
 	        
 		if (!cfile.exists()) {
 			try {
@@ -59,6 +55,9 @@ public class HOFManager {
 				plugin.getLogger().severe(ChatColor.RED + "Could not create config.yml!");
 			}
 		}
+
+		config = YamlConfiguration.loadConfiguration(cfile);
+		dfile = new File(plugin.getDataFolder(), "data.yml");
 		    
 		if (!dfile.exists()) {
 			try {
@@ -67,6 +66,9 @@ public class HOFManager {
 				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create data.yml!");
 			}
 		}
+		
+		data = YamlConfiguration.loadConfiguration(dfile);
+		hfile = new File(plugin.getDataFolder(), "hof.yml");
         
 		if (!hfile.exists()) {
 			try {
@@ -75,6 +77,9 @@ public class HOFManager {
 				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create hof.yml!");
 			}
 		}
+		
+		hof = YamlConfiguration.loadConfiguration(hfile);
+		sfile = new File(plugin.getDataFolder(), "swap.yml");
                
 		if (!sfile.exists()) {
 			try {
@@ -83,6 +88,9 @@ public class HOFManager {
 				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create swap.yml!");
 			}
 		}
+		
+		swap = YamlConfiguration.loadConfiguration(sfile);
+		wfile = new File(plugin.getDataFolder(), "worlds.yml");
         
 		if (!wfile.exists()) {
 			try {
@@ -91,11 +99,7 @@ public class HOFManager {
 				Bukkit.getServer().getLogger().severe(ChatColor.RED + "Could not create worlds.yml!");
 			}
 		}
-
-		config = YamlConfiguration.loadConfiguration(cfile);
-		data = YamlConfiguration.loadConfiguration(dfile);
-		hof = YamlConfiguration.loadConfiguration(hfile);
-		swap = YamlConfiguration.loadConfiguration(sfile);
+		
 		worlds = YamlConfiguration.loadConfiguration(wfile);
 	
 		plugin.getLogger().info("Configs has been setup.");
