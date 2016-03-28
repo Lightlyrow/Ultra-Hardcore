@@ -20,7 +20,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.game.TimerCommand;
 import com.leontg77.ultrahardcore.events.FinalHealEvent;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
@@ -330,13 +329,12 @@ public class Timer {
 					
 					spec.getSpecInfo().getTotal(online).clear();
 					
-					final User user = plugin.getUser(online);
+					User user = plugin.getUser(online);
 					
 					if (spec.isSpectating(online)) {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Have fun spectating!", 1, 20, 1);
 					} else {
 						PacketUtils.sendTitle(online, "§aGo!", "§7Good luck, have fun!", 1, 20, 1);
-						user.increaseStat(Stat.GAMESPLAYED);
 						
 						if (online.getGameMode() != GameMode.SURVIVAL) {
 							online.setGameMode(GameMode.SURVIVAL);
@@ -364,7 +362,7 @@ public class Timer {
 					}
 					
 					if (scen.getScenario(SlaveMarket.class).isEnabled()) {
-						final PlayerInventory inv = online.getInventory();
+						PlayerInventory inv = online.getInventory();
 
 						for (ItemStack item : inv.getContents()) {
 							if (item == null) {
@@ -381,7 +379,7 @@ public class Timer {
 				        inv.setArmorContents(null);
 				        online.setItemOnCursor(new ItemStack(Material.AIR));
 
-				        final InventoryView openInventory = online.getOpenInventory();
+				        InventoryView openInventory = online.getOpenInventory();
 				        
 				        if (openInventory.getType() == InventoryType.CRAFTING) {
 				            openInventory.getTopInventory().clear();
@@ -475,6 +473,11 @@ public class Timer {
 						
 						if (meetupToString.equals("1")) {
 							PlayerUtils.broadcast(Main.PREFIX + "Start preparing to head to 0,0.");
+							return;
+						}
+						
+						if (game.isMovedMiddle() && meetupToString.equals("10")) {
+							PlayerUtils.broadcast(Main.PREFIX + "You can now use §a/mucoords§7 to get the meetup coords.");
 							return;
 						}
 					}
@@ -764,6 +767,11 @@ public class Timer {
 					for (World world : game.getWorlds()) {
 						world.setGameRuleValue("doDaylightCycle", "false");
 						world.setTime(6000);
+					}
+					
+					if (game.isMovedMiddle()) {
+						PlayerUtils.broadcast(Main.PREFIX + "You can now use §a/mucoords§7 to get the meetup coords.");
+						return;
 					}
 				}
 				
