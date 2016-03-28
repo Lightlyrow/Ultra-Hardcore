@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,113 +21,132 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.utils.NumberUtils;
 import com.leontg77.ultrahardcore.utils.PacketUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
- * ChunkApocalypse scenario class
+ * Voidscape scenario class.
  * 
  * @author LeonTG77
  */
-public class Voidscape extends Scenario implements Listener, CommandExecutor {
+public class Voidscape extends Scenario implements CommandExecutor, Listener {
+	public static final String PREFIX = "§9Voidscape §8» §7";
+	
 	private final Main plugin;
 	
+	/**
+	 * Voidscape scenario class constructor.
+	 * 
+	 * @param plugin The main class.
+	 */
 	public Voidscape(Main plugin) {
-		super("Voidscape", "All stone and bedrock is replaced with air");
-		
-		plugin.getCommand("void").setExecutor(this);
+		super("Voidscape", "All stone and bedrock is replaced with air, to get cobble you need to make water flow to lava and make a cobblestone generator.");
 		
 		this.plugin = plugin;
+		
+		plugin.getCommand("voidscape").setExecutor(this);
 	}
 	
-	private List<Location> locations = new ArrayList<Location>();
-	private int totalChunks;
+	private final List<Location> locs = new ArrayList<Location>();
 	
-	public BukkitRunnable task = null;
-
+	private BukkitRunnable task = null;
+	private double totalChunks = 0;
+	
 	@Override
-	public void onDisable() {}
-
-	@Override
-	public void onEnable() {}
+	public void onDisable() {
+		if (task != null) {
+			PlayerUtils.broadcast(PREFIX + "Cancelling voidscape generation.");
+			task.cancel();
+		}
+		
+		totalChunks = 0;
+		task = null;
+	}
 
 	@EventHandler
-    public void onFlow(BlockFromToEvent event) {
+    public void on(BlockFromToEvent event) {
+		if (task == null) {
+			return;
+		}
+		
         event.setCancelled(true);
     }
 	
-	public boolean onCommand(final CommandSender sender, Command cmd, String label, final String[] args) {
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can generate voidscape.");
-			return true;
-		}
-		
-		final Player player = (Player) sender;
-		
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!isEnabled()) {
-			sender.sendMessage(Main.PREFIX + "\"Voidscape\" is not enabled.");
+			sender.sendMessage(PREFIX + "Voidscape is not enabled.");
 			return true;
 		}
 		
-		if (!sender.hasPermission("uhc.voidscape")) {
+		if (!sender.hasPermission("uhc." + getName().toLowerCase())) {
 			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 		
-		if (args.length == 0) {
-			player.sendMessage(Main.PREFIX + "Usage: /void <radius>");
+		if (args.length < 2) {
+			sender.sendMessage(PREFIX + "Usage: /voidscape <world> <radius>");
+			return true;
+		}
+		
+		final World world = Bukkit.getWorld(args[0]);
+		
+		if (world == null) {
+			sender.sendMessage(ChatColor.RED + "The world '" + args[0] + "' does not exist.");
 			return true;
 		}
 		
 		int radius;
 		
 		try {
-			radius = Integer.parseInt(args[0]);
-		} catch (Exception e) {
-			player.sendMessage(ChatColor.RED + args[0] + " is not an vaild radius.");
+			radius = parseInt(args[1]);
+		} catch (Exception ex) {
+			sender.sendMessage(ChatColor.RED + ex.getMessage());
 			return true;
 		}
 		
-		locations = new ArrayList<Location>();
+		locs.clear();
 		
 		for (int x = -1 * radius; x < radius; x += 16) {
 			for (int z = -1 * radius; z < radius; z += 16) {
-				locations.add(new Location(player.getWorld(), x, 1, z));
+				locs.add(new Location(world, x, 1, z));
 			}
 		}
 		
-		totalChunks = locations.size();
+		totalChunks = locs.size();
 
-		PlayerUtils.broadcast(Main.PREFIX + "Voidscape generation started.");
+		PlayerUtils.broadcast(PREFIX + "Starting voidscape generation in world '§a" + world.getName() + "§7'.");
 		
 		task = new BukkitRunnable() {
 			public void run() {
-				if (locations.size() == 0) {
-					PlayerUtils.broadcast(Main.PREFIX + "Voidscape generation finished.");
+				if (locs.size() == 0) {
+					PlayerUtils.broadcast(PREFIX + "The voidscape generation has finished.");
+					
 					cancel();
 					task = null;
 					return;
 				}
 
-				Location loc = locations.remove(locations.size() - 1);
-				Chunk chunk = player.getWorld().getChunkAt(loc);
+				Location loc = locs.remove(locs.size() - 1);
+				Chunk chunk = world.getChunkAt(loc);
 				
 				for (int y = 0; y < 128; y++) {
 					for (int x = 0; x < 16; x++) {
 						for (int z = 0; z < 17; z++) {
 							Block block = chunk.getBlock(x, y, z);
 							
-							if (block.getType() == Material.STONE || block.getType() == Material.BEDROCK) {
+							if (block.getType() == Material.STONE || block.getType() == Material.BEDROCK || block.getType() == Material.MONSTER_EGGS) {
 								block.setType(Material.AIR);
 							}
 						}
 					}
 				}
 
-				int percentCompleted = ((totalChunks - locations.size())*100 / totalChunks);
+				double completed = ((totalChunks - ((double) locs.size())) * 100 / totalChunks);
 				
 				for (Player online : Bukkit.getOnlinePlayers()) {
-					PacketUtils.sendAction(online, Main.PREFIX + "Voidscape generation, §6" + percentCompleted + "% §7finished");
+					PacketUtils.sendAction(online, PREFIX + "Generating voidscape §8(§a" + NumberUtils.formatPercentDouble(completed) + "%§8)");
 				}
 			}
 		};
