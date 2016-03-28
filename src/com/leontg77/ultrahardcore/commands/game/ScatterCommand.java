@@ -47,7 +47,7 @@ public class ScatterCommand extends UHCCommand {
 	private final Arena arena;
 	
 	public ScatterCommand(Game game, Settings settings, SpecManager spec, ScatterManager scatter, TeamManager teams, Parkour parkour, Arena arena) {
-		super("spread", "<teamspread> <player|*>");
+		super("scatter", "<teamspread> <player|*>");
 		
 		this.spec = spec;
 		
@@ -78,8 +78,18 @@ public class ScatterCommand extends UHCCommand {
 		if (args[1].equalsIgnoreCase("*")) {
 			switch (State.getState()) {
 			case NOT_RUNNING:
+				if (game.isRecordedRound() || game.isPrivateGame()) {
+					State.setState(State.CLOSED);
+					break;
+				}
+			
 				throw new CommandException("You can't scatter when no games are running.");
 			case OPEN:
+				if (game.isRecordedRound() || game.isPrivateGame()) {
+					State.setState(State.CLOSED);
+					break;
+				}
+			
 				throw new CommandException("You can't scatter when the server isn't whitelisted.");
 			case SCATTER:
 				throw new CommandException("You can't scatter while a scatter is currently running.");
@@ -97,7 +107,7 @@ public class ScatterCommand extends UHCCommand {
 				throw new CommandException("You can't scatter without disabling team management.");
 			}
 			
-			if (!game.isMuted()) {
+			if (!game.isPrivateGame() && !game.isRecordedRound() && !game.isMuted()) {
 				throw new CommandException("You can't scatter without muting the chat.");
 			}
 			
@@ -177,7 +187,7 @@ public class ScatterCommand extends UHCCommand {
 				worlds.setPVP(false);
 				worlds.setTime(0);
 				
-				worlds.setGameRuleValue("doDaylightCycle", "true");
+				worlds.setGameRuleValue("doDaylightCycle", "false");
 				worlds.setThundering(false);
 				worlds.setStorm(false);
 				
