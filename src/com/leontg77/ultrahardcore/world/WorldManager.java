@@ -95,7 +95,7 @@ public class WorldManager {
 		
 		if (movedMiddle) {
 			int x = rand.nextInt(7500) - 3750;
-			int z = rand.nextInt(3750);
+			int z = rand.nextInt(3750); // I don't want negative coords for the Z as that messes up hostile mob spawning.
 			
 			border.setCenter(x, z);
 		} else {
