@@ -9,7 +9,9 @@ import org.bukkit.WorldBorder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -20,9 +22,14 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BorderCommand extends UHCCommand {
+	private final Settings settings;
+	private final Game game;
 
-	public BorderCommand() {
+	public BorderCommand(Game game, Settings settings) {
 		super("border", "<world> <size>");
+
+		this.settings = settings;
+		this.game = game;
 	}
 
 	@Override
@@ -44,18 +51,19 @@ public class BorderCommand extends UHCCommand {
 			}
 		}
 		
-		if (args.length < 2) {
+		if (args.length < 2 || !sender.hasPermission(getPermission() + ".set")) {
 			WorldBorder border = world.getWorldBorder();
+			int diameter;
 			
-			int diameter = (int) border.getSize();
+			if (game.isMovedMiddle()) {
+				diameter = settings.getWorlds().getInt(world.getName() + ".diameter", (int) border.getSize());
+			} else {
+				diameter = (int) border.getSize();
+			}
+			
 			int radius = diameter / 2;
 			
 			sender.sendMessage(Main.PREFIX + "The border is currently: §a" + diameter + "x" + diameter + " §8(§a+" + radius + " -" + radius + "§8)");
-			return true;
-		}
-		
-		if (!sender.hasPermission(getPermission() + ".set")) {
-			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 
