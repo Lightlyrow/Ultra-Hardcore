@@ -7,6 +7,7 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -143,7 +144,15 @@ public class SpectatorListener implements Listener {
 		}
 		
 		if (item.getType() == Material.FEATHER) {
-			Location loc = new Location(game.getWorld(), 0.5, 0, 0.5);
+			World world = game.getWorld();
+			
+			if (world == null) {
+				return;
+			}
+			
+			Location center = world.getWorldBorder().getCenter();
+			
+			Location loc = new Location(world, center.getBlockX() + 0.5, 0, center.getBlockZ() + 0.5);
 			loc.setY(LocationUtils.highestTeleportableYAtLocation(loc) + 1);
 			
 			player.teleport(loc);
