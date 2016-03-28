@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
@@ -49,8 +50,10 @@ public class PregenCommand extends UHCCommand {
 			throw new CommandException("The world '" + args[0] + "' does not exist.");
 		}
 		
+		Location center = world.getWorldBorder().getCenter();
+		
 		int radius = parseInt(args[1], "diameter") / 2;
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " set " + radius + " 0 0");
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " set " + radius + " " + center.getX() + " " + center.getZ());
 		
 		if (args.length > 2) {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420 208 " + parseBoolean(args[2], "force"));
