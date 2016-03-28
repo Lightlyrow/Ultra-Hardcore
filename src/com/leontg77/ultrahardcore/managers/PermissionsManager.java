@@ -12,6 +12,8 @@ import com.google.common.collect.ImmutableMap;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Rank;
+import com.leontg77.ultrahardcore.scenario.Scenario;
+import com.leontg77.ultrahardcore.scenario.ScenarioManager;
 
 /**
  * Permissions manager class.
@@ -21,14 +23,17 @@ import com.leontg77.ultrahardcore.User.Rank;
  * @author LeonTG77
  */
 public class PermissionsManager {
+	private final ScenarioManager manager;
 	private final Main plugin;
 	
 	/**
 	 * Permissions manager class constructor.
 	 * 
 	 * @param plugin The main class.
+	 * @param manager The scenario manager class.
 	 */
-	public PermissionsManager(Main plugin) {
+	public PermissionsManager(Main plugin, ScenarioManager manager) {
+		this.manager = manager;
 		this.plugin = plugin;
 	}
 	
@@ -93,6 +98,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.hotbar", true);
 		perm.setPermission("uhc.parkour", true);
 		perm.setPermission("uhc.combatlog", true);
+		perm.setPermission("uhc.mucoords", true);
 		
 		// spectator perms, they can only use them if they're spectating.
 		perm.setPermission("uhc.spectate", true);
@@ -161,23 +167,18 @@ public class PermissionsManager {
 		perm.setPermission("uhc.sethealth", true);
 		perm.setPermission("uhc.setmaxhealth", true);
 		perm.setPermission("uhc.start", true);
-		perm.setPermission("uhc.spread", true);
+		perm.setPermission("uhc.scatter", true);
 		perm.setPermission("uhc.spectate.others", true);
 		perm.setPermission("uhc.timer", true);
-		perm.setPermission("uhc.timer", true);
-		perm.setPermission("uhc.slavemarket", true);
-		perm.setPermission("uhc.mysteryteams", true);
-		perm.setPermission("uhc.bestbtc", true);
-		perm.setPermission("uhc.bestpve", true);
-		perm.setPermission("uhc.bigcrack", true);
-		perm.setPermission("uhc.slimycrack", true);
-		perm.setPermission("uhc.kings", true);
-		perm.setPermission("uhc.damagedodgers", true);
-		
+		perm.setPermission("uhc.vote", true);
 		perm.setPermission("uhc.pvp", true);
 		perm.setPermission("uhc.pregen", true);
 		perm.setPermission("uhc.border.set", true);
 		perm.setPermission("uhc.world", true);
+		
+		for (Scenario scen : manager.getScenarios()) {
+			perm.setPermission("uhc." + scen.getName().toLowerCase(), true);
+		}
 	}
 	
 	/**
@@ -194,6 +195,7 @@ public class PermissionsManager {
 			player.removeAttachment(permissions.get(player.getUniqueId()));
 		} catch (Exception e) {
 			Bukkit.getLogger().warning("Couldn't remove " + player.getName() + "'s permissions.");
+			Bukkit.getLogger().warning(e.getClass().getName() + ": " + e.getMessage());
 		}
 		
 		permissions.remove(player.getUniqueId());
