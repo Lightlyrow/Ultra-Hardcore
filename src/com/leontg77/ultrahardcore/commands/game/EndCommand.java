@@ -23,6 +23,7 @@ import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.gui.GUIManager;
@@ -101,12 +102,9 @@ public class EndCommand extends UHCCommand {
 		
 		for (int i = 0; i < args.length; i++) {
 			OfflinePlayer winner = PlayerUtils.getOfflinePlayer(args[i]);
+			
 			User user = plugin.getUser(winner);
-
-			if (!game.isRecordedRound() && !game.isPrivateGame()) {
-				user.getFile().set("stats.wins", user.getFile().getInt("stats.wins") + 1);
-				user.saveFile();
-			}
+			user.increaseStat(Stat.WINS);
 
 			String color = teams.getTeam(winner) == null ? "§f" : teams.getTeam(winner).getPrefix();
 			int kills = board.getActualScore(winner.getName());
