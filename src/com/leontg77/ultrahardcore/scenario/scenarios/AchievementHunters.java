@@ -83,7 +83,7 @@ public class AchievementHunters extends Scenario implements CommandExecutor, Lis
     
     @Override
     public void onDisable() {
-    	if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+    	if (task != null) {
     		task.cancel();
     	}
     	
