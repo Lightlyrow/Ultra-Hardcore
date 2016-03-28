@@ -85,6 +85,8 @@ commands:
   matchpost:
     description: Get the link of the match post.
     aliases: [post]
+  mucoords:
+    description: Get the meetup coords for moved middle games.
   ms:
     description: Check someones ping to the server
     aliases: [ping]
@@ -138,9 +140,9 @@ commands:
     description: Set the lobby spawn point.
   speed:
     description: Change your fly/walk speed
-  spread:
+  scatter:
     description: Spread all players and freeze them.
-    aliases: [scatter]
+    aliases: [spread]
   ac:
     description: Talk in StaffChat.
   start:
@@ -256,5 +258,5 @@ commands:
     description: View what effects people have.
   super:
     description: Add or remove effects.
-  void:
-    description: Voidscape generator.
+  voidscape:
+    description: Generate voidscape.
