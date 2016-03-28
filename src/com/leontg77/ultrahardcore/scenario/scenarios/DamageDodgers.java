@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
@@ -21,13 +22,17 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class DamageDodgers extends Scenario implements Listener, CommandExecutor {
-	private static final String PREFIX = "§7DamageDodgers §8» §7";
+	private final Timer timer;
+	
+	private static final String PREFIX = "§4DamageDodgers §8» §7";
 	private static final int DAMAGE_AMOUNT = 10000;
 	
-	public DamageDodgers(Main plugin) {
+	public DamageDodgers(Main plugin, Timer timer) {
 		super("DamageDodgers", "An amount of player deaths needed to deactivate Damage Dodgers is set by the host. If a player takes damage while Damage Dodgers is active, they will be instantly killed, and one less player will be required to turn it off. This continues until enough players have died and it deactivates, allowing players to take damage safely.");
 		
 		plugin.getCommand("dodge").setExecutor(this);
+		
+		this.timer = timer;
 	}
 	
 	private int needed = 0;
@@ -45,6 +50,10 @@ public class DamageDodgers extends Scenario implements Listener, CommandExecutor
 			return;
 		}
 		
+		if (timer.getTimeSinceStartInSeconds() < 20) {
+			return;
+		}
+		
 		Entity entity = event.getEntity();
 		
 		if (!(event.getEntity() instanceof Player)) {
@@ -57,16 +66,15 @@ public class DamageDodgers extends Scenario implements Listener, CommandExecutor
 		if (deaths > needed) {
 			return;
 		}
-		
-		if (deaths == needed) {
-			PlayerUtils.broadcast(PREFIX + "Amount of needed deaths reached, disabling damage dodgers.");
-			return;
-		}
 
 		PlayerUtils.broadcast(PREFIX + "§b" + player.getName() + " §7failed to avoid damage!");
 		PlayerUtils.broadcast(PREFIX + "§b" + deaths + " §7" + (deaths == 1 ? "player" : "players") + " have perished!");
 		
 		event.setDamage(DAMAGE_AMOUNT);
+		
+		if (deaths == needed) {
+			PlayerUtils.broadcast(PREFIX + "Amount of needed deaths reached, disabling damage dodgers.");
+		}
 	}
 
 	@Override
