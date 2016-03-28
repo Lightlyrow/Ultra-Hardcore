@@ -13,7 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -262,7 +261,7 @@ public class User {
 	 * 
 	 * @return A list of alt accounts.
 	 */
-	public Set<String> getAlts(OfflinePlayer player) {
+	public Set<String> getAlts() {
 		Set<String> altList = new HashSet<String>();
 		
 		String thisName = config.getString("username", "none1");
@@ -284,7 +283,7 @@ public class User {
 			
 			Player check = Bukkit.getPlayerExact(name);
 			
-			if (banlist.getBanEntry(player.getName()) != null) {
+			if (banlist.getBanEntry(name) != null) {
 				altList.add("§4" + name + "§8");
 			}
 			else if (check != null) {
@@ -537,8 +536,8 @@ public class User {
 			return;
 		}
 		
-		final String statName = stat.name().toLowerCase();
-		final double current = config.getDouble("stats." + statName, 0);
+		String statName = stat.name().toLowerCase();
+		double current = config.getDouble("stats." + statName, 0);
 		
 		if (stat == Stat.ARENADEATHS || stat == Stat.ARENAKILLSTREAK || stat == Stat.ARENAKILLS) {
 			if (!Bukkit.hasWhitelist()) {
@@ -546,7 +545,7 @@ public class User {
 				saveFile();
 			}
 		} else {
-			if (State.isState(State.INGAME) || stat == Stat.WINS) {
+			if (State.isState(State.INGAME) || stat == Stat.WINS || stat == Stat.GAMESPLAYED) {
 				config.set("stats." + statName, current + 1);
 				saveFile();
 			}
