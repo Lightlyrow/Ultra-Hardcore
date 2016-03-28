@@ -213,6 +213,14 @@ public class Game {
 		return settings.getConfig().getBoolean("misc.prewl", true);
 	}
 	
+	public boolean isMovedMiddle() {
+		if (getWorld() == null) {
+			return false;
+		}
+		
+		return settings.getWorlds().getBoolean(getWorld().getName() + ".movedMiddle", false);
+	}
+	
 	/**
 	 * Set the team size of the game.
 	 * 
