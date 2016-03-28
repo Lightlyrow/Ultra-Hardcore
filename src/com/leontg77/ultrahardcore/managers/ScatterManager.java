@@ -14,6 +14,8 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
+import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -24,6 +26,8 @@ import com.google.common.collect.ImmutableSet;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
+import com.leontg77.ultrahardcore.User;
+import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.utils.LocationUtils;
 import com.leontg77.ultrahardcore.utils.NumberUtils;
@@ -54,6 +58,8 @@ public class ScatterManager {
 		this.manager = manager;
 		this.game = game;
 	}
+
+	private final Random rand = new Random();
 	
 	/**
 	 * List of all freeze effects.
@@ -145,6 +151,9 @@ public class ScatterManager {
 			}
 		}
 			
+		User user = plugin.getUser(toScatter);
+		user.increaseStat(Stat.GAMESPLAYED);
+		
 		toScatter.teleport(lateScatters.get(toScatter.getName()));
 		lateScatters.remove(toScatter.getName());
 	}
@@ -262,6 +271,9 @@ public class ScatterManager {
 															toScatter.addPotionEffect(effect);
 														}
 													}
+
+													User user = plugin.getUser(toScatter);
+													user.increaseStat(Stat.GAMESPLAYED);
 													
 													toScatter.teleport(scatterLocs.get(scatter));
 												}
@@ -284,6 +296,9 @@ public class ScatterManager {
 														toScatter.addPotionEffect(effect);
 													}
 												}
+
+												User user = plugin.getUser(toScatter);
+												user.increaseStat(Stat.GAMESPLAYED);
 												
 												toScatter.teleport(scatterLocs.get(scatter));
 												scatterLocs.remove(scatter);
@@ -294,7 +309,12 @@ public class ScatterManager {
 
 										if (toScatter.size() > 1) {
 											for (Player online : Bukkit.getOnlinePlayers()) {
-												PacketUtils.sendAction(online, "§7Scattered " + scatter + " §8[§a" + i + "§7/§a" + names.size() + "§8]");
+												if (scatterTeams) {
+													PacketUtils.sendAction(online, "§7Scattered §6Team " + scatter.substring(3) + " §8[§a" + i + "§7/§a" + names.size() + "§8]");
+												} else {
+													PacketUtils.sendAction(online, "§7Scattered §6" + scatter + " §8[§a" + i + "§7/§a" + names.size() + "§8]");
+												}
+												
 											}
 										}
 									} else {
@@ -341,10 +361,13 @@ public class ScatterManager {
 					break;
 				}
 				
-				final Random rand = new Random();
+				WorldBorder border = world.getWorldBorder();
 				
 				int x = rand.nextInt(radius * 2) - radius;
 				int z = rand.nextInt(radius * 2) - radius;
+
+				x = x + border.getCenter().getBlockX();
+				z = z + border.getCenter().getBlockZ();
 
 				Location loc = new Location(world, x + 0.5, 0, z + 0.5);
 
@@ -355,9 +378,9 @@ public class ScatterManager {
 					}
 				}
 				
-				if (!close && isVaild(loc.clone())) {
+				if (!close && isValid(loc.clone())) {
 					double y = LocationUtils.highestTeleportableYAtLocation(loc);
-					loc.setY(y + 2);
+					loc.setY(y + 1);
 					locs.add(loc);
 					break;
 				} else {
@@ -375,18 +398,22 @@ public class ScatterManager {
 	 * @param loc the location.
 	 * @return True if its vaild, false otherwise.
 	 */
-	private boolean isVaild(Location loc) {
+	private boolean isValid(Location loc) {
 		loc.setY(loc.getWorld().getHighestBlockYAt(loc));
 		
 		Material type = loc.add(0, -1, 0).getBlock().getType();
-		boolean vaild = true;
+		boolean valid = true;
+		
+		if (loc.getWorld().getWorldType() != WorldType.FLAT && loc.getY() < 60) {
+			valid = false;
+		}
 		
 		for (Material no : INVAILD_SPAWN_BLOCKS) {
 			if (type == no) {
-				vaild = false;
+				valid = false;
 			}
 		}
 		
-		return vaild;
+		return valid;
 	}
 }
