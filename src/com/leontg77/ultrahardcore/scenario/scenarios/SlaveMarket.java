@@ -37,7 +37,7 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class SlaveMarket extends Scenario implements Listener, CommandExecutor {
-	private static final String PREFIX = "§2§lMarket §8» §7";
+	private static final String PREFIX = "§2Market §8» §7";
 	
 	private final TeamManager teams;
 	private final Main plugin;
