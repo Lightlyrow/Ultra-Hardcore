@@ -73,7 +73,7 @@ public class PacketUtils {
 	public static void sendAction(final Player player, final String msg) {
 		final CraftPlayer craft = (CraftPlayer) player;
 
-		final IChatBaseComponent actionJSON = ChatSerializer.a("{text:'" + msg + "'}");
+		final IChatBaseComponent actionJSON = ChatSerializer.a("{text:\"" + msg + "\"}");
 		final PacketPlayOutChat actionPacket = new PacketPlayOutChat(actionJSON, (byte) 2);
         
         craft.getHandle().playerConnection.sendPacket(actionPacket);
