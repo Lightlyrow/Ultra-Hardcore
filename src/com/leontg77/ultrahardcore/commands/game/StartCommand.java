@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.commands.CommandException;
@@ -47,20 +48,30 @@ public class StartCommand extends UHCCommand {
 			if (args.length < 3) {
 				return false;
 			}
-			
-			int timePassed = parseInt(args[0], "time from start");
-			int pvp = parseInt(args[1], "time until pvp");
-			int meetup = parseInt(args[2], "time until meetup");
-			
-			timer.setTimeSinceStart(timePassed);
-			timer.setPvP(pvp);
-			timer.setMeetup(meetup);
 
 			if (game.isRecordedRound()) {
+				int timePassed = parseInt(args[0], "time to next episode number");
+				int pvp = parseInt(args[1], "time passed number");
+				int meetup = parseInt(args[2], "current episode number");
+				
+				timer.setTimeSinceStart(timePassed);
+				timer.setPvP(pvp);
+				timer.setMeetup(meetup);
+				
 				timer.timerRR();
 			} else {
+				int timePassed = parseInt(args[0], "time from start");
+				int pvp = parseInt(args[1], "time until pvp");
+				int meetup = parseInt(args[2], "time until meetup");
+				
+				timer.setTimeSinceStart(timePassed);
+				timer.setPvP(pvp);
+				timer.setMeetup(meetup);
+				
 				timer.timer();
 			}
+			
+			sender.sendMessage(Main.PREFIX + "You started the timers.");
 			break;
 		}
 		
@@ -70,5 +81,14 @@ public class StartCommand extends UHCCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
 		return new ArrayList<String>();
+	}
+	
+	@Override
+	public String getUsage() {
+		if (game.isRecordedRound()) {
+			return "/" + getName() + " <time to next ep> <time passed> <current ep>";
+		}
+		
+		return super.getUsage();
 	}
 }
