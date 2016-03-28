@@ -1,5 +1,6 @@
 package com.leontg77.ultrahardcore.world;
 
+import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -33,6 +34,8 @@ public class WorldManager {
 		this.settings = settings;
 	}
 	
+	private final Random rand = new Random();
+	
 	/**
 	 * Load all the saved worlds.
 	 */
@@ -61,7 +64,7 @@ public class WorldManager {
 	 * @param environment The world's environment.
 	 * @param type The world type.
 	 */
-	public void createWorld(String name, int diameter, long seed, Environment environment, WorldType type, boolean antiStripmine, boolean oreLimiter, boolean newStone) {
+	public void createWorld(String name, int diameter, long seed, Environment environment, WorldType type, boolean antiStripmine, boolean oreLimiter, boolean newStone, boolean movedMiddle) {
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		creator.environment(environment);
@@ -85,11 +88,19 @@ public class WorldManager {
 		WorldBorder border = world.getWorldBorder();
 		
 		border.setSize(diameter);
-		border.setCenter(0.0, 0.0);
 		border.setWarningDistance(0);
 		border.setWarningTime(60);
 		border.setDamageAmount(0.1);
 		border.setDamageBuffer(0);
+		
+		if (movedMiddle) {
+			int x = rand.nextInt(7500) - 3750;
+			int z = rand.nextInt(3750);
+			
+			border.setCenter(x, z);
+		} else {
+			border.setCenter(0.0, 0.0);
+		}
 		
 		world.save();
 
@@ -104,6 +115,7 @@ public class WorldManager {
 		settings.getWorlds().set(world.getName() + ".antiStripmine", antiStripmine);
 		settings.getWorlds().set(world.getName() + ".oreLimiter", oreLimiter);
 		settings.getWorlds().set(world.getName() + ".newStone", newStone);
+		settings.getWorlds().set(world.getName() + ".movedMiddle", movedMiddle);
 		
 		settings.saveWorlds();
 	}
