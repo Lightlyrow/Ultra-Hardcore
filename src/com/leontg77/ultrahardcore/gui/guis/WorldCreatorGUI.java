@@ -49,12 +49,15 @@ public class WorldCreatorGUI extends GUI implements Listener {
 	}
 	
 	private String name;
+	
 	private int diameter;
 	private long seed;
 	
 	private boolean newstone = false;
 	private boolean antiStripmine = true;
 	private boolean orelimiter = true;
+
+	private boolean moved = true;
 	
 	private boolean netherD = true;
 	private boolean endD = false;
@@ -71,6 +74,8 @@ public class WorldCreatorGUI extends GUI implements Listener {
 			newstone = false;
 			antiStripmine = true;
 			orelimiter = false;
+			
+			moved = false;
 			
 			netherD = true;
 			endD = false;
@@ -163,18 +168,22 @@ public class WorldCreatorGUI extends GUI implements Listener {
 			endD = !endD;
 			update();
 			break;
+		case "moved 0,0":
+			moved = !moved;
+			update();
+			break;
 		case "confirm":
 			player.closeInventory();
 			player.sendMessage(Main.PREFIX + "Starting creation of world '§a" + name + "§7'...");
 			
-			manager.createWorld(name, diameter, seed, Environment.NORMAL, type, antiStripmine, orelimiter, newstone);
+			manager.createWorld(name, diameter, seed, Environment.NORMAL, type, antiStripmine, orelimiter, newstone, moved);
 			
 			if (netherD) {
-				manager.createWorld(name + "_nether", diameter, seed, Environment.NETHER, type, false, orelimiter, true);
+				manager.createWorld(name + "_nether", diameter, seed, Environment.NETHER, type, false, orelimiter, true, moved);
 			}
 			
 			if (endD) {
-				manager.createWorld(name + "_end", diameter, seed, Environment.THE_END, type, false, orelimiter, true);
+				manager.createWorld(name + "_end", diameter, seed, Environment.THE_END, type, false, orelimiter, true, moved);
 			}
 
 			player.sendMessage(Main.PREFIX + "World creation finished.");
@@ -241,12 +250,15 @@ public class WorldCreatorGUI extends GUI implements Listener {
 		inv.setItem(14, oreLimiter);
 		lore.clear();
 		
-		ItemStack TBA = new ItemStack(Material.BARRIER);
+		ItemStack TBA = new ItemStack(Material.EMPTY_MAP);
 		ItemMeta TBAMeta = TBA.getItemMeta();
 		
-		TBAMeta.setDisplayName("§8» §6To be added §8«");
+		TBAMeta.setDisplayName("§8» §6Moved 0,0 §8«");
 		lore.add(" ");
-		lore.add("§8» §7Unknown.");
+		lore.add("§8» §7Currently: " + (moved ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled"));
+		lore.add(" ");
+		lore.add("§8» §cDescription:");
+		lore.add("§8» §7Makes the center at the world not at 0,0.");
 		lore.add(" ");
 		TBAMeta.setLore(lore);
 		TBA.setItemMeta(TBAMeta);
