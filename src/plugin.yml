@@ -133,6 +133,9 @@ commands:
   specchat:
     description: Talk in the spectator chat.
     aliases: [sc]
+  specandstaffchat:
+    description: Talk in the spectator + staff chat.
+    aliases: [ssc, sschat]
   spectate:
     description: Change your spectator status.
     aliases: [spec]
