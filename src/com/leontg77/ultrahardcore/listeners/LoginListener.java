@@ -73,11 +73,7 @@ public class LoginListener implements Listener {
 	
 	@EventHandler
 	public void on(PlayerJoinEvent event) {
-		final Player player = event.getPlayer();
-		
-		if (player.hasPermission("uhc.cmdspy")) {
-			spec.getCommandSpies().add(player.getName());
-		}
+		Player player = event.getPlayer();
 		
 		// update names (name changes)
 		for (String path : settings.getHOF().getKeys(false)) {
@@ -90,14 +86,14 @@ public class LoginListener implements Listener {
 			}
 		}
 		
-		final User user = plugin.getUser(player);
-		final Date date = new Date();
+		User user = plugin.getUser(player);
+		Date date = new Date();
 		
 		user.getFile().set("ip", player.getAddress().getAddress().getHostAddress());
 		user.getFile().set("uuid", player.getUniqueId().toString());
 		user.getFile().set("lastlogin", date.getTime());
 
-		final String oldName = user.getFile().getString("username", "none");
+		String oldName = user.getFile().getString("username", "none");
 
 		// update names (name changes) and broadcast old name
 		if (!oldName.equals(player.getName())) {
@@ -147,7 +143,6 @@ public class LoginListener implements Listener {
 			}
 		}
 		
-		
 		if (scatter.needsLateScatter(player) && !scatter.isScattering()) {
 			if (State.isState(State.INGAME)) {
 				for (PotionEffect effect : ScatterManager.FREEZE_EFFECTS) {
@@ -159,7 +154,7 @@ public class LoginListener implements Listener {
 				}
 			}
 			
-			PlayerUtils.broadcast(Main.PREFIX + "- §a" + player.getName() + " §7scheduled scatter.");
+			PlayerUtils.broadcast(Main.ARROW + "§8- §a" + player.getName() + " §7scheduled scatter.");
 			scatter.handleLateScatter(player);
 		}
 		
