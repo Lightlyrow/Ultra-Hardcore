@@ -213,6 +213,11 @@ public class Game {
 		return settings.getConfig().getBoolean("misc.prewl", true);
 	}
 	
+	/**
+	 * Check if the game world's middle is not at 0,0 aka moved.
+	 * 
+	 * @return True if it is, false if it isn't or the game world is null
+	 */
 	public boolean isMovedMiddle() {
 		if (getWorld() == null) {
 			return false;
