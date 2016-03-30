@@ -28,7 +28,7 @@ public class StaffChatCommand extends UHCCommand {
         } 
         
     	String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
-		PlayerUtils.broadcast(PREFIX + sender.getName() + "§8: §7" + message, "uhc.staff");
+		PlayerUtils.broadcast(PREFIX + sender.getName() + "§8: §f" + message, "uhc.staff");
 		return true;
 	}
 

@@ -51,7 +51,7 @@ public class SpecChatCommand extends UHCCommand {
         		continue;
         	}
         	
-        	online.sendMessage(PREFIX + sender.getName() + "§8: §7" + message);
+        	online.sendMessage(PREFIX + sender.getName() + "§8: §f" + message);
         }
 		return true;
 	}
