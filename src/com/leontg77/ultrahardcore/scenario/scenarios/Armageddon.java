@@ -2,7 +2,6 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,6 +18,7 @@ import org.bukkit.util.Vector;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.BlockUtils;
@@ -48,7 +48,7 @@ public class Armageddon extends Scenario implements Listener {
 
 	@Override
 	public void onDisable() {
-		if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+		if (task != null) {
 			task.cancel();
 		}
 		
@@ -58,6 +58,12 @@ public class Armageddon extends Scenario implements Listener {
 	@Override
 	public void onEnable() {
 		world = game.getWorld();
+		
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		on(new GameStartEvent());
 	}
 	
 	@EventHandler

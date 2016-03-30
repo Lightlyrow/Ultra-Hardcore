@@ -1,6 +1,5 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,6 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -32,7 +32,7 @@ public class Entropy extends Scenario implements Listener {
 	
 	@Override
 	public void onDisable() {
-		if (task != null && Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+		if (task != null) {
 			task.cancel();
 		}
 		
@@ -40,7 +40,13 @@ public class Entropy extends Scenario implements Listener {
 	}
 
 	@Override
-	public void onEnable() {}
+	public void onEnable() {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		on(new GameStartEvent());
+	}
 	
 	@EventHandler
 	public void on(GameStartEvent event) {
