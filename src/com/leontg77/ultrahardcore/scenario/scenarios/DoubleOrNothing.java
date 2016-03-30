@@ -1,61 +1,101 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import org.bukkit.Bukkit;
+import java.util.Random;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
-import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.scenario.Scenario;
-import com.leontg77.ultrahardcore.utils.NumberUtils;
+import com.leontg77.ultrahardcore.utils.BlockUtils;
 
 /**
- * CatsEyes scenario class
+ * DoubleOrNothing scenario class
  * 
  * @author LeonTG77
  */
 public class DoubleOrNothing extends Scenario implements Listener {
-	private static final PotionEffect EFFECT = new PotionEffect(PotionEffectType.NIGHT_VISION, NumberUtils.TICKS_IN_999_DAYS, 1);
+	private final CutClean cc;
+	private final Game game;
 
-	public DoubleOrNothing() {
-		super("DeathSentence", "Players are given 10 minutes of their lives. After their 10 Minutes run out, the player dies. However, if a player mines a specific ore or if they kill a player, they will gain a certain amount of time to their lives.");
-	}
+	public DoubleOrNothing(Game game, CutClean cc) {
+		super("DoubleOrNothing", "On mine of iron, diamond, emerald or gold ore you have a 50% chance of 2 of the ore dropping or no ores dropping.");
 
-	@Override
-	public void onDisable() {
-		for (Player online : Bukkit.getOnlinePlayers()) {
-			online.removePotionEffect(EFFECT.getType());
-		}
-	}
-
-	@Override
-	public void onEnable() {
-		if (!State.isState(State.INGAME)) {
-			return;
-		}
-
-		on(new GameStartEvent());
+		this.game = game;
+		this.cc = cc;
 	}
 	
-	@EventHandler(ignoreCancelled = true)
-    public void on(final GameStartEvent event)  {
-		for (Player online : Bukkit.getOnlinePlayers()) {
-			online.addPotionEffect(EFFECT);
-		}
-    }
+	private final Random rand = new Random();
 
 	@EventHandler
-	public void on(PlayerJoinEvent event) {
+	public void on(BlockBreakEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
-		final Player player = event.getPlayer();
+		Player player = event.getPlayer();
+		Block block = event.getBlock();
 		
-		player.addPotionEffect(EFFECT);
+		if (!game.getPlayers().contains(player)) {
+			return;
+		}
+		
+		Location toDrop = block.getLocation().add(0.5, 0.7, 0.5);
+		
+		switch (block.getType()) {
+		case IRON_ORE:
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
+			
+			event.setCancelled(true);
+			block.setType(Material.AIR);
+			
+			if (rand.nextBoolean()) {
+				BlockUtils.dropItem(toDrop, new ItemStack(cc.isEnabled() ? Material.IRON_INGOT : Material.IRON_ORE, 2));
+			}
+			break;
+		case GOLD_ORE:
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
+			
+			event.setCancelled(true);
+			block.setType(Material.AIR);
+			
+			if (rand.nextBoolean()) {
+				BlockUtils.dropItem(toDrop, new ItemStack(cc.isEnabled() ? Material.GOLD_INGOT : Material.GOLD_ORE, 2));
+			}
+			break;
+		case DIAMOND_ORE:
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
+			
+			event.setCancelled(true);
+			block.setType(Material.AIR);
+			
+			if (rand.nextBoolean()) {
+				BlockUtils.dropItem(toDrop, new ItemStack(Material.DIAMOND, 2));
+			}
+			break;
+		case EMERALD_ORE:
+			BlockUtils.blockBreak(player, block);
+			BlockUtils.degradeDurabiliy(player);
+			
+			event.setCancelled(true);
+			block.setType(Material.AIR);
+			
+			if (rand.nextBoolean()) {
+				BlockUtils.dropItem(toDrop, new ItemStack(Material.EMERALD));
+			}
+			break;
+		default:
+			break;
+		}
 	}
 }
