@@ -210,7 +210,7 @@ public class LoginListener implements Listener {
 		
 		String IP = event.getAddress().getHostAddress();
 		
-		if (IP.startsWith("69.65.")) {
+		if (IP.startsWith("69.65.")) { // http://whois.domaintools.com/69.65.39.193
 			name.addBan(player.getName(), "DDoS", null, "CONSOLE");
 			event.setResult(Result.KICK_BANNED);
 		}
