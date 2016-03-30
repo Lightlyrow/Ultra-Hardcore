@@ -117,6 +117,8 @@ public class ScenarioManager {
 		scenarios.add(new AchievementHunters(plugin, game, timer));
 		scenarios.add(new AchievementParanoia(game));
 		scenarios.add(new Achievements(game));
+		scenarios.add(new AgarIO(plugin, game));
+		scenarios.add(new AloneTogether(game, teams));
 		scenarios.add(new Armageddon(plugin, game));
 		scenarios.add(new Assassins(timer, game));
 		scenarios.add(new AssaultAndBattery(game, teams));
@@ -160,6 +162,7 @@ public class ScenarioManager {
 		scenarios.add(new DeathSentence(plugin, game));
 		scenarios.add(new Depths());
 		scenarios.add(new Diamondless(cc));
+		scenarios.add(new DoubleOrNothing(game, cc));
 		scenarios.add(new DragonRush(spec));
 		scenarios.add(new Eggs());
 		scenarios.add(new EightLeggedFreaks(game));
@@ -210,6 +213,8 @@ public class ScenarioManager {
 		scenarios.add(new TeamHealth(plugin, game, board, teams));
 		scenarios.add(new Timber());
 		scenarios.add(new Timebomb(plugin, game));
+		scenarios.add(new TimeFlies(plugin, game));
+		scenarios.add(new TommySX(game));
 		scenarios.add(new TrainingRabbits(timer));
 		scenarios.add(new TripleOres(this));
 		scenarios.add(new VengefulSpirits(settings, feat));
