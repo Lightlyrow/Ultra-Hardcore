@@ -269,8 +269,8 @@ public class Main extends JavaPlugin {
 		int players = Bukkit.getOnlinePlayers().size();
 		int specs = 0;
 		
-		for (String spec : spec.getSpectators()) {
-			if (Bukkit.getPlayer(spec) != null) {
+		for (String list : spec.getSpectators()) {
+			if (Bukkit.getPlayer(list) != null) {
 				specs++;
 			}
 		}
@@ -286,7 +286,7 @@ public class Main extends JavaPlugin {
 	 * @return The lobby spawnpoint.
 	 */
 	public Location getSpawn() {
-		final FileConfiguration config = settings.getConfig();
+		FileConfiguration config = settings.getConfig();
 		
 		World world = Bukkit.getWorld(config.getString("spawn.world", "lobby"));
 		
