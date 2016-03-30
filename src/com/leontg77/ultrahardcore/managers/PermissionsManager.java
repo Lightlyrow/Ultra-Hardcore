@@ -108,6 +108,7 @@ public class PermissionsManager {
 		perm.setPermission("uhc.speed", true);
 		perm.setPermission("uhc.tp", true);
 		perm.setPermission("uhc.back", true);
+		perm.setPermission("uhc.specandstaffchat", true);
 		
 		if (rank == Rank.DEFAULT) {
 			return;
