@@ -9,9 +9,7 @@ import org.bukkit.WorldBorder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
-import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -22,14 +20,9 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77
  */
 public class BorderCommand extends UHCCommand {
-	private final Settings settings;
-	private final Game game;
 
-	public BorderCommand(Game game, Settings settings) {
-		super("border", "<world> <size>");
-
-		this.settings = settings;
-		this.game = game;
+	public BorderCommand() {
+		super("border", "<world> [diameter]");
 	}
 
 	@Override
@@ -53,26 +46,20 @@ public class BorderCommand extends UHCCommand {
 		
 		if (args.length < 2 || !sender.hasPermission(getPermission() + ".set")) {
 			WorldBorder border = world.getWorldBorder();
-			int diameter;
 			
-			if (game.isMovedMiddle()) {
-				diameter = settings.getWorlds().getInt(world.getName() + ".diameter", (int) border.getSize());
-			} else {
-				diameter = (int) border.getSize();
-			}
-			
+			int diameter = (int) border.getSize();
 			int radius = diameter / 2;
 			
-			sender.sendMessage(Main.PREFIX + "The border is currently: §a" + diameter + "x" + diameter + " §8(§a+" + radius + " -" + radius + "§8)");
+			sender.sendMessage(Main.PREFIX + "The border in " + (args.length == 0 ? "your world" : "§7'§6" + world.getName() + "§7'") + " is§8: §a" + diameter + "x" + diameter + " §8(§7X/Z §a+" + radius + " -" + radius + "§8)");
 			return true;
 		}
 
 		WorldBorder border = world.getWorldBorder();
 		
-		int diameter = parseInt(args[1], "radius");
+		int diameter = parseInt(args[1], "diameter");
 		border.setSize(diameter);
 		
-		PlayerUtils.broadcast(Main.PREFIX + "Borders in world '§6" + world.getName() + "§7' has been setup with size §a" + diameter + "x" + diameter + "§7.");
+		PlayerUtils.broadcast(Main.PREFIX + "The border in world '§6" + world.getName() + "§7' has been setup with size §a" + diameter + "x" + diameter + "§7.");
 		return true;
 	}
 
