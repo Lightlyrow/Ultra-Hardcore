@@ -173,7 +173,7 @@ public class EntityUtils {
 		case ZOMBIE:
 			return "Zombie";
 		default:
-			return "???";
+			return "???" + NameUtils.capitalizeString(type.name(), true);
 		}
 	}
 }
