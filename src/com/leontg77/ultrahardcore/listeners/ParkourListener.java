@@ -106,12 +106,12 @@ public class ParkourListener implements Listener {
 		}
 		
 		final Player player = event.getPlayer();
-		
+
 		if (spec.isSpectating(player)) {
 			return;
 		}
 			
-		if (to.getBlockY() < 20) {
+		if (to.getBlockY() < 20 && parkour.isParkouring(player)) {
 			player.teleport(parkour.getLocation(parkour.getCheckpoint(player)), TeleportCause.UNKNOWN);
 			return;
 		}
