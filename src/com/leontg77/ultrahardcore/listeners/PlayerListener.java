@@ -79,7 +79,6 @@ public class PlayerListener implements Listener {
 		case END_PORTAL:
 		case NETHER_PORTAL:
 		case UNKNOWN:
-		case PLUGIN:
 			return;
 		default:
 			break;
