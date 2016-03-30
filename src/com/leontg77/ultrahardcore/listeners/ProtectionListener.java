@@ -1,6 +1,5 @@
 package com.leontg77.ultrahardcore.listeners;
 
-import com.leontg77.ultrahardcore.Parkour;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -17,11 +16,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-
-import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.State;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
+
+import com.leontg77.ultrahardcore.Game;
+import com.leontg77.ultrahardcore.Parkour;
+import com.leontg77.ultrahardcore.State;
 
 /**
  * Protection listener class.
@@ -31,8 +31,8 @@ import org.bukkit.util.Vector;
  * @author LeonTG77
  */
 public class ProtectionListener implements Listener {
-	private final Game game;
 	private final Parkour parkour;
+	private final Game game;
 	
 	/**
 	 * Player listener class constructor.
@@ -41,8 +41,8 @@ public class ProtectionListener implements Listener {
 	 * @param parkour The parkour instance
 	 */
 	public ProtectionListener(Game game, Parkour parkour) {
-		this.game = game;
 		this.parkour = parkour;
+		this.game = game;
 	}
 	
 	@EventHandler
@@ -98,11 +98,22 @@ public class ProtectionListener implements Listener {
 		Player player = event.getPlayer();
 		Vector velocity = player.getVelocity();
 		double velocityY = velocity.getY();
-
-		if (!world.getName().equals("lobby")) return;
-		if (to.getY() > 20) return;
-		if (parkour.isParkouring(player)) return;
-		if (velocityY > 2) return;
+		
+		if (!world.getName().equals("lobby")) {
+			return;
+		}
+		
+		if (to.getY() > 20) {
+			return;
+		}
+		
+		if (parkour.isParkouring(player)) {
+			return;
+		}
+		
+		if (velocityY > 2) {
+			return;
+		}
 
 		velocity.setY(velocityY + 2);
 		player.setVelocity(velocity);
