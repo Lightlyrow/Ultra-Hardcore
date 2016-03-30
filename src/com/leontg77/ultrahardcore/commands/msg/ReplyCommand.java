@@ -77,10 +77,14 @@ public class ReplyCommand extends UHCCommand {
         String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
 
         sender.sendMessage("§8[§a§ome §8-> §a§o" + target.getName() + "§8] §7" + msg);
-    	target.sendMessage("§8[§a§o" + sender.getName() + " §8-> §a§ome§8] §7" + msg);
-
-    	MsgCommand.msg.put(target.getName(), player.getName());
     	MsgCommand.msg.put(player.getName(), target.getName());
+		
+		if (tUser.isIgnoring(player)) {
+			return true;
+		}
+
+    	target.sendMessage("§8[§a§o" + sender.getName() + " §8-> §a§ome§8] §7" + msg);
+    	MsgCommand.msg.put(target.getName(), player.getName());
 		return true;
     }
 

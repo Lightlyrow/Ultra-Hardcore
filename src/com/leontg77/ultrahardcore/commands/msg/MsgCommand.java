@@ -66,10 +66,6 @@ public class MsgCommand extends UHCCommand {
         
 		User tUser = plugin.getUser(target);
 		
-		if (tUser.isIgnoring(player)) {
-			throw new CommandException("'" + player.getName() + "' have you ignored.");
-		}
-		
     	if (tUser.isMuted()) {
     		player.sendMessage(ChatColor.RED + "'" + target.getName() + "' is muted and won't be able to respond.");
     	}
@@ -77,10 +73,14 @@ public class MsgCommand extends UHCCommand {
         String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length));
                
         player.sendMessage("§8[§a§ome §8-> §a§o" + target.getName() + "§8] §7" + message);
-    	target.sendMessage("§8[§a§o" + player.getName() + " §8-> §a§ome§8] §7" + message);
-    	
-    	msg.put(target.getName(), player.getName());
 		msg.put(player.getName(), target.getName());
+		
+		if (tUser.isIgnoring(player)) {
+			return true;
+		}
+		
+    	target.sendMessage("§8[§a§o" + player.getName() + " §8-> §a§ome§8] §7" + message);
+    	msg.put(target.getName(), player.getName());
 		return true;
     }
 
