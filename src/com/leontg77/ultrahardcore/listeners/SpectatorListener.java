@@ -144,6 +144,11 @@ public class SpectatorListener implements Listener {
 		}
 		
 		if (item.getType() == Material.FEATHER) {
+			if (game.isMovedMiddle() && !player.hasPermission("uhc.staff")) {
+				player.sendMessage(Main.PREFIX + "You need to be staff to use this in moved 0,0 games.");
+				return;
+			}
+			
 			World world = game.getWorld();
 			
 			if (world == null) {
