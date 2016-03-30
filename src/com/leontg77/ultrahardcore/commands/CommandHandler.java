@@ -3,7 +3,6 @@ package com.leontg77.ultrahardcore.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.leontg77.ultrahardcore.commands.spectate.SpecAndStaffChatCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -76,6 +75,7 @@ import com.leontg77.ultrahardcore.commands.player.SetmaxhealthCommand;
 import com.leontg77.ultrahardcore.commands.spectate.BackCommand;
 import com.leontg77.ultrahardcore.commands.spectate.InvseeCommand;
 import com.leontg77.ultrahardcore.commands.spectate.NearCommand;
+import com.leontg77.ultrahardcore.commands.spectate.SpecAndStaffChatCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpecChatCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpectateCommand;
 import com.leontg77.ultrahardcore.commands.spectate.SpeedCommand;
@@ -315,8 +315,8 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new InvseeCommand(gui, spec));
 		cmds.add(new NearCommand(spec, teams));
 		cmds.add(new SpectateCommand(game, spec));
-		cmds.add(new SpecChatCommand(spec));
 		cmds.add(new SpecAndStaffChatCommand(spec));
+		cmds.add(new SpecChatCommand(spec));
 		cmds.add(new SpeedCommand(spec));
 		cmds.add(new TpCommand(spec));
 		
@@ -336,7 +336,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new TopCommand(game, gui));
 		
 		// world
-		cmds.add(new BorderCommand(game, settings));
+		cmds.add(new BorderCommand());
 		cmds.add(new PregenCommand());
 		cmds.add(new PvPCommand());
 		cmds.add(new WorldCommand(game, settings, gui, manager));
