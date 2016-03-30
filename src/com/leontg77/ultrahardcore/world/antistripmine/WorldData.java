@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -33,7 +34,7 @@ public class WorldData {
 	private final Main plugin;
 	
 	private final AntiStripmine antiSM;
-	private final World world;
+	private final String world;
 	
 	private final Map<Material, Integer> remaining = new HashMap<Material, Integer>();
 	private final Set<ChunkOreRemover> noOresFound = new HashSet<ChunkOreRemover>();
@@ -55,7 +56,7 @@ public class WorldData {
 		this.plugin = plugin;
 		
 		this.antiSM = antiSM;
-		this.world = world;
+		this.world = world.getName();
 		
 		File folder = new File(plugin.getDataFolder(), "Anti Stripmine" + File.separator + world.getName() + File.separator);
 
@@ -85,7 +86,7 @@ public class WorldData {
 	 * @return The world.
 	 */
 	public World getWorld() {
-		return world;
+		return Bukkit.getWorld(world);
 	}
 
 	/**
@@ -95,11 +96,11 @@ public class WorldData {
 	 */
 	public void displayStats(CommandSender sender) {
 		if (chunks == 0) {
-			sender.sendMessage(ChatColor.RED + "Anti-Stripmine has not run yet on the world: '" + world.getName() + "'.");
+			sender.sendMessage(ChatColor.RED + "Anti-Stripmine has not run yet on the world: '" + world + "'.");
 			return;
 		}
 		
-		sender.sendMessage(Main.PREFIX + world.getName() + ": Average §a" + (total / chunks) + " §7ns per chunk §8(§7" + (total / chunks / 1.0E9D) + "s)");
+		sender.sendMessage(Main.PREFIX + world + ": Average §a" + (total / chunks) + " §7ns per chunk §8(§7" + (total / chunks / 1.0E9D) + "s)");
 		
 		for (Material type : remaining.keySet()) {
 			int amount = remaining.get(type);
@@ -213,7 +214,7 @@ public class WorldData {
 					
 					new BukkitRunnable() {
 						public void run() {
-							antiSM.queue(new ChunkOreRemover(antiSM, worldData, world.getChunkAt(x, z)));
+							antiSM.queue(new ChunkOreRemover(antiSM, worldData, getWorld().getChunkAt(x, z)));
 						}
 					}.runTaskLater(plugin, i++);
 				}
@@ -222,7 +223,7 @@ public class WorldData {
 				
 				new BukkitRunnable() {
 					public void run() {
-						plugin.getLogger().info("Loaded data for " + world.getName() + ", checking " + queued + " chunks!");
+						plugin.getLogger().info("Loaded data for " + world + ", checking " + queued + " chunks!");
 					}
 				}.runTask(plugin);
 			}
@@ -368,11 +369,11 @@ public class WorldData {
 		}
 		
 		WorldData other = (WorldData) obj;
-		return other.getWorld().getUID().equals(world.getUID());
+		return other.getWorld().getUID().equals(getWorld().getUID());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(world.getUID());
+		return Objects.hashCode(getWorld().getUID());
 	}
 }

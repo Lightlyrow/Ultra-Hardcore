@@ -18,8 +18,9 @@ import org.bukkit.block.Block;
 public class ChunkOreRemover implements Runnable {
 	private final AntiStripmine antiSM;
 	private final WorldData data;
-	
-	private final Chunk chunk;
+
+	private final int chunkX;
+	private final int chunkZ;
 
 	/**
 	 * Chunk ore remover class constructor.
@@ -31,8 +32,9 @@ public class ChunkOreRemover implements Runnable {
 	public ChunkOreRemover(AntiStripmine antiSM, WorldData data, Chunk chunk) {
 		this.antiSM = antiSM;
 		this.data = data;
-		
-		this.chunk = chunk;
+
+		this.chunkX = chunk.getX();
+		this.chunkZ = chunk.getZ();
 	}
 
 	/**
@@ -132,6 +134,8 @@ public class ChunkOreRemover implements Runnable {
 		Map<Block, Set<Block>> toRemove = new HashMap<Block, Set<Block>>();
 		Set<Block> allowed = new HashSet<Block>();
 		
+		Chunk chunk = data.getWorld().getChunkAt(chunkX, chunkZ);
+		
 		for (int x = 0; x < 16; x++) {
 			for (int z = 0; z < 16; z++) {
 				for (int y = 0; y <= antiSM.getMaxHeight(); y++) {
@@ -219,10 +223,10 @@ public class ChunkOreRemover implements Runnable {
 	/**
 	 * Get the chunk used for this class.
 	 * 
-	 * @return The chunk.
+	 * @return The chunk. 
 	 */
 	public Chunk getChunk() {
-		return chunk;
+		return data.getWorld().getChunkAt(chunkX, chunkZ);
 	}
 
 	/**
@@ -231,7 +235,7 @@ public class ChunkOreRemover implements Runnable {
 	 * @return The chunk X.
 	 */
 	public int getChunkX() {
-		return chunk.getX();
+		return chunkX;
 	}
 
 	/**
@@ -240,7 +244,7 @@ public class ChunkOreRemover implements Runnable {
 	 * @return The chunk Z.
 	 */
 	public int getChunkZ() {
-		return chunk.getZ();
+		return chunkZ;
 	}
 
 	@Override
