@@ -1,8 +1,6 @@
 package com.leontg77.ultrahardcore;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -23,7 +21,6 @@ import com.leontg77.ultrahardcore.commands.CommandHandler;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.feature.portal.NetherFeature;
-import com.leontg77.ultrahardcore.feature.pvp.StalkingFeature;
 import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.listeners.ChatListener;
 import com.leontg77.ultrahardcore.listeners.LoginListener;
@@ -220,7 +217,7 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new LoginListener(this, game, settings, spec, scatter, perm), this);
 		manager.registerEvents(new LogoutListener(this, game, gui, spec, perm), this);
 		manager.registerEvents(new PlayerListener(this, spec), this);
-		manager.registerEvents(new ProtectionListener(game), this);
+		manager.registerEvents(new ProtectionListener(game, parkour), this);
 		manager.registerEvents(new SpectatorListener(game, spec, gui, feat.getFeature(NetherFeature.class)), this);
 		manager.registerEvents(new StatsListener(this, arena, game, board, teams, feat.getFeature(GoldenHeadsFeature.class)), this);
 		manager.registerEvents(new WorldListener(arena), this);

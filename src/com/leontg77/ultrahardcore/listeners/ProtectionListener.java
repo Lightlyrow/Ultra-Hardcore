@@ -1,5 +1,7 @@
 package com.leontg77.ultrahardcore.listeners;
 
+import com.leontg77.ultrahardcore.Parkour;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -18,6 +20,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.State;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.util.Vector;
 
 /**
  * Protection listener class.
@@ -28,14 +32,17 @@ import com.leontg77.ultrahardcore.State;
  */
 public class ProtectionListener implements Listener {
 	private final Game game;
+	private final Parkour parkour;
 	
 	/**
 	 * Player listener class constructor.
-	 * 
+	 *
 	 * @param game The game class.
+	 * @param parkour The parkour instance
 	 */
-	public ProtectionListener(Game game) {
+	public ProtectionListener(Game game, Parkour parkour) {
 		this.game = game;
+		this.parkour = parkour;
 	}
 	
 	@EventHandler
@@ -83,6 +90,23 @@ public class ProtectionListener implements Listener {
 
 		event.setCancelled(true);
     }
+
+	@EventHandler
+	public void on(PlayerMoveEvent event) {
+		Location to = event.getTo();
+		World world = to.getWorld();
+		Player player = event.getPlayer();
+		Vector velocity = player.getVelocity();
+		double velocityY = velocity.getY();
+
+		if (!world.getName().equals("lobby")) return;
+		if (to.getY() > 20) return;
+		if (parkour.isParkouring(player)) return;
+		if (velocityY > 2) return;
+
+		velocity.setY(velocityY + 2);
+		player.setVelocity(velocity);
+	}
 	
 	@EventHandler
     public void on(PlayerInteractEvent event) {
