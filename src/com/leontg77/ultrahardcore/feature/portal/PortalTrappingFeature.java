@@ -68,6 +68,10 @@ public class PortalTrappingFeature extends ToggleableFeature implements Listener
 			return;
 		}
 		
+		if (block.getType() == Material.PORTAL) {
+			return;
+		}
+		
 		if (!searchForNearbyPortal(block)) {
 			return;
     	}
