@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.CommandException;
@@ -28,7 +29,14 @@ public class FireCommand extends UHCCommand {
 	@Override
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		PlayerUtils.broadcast(Main.PREFIX + "The firework show has started by §6" + sender.getName() + "§7!");
-		firework.startFireworkShow();
+		
+		if (!(sender instanceof Player)) {
+			firework.startFireworkShow();
+			return true;
+		}
+		
+		Player player = (Player) sender;
+		firework.startFireworkShow(player.getLocation());
 		return true;
 	}
 
