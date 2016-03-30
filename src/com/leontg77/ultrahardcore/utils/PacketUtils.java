@@ -2,18 +2,19 @@ package com.leontg77.ultrahardcore.utils;
 
 import java.lang.reflect.Field;
 
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
-
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Game;
+
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_8_R3.Packet;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
 
 /**
  * Packet utilities class.
@@ -32,36 +33,33 @@ public class PacketUtils {
 	public static void setTabList(Player player, Game game) {
 		if (game.isRecordedRound()) {
 	        return;
-		} 
+		}
 		
-		final CraftPlayer craft = (CraftPlayer) player;
-		
-		final IChatBaseComponent headerJSON = ChatSerializer.a(
+		IChatBaseComponent headerJSON = ChatSerializer.a(
 	      	"{text:'§4§lArctic UHC§r §8- §a§o@ArcticUHC§r\n"
 	      	+ "§7Follow us for games and updates!\n'}"
 	    );
 
-		final String gamemode = game.getAdvancedTeamSize(false, true).replaceAll("-", "§8-§7") + game.getScenarios().replaceAll(",", "§8,§7");
-		final String host = game.getHost();
-		final String teamsize = game.getTeamSize().toLowerCase();
+		String gamemode = game.getAdvancedTeamSize(false, true).replaceAll("-", "§8-§7") + game.getScenarios().replaceAll(",", "§8,§7");
+		String teamsize = game.getTeamSize().toLowerCase();
 	        
-		final IChatBaseComponent footerJSON = ChatSerializer.a(
+		IChatBaseComponent footerJSON = ChatSerializer.a(
 			"{text:'\n§7" + gamemode + (!teamsize.startsWith("no") && !teamsize.startsWith("open") ? 
-			"\n§4Host §8» §a" + host : "") + "'}"
+			"\n§4Host §8» §a" + game.getHost() : "") + "'}"
 		);
 	        
-		final PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
+		PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(headerJSON);
 	 
 		try {
-			final Field field = headerPacket.getClass().getDeclaredField("b");
+			Field field = headerPacket.getClass().getDeclaredField("b");
 			field.setAccessible(true);
 			field.set(headerPacket, footerJSON);
 		} catch (Exception e) {
-			Bukkit.getServer().getLogger().severe("§cCould not send tab list packets to " + player.getName());
+			Bukkit.getLogger().severe("§cCould not send tab list packets to " + player.getName());
 			return;
 		}
 		        
-		craft.getHandle().playerConnection.sendPacket(headerPacket);
+		sendPacket(player, headerPacket);
 	}
 	
 	/**
@@ -70,13 +68,11 @@ public class PacketUtils {
 	 * @param player the player.
 	 * @param msg the message.
 	 */
-	public static void sendAction(final Player player, final String msg) {
-		final CraftPlayer craft = (CraftPlayer) player;
-
-		final IChatBaseComponent actionJSON = ChatSerializer.a("{text:\"" + msg + "\"}");
-		final PacketPlayOutChat actionPacket = new PacketPlayOutChat(actionJSON, (byte) 2);
+	public static void sendAction(Player player, String msg) {
+		IChatBaseComponent actionJSON = ChatSerializer.a("{text:\"" + msg + "\"}");
+		PacketPlayOutChat actionPacket = new PacketPlayOutChat(actionJSON, (byte) 2);
         
-        craft.getHandle().playerConnection.sendPacket(actionPacket);
+        sendPacket(player, actionPacket);
 	}
 	
 	/**
@@ -90,16 +86,26 @@ public class PacketUtils {
 	 * @param out how long it uses to fade out.
 	 * @param stay how long it stays.
 	 */
-	public static void sendTitle(final Player player, final String title, final String subtitle, final int in, final int stay, final int out) {
-		final CraftPlayer craft = (CraftPlayer) player;
+	public static void sendTitle(Player player, String title, String subtitle, int in, int stay, int out) {
+		IChatBaseComponent titleJSON = ChatSerializer.a("{'text': '" + title + "'}");
+		IChatBaseComponent subtitleJSON = ChatSerializer.a("{'text': '" + subtitle + "'}");
+	 
+		PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(EnumTitleAction.TITLE, titleJSON, in, stay, out);
+		PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, subtitleJSON, in, stay, out);
         
-		final IChatBaseComponent titleJSON = ChatSerializer.a("{'text': '" + title + "'}");
-		final IChatBaseComponent subtitleJSON = ChatSerializer.a("{'text': '" + subtitle + "'}");
-        
-		final PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(EnumTitleAction.TITLE, titleJSON, in, stay, out);
-        final PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(EnumTitleAction.SUBTITLE, subtitleJSON);
-        
-        craft.getHandle().playerConnection.sendPacket(titlePacket);
-        craft.getHandle().playerConnection.sendPacket(subtitlePacket);
+        sendPacket(player, titlePacket);
+        sendPacket(player, subtitlePacket);
     }
+
+	/**
+	 * Send the given packet to the given player.
+	 * 
+	 * @param player The player to send it to.
+	 * @param packet The packet to send.
+	 */
+	private static void sendPacket(Player player, Packet<?> packet) {
+		CraftPlayer craft = (CraftPlayer) player;
+		
+        craft.getHandle().playerConnection.sendPacket(packet);
+	}
 }
