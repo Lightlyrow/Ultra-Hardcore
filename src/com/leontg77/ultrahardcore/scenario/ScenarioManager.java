@@ -118,7 +118,7 @@ public class ScenarioManager {
 		scenarios.add(new AchievementParanoia(game));
 		scenarios.add(new Achievements(game));
 		scenarios.add(new AgarIO(plugin, game));
-		scenarios.add(new AloneTogether(game, teams));
+		scenarios.add(new AloneTogether(plugin, game, teams));
 		scenarios.add(new Armageddon(plugin, game));
 		scenarios.add(new Assassins(timer, game));
 		scenarios.add(new AssaultAndBattery(game, teams));
