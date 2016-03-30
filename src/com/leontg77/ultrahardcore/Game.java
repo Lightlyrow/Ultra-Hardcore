@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -219,11 +220,19 @@ public class Game {
 	 * @return True if it is, false if it isn't or the game world is null
 	 */
 	public boolean isMovedMiddle() {
-		if (getWorld() == null) {
+		World world = getWorld();
+		
+		if (world == null) {
 			return false;
 		}
 		
-		return settings.getWorlds().getBoolean(getWorld().getName() + ".movedMiddle", false);
+		Location center = world.getWorldBorder().getCenter();
+		
+		if (center.getBlockX() == 0 && center.getBlockZ() == 0) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
