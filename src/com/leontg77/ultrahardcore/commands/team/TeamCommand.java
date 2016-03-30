@@ -184,7 +184,7 @@ public class TeamCommand extends UHCCommand {
 				
 				teams.sendMessage(team, Main.PREFIX + ChatColor.GREEN + target.getName() + " §7has been invited to your team.");
 
-				if (!invites.containsKey(sender)) {
+				if (!invites.containsKey(player.getName())) {
 					invites.put(player.getName(), new ArrayList<String>());
 				}
 				
