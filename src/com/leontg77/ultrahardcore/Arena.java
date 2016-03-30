@@ -155,7 +155,6 @@ public class Arena {
 				
 				if (time == 15 || time == 10 || time == 5 || time == 1) {
 					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a" + time + " §7minute" + (time == 1 ? "" : "s") + ".");
-					return;
 				}
 			}
 		};
