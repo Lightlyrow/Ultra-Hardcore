@@ -1,10 +1,10 @@
 package com.leontg77.ultrahardcore.world;
 
-import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldBorder;
@@ -34,8 +34,6 @@ public class WorldManager {
 		this.settings = settings;
 	}
 	
-	private final Random rand = new Random();
-	
 	/**
 	 * Load all the saved worlds.
 	 */
@@ -58,13 +56,18 @@ public class WorldManager {
 	/**
 	 * Create a world with the given settings.
 	 * 
-	 * @param name The name of the world.
-	 * @param diameter The border size.
-	 * @param seed The seed of the world.
-	 * @param environment The world's environment.
+	 * @param name The world name.
+	 * @param diameter The world diameter size.
+	 * @param seed The world seed.
+	 * @param environment The world environment.
 	 * @param type The world type.
+	 * @param antiStripmine Wether antistripmine should be enabled.
+	 * @param oreLimiter Wether ore limiter should be enabled.
+	 * @param newStone Wether the world should have the new 1.8 stone.
+	 * @param x The world X center.
+	 * @param z The world Z center.
 	 */
-	public void createWorld(String name, int diameter, long seed, Environment environment, WorldType type, boolean antiStripmine, boolean oreLimiter, boolean newStone, boolean movedMiddle) {
+	public void createWorld(String name, int diameter, long seed, Environment environment, WorldType type, boolean antiStripmine, boolean oreLimiter, boolean newStone, double x, double z) {
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		creator.environment(environment);
@@ -79,9 +82,9 @@ public class WorldManager {
 		
 		World world = creator.createWorld();
 		world.setDifficulty(Difficulty.HARD);
-		world.setSpawnLocation(0, 0, 0);
-		int y = LocationUtils.highestTeleportableYAtLocation(world.getSpawnLocation()) + 2;
-		world.setSpawnLocation(0, y, 0);
+		
+		int y = LocationUtils.highestTeleportableYAtLocation(new Location(world, x, 0, z)) + 2;
+		world.setSpawnLocation((int) x, y, (int) z);
 		
 		world.setGameRuleValue("doDaylightCycle", "false");
 
@@ -92,15 +95,7 @@ public class WorldManager {
 		border.setWarningTime(60);
 		border.setDamageAmount(0.1);
 		border.setDamageBuffer(0);
-		
-		if (movedMiddle) {
-			int x = rand.nextInt(7500) - 3750;
-			int z = rand.nextInt(3750); // I don't want negative coords for the Z as that messes up hostile mob spawning.
-			
-			border.setCenter(x, z);
-		} else {
-			border.setCenter(0.0, 0.0);
-		}
+		border.setCenter(x, z);
 		
 		world.save();
 
@@ -115,7 +110,8 @@ public class WorldManager {
 		settings.getWorlds().set(world.getName() + ".antiStripmine", antiStripmine);
 		settings.getWorlds().set(world.getName() + ".oreLimiter", oreLimiter);
 		settings.getWorlds().set(world.getName() + ".newStone", newStone);
-		settings.getWorlds().set(world.getName() + ".movedMiddle", movedMiddle);
+		settings.getWorlds().set(world.getName() + ".center.x", x);
+		settings.getWorlds().set(world.getName() + ".center.z", z);
 		
 		settings.saveWorlds();
 	}

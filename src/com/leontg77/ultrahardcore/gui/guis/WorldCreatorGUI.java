@@ -2,6 +2,7 @@ package com.leontg77.ultrahardcore.gui.guis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -104,6 +105,8 @@ public class WorldCreatorGUI extends GUI implements Listener {
 		return get();
 	}
 	
+	private final Random rand = new Random();
+	
 	@EventHandler
 	public void on(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked(); // safe cast
@@ -176,14 +179,22 @@ public class WorldCreatorGUI extends GUI implements Listener {
 			player.closeInventory();
 			player.sendMessage(Main.PREFIX + "Starting creation of world '§a" + name + "§7'...");
 			
-			manager.createWorld(name, diameter, seed, Environment.NORMAL, type, antiStripmine, orelimiter, newstone, moved);
+			double x = 0.0;
+			double z = 0.0; // I don't want negative coords for the Z as that messes up hostile mob spawning.
+			
+			if (moved) {
+				x = rand.nextInt(7500) - 3750;
+				z = rand.nextInt(3750); // I don't want negative coords for the Z as that messes up hostile mob spawning.
+			}
+			
+			manager.createWorld(name, diameter, seed, Environment.NORMAL, type, antiStripmine, orelimiter, newstone, x, z);
 			
 			if (netherD) {
-				manager.createWorld(name + "_nether", diameter, seed, Environment.NETHER, type, false, orelimiter, true, moved);
+				manager.createWorld(name + "_nether", diameter, seed, Environment.NETHER, type, false, orelimiter, true, x, z);
 			}
 			
 			if (endD) {
-				manager.createWorld(name + "_end", diameter, seed, Environment.THE_END, type, false, orelimiter, true, moved);
+				manager.createWorld(name + "_end", diameter, seed, Environment.THE_END, type, false, orelimiter, true, x, z);
 			}
 
 			player.sendMessage(Main.PREFIX + "World creation finished.");
