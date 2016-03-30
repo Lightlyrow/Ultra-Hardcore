@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -17,6 +18,8 @@ import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.ImmutableList;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.events.TeamJoinEvent;
+import com.leontg77.ultrahardcore.events.TeamLeaveEvent;
 
 /**
  * Team management class.
@@ -75,6 +78,8 @@ public class TeamManager {
 		
 		team.addPlayer(player);
 		
+		Bukkit.getPluginManager().callEvent(new TeamJoinEvent(team, player));
+		
 		if (!savedTeams.containsKey(team.getName())) {
 			Set<String> players = new HashSet<String>(team.getEntries());
 			
@@ -117,6 +122,8 @@ public class TeamManager {
 				}
 				
 				team.removePlayer(player);
+				
+				Bukkit.getPluginManager().callEvent(new TeamLeaveEvent(team, player));
 				
 				if (!unsave) {
 					return;
