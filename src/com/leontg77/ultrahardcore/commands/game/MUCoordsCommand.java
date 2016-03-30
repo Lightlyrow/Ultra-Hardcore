@@ -41,7 +41,7 @@ public class MUCoordsCommand extends UHCCommand {
 			throw new CommandException(Main.PREFIX + "No game world has been set yet.");
 		}
 		
-		if (game.isMovedMiddle()) {
+		if (!game.isMovedMiddle()) {
 			throw new CommandException(Main.PREFIX + "This game is not a moved 0,0 game.");
 		}
 		
@@ -57,7 +57,7 @@ public class MUCoordsCommand extends UHCCommand {
 		
 		WorldBorder border = game.getWorld().getWorldBorder();
 		
-		sender.sendMessage(Main.PREFIX + "Meetup coords: X:§a" + border.getCenter().getBlockX() + " §7Z:§a" + border.getCenter().getBlockZ());
+		sender.sendMessage(Main.PREFIX + "Meetup coords§7: §7X: §a" + border.getCenter().getBlockX() + " §7Z: §a" + border.getCenter().getBlockZ());
 		return true;
 	}
 
