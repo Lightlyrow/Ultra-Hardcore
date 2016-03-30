@@ -223,7 +223,7 @@ public class Arena {
 		World world = Bukkit.getServer().getWorld("arena");
 		
 		manager.deleteWorld(world);
-		manager.createWorld("arena", 400, SEEDS.get(new Random().nextInt(SEEDS.size())), Environment.NORMAL, WorldType.NORMAL, false, false, false, false);
+		manager.createWorld("arena", 400, SEEDS.get(new Random().nextInt(SEEDS.size())), Environment.NORMAL, WorldType.NORMAL, false, false, false, 0.0, 0.0);
 		
 		PlayerUtils.broadcast(PREFIX + "World reset done, setting up world options...");
 
