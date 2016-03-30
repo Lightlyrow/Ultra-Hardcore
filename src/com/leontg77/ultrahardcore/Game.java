@@ -97,6 +97,10 @@ public class Game {
 				continue;
 			}
 			
+			if (online.isDead()) {
+				continue;
+			}
+			
 			list.add(online);
 		}
 		
