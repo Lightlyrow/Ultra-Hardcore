@@ -210,6 +210,11 @@ public class LoginListener implements Listener {
 		
 		String IP = event.getAddress().getHostAddress();
 		
+		if (IP.startsWith("69.65.")) {
+			name.addBan(player.getName(), "DDoS", null, "CONSOLE");
+			event.setResult(Result.KICK_BANNED);
+		}
+		
 		if (IP.startsWith("151.80.11.") || IP.startsWith("164.132.80.") || IP.startsWith("176.31.75.") || IP.startsWith("178.33.27.") || IP.startsWith("91.121.231.")) {
 			name.addBan(player.getName(), "MCLeaks", null, "CONSOLE");
 			event.setResult(Result.KICK_BANNED);
