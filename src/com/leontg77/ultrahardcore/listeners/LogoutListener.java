@@ -74,8 +74,8 @@ public class LogoutListener implements Listener {
 			PlayerUtils.broadcast("§8[§c-§8] " + user.getRankColor() + player.getName() + " §7left. §8(§a" + (plugin.getOnlineCount() - 1) + "§8/§a" + game.getMaxPlayers() + "§8)");
 		}
 
-		if (MsgCommand.msg.containsKey(player)) {
-			MsgCommand.msg.remove(player);
+		if (MsgCommand.msg.containsKey(player.getName())) {
+			MsgCommand.msg.remove(player.getName());
 		}
 		
 		Set<String> temp = new HashSet<String>(MsgCommand.msg.keySet());
