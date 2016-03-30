@@ -194,7 +194,7 @@ public class WorldCreatorGUI extends GUI implements Listener {
 			}
 			
 			if (endD) {
-				manager.createWorld(name + "_end", diameter, seed, Environment.THE_END, type, false, orelimiter, true, x, z);
+				manager.createWorld(name + "_end", diameter, seed, Environment.THE_END, type, false, orelimiter, true, 0.0, 0.0); // end island is at 0,0
 			}
 
 			player.sendMessage(Main.PREFIX + "World creation finished.");
