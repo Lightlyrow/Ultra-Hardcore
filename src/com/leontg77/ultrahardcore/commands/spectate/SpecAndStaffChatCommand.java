@@ -13,6 +13,11 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Spec and staff chat command class.
+ * 
+ * @author D4mnX
+ */
 public class SpecAndStaffChatCommand extends UHCCommand {
     private final SpecManager spec;
     private final CanAccessChatPredicate predicate = new CanAccessChatPredicate();
@@ -23,7 +28,7 @@ public class SpecAndStaffChatCommand extends UHCCommand {
         this.spec = spec;
     }
 
-    private static final String PREFIX = "§dSpec And Staff Chat §8» §d";
+    private static final String PREFIX = "§cSpec & Staff Chat §8» §7";
 
     @Override
     public boolean execute(CommandSender sender, String[] args) throws CommandException {
@@ -42,7 +47,7 @@ public class SpecAndStaffChatCommand extends UHCCommand {
                 continue;
             }
 
-            online.sendMessage(PREFIX + sender.getName() + "§8: §7" + message);
+            online.sendMessage(PREFIX + sender.getName() + "§8: §f" + message);
         }
 
         Bukkit.getLogger().info(message);
