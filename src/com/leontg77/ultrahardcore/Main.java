@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import com.leontg77.ultrahardcore.listeners.PushUpwardsInSpawnListener;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 import org.bukkit.Bukkit;
@@ -217,7 +218,8 @@ public class Main extends JavaPlugin {
 		manager.registerEvents(new LoginListener(this, game, settings, spec, scatter, perm), this);
 		manager.registerEvents(new LogoutListener(this, game, gui, spec, perm), this);
 		manager.registerEvents(new PlayerListener(this, spec), this);
-		manager.registerEvents(new ProtectionListener(game, parkour), this);
+		manager.registerEvents(new ProtectionListener(game), this);
+		manager.registerEvents(new PushUpwardsInSpawnListener(this, parkour), this);
 		manager.registerEvents(new SpectatorListener(game, spec, gui, feat.getFeature(NetherFeature.class)), this);
 		manager.registerEvents(new StatsListener(this, arena, game, board, teams, feat.getFeature(GoldenHeadsFeature.class)), this);
 		manager.registerEvents(new WorldListener(arena), this);

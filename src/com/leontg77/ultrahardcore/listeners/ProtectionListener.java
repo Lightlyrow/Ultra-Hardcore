@@ -31,17 +31,14 @@ import com.leontg77.ultrahardcore.State;
  * @author LeonTG77
  */
 public class ProtectionListener implements Listener {
-	private final Parkour parkour;
 	private final Game game;
 	
 	/**
 	 * Player listener class constructor.
 	 *
 	 * @param game The game class.
-	 * @param parkour The parkour instance
 	 */
-	public ProtectionListener(Game game, Parkour parkour) {
-		this.parkour = parkour;
+	public ProtectionListener(Game game) {
 		this.game = game;
 	}
 	
@@ -90,34 +87,6 @@ public class ProtectionListener implements Listener {
 
 		event.setCancelled(true);
     }
-
-	@EventHandler
-	public void on(PlayerMoveEvent event) {
-		Location to = event.getTo();
-		World world = to.getWorld();
-		Player player = event.getPlayer();
-		Vector velocity = player.getVelocity();
-		double velocityY = velocity.getY();
-		
-		if (!world.getName().equals("lobby")) {
-			return;
-		}
-		
-		if (to.getY() > 20) {
-			return;
-		}
-		
-		if (parkour.isParkouring(player)) {
-			return;
-		}
-		
-		if (velocityY > 2) {
-			return;
-		}
-
-		velocity.setY(velocityY + 2);
-		player.setVelocity(velocity);
-	}
 	
 	@EventHandler
     public void on(PlayerInteractEvent event) {
