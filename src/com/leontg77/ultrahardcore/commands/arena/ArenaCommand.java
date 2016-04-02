@@ -126,19 +126,6 @@ public class ArenaCommand extends UHCCommand {
 		
 		Player player = (Player) sender;
 		
-		if (args[0].equalsIgnoreCase("leave")) {
-			if (!arena.isEnabled()) {
-				throw new CommandException("The arena is currently disabled.");
-			}
-			
-			if (!arena.hasPlayer(player)) {
-				throw new CommandException("You are not in the arena.");
-			}
-			
-			arena.removePlayer(player, false);;
-			return true;
-		}
-		
 		if (!arena.isEnabled()) {
 			throw new CommandException("The arena is currently disabled.");
 		}
