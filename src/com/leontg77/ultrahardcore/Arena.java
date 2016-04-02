@@ -55,8 +55,8 @@ public class Arena {
 	private final ArenaListener listener;
 	private final Set<UUID> players;
 	
-	public Scoreboard sb;
-	public Objective killboard;
+	private Scoreboard score;
+	private Objective killboard;
 	
 	public Arena(Main plugin, Game game, BoardManager board, ScatterManager scatter, WorldManager manager) {
 		this.plugin = plugin;
@@ -64,17 +64,17 @@ public class Arena {
 		this.board = board;
 		this.game = game;
 		
-		sb = board.getBoard(); 
-		killboard = sb.getObjective("arenaKills");
+		this.score = board.getBoard(); 
+		this.killboard = score.getObjective("arenaKills");
 		
 		this.scatter = scatter;
 		this.manager = manager;
 
-		listener = new ArenaListener(plugin, this);
-		players = new HashSet<UUID>();
+		this.listener = new ArenaListener(plugin, this);
+		this.players = new HashSet<UUID>();
 	}
 	
-	private BukkitRunnable regen;
+	private BukkitRunnable regenTask;
 	
 	private boolean enabled = false;
 	
@@ -85,22 +85,22 @@ public class Arena {
 	 * List of all verified arena world seeds.
 	 */
 	private static final List<Long> SEEDS = ImmutableList.of(
-			-4978851967201209985l, 
-			-4967553104279076810l, 
-			-8429542510557232451l, 
-			-3176074841184868038l, 
-			-397143620226990283l, 
-			-6555102318239067639l, 
-			6776651824076158879l, 
-			4542866204785804909l
+			-4978851967201209985L, 
+			-4967553104279076810L, 
+			-8429542510557232451L, 
+			-3176074841184868038L, 
+			-397143620226990283L, 
+			-6555102318239067639L, 
+			6776651824076158879L, 
+			4542866204785804909L
 	);
 
 	/**
 	 * Setup the arena class.
 	 */
 	public void setup() {
-		if (sb.getObjective("arenaKills") == null) {
-			killboard = sb.registerNewObjective("arenaKills", "dummy");
+		if (score.getObjective("arenaKills") == null) {
+			killboard = score.registerNewObjective("arenaKills", "dummy");
 		}
 		
 		killboard.setDisplayName("§4Arena §8» §7§oUse /a to join§r");
@@ -116,8 +116,9 @@ public class Arena {
 	 * Enable the arena
 	 */
 	public void enable() {
-		Bukkit.getPluginManager().registerEvents(listener, plugin);
 		this.enabled = true;
+		
+		Bukkit.getPluginManager().registerEvents(listener, plugin);
 		
 		if (game.pregameBoard()) {
 			board.setScore("§a ", 11);
@@ -131,35 +132,50 @@ public class Arena {
 			game.setPregameBoard(false);
 			game.setArenaBoard(true);
 		}
+
+		if (regenTask != null) {
+			return;
+		}
 		
-		regen = new BukkitRunnable() {
-			int time = 30;
+		regenTask = new BukkitRunnable() {
+			int time = 1800;
 			
 			public void run() {
 				time--;
 				
 				switch (time) {
-				case 15:
-				case 10:
-				case 5:
-					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a" + time + " §7minutes.");
+				case 900:
+					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a15 §7minutes.");
 					break;
-				case 1:
+				case 600:
+					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a10 §7minutes.");
+					break;
+				case 300:
+					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a5 §7minutes.");
+					break;
+				case 60:
 					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a1 §7minute.");
 					break;
+				case 30:
+				case 10:
+				case 5:
+				case 4:
+				case 3:
+				case 2:
+					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a" + time + " §7seconds.");
+					break;
+				case 1:
+					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a1 §7second.");
+					break;
 				case 0:
-					time = 30;
+					time = 1800;
 					reset();
 					break;
-				}
-				
-				if (time == 15 || time == 10 || time == 5 || time == 1) {
-					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a" + time + " §7minute" + (time == 1 ? "" : "s") + ".");
 				}
 			}
 		};
 		
-		regen.runTaskTimer(plugin, 1200, 1200);
+		regenTask.runTaskTimer(plugin, 20, 20);
 	}
 	
 	/**
@@ -178,7 +194,7 @@ public class Arena {
 			}
 
 			player.teleport(plugin.getSpawn());
-			sb.resetScores(player.getName());
+			score.resetScores(player.getName());
 		}
 		
 		if (game.pregameBoard()) {
@@ -188,7 +204,7 @@ public class Arena {
 		}
 		
 		if (game.arenaBoard()) {
-			for (String entry : sb.getEntries()) {
+			for (String entry : score.getEntries()) {
 				resetScore(entry);
 			}
 			
@@ -202,8 +218,11 @@ public class Arena {
 		
 		players.clear();
 
-		regen.cancel();
-		regen = null;
+		if (regenTask != null) {
+			regenTask.cancel();
+		}
+		
+		regenTask = null;
 	}
 
 	/**
@@ -219,17 +238,17 @@ public class Arena {
 		
 		PlayerUtils.broadcast(PREFIX + "The arena is resetting, lag incoming.");
 		
-		World world = Bukkit.getServer().getWorld("arena");
+		World world = Bukkit.getWorld("arena");
 		
 		manager.deleteWorld(world);
 		manager.createWorld("arena", 400, SEEDS.get(new Random().nextInt(SEEDS.size())), Environment.NORMAL, WorldType.NORMAL, false, false, false, 0.0, 0.0);
 		
-		PlayerUtils.broadcast(PREFIX + "World reset done, setting up world options...");
-
+		world = Bukkit.getWorld("arena");
+		
 		world.setGameRuleValue("doDaylightCycle", "false");
 		world.setTime(6000);
 		
-		PlayerUtils.broadcast(PREFIX + "Options setup, pregenning arena world.");
+		PlayerUtils.broadcast(PREFIX + "World reset done, pregenning arena world.");
 		
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " set 200 0 0");
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420");
@@ -316,7 +335,7 @@ public class Arena {
 		user.reset();
 
 		player.teleport(plugin.getSpawn());
-		sb.resetScores(player.getName());
+		score.resetScores(player.getName());
 		
 		if (player.isDead()) {
 			player.spigot().respawn();
@@ -412,6 +431,24 @@ public class Arena {
 	 * @param string the string resetting.
 	 */
 	public void resetScore(String string) {
-		sb.resetScores(string);
+		score.resetScores(string);
+	}
+
+	/**
+	 * Get the main scoreboard.
+	 * 
+	 * @return The scoreboard.
+	 */
+	public Scoreboard getBoard() {
+		return score;
+	}
+
+	/**
+	 * Get the kill board objective.
+	 * 
+	 * @return The objective.
+	 */
+	public Objective getKillBoard() {
+		return killboard;
 	}
 }
