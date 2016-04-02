@@ -114,7 +114,7 @@ public class ScenarioManager {
 
 		scenarios.add(new HalfOres());
 		scenarios.add(new TripleArrows());
-		scenarios.add(new AchievementHunters(plugin, game, timer));
+		scenarios.add(new AchievementHunters(plugin, game, timer, settings, feat));
 		scenarios.add(new AchievementParanoia(game));
 		scenarios.add(new Achievements(game));
 		scenarios.add(new AgarIO(plugin, game));
