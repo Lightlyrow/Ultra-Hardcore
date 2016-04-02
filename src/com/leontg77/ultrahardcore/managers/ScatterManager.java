@@ -215,7 +215,7 @@ public class ScatterManager {
 						if (i < locs.size()) {
 							Player host = Bukkit.getPlayer(game.getHost());
 							
-							if (State.isState(State.INGAME) || host == null) {
+							if (State.isState(State.INGAME) || host == null || (State.isState(State.SCATTER) && manager.getTeam(host) != null)) {
 								locs.get(i).getChunk().load(true);
 							} else {
 								host.teleport(locs.get(i));
