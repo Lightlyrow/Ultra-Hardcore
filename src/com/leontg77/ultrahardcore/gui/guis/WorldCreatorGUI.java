@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -240,6 +241,7 @@ public class WorldCreatorGUI extends GUI implements Listener {
 		lore.add("§8» §7and gold outside of caves.");
 		lore.add(" ");
 		antiSMMeta.setLore(lore);
+		antiSMMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		antiSM.setItemMeta(antiSMMeta);
 		
 		inv.setItem(12, antiSM);
