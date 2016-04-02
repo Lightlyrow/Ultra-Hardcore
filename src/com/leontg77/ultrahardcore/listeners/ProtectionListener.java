@@ -1,6 +1,5 @@
 package com.leontg77.ultrahardcore.listeners;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -16,11 +15,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.util.Vector;
 
 import com.leontg77.ultrahardcore.Game;
-import com.leontg77.ultrahardcore.Parkour;
 import com.leontg77.ultrahardcore.State;
 
 /**
