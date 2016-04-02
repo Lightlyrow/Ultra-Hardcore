@@ -89,6 +89,7 @@ public class TeamCommand extends UHCCommand {
 						}
 					}
 				}
+				return true;
 			}
 			
 			if (args[0].equalsIgnoreCase("info")) {
