@@ -57,7 +57,7 @@ public class MUCoordsCommand extends UHCCommand {
 		
 		WorldBorder border = game.getWorld().getWorldBorder();
 		
-		sender.sendMessage(Main.PREFIX + "Meetup coords§7: §7X: §a" + border.getCenter().getBlockX() + " §7Z: §a" + border.getCenter().getBlockZ());
+		sender.sendMessage(Main.PREFIX + "Meetup coords§8: §7X: §a" + border.getCenter().getBlockX() + " §7Z: §a" + border.getCenter().getBlockZ());
 		return true;
 	}
 
