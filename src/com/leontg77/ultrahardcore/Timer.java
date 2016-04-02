@@ -513,9 +513,7 @@ public class Timer {
 					PlayerUtils.broadcast(Main.PREFIX + "Do not ask for another one.");
 					
 					for (Player online : Bukkit.getOnlinePlayers()) {
-						if (!TimerCommand.isRunning()) {
-							PacketUtils.sendTitle(online, "§6Final heal!", "§7Do not ask for another one", 5, 10, 5);
-						}
+						PacketUtils.sendTitle(online, "§6Final heal!", "§7Do not ask for another one", 5, 10, 5);
 						
 						online.playSound(online.getLocation(), Sound.NOTE_BASS, 1, 1);
 						
@@ -572,28 +570,66 @@ public class Timer {
 	 * Start the countdown for the recorded round.
 	 */
 	public void startRR() {
-		for (Player online : Bukkit.getOnlinePlayers()) {
-			PacketUtils.sendTitle(online, "§c3", "", 1, 20, 1);
-			online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+		for (int i = 0; i < 150; i++) {
+			for (Player online : Bukkit.getOnlinePlayers()) {
+				online.sendMessage("§0");
+			}
 		}
 		
 		new BukkitRunnable() {
 			public void run() {
 				for (Player online : Bukkit.getOnlinePlayers()) {
-					PacketUtils.sendTitle(online, "§e2", "", 1, 20, 1);
+					PacketUtils.sendTitle(online, "§45", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §45.");
 			}
 		}.runTaskLater(plugin, 20);
 		
 		new BukkitRunnable() {
 			public void run() {
 				for (Player online : Bukkit.getOnlinePlayers()) {
+					PacketUtils.sendTitle(online, "§c4", "", 1, 20, 1);
+					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §c4.");
+			}
+		}.runTaskLater(plugin, 40);
+		
+		new BukkitRunnable() {
+			public void run() {
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					PacketUtils.sendTitle(online, "§63", "", 1, 20, 1);
+					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §63.");
+			}
+		}.runTaskLater(plugin, 60);
+
+		new BukkitRunnable() {
+			public void run() {
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					PacketUtils.sendTitle(online, "§e2", "", 1, 20, 1);
+					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
+				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §e2.");
+			}
+		}.runTaskLater(plugin, 80);
+
+		new BukkitRunnable() {
+			public void run() {
+				for (Player online : Bukkit.getOnlinePlayers()) {
 					PacketUtils.sendTitle(online, "§a1", "", 1, 20, 1);
 					online.playSound(online.getLocation(), Sound.SUCCESSFUL_HIT, 1, 0);
 				}
+				
+				PlayerUtils.broadcast(Main.PREFIX + "Game starting in §a1.");
 			}
-		}.runTaskLater(plugin, 40);
+		}.runTaskLater(plugin, 100);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -616,6 +652,8 @@ public class Timer {
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
 				PlayerUtils.broadcast(Main.PREFIX + "The game has started!");
 				PlayerUtils.broadcast("§8» §m---------------------------------§8 «");
+				
+				game.setMuted(false);
 				
 				for (World world : game.getWorlds()) {
 					world.setDifficulty(Difficulty.HARD);
@@ -708,7 +746,7 @@ public class Timer {
 				
 				Bukkit.getPluginManager().callEvent(new GameStartEvent());
 			}
-		}.runTaskLater(plugin, 60);
+		}.runTaskLater(plugin, 120);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -724,7 +762,7 @@ public class Timer {
 					user.resetFood();
 				}
 			}
-		}.runTaskLater(plugin, 260);
+		}.runTaskLater(plugin, 380);
 	}
 	
 	/**
@@ -762,7 +800,7 @@ public class Timer {
 				}
 				
 				if (pvp == 100) {
-					PlayerUtils.broadcast(Main.PREFIX + "Permaday activated!");
+					PlayerUtils.broadcast(Main.PREFIX + "Permaday has been activated!");
 					
 					for (World world : game.getWorlds()) {
 						world.setGameRuleValue("doDaylightCycle", "false");
@@ -778,6 +816,11 @@ public class Timer {
 				if (pvp == 120) {
 					PlayerUtils.broadcast(Main.PREFIX + "Meetup is now!");
 					Bukkit.getPluginManager().callEvent(new MeetupEvent());
+					
+					if (game.isMovedMiddle()) {
+						PlayerUtils.broadcast(Main.PREFIX + "Use §a/mucoords§7 to get the meetup coords.");
+						return;
+					}
 				}
 			}
 		};
