@@ -68,6 +68,22 @@ public class WorldManager {
 	 * @param z The world Z center.
 	 */
 	public void createWorld(String name, int diameter, long seed, Environment environment, WorldType type, boolean antiStripmine, boolean oreLimiter, boolean newStone, double x, double z) {
+		settings.getWorlds().set(name + ".name", name);
+		settings.getWorlds().set(name + ".radius", diameter);
+		settings.getWorlds().set(name + ".seed", seed);
+		
+		settings.getWorlds().set(name + ".environment", environment.name());
+		settings.getWorlds().set(name + ".worldtype", type.name());
+		settings.getWorlds().set(name + ".diameter", diameter);
+		
+		settings.getWorlds().set(name + ".antiStripmine", antiStripmine);
+		settings.getWorlds().set(name + ".oreLimiter", oreLimiter);
+		settings.getWorlds().set(name + ".newStone", newStone);
+		settings.getWorlds().set(name + ".center.x", x);
+		settings.getWorlds().set(name + ".center.z", z);
+		
+		settings.saveWorlds();
+		
 		WorldCreator creator = new WorldCreator(name);
 		creator.generateStructures(true);
 		creator.environment(environment);
@@ -98,22 +114,6 @@ public class WorldManager {
 		border.setCenter(x, z);
 		
 		world.save();
-
-		settings.getWorlds().set(world.getName() + ".name", name);
-		settings.getWorlds().set(world.getName() + ".radius", diameter);
-		settings.getWorlds().set(world.getName() + ".seed", seed);
-		
-		settings.getWorlds().set(world.getName() + ".environment", environment.name());
-		settings.getWorlds().set(world.getName() + ".worldtype", type.name());
-		settings.getWorlds().set(world.getName() + ".diameter", diameter);
-		
-		settings.getWorlds().set(world.getName() + ".antiStripmine", antiStripmine);
-		settings.getWorlds().set(world.getName() + ".oreLimiter", oreLimiter);
-		settings.getWorlds().set(world.getName() + ".newStone", newStone);
-		settings.getWorlds().set(world.getName() + ".center.x", x);
-		settings.getWorlds().set(world.getName() + ".center.z", z);
-		
-		settings.saveWorlds();
 	}
 	
 	/**

@@ -33,7 +33,7 @@ public class WorldInitListener implements Listener {
 	public void on(WorldInitEvent event) {
 		World world = event.getWorld();
 		
-		if (!settings.getWorlds().getBoolean(world.getName() + ".antistripmine", true)) {
+		if (!settings.getWorlds().getBoolean(world.getName() + ".antiStripmine", true)) {
 			return;
 		}
 		
