@@ -4,10 +4,12 @@ import java.util.Arrays;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -18,6 +20,7 @@ import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Arena;
 import com.leontg77.ultrahardcore.Main;
@@ -42,6 +45,26 @@ public class ArenaListener implements Listener {
 	public ArenaListener(Main plugin, Arena arena) {
 		this.plugin = plugin;
 		this.arena = arena;
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void on(BlockPlaceEvent event) {
+		final Player player = event.getPlayer();
+		final Block block = event.getBlock();
+		
+		if (!arena.hasPlayer(player)) {
+			return;
+		}
+		
+		if (block == null || block.getType() != Material.COBBLESTONE) {
+			return;
+		}
+		
+		new BukkitRunnable() {
+			public void run() {
+				PlayerUtils.giveItem(player, new ItemStack(block.getType()));
+			}
+		}.runTask(plugin);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -79,11 +102,11 @@ public class ArenaListener implements Listener {
 			}
 
 			player.sendMessage(Arena.PREFIX + "You got killed by PvE!");
-			
-			arena.setScore("§8» §c§oPvE", arena.getScore("§8» §c§oPvE") + 1);
 			arena.resetScore(player.getName());
 			return;
 		}
+		
+		player.getLastDamageCause().getCause();
 		
 		if (arena.getScore(player.getName()) > 4) {
 			PlayerUtils.broadcast(Arena.PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + arena.getScore(player.getName()) + " §7was shut down by §6" + killer.getName() + "§7!");
@@ -156,8 +179,8 @@ public class ArenaListener implements Listener {
 
 	@EventHandler
 	public void on(EnchantItemEvent event) {
-		Player player = event.getEnchanter();
 		Inventory inv = event.getInventory();
+		Player player = event.getEnchanter();
 		
 		if (!arena.hasPlayer(player)) {
 			return;
@@ -168,8 +191,7 @@ public class ArenaListener implements Listener {
 	
 	@EventHandler
     public void on(InventoryClickEvent event) {
-		// safe cast
-		Player player = (Player) event.getWhoClicked();
+		Player player = (Player) event.getWhoClicked(); // safe cast
 		
 		if (!arena.hasPlayer(player)) {
 			return;
