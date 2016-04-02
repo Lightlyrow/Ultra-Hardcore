@@ -36,12 +36,11 @@ public class Webcage extends Scenario implements Listener {
 		}
 		
 		Player player = event.getEntity();
+		Location loc = player.getLocation();
 		
-		if (!game.getPlayers().contains(player)) {
+		if (!game.getWorlds().contains(loc.getWorld())) {
 			return;
 		}
-		
-		Location loc = player.getLocation();
 		
 		int bX = loc.getBlockX();
 		int bY = loc.getBlockY();
