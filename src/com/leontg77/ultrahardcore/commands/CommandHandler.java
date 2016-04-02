@@ -124,28 +124,24 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		UHCCommand command = getCommand(cmd.getName());
 		
-		if (command == null) {
-			// this shouldn't happen, it only uses registered commands.
+		if (command == null) { // this shouldn't happen, it only uses registered commands but incase.
 			return true;
 		}
 		
-		// if they don't have permission, tell them so and stop
 		if (!sender.hasPermission(command.getPermission())) {
 			sender.sendMessage(Main.NO_PERMISSION_MESSAGE);
 			return true;
 		}
 		
 		try {
-			// if the command returned false, send the usage.
 			if (!command.execute(sender, args)) {
 				sender.sendMessage(Main.PREFIX + "Usage: " + command.getUsage());
 			}
 		} catch (CommandException ex) {
-			sender.sendMessage(ChatColor.RED + ex.getMessage());
+			sender.sendMessage(ChatColor.RED + ex.getMessage()); // send them the exception message
 		} catch (Exception ex) {
-			// send them the error message in red if anything failed.
 			sender.sendMessage(ChatColor.RED + ex.getClass().getName() + ": " + ex.getMessage());
-			ex.printStackTrace();
+			ex.printStackTrace(); // send them the exception and tell the console the error if its not a command exception
 		}
 		return true;
 	}
@@ -153,13 +149,11 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		UHCCommand command = getCommand(cmd.getName());
-		
-		if (command == null) {
-			// this shouldn't happen, it only uses registered commands.
+
+		if (command == null) { // this shouldn't happen, it only uses registered commands but incase.
 			return null;
 		}
 		
-		// if they don't have permission, stop
 		if (!sender.hasPermission(command.getPermission())) {
 			return null;
 		}
@@ -193,8 +187,8 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 			
 			return toReturn;
 		} catch (Exception ex) {
-			// send them the error message in red if anything failed.
-			sender.sendMessage(ChatColor.RED + ex.getMessage());
+			sender.sendMessage(ChatColor.RED + ex.getClass().getName() + ": " + ex.getMessage());
+			ex.printStackTrace(); 
 		}
 		return null;
 	}
@@ -240,7 +234,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	 */
 	public void registerCommands(Game game, Data data, Arena arena, Parkour parkour, Settings settings, GUIManager gui, BoardManager board, SpecManager spec, FeatureManager feat, ScenarioManager scen, WorldManager manager, Timer timer, TeamManager teams, FireworkManager firework, ScatterManager scatter) {
 		// arena
-		cmds.add(new ArenaCommand(arena, game, board));
+		cmds.add(new ArenaCommand(arena, game, parkour, spec, board));
 		cmds.add(new HotbarCommand());
 		
 		// banning
