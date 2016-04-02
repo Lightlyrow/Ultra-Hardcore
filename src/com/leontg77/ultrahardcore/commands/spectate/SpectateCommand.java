@@ -184,16 +184,16 @@ public class SpectateCommand extends UHCCommand {
 				spec.getCommandSpies().remove(target.getName());
 				
 				if (target != sender) {
-					sender.sendMessage(Main.PREFIX + "You disabled " + target.getName() + "'s commandspy.");
+					sender.sendMessage(Main.PREFIX + "You enabled " + target.getName() + "'s commandspy.");
 				}
-				target.sendMessage(Main.PREFIX + "Your commandspy has been disabled.");
+				target.sendMessage(Main.PREFIX + "Your commandspy has been enabled.");
 			} else {
 				spec.getCommandSpies().add(target.getName());
 				
 				if (target != sender) {
-					sender.sendMessage(Main.PREFIX + "You enabled " + target.getName() + "'s commandspy.");
+					sender.sendMessage(Main.PREFIX + "You disabled " + target.getName() + "'s commandspy.");
 				}
-				target.sendMessage(Main.PREFIX + "Your commandspy has been enabled.");
+				target.sendMessage(Main.PREFIX + "Your commandspy has been disabled.");
 			}
 			return true;
 		}
