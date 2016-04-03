@@ -31,6 +31,7 @@ import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
+import com.leontg77.ultrahardcore.scenario.scenarios.AchievementHunters;
 import com.leontg77.ultrahardcore.scenario.scenarios.VengefulSpirits;
 
 /**
@@ -45,18 +46,19 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 	private static final short PLAYER_HEAD_DATA = 3;
 	
 	private static final ItemStack PLAYER_SKULL = new ItemStack(Material.SKULL_ITEM, 1, PLAYER_HEAD_DATA);
-	
-	private final Main plugin;
-	
-	private final VengefulSpirits spirit;
+
 	private final Settings settings;
+	private final Main plugin;
+
+	private final AchievementHunters ach;
+	private final VengefulSpirits spirit;
 	
 	private final Arena arena;
 	private final Game game;
 	
     private int healAmount;
 
-	public GoldenHeadsFeature(Main plugin, Settings settings, Arena arena, Game game, VengefulSpirits spirit) {
+	public GoldenHeadsFeature(Main plugin, Settings settings, Arena arena, Game game, AchievementHunters ach, VengefulSpirits spirit) {
 		super("Golden Heads", "Crafted like a golden apple just with a head in the middle and heals more hearts.");
 
 		final ShapedRecipe recipe = new ShapedRecipe(new ItemStack(Material.GOLDEN_APPLE, 1))
@@ -74,9 +76,10 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 		slot = 1;
 		
 		this.plugin = plugin;
-		
 		this.settings = settings;
+
 		this.spirit = spirit;
+		this.ach = ach;
 		
 		this.arena = arena;
 		this.game = game;
@@ -183,7 +186,7 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
         }
 
     	// heads should be craftable if vengeful spirits is enabled.
-        if (!isEnabled() && !spirit.isEnabled()) {
+        if (!isEnabled() && !spirit.isEnabled() && !ach.isEnabled()) {
         	inv.setResult(new ItemStack(Material.AIR));
             return;
         }
