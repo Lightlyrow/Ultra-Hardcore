@@ -3,11 +3,13 @@ package com.leontg77.ultrahardcore.feature.border;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.Timer;
+import com.leontg77.ultrahardcore.events.GameEndEvent;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
 import com.leontg77.ultrahardcore.events.MeetupEvent;
 import com.leontg77.ultrahardcore.events.PvPEnableEvent;
@@ -53,6 +55,8 @@ public class BorderShrinkFeature extends Feature implements Listener {
 		this.timer = timer;
 		this.game = game;
 	}
+	
+	private BukkitRunnable currentTask = null;
 	
 	/**
 	 * Set the time the border will shrink at.
@@ -113,9 +117,27 @@ public class BorderShrinkFeature extends Feature implements Listener {
 			timeToNextShrink = 120;
 		} else {
 			timeToNextShrink = 1320;
+			
+			PlayerUtils.broadcast(Main.BORDER_PREFIX + "Border has stopped shrinking.");
+			PlayerUtils.broadcast(Main.BORDER_PREFIX + "Next shrink is in §a22§7 minutes.");
 		}
 		
-		new BorderRunnable(game, timeToNextShrink).runTaskTimer(plugin, 20, 20);
+		if (currentTask != null) {
+			return;
+		}
+		
+		currentTask = new BorderRunnable(game, timeToNextShrink);
+		currentTask.runTaskTimer(plugin, 20, 20);
+	}
+
+	@EventHandler
+	public void on(GameEndEvent event) {
+		if (currentTask == null) {
+			return;
+		}
+		
+		currentTask.cancel();
+		currentTask = null;
 	}
 	
 	/**
