@@ -107,7 +107,7 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
     }
 
 	@EventHandler
-	public void on(final PlayerDeathEvent event) {
+	public void on(PlayerDeathEvent event) {
         if (!isEnabled()) {
         	return;
         }
@@ -154,9 +154,9 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
 	}
 
     @EventHandler
-    public void on(final PlayerItemConsumeEvent event) {
-    	// heads should be useable if vengeful spirits is enabled.
-        if (!isEnabled() && !spirit.isEnabled()) {
+    public void on(PlayerItemConsumeEvent event) {
+    	// heads should be useable if vengeful spirits or achievement hunters is enabled.
+        if (!isEnabled() && !spirit.isEnabled() && !ach.isEnabled()) {
         	return;
         }
         
@@ -171,7 +171,7 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
     }
 
     @EventHandler
-    public void on(final PrepareItemCraftEvent event) {
+    public void on(PrepareItemCraftEvent event) {
     	CraftingInventory inv = event.getInventory();
     	Recipe recipe = event.getRecipe();
     	
@@ -185,7 +185,7 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
         	return;
         }
 
-    	// heads should be craftable if vengeful spirits is enabled.
+    	// heads should be craftable if vengeful spirits or achievement hunters is enabled.
         if (!isEnabled() && !spirit.isEnabled() && !ach.isEnabled()) {
         	inv.setResult(new ItemStack(Material.AIR));
             return;
@@ -201,9 +201,9 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
      * @param name The owner of the golden head.
      * @return The head ItemStack.
      */
-    public ItemStack getGoldenHeadItem(final String name) {
-    	final ItemStack item = new ItemStack(Material.GOLDEN_APPLE, 1);
-        final ItemMeta meta = item.getItemMeta();
+    public ItemStack getGoldenHeadItem(String name) {
+    	ItemStack item = new ItemStack(Material.GOLDEN_APPLE, 1);
+        ItemMeta meta = item.getItemMeta();
         
         meta.setDisplayName(HEAD_NAME);
 
@@ -225,12 +225,12 @@ public class GoldenHeadsFeature extends ToggleableFeature implements Listener {
      * @param item The item checking.
      * @return True if it has the same name and a lore, false otherwise.
      */
-    public boolean isGoldenHead(final ItemStack item) {
+    public boolean isGoldenHead(ItemStack item) {
         if (item.getType() != Material.GOLDEN_APPLE) {
         	return false;
         }
 
-        final ItemMeta meta = item.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
 
         return meta.hasLore() && meta.hasDisplayName() && meta.getDisplayName().equals(HEAD_NAME);
     }
