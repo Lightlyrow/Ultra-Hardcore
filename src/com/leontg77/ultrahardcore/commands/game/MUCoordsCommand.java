@@ -46,7 +46,7 @@ public class MUCoordsCommand extends UHCCommand {
 		}
 		
 		if (game.isRecordedRound()) {
-			if (!State.isState(State.INGAME) || timer.getPvP() > 100) {
+			if (!State.isState(State.INGAME) || timer.getPvP() < 100) {
 				throw new CommandException(Main.PREFIX + "Meetup coords has not been announced yet.");
 			}
 		} else {
