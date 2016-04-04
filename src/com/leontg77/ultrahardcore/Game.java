@@ -158,11 +158,7 @@ public class Game {
 	 * @return The string format.
 	 */
 	public String getAdvancedTeamSize(String teamsize, boolean advancedFFA, boolean seperate) {
-		if (teamsize.startsWith("To")) {
-			setTeamSize("c" + getTeamSize());
-		}
-		
-		final String seperator = seperate ? " - " : " ";
+		String seperator = seperate ? " - " : " ";
 		
 		if (teamsize.startsWith("FFA")) {
 			return (advancedFFA ? "Free for all" : "FFA") + seperator;
