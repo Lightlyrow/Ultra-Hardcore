@@ -26,6 +26,7 @@ import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.User.Stat;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.events.GameEndEvent;
 import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.gui.guis.HallOfFameGUI;
 import com.leontg77.ultrahardcore.managers.BoardManager;
@@ -121,6 +122,8 @@ public class EndCommand extends UHCCommand {
 		PlayerUtils.broadcast(Main.PREFIX + "Remember to check out the hall of fame by using §6/hof§7.");
 		
 		String host = game.getHostHOFName();
+		
+		Bukkit.getPluginManager().callEvent(new GameEndEvent());
 		
 		DateFormat dateFormat = new SimpleDateFormat("dd. MMM, yyyy", Locale.US);
 		Date date = new Date();
