@@ -101,6 +101,10 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 	
 	@EventHandler
 	public void on(BlockBreakEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		final Player player = event.getPlayer();
 		final Block block = event.getBlock();
 
@@ -122,6 +126,10 @@ public class BestBTC extends Scenario implements Listener, CommandExecutor {
 
 	@EventHandler(ignoreCancelled = true)
 	public void on(PlayerMoveEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		final Player player = event.getPlayer();
 
 		if (event.getTo().getBlockY() <= 50) {

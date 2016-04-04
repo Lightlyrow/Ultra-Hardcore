@@ -108,6 +108,10 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void on(PlayerDeathEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+
 		final Player killer = event.getEntity().getKiller();
 		
 		if (killer == null) {
@@ -131,6 +135,10 @@ public class BestPvE extends Scenario implements Listener, CommandExecutor {
 
 	@EventHandler(ignoreCancelled = true)
 	public void on(EntityDamageEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
 		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
