@@ -74,12 +74,7 @@ public class Arena {
 		this.players = new HashSet<UUID>();
 	}
 	
-	private BukkitRunnable regenTask;
-	
 	private boolean enabled = false;
-	
-	public boolean isResetting = false;
-	public boolean wasEnabled = false;
 
 	/**
 	 * List of all verified arena world seeds.
@@ -111,12 +106,21 @@ public class Arena {
 		
 		plugin.getLogger().info("The arena has been setup.");
 	}
+
+	private BukkitRunnable borderTask;
+	private BukkitRunnable regenTask;
 	
 	/**
 	 * Enable the arena
 	 */
 	public void enable() {
 		this.enabled = true;
+
+		World world = Bukkit.getWorld("arena");
+		
+		if (world != null) {
+			world.getWorldBorder().setSize(200);
+		}
 		
 		Bukkit.getPluginManager().registerEvents(listener, plugin);
 		
@@ -132,58 +136,85 @@ public class Arena {
 			game.setPregameBoard(false);
 			game.setArenaBoard(true);
 		}
+		
+		setScore("§8» §9§oNext Reset ", -30);
 
-		if (regenTask != null) {
-			return;
-		}
-		
-		regenTask = new BukkitRunnable() {
-			int time = 1800;
-			
-			public void run() {
-				time--;
+		if (regenTask == null) {
+			regenTask = new BukkitRunnable() {
+				int time = 1800;
 				
-				switch (time) {
-				case 900:
-					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a15 §7minutes.");
-					break;
-				case 600:
-					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a10 §7minutes.");
-					break;
-				case 300:
-					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a5 §7minutes.");
-					break;
-				case 60:
-					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a1 §7minute.");
-					break;
-				case 30:
-				case 10:
-				case 5:
-				case 4:
-				case 3:
-				case 2:
-					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a" + time + " §7seconds.");
-					break;
-				case 1:
-					PlayerUtils.broadcast(PREFIX + "The arena will reset in §a1 §7second.");
-					break;
-				case 0:
-					time = 1800;
-					reset();
-					break;
+				public void run() {
+					time--;
+
+					setScore("§8» §9§oNext Reset ", (int) (time / 60));
+					
+					switch (time) {
+					case 900:
+						PlayerUtils.broadcast(PREFIX + "The arena will reset in §a15 §7minutes.");
+						break;
+					case 600:
+						PlayerUtils.broadcast(PREFIX + "The arena will reset in §a10 §7minutes.");
+						break;
+					case 300:
+						PlayerUtils.broadcast(PREFIX + "The arena will reset in §a5 §7minutes.");
+						break;
+					case 60:
+						PlayerUtils.broadcast(PREFIX + "The arena will reset in §a1 §7minute.");
+						break;
+					case 30:
+					case 10:
+					case 5:
+					case 4:
+					case 3:
+					case 2:
+						PlayerUtils.broadcast(PREFIX + "The arena will reset in §a" + time + " §7seconds.");
+						break;
+					case 1:
+						PlayerUtils.broadcast(PREFIX + "The arena will reset in §a1 §7second.");
+						break;
+					case 0:
+						time = 1800;
+						reset();
+						break;
+					}
 				}
-			}
-		};
-		
-		regenTask.runTaskTimer(plugin, 20, 20);
+			};
+			
+			regenTask.runTaskTimer(plugin, 20, 20);
+		}
+
+		if (borderTask == null) {
+			borderTask = new BukkitRunnable() {
+				public void run() {
+					World world = Bukkit.getWorld("arena");
+					
+					if (world == null) {
+						return;
+					}
+					
+					int newRadius = Math.min(40 + (players.size() * 10), 400);
+					
+					world.getWorldBorder().setSize(newRadius, 25); // Thanks @D4mnX for this
+				}
+			};
+			
+			borderTask.runTaskTimer(plugin, 600, 600);
+		}
 	}
 	
 	/**
 	 * Disable the arena
 	 */
 	public void disable() {
-		HandlerList.unregisterAll(listener);
 		this.enabled = false;
+
+		World world = Bukkit.getWorld("arena");
+		
+		if (world != null) {
+			world.getWorldBorder().setSize(400);
+		}
+
+		HandlerList.unregisterAll(listener);
 		
 		for (Player player : getPlayers()) {
 			User user = plugin.getUser(player);
@@ -208,29 +239,38 @@ public class Arena {
 				resetScore(entry);
 			}
 			
-			PlayerUtils.broadcast(PREFIX + "The arena board has been disabled.");
-			board.getKillsObjective().setDisplaySlot(DisplaySlot.SIDEBAR);
-			
 			if (!isResetting) {
+				PlayerUtils.broadcast(PREFIX + "The arena board has been disabled.");
+				board.getKillsObjective().setDisplaySlot(DisplaySlot.SIDEBAR);
+				
 				game.setArenaBoard(false);
 			}
 		}
-		
+
+		resetScore("§8» §9§oNext Reset ");
 		players.clear();
 
 		if (regenTask != null) {
 			regenTask.cancel();
 		}
+
+		if (borderTask != null) {
+			borderTask.cancel();
+		}
 		
+		borderTask = null;
 		regenTask = null;
 	}
-
+	
+	public boolean isResetting = false;
+	public boolean wasEnabled = false;
+	
 	/**
 	 * Reset the arena.
 	 */
 	public void reset() {
-		isResetting = true;
 		wasEnabled = isEnabled();
+		isResetting = true;
 		
 		if (wasEnabled) {
 			disable();
@@ -280,7 +320,7 @@ public class Arena {
 			}
 		}
 		
-		return list;
+		return ImmutableList.copyOf(list);
 	}
 	
 	/**
@@ -289,27 +329,36 @@ public class Arena {
 	 * @param player the player.
 	 */
 	public void addPlayer(Player player) {
-		Location loc;
+		World world = Bukkit.getWorld("arena");
 		
-		try {
-			loc = scatter.findScatterLocations(Bukkit.getWorld("arena"), (int) Bukkit.getWorld("arena").getWorldBorder().getSize() / 3, 1).get(0);
-		} catch (Exception e) {
+		List<Location> locs = scatter.findScatterLocations(world, (int) world.getWorldBorder().getSize() / 3, 1);
+		
+		if (locs.isEmpty()) {
 			player.sendMessage(ChatColor.RED + "Could not teleport you to the arena.");
 			return;
 		}
+		
+		Location loc = locs.get(0);
 
 		player.sendMessage(PREFIX + "You joined the arena.");
+		player.sendMessage(PREFIX + "Modify your hotbar with §a/hotbar§7.");
 		
 		players.add(player.getUniqueId());
 		giveKit(player);
 		
-		loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 2);
+		loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 1);
 
-		player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 7));
-		player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 40, 7));
+		player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 7));
+		player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 60, 7));
 		
 		player.setGameMode(GameMode.SURVIVAL);
 		player.teleport(loc);
+		
+		player.setAllowFlight(false);
+		player.setFlying(false);
+		
+		player.setWalkSpeed(0.2f);
+		player.setFlySpeed(0.1f);
 	}
 	
 	/**
@@ -357,9 +406,36 @@ public class Arena {
 	 * 
 	 * @param player the player.
 	 */
-	private void giveKit(Player player) {
+	public void giveKit(Player player) {
 		User user = plugin.getUser(player);
 		
+		if (!user.getFile().contains("hotbar")) {
+			giveDefaultKit(player);
+			return;
+		}
+		
+		for (int i = 0; i < 36; i++) {
+			ItemStack item = ItemStack.deserialize(user.getFile().getConfigurationSection("hotbar." + i).getValues(false));
+			
+			if (item == null) {
+				item = new ItemStack(Material.AIR);
+			}
+			
+			player.getInventory().setItem(i, item);
+		}
+		
+		player.getInventory().setHelmet(new ItemStack(Material.IRON_HELMET));
+		player.getInventory().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
+		player.getInventory().setLeggings(new ItemStack(Material.IRON_LEGGINGS));
+		player.getInventory().setBoots(new ItemStack(Material.IRON_BOOTS));
+	}
+	
+	/**
+	 * Gives the arena kit to the given player.
+	 * 
+	 * @param player the player.
+	 */
+	public void giveDefaultKit(Player player) {
 		ItemStack sword = new ItemStack(Material.IRON_SWORD);
 		ItemStack bow = new ItemStack(Material.BOW);
 		
@@ -378,29 +454,24 @@ public class Arena {
 		ItemStack gapple = new ItemStack(Material.GOLDEN_APPLE);
 		ItemStack food = new ItemStack(Material.COOKED_BEEF, 32);
 		
-		ItemStack helmet = new ItemStack(Material.IRON_HELMET);
-		ItemStack chestplate = new ItemStack(Material.IRON_CHESTPLATE);
-		ItemStack leggings = new ItemStack(Material.IRON_LEGGINGS);
-		ItemStack boots = new ItemStack(Material.IRON_BOOTS);
-		
-		player.getInventory().setItem(user.getFile().getInt("hotar.sword", 0), sword);
-		player.getInventory().setItem(user.getFile().getInt("hotar.bow", 1), bow);
-		player.getInventory().setItem(user.getFile().getInt("hotar.bucket", 2), bucket);
-		player.getInventory().setItem(user.getFile().getInt("hotar.pickaxe", 3), pickaxe);
-		player.getInventory().setItem(user.getFile().getInt("hotar.cobble", 4), cobble);
-		player.getInventory().setItem(user.getFile().getInt("hotar.gapple", 5), gapple);
-		player.getInventory().setItem(user.getFile().getInt("hotar.shovel", 6), shovel);
-		player.getInventory().setItem(user.getFile().getInt("hotar.axe", 7), axe);
-		player.getInventory().setItem(user.getFile().getInt("hotar.food", 8), food);
+		player.getInventory().setItem(0, sword);
+		player.getInventory().setItem(1, bow);
+		player.getInventory().setItem(2, bucket);
+		player.getInventory().setItem(3, pickaxe);
+		player.getInventory().setItem(4, cobble);
+		player.getInventory().setItem(5, gapple);
+		player.getInventory().setItem(6, shovel);
+		player.getInventory().setItem(7, axe);
+		player.getInventory().setItem(8, food);
 		
 		player.getInventory().setItem(27, new ItemStack(Material.ARROW, 64));
 		player.getInventory().addItem(new ItemStack(Material.WORKBENCH, 16));
 		player.getInventory().addItem(new ItemStack(Material.ENCHANTMENT_TABLE, 4));
 		
-		player.getInventory().setHelmet(helmet);
-		player.getInventory().setChestplate(chestplate);
-		player.getInventory().setLeggings(leggings);
-		player.getInventory().setBoots(boots);
+		player.getInventory().setHelmet(new ItemStack(Material.IRON_HELMET));
+		player.getInventory().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
+		player.getInventory().setLeggings(new ItemStack(Material.IRON_LEGGINGS));
+		player.getInventory().setBoots(new ItemStack(Material.IRON_BOOTS));
 	}
 	
 	/**
