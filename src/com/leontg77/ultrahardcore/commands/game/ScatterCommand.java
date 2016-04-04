@@ -23,6 +23,7 @@ import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
+import com.leontg77.ultrahardcore.events.ScatterEvent;
 import com.leontg77.ultrahardcore.managers.ScatterManager;
 import com.leontg77.ultrahardcore.managers.SpecManager;
 import com.leontg77.ultrahardcore.managers.TeamManager;
@@ -171,6 +172,8 @@ public class ScatterCommand extends UHCCommand {
 			scatter.setWorld(world);
 			
 			scatter.scatter(ImmutableList.copyOf(toScatter));
+
+			Bukkit.getPluginManager().callEvent(new ScatterEvent());
 			
 			if (teamSpread) {
 				PlayerUtils.broadcast(Main.PREFIX + "Scattering §a" + teams + " §7teams and §a" + solo + " §7solos...");
