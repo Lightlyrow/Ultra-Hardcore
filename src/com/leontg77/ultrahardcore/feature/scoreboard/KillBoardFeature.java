@@ -52,7 +52,15 @@ public class KillBoardFeature extends Feature implements Listener {
 		final Player killer = player.getKiller();
 
 		if (killer == null) {
+			if (game.isRecordedRound()) {
+				return;
+			}
+			
 			board.setScore("§8» §c§oPvE", board.getScore("§8» §c§oPvE") + 1);
+			return;
+		}
+		
+		if (killer.isDead()) {
 			return;
 		}
 		
