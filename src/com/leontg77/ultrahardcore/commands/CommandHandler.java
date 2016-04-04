@@ -235,7 +235,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 	public void registerCommands(Game game, Data data, Arena arena, Parkour parkour, Settings settings, GUIManager gui, BoardManager board, SpecManager spec, FeatureManager feat, ScenarioManager scen, WorldManager manager, Timer timer, TeamManager teams, FireworkManager firework, ScatterManager scatter) {
 		// arena
 		cmds.add(new ArenaCommand(arena, game, parkour, spec, board));
-		cmds.add(new HotbarCommand());
+		cmds.add(new HotbarCommand(plugin, arena));
 		
 		// banning
 		cmds.add(new BanCommand(board));
