@@ -43,9 +43,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.Settings;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.Timer;
 import com.leontg77.ultrahardcore.events.GameStartEvent;
+import com.leontg77.ultrahardcore.feature.FeatureManager;
+import com.leontg77.ultrahardcore.feature.health.GoldenHeadsFeature;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.NameUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -62,14 +65,20 @@ public class AchievementHunters extends Scenario implements CommandExecutor, Lis
 	
 	private final Timer timer;
 	private final Game game;
+	
+	private final FeatureManager feat;
+	private final Settings settings;
 
-    public AchievementHunters(Main plugin, Game game, Timer timer) {
+    public AchievementHunters(Main plugin, Game game, Timer timer, Settings settings, FeatureManager feat) {
 		super("AchievementHunters", "If you gain achievements you get certain awards, read: http://pastebin.com/1KJ2y5c9");
 
 		this.plugin = plugin;
 		
 		this.timer = timer;
 		this.game = game;
+		
+		this.settings = settings;
+		this.feat = feat;
 		
 		plugin.getCommand("alist").setExecutor(this);
     }
@@ -97,6 +106,10 @@ public class AchievementHunters extends Scenario implements CommandExecutor, Lis
     public void onEnable() {
     	awarded.clear();
     	damaged.clear();
+    	
+		// I don't want the code to place the normal skulls so then
+		// I disable them instead since I have a custom dropping
+		feat.getFeature(GoldenHeadsFeature.class).disable(settings);
     	
     	if (!State.isState(State.INGAME)) {
     		return;
