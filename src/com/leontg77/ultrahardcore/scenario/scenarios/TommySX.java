@@ -79,7 +79,14 @@ public class TommySX extends Scenario implements Listener {
 			return;
 		}
 		
-		event.setMessage(event.getMessage().replaceAll("gg", "mfw"));
+		String message = event.getMessage();
+
+		message = message.replaceAll("gg", "mfw");
+		message = message.replaceAll("Gg", "Mfw");
+		message = message.replaceAll("gG", "mfW");
+		message = message.replaceAll("GG", "MFW");
+		
+		event.setMessage(message);
 	}
 	
 	@EventHandler
