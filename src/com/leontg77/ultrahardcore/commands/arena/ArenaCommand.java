@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.commands.arena;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -51,6 +52,10 @@ public class ArenaCommand extends UHCCommand {
 				if (args[0].equalsIgnoreCase("enable")) {
 					if (arena.isEnabled()) {
 						throw new CommandException("The arena is already enabled.");
+					}
+					
+					if (!sender.isOp() && Bukkit.hasWhitelist()) {
+						throw new CommandException("You cannot enable the arena with the whitelist on.");
 					}
 					
 					PlayerUtils.broadcast(Arena.PREFIX + "The arena has been enabled.");
