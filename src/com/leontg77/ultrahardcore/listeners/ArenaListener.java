@@ -5,12 +5,14 @@ import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -56,6 +58,12 @@ public class ArenaListener implements Listener {
 			return;
 		}
 		
+		if (block.getLocation().getY() > 110) {
+			player.sendMessage(Arena.PREFIX + "You cannot build higher than y: 110!");
+			event.setCancelled(true);
+			return;
+		}
+		
 		if (block == null || block.getType() != Material.COBBLESTONE) {
 			return;
 		}
@@ -65,6 +73,17 @@ public class ArenaListener implements Listener {
 				PlayerUtils.giveItem(player, new ItemStack(block.getType()));
 			}
 		}.runTask(plugin);
+	}
+
+	@EventHandler
+	public void on(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+		
+		if (!arena.hasPlayer(player)) {
+			return;
+		}
+		
+		arena.removePlayer(player, false);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -83,16 +102,16 @@ public class ArenaListener implements Listener {
 
 		user.increaseStat(Stat.ARENADEATHS);
 		
-		ItemStack head = new ItemStack(Material.GOLDEN_APPLE);
-		ItemMeta headMeta = head.getItemMeta();
-		headMeta.setDisplayName("§6Golden Head");
-		headMeta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Some say consuming the head of a", ChatColor.DARK_PURPLE + "fallen foe strengthens the blood."));
-		head.setItemMeta(headMeta);
+		ItemStack skull = new ItemStack(Material.GOLDEN_APPLE);
+		ItemMeta skullMeta = skull.getItemMeta();
+		skullMeta.setDisplayName("§6Golden Head");
+		skullMeta.setLore(Arrays.asList(ChatColor.DARK_PURPLE + "Some say consuming the head of a", ChatColor.DARK_PURPLE + "fallen foe strengthens the blood."));
+		skull.setItemMeta(skullMeta);
 		
 		event.getDrops().clear();
 		event.getDrops().add(new ItemStack(Material.DIAMOND, 1));
 		event.getDrops().add(new ItemStack(Material.ARROW, 32));
-		event.getDrops().add(head);
+		event.getDrops().add(skull);
 		
 		Player killer = player.getKiller();
 		
@@ -101,21 +120,30 @@ public class ArenaListener implements Listener {
 				PlayerUtils.broadcast(Arena.PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + arena.getScore(player.getName()) + " §7was shut down by PvE!");
 			}
 
-			player.sendMessage(Arena.PREFIX + "You got killed by PvE!");
+			player.sendMessage(Arena.PREFIX + "You were killed by PvE!");
 			arena.resetScore(player.getName());
+			
+			ExperienceOrb exp = player.getWorld().spawn(player.getLocation(), ExperienceOrb.class);
+			exp.setExperience(7);
 			return;
 		}
 		
-		player.getLastDamageCause().getCause();
+		if (player.getLastDamageCause().getCause() == DamageCause.PROJECTILE) {
+			PlayerUtils.giveItem(killer, event.getDrops().toArray(new ItemStack[event.getDrops().size()]));
+			event.getDrops().clear();
+		}
 		
 		if (arena.getScore(player.getName()) > 4) {
 			PlayerUtils.broadcast(Arena.PREFIX + "§6" + player.getName() + "§7's killstreak of §a" + arena.getScore(player.getName()) + " §7was shut down by §6" + killer.getName() + "§7!");
 		}
 		
-		player.sendMessage(Arena.PREFIX + "You got killed by §6" + killer.getName() + "§7! (" + NumberUtils.makePercent(killer.getHealth()) + "%§7)");
+		player.sendMessage(Arena.PREFIX + "You were killed by §a" + killer.getName() + "§7! §8(" + NumberUtils.makePercent(killer.getHealth()) + "%§8)");
 		killer.sendMessage(Arena.PREFIX + "You killed §a" + player.getName() + "§7!");
 
-		arena.setScore(killer.getName(), arena.getScore(killer.getName()) + 1);
+		if (!killer.isDead()) {
+			arena.setScore(killer.getName(), arena.getScore(killer.getName()) + 1);
+		}
+		
 		arena.resetScore(player.getName());
 		
 		killer.setLevel(killer.getLevel() + 1);
@@ -129,20 +157,13 @@ public class ArenaListener implements Listener {
 
 		String killstreak = String.valueOf(arena.getScore(killer.getName()));
 		
-		if (killstreak.endsWith("0") || killstreak.endsWith("5")) {
-			PlayerUtils.broadcast(Arena.PREFIX + "§6" + killer.getName() + " §7is now on a §a" + killstreak + " §7killstreak!");
-		}
-	}
-
-	@EventHandler
-	public void on(PlayerQuitEvent event) {
-		Player player = event.getPlayer();
-		
-		if (!arena.hasPlayer(player)) {
+		if (killstreak.equals("0")) {
 			return;
 		}
 		
-		arena.removePlayer(player, false);
+		if (killstreak.endsWith("0") || killstreak.endsWith("5")) {
+			PlayerUtils.broadcast(Arena.PREFIX + "§6" + killer.getName() + " §7is now on a §a" + killstreak + " §7killstreak!");
+		}
 	}
 	
 	@EventHandler
