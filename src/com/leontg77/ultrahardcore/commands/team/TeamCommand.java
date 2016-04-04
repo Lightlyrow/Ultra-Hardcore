@@ -58,8 +58,7 @@ public class TeamCommand extends UHCCommand {
 	@Override
 	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
 		if (args.length == 0) {
-			// the method returns true but hey, one less line :D
-			return helpMenu(sender);
+			return helpMenu(sender); // the method returns true but hey, one less line :D
 		}
 		
 		if (args.length > 1) {
