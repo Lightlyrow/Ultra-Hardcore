@@ -55,15 +55,6 @@ public class ChatListener implements Listener {
 		String name = (team == null || spec.isSpectating(player) ? "§f%s" : team.getPrefix() + "%s");
 		String messageAndColor = name.startsWith("§f") ? "§7%s" : "§f%s";
 		
-		if (user.getRank().getLevel() >= Rank.DEFAULT.getLevel()) {
-			messageAndColor = "§f%s";
-		}
-    	
-    	if (game.isRecordedRound()) {
-    		event.setFormat("§f<" + name + "§f> §f%s");
-    		return;
-    	}
-		
 		if (VoteCommand.isRunning() && (message.equalsIgnoreCase("y") || message.equalsIgnoreCase("n"))) {
 			if (!game.getPlayers().contains(player)) {
 				player.sendMessage(ChatColor.RED + "You can only vote while playing the game.");
@@ -104,6 +95,21 @@ public class ChatListener implements Listener {
 				player.sendMessage(Main.PREFIX + "Your mute expires in: §a" + DateUtils.formatDateDiff(user.getMuteExpiration().getTime()));
 			}
 		}
+		
+		if (user.getRank().getLevel() > Rank.SPEC.getLevel()) {
+			messageAndColor = "§f%s";
+		}
+    	
+    	if (game.isRecordedRound()) {
+			if (game.isMuted() && user.getRank().getLevel() < Rank.STAFF.getLevel()) {
+				player.sendMessage(Main.PREFIX + "The chat is currently muted.");
+				event.setCancelled(true);
+				return;
+			}
+			
+    		event.setFormat(name + " §8» " + messageAndColor);
+    		return;
+    	}
 		
 		Iterator<Player> it = event.getRecipients().iterator();
 		
