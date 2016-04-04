@@ -63,6 +63,10 @@ public class TimeFlies extends Scenario implements Listener {
 					return;
 				}
 				
+				if (world.getGameRuleValue("doDaylightCycle").equals("false")) {
+					return;
+				}
+				
 				world.setTime(world.getTime() + 1);
 			}
 		};
