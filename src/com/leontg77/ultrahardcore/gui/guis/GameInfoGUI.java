@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -52,8 +53,11 @@ import com.leontg77.ultrahardcore.feature.xp.NerfedQuartzXPFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedXPFeature;
 import com.leontg77.ultrahardcore.gui.GUI;
 import com.leontg77.ultrahardcore.scenario.ScenarioManager;
+import com.leontg77.ultrahardcore.scenario.scenarios.AchievementHunters;
 import com.leontg77.ultrahardcore.scenario.scenarios.Moles;
 import com.leontg77.ultrahardcore.scenario.scenarios.PotentialMoles;
+import com.leontg77.ultrahardcore.scenario.scenarios.PotentialPermanent;
+import com.leontg77.ultrahardcore.scenario.scenarios.VengefulSpirits;
 import com.leontg77.ultrahardcore.utils.DateUtils;
 import com.leontg77.ultrahardcore.utils.FileUtils;
 import com.leontg77.ultrahardcore.utils.NameUtils;
@@ -118,6 +122,9 @@ public class GameInfoGUI extends GUI implements Listener {
         	return;
         }
         
+        HumanEntity player = event.getWhoClicked();
+        
+        ItemStack item = event.getCurrentItem();
 		Inventory inv = event.getInventory();
 		
 		if (!this.inv.getTitle().equals(inv.getTitle())) {
@@ -125,6 +132,20 @@ public class GameInfoGUI extends GUI implements Listener {
 		}
 		
 		event.setCancelled(true);
+		
+		if (item == null) {
+			return;
+		}
+		
+		if (!item.hasItemMeta() || !item.getItemMeta().hasLore() || !item.getItemMeta().hasDisplayName()) {
+			return;
+		}
+		
+		player.sendMessage(item.getItemMeta().getDisplayName());
+		
+		for (String lore : item.getItemMeta().getLore()) {
+			player.sendMessage(lore);
+		}
 	}
 	
 	/**
@@ -256,19 +277,34 @@ public class GameInfoGUI extends GUI implements Listener {
 		ItemMeta miscMeta = meetup.getItemMeta();
 		miscMeta.setDisplayName("§8» §6Meetup Rules §8«");
 		lore.add(" ");
-		lore.add("§8» §7Strict Meetup: §cNo.");
-		lore.add(" ");
-		lore.add("§8» §7Towering: §eOnly allowed before meetup.");
-		lore.add("§8» §7Forting: §eOnly allowed before meetup.");
-		lore.add("§8» §7Digging down: §eOnly allowed before meetup.");
-		lore.add(" ");
-		lore.add("§8» §7At meetup you are allowed to do anything you may");
-		lore.add("§8» §7want to, but you have to be inside of the MC border");
-		lore.add("§8» §7and on the surface, rules above also apply.");
-		lore.add(" ");
-		lore.add("§8» §7Border shrinks: §6" + NameUtils.capitalizeString(border.getPreText(), false) + border.name().toLowerCase() + ".");
-		lore.add("§8» §7The border will damage you if you go");
-		lore.add("§8» §7outside, until it eventually kills you");
+		if (border == BorderShrink.NEVER) {
+			lore.add("§8» §7Strict Meetup: §aYes.");
+			lore.add(" ");
+			lore.add("§8» §7Towering: " + (game.isRecordedRound() ? "§cDisallowed" : "§eOnly allowed before meetup."));
+			lore.add("§8» §7Forting: §eOnly allowed before meetup.");
+			lore.add("§8» §7Digging down: §eOnly allowed before meetup.");
+			lore.add(" ");
+			lore.add("§8» §7At meetup you have to go to 0,0 and fight, running");
+			lore.add("§8» §7and stalling will be disallowed and you may only");
+			lore.add("§8» §7fight and pick up loot, no farming apples etc.");
+			lore.add(" ");
+			lore.add("§8» §7Border shrinks: §6Never.");
+		} else {
+			lore.add("§8» §7Strict Meetup: §cNo.");
+			lore.add(" ");
+			lore.add("§8» §7Towering: " + (game.isRecordedRound() ? "§cDisallowed" : "§eOnly allowed before meetup."));
+			lore.add("§8» §7Forting: §eOnly allowed before meetup.");
+			lore.add("§8» §7Digging down: §eOnly allowed before meetup.");
+			lore.add(" ");
+			lore.add("§8» §7At meetup you are allowed to do anything you may");
+			lore.add("§8» §7want to, but you have to be inside of the MC border");
+			lore.add("§8» §7and on the surface, rules above also apply.");
+			lore.add(" ");
+			lore.add("§8» §7Border shrinks: §6" + NameUtils.capitalizeString(border.getPreText(), false) + border.name().toLowerCase() + ".");
+			lore.add("§8» §7The border will damage you if you go");
+			lore.add("§8» §7outside, until it eventually kills you");
+		}
+		
 		lore.add(" ");
 		miscMeta.setLore(lore);
 		meetup.setItemMeta(miscMeta);
@@ -363,16 +399,37 @@ public class GameInfoGUI extends GUI implements Listener {
 		nether.setItemMeta(netherMeta);
 		lore.clear();
 		
+		String heal = NumberUtils.formatDouble(feat.getFeature(GoldenHeadsFeature.class).getHealAmount());
+		
 		ItemStack healing = new ItemStack (Material.GOLDEN_APPLE);
 		ItemMeta healingMeta = healing.getItemMeta();
 		healingMeta.setDisplayName("§8» §6Healing Info §8«");
 		lore.add(" ");
-		lore.add("§8» §7Absorption: " + (feat.getFeature(AbsorptionFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
+		if (scen.getScenario(PotentialPermanent.class).isEnabled()) {
+			lore.add("§8» §7Absorption: §cDisabled.");
+		}
+		else if (feat.getFeature(AbsorptionFeature.class).isEnabled()) {
+			lore.add("§8» §7Absorption: §aEnabled.");
+		} 
+		else {
+			lore.add("§8» §7Absorption: §cDisabled.");
+		}
 		lore.add("§8» §7Notch Apples: " + (feat.getFeature(NotchApplesFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
 		lore.add(" ");
-		lore.add("§8» §7Golden Heads: " + (feat.getFeature(GoldenHeadsFeature.class).isEnabled() ? "§aEnabled." : "§cDisabled."));
 		if (feat.getFeature(GoldenHeadsFeature.class).isEnabled()) {
-			lore.add("§8» §7Heads Heal: §6" + NumberUtils.formatDouble(feat.getFeature(GoldenHeadsFeature.class).getHealAmount()) + " hearts.");
+			lore.add("§8» §7Golden Heads: §aEnabled. §8(§7On a head post§8)");
+			lore.add("§8» §7Heads Heal: §6" + heal + " hearts.");
+		} 
+		else if (scen.getScenario(VengefulSpirits.class).isEnabled()) {
+			lore.add("§8» §7Golden Heads: §aEnabled. §8(§7From VengefulSpirits§8)");
+			lore.add("§8» §7Heads Heal: §6" + heal + " hearts.");
+		}
+		else if (scen.getScenario(AchievementHunters.class).isEnabled()) {
+			lore.add("§8» §7Golden Heads: §aEnabled. §8(§7Only from achievements awards§8)");
+			lore.add("§8» §7Heads Heal: §6" + heal + " hearts.");
+		}
+		else {
+			lore.add("§8» §7Golden Heads: §cDisabled");
 		}
 		lore.add(" ");
 		healingMeta.setLore(lore);
