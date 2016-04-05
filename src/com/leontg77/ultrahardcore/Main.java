@@ -155,22 +155,13 @@ public class Main extends JavaPlugin {
 		PluginDescriptionFile file = getDescription();
 		getLogger().info(file.getName() + " is now disabled.");
 		
-		swap.resetBiomes();
 		data.store(teams, scen);
 		
-		if (!game.teamManagement()) {
-			return;
+		try {
+			swap.resetBiomes();
+		} catch (Exception e) {
+			getLogger().warning("Could not reset biomes!");
 		}
-		
-		game.setTeamManagement(false);
-
-		if (!game.pregameBoard()) {
-			return;
-		}
-		
-		board.resetScore("§e ");
-		board.resetScore("§8» §cTeam:");
-		board.resetScore("§8» §7/team");
 	}
 	
 	@Override
