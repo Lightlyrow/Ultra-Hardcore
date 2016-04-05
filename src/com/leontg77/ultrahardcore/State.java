@@ -1,5 +1,7 @@
 package com.leontg77.ultrahardcore;
 
+import org.bukkit.Bukkit;
+
 /**
  * The game state class.
  * 
@@ -55,6 +57,7 @@ public enum State {
 			try {
 				state = State.valueOf(settings.getConfig().getString("state"));
 			} catch (Exception e) {
+				Bukkit.getLogger().warning("Setting the state to NOT_RUNNING as it can't find the saved one!");
 				state = State.NOT_RUNNING;
 			}
 			
