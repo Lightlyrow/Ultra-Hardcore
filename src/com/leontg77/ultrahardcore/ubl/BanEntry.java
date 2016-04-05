@@ -23,9 +23,11 @@ public class BanEntry {
      */
     public BanEntry(UBL ubl, String[] fieldNames, String rawCSV) {
         String[] parts = ubl.parseLine(rawCSV);
+        
         if (parts.length != fieldNames.length) {
             throw new IllegalArgumentException("Expected " + fieldNames.length + " columns: " + rawCSV);
         }
+        
         for (int i = 0; i < fieldNames.length; i++) {
             data.put(fieldNames[i], parts[i]);
         }
