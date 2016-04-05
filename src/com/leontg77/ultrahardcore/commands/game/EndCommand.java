@@ -116,7 +116,10 @@ public class EndCommand extends UHCCommand {
 			winners.add(winner.getName());
 		}
 		
-		PlayerUtils.broadcast(Main.PREFIX + "With a total of §a" + totalKills + "§7 kills.");
+		if (winners.size() < 2) {
+			PlayerUtils.broadcast(Main.PREFIX + "With a total of §a" + totalKills + "§7 kills.");
+		}
+		
 		PlayerUtils.broadcast(" ");
 		PlayerUtils.broadcast(Main.PREFIX + "Thanks for playing and congrats to the winners!");
 		PlayerUtils.broadcast(Main.PREFIX + "Remember to check out the hall of fame by using §6/hof§7.");
