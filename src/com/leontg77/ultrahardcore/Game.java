@@ -441,9 +441,11 @@ public class Game {
 	 * Enable or disable team management.
 	 * 
 	 * @param enable True to enable, false to disable.
+	 * @param teamsize 
 	 */
-	public void setTeamManagement(boolean enable) {
-		settings.getConfig().set("misc.team", enable);
+	public void setTeamManagement(boolean enable, int teamsize) {
+		settings.getConfig().set("misc.team.enabled", enable);
+		settings.getConfig().set("misc.team.teamsize", teamsize);
 		settings.saveConfig();
 	}
 	
@@ -453,7 +455,16 @@ public class Game {
 	 * @return True if it is, false otherwise.
 	 */
 	public boolean teamManagement() {
-		return settings.getConfig().getBoolean("misc.team", false);
+		return settings.getConfig().getBoolean("misc.team.enabled", false);
+	}
+	
+	/**
+	 * Get the max teamsize of the team management.
+	 * 
+	 * @return The max teamsize..
+	 */
+	public int getTeamManagementTeamsize() {
+		return settings.getConfig().getInt("misc.team.teamsize", 1);
 	}
 
 	/**
