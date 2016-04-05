@@ -45,6 +45,10 @@ public class DQCommand extends UHCCommand {
 			return false;
 		}
 		
+		if (!Bukkit.hasWhitelist()) {
+			throw new CommandException("You cannot DQ when the whitelist is off.");
+		}
+		
 		Player target = Bukkit.getPlayer(args[0]);
 
     	if (target == null) {
