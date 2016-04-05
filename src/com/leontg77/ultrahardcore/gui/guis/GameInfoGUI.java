@@ -140,12 +140,14 @@ public class GameInfoGUI extends GUI implements Listener {
 		if (!item.hasItemMeta() || !item.getItemMeta().hasLore() || !item.getItemMeta().hasDisplayName()) {
 			return;
 		}
-		
-		player.sendMessage(item.getItemMeta().getDisplayName());
+
+		player.sendMessage("§8» §m--------" + item.getItemMeta().getDisplayName() + "§8§m--------§8 «");
 		
 		for (String lore : item.getItemMeta().getLore()) {
 			player.sendMessage(lore);
 		}
+		
+		player.sendMessage("§8» §m----------------------------§8 «");
 	}
 	
 	/**
