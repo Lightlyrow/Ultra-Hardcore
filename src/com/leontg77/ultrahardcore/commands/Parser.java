@@ -129,12 +129,11 @@ public class Parser {
 	 * Parse an boolean from the given string.
 	 * 
 	 * @param parse The string to parse.
-	 * @param criteria What the boolean is used for.
 	 * @return The boolean parsed.
 	 * 
 	 * @throws CommandException If the string typed isn't an boolean, this will send the sender a message.
 	 */
-	public boolean parseBoolean(String parse, String criteria) throws CommandException {
+	public boolean parseBoolean(String parse) throws CommandException {
 		if (parse.equalsIgnoreCase("true") || parse.equalsIgnoreCase("on")) {
 			return true;
 		} 
@@ -143,6 +142,6 @@ public class Parser {
 			return false;
 		}
 
-		throw new CommandException(NameUtils.capitalizeString(criteria, false) + " can only be 'true' or 'false', not '" + parse + "'.");
+		throw new CommandException("'" + parse + "' is not true or false.");
 	}
 }
