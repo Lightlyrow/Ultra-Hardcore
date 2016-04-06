@@ -319,7 +319,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 		cmds.add(new PMMinedOresCommand(game, spec, teams));
 		cmds.add(new PMOresCommand(game, spec, teams));
 		cmds.add(new RandomCommand(teams));
-		cmds.add(new TeamCommand(game, spec, board, teams));
+		cmds.add(new TeamCommand(game, board, teams));
 		cmds.add(new TLCommand(game, spec, teams));
 
 		// user
