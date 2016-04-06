@@ -56,7 +56,7 @@ public class PregenCommand extends UHCCommand {
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " set " + radius + " " + center.getX() + " " + center.getZ());
 		
 		if (args.length > 2) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420 208 " + parseBoolean(args[2], "force"));
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420 208 " + parseBoolean(args[2]));
 		} else {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pload " + world.getName() + " fill 420");
 		}

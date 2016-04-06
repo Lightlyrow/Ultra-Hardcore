@@ -47,7 +47,7 @@ public class RespawnCommand extends UHCCommand {
 		User user = plugin.getUser(target);
 		
 		if (args.length > 1) {
-			giveBasicStuff = parseBoolean(args[1], "Give basic stuff");
+			giveBasicStuff = parseBoolean(args[1]);
 		}
 
 		Location death = user.getDeathLoc();

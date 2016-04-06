@@ -28,7 +28,7 @@ public class PvPCommand extends UHCCommand {
 			return false;
 		}
 		
-		boolean enable = parseBoolean(args[1], "PvP");
+		boolean enable = parseBoolean(args[1]);
 		
 		if (args[0].equalsIgnoreCase("global")) {
 			for (World world : Bukkit.getWorlds()) {

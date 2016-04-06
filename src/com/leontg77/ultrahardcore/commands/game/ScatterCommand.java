@@ -74,7 +74,7 @@ public class ScatterCommand extends UHCCommand {
 			throw new CommandException("There are no worlds called '" + settings.getConfig().getString("world", "girhgqeruiogh") + "'.");
 		}
 		
-		boolean teamSpread = parseBoolean(args[0], "Team Spread");
+		boolean teamSpread = parseBoolean(args[0]);
 		
 		if (args[1].equalsIgnoreCase("*")) {
 			switch (State.getState()) {
