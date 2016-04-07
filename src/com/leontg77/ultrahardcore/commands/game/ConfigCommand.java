@@ -124,12 +124,12 @@ public class ConfigCommand extends UHCCommand {
 			
 			double appleRate = parseDouble(args[1], "apple rate");
 			
-			if (appleRate < 0.55) {
-				throw new CommandException("Apple rates cannot be lower than vanilla (0.55%)");
+			if (appleRate < 0.5) {
+				throw new CommandException("Apple rates cannot be lower than vanilla (0.5%)");
 			}
 			
-			if (appleRate > 100) {
-				throw new CommandException("Apple rates cannot be higher than 100%");
+			if (appleRate > 10) {
+				throw new CommandException("Apple rates cannot be higher than 10%");
 			}
 			
 			PlayerUtils.broadcast(Main.PREFIX + "Apple rates has been changed to §a" + NumberUtils.formatDouble(appleRate) + "%");
