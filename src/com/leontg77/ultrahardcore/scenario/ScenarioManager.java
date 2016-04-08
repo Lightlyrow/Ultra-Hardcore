@@ -158,7 +158,7 @@ public class ScenarioManager {
 		scenarios.add(new Cryophobia(plugin, game));
 		scenarios.add(cc);
 		scenarios.add(new DamageCycle(plugin));
-		scenarios.add(new DamageDodgers(plugin, timer));
+		scenarios.add(new DamageDodgers(plugin, game, timer));
 		scenarios.add(new DeathSentence(plugin, game));
 		scenarios.add(new Depths());
 		scenarios.add(new Diamondless(cc));
