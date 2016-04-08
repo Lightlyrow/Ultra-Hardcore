@@ -187,9 +187,9 @@ public class Main extends JavaPlugin {
 		scen.registerScenarios(arena, game, timer, teams, spec, settings, feat, scatter, board);
 		feat.registerFeatures(arena, game, timer, board, teams, spec, enchPreview, hardHearts, scen);
 		cmd.registerCommands(game, data, arena, parkour, settings, gui, board, spec, feat, scen, worlds, timer, teams, firework, scatter);
-	    
-		worlds.loadWorlds();
+
 		swap.setup();
+		worlds.loadWorlds();
 
 		announcer.setup();
 		arena.setup();
