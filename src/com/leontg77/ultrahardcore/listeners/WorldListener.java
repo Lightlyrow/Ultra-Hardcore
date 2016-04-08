@@ -1,17 +1,9 @@
 package com.leontg77.ultrahardcore.listeners;
 
-import java.util.Random;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.TreeType;
 import org.bukkit.World;
-import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 import com.leontg77.pregenner.events.WorldBorderFillFinishedEvent;
@@ -38,8 +30,6 @@ public class WorldListener implements Listener {
 	public WorldListener(Arena arena) {
 		this.arena = arena;
 	}
-	
-	private final Random rand = new Random();
 
 	@EventHandler
 	public void on(ChunkUnloadEvent event) {
@@ -69,28 +59,5 @@ public class WorldListener implements Listener {
 		}
 
 		PlayerUtils.broadcast(Main.PREFIX + "Pregen of world '§a" + world.getName() + "§7' finished.");
-	}
-	
-	@EventHandler
-	public void on(ChunkPopulateEvent event) {
-		World world = event.getWorld();
-		Chunk chunk = event.getChunk();
-		
-		for (int x = 0; x < 16; x++) {
-			for (int z = 0; z < 16; z++) {
-				Block block = chunk.getBlock(x, world.getHighestBlockYAt(chunk.getX() * x, chunk.getZ() * z) + 1, z);
-				
-				if (block.getBiome() != Biome.FOREST && block.getBiome() != Biome.FOREST_HILLS) {
-					return;
-				}
-				
-				if (rand.nextInt(100) >= 30) {
-					return;
-				}
-				
-				Location loc = block.getLocation();
-				loc.getWorld().generateTree(loc, TreeType.BIG_TREE);
-			}
-		}
 	}
 }
