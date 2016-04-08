@@ -36,15 +36,9 @@ public class Compensation extends Scenario implements Listener {
 		this.teams = teams;
 		this.arena = arena;
 	}
-
-	@Override
-	public void onDisable() {}
-
-	@Override
-	public void onEnable() {}
 	
 	@EventHandler
-    public void onPrepareItemCraft(PrepareItemCraftEvent event) {
+    public void on(PrepareItemCraftEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
@@ -61,7 +55,7 @@ public class Compensation extends Scenario implements Listener {
     }
 	
 	@EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerDeath(PlayerDeathEvent event) {
+    public void on(PlayerDeathEvent event) {
 		if (arena.isEnabled()) {
 			return;
 		}
