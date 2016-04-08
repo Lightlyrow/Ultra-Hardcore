@@ -1,18 +1,21 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.User;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
@@ -43,25 +46,29 @@ public class Timebomb extends Scenario implements Listener {
 	
 	@EventHandler
 	public void on(PlayerDeathEvent event) {
-		final Player player = event.getEntity();
-		
-		if (!game.getWorlds().contains(player.getWorld())) {
+		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
-		User user = plugin.getUser(player);
+		final Player player = event.getEntity();
+		final Location loc = player.getLocation().clone();
 		
-		final Location loc = player.getLocation().add(0, -1, 0);
-		event.setKeepInventory(true);
+		if (!game.getPlayers().contains(player)) {
+			return;
+		}
 		
-		loc.getBlock().setType(Material.TRAPPED_CHEST);
-		Chest chest = (Chest) loc.getBlock().getState();
+		Block block = loc.getBlock();
 		
-		loc.add(0, 0, -1);
-		loc.getBlock().setType(Material.TRAPPED_CHEST);
+		block = block.getRelative(BlockFace.DOWN);
+		block.setType(Material.CHEST);
+		
+		Chest chest = (Chest) block.getState();
+
+		block = block.getRelative(BlockFace.NORTH);
+		block.setType(Material.CHEST);
 		
 		for (ItemStack item : player.getInventory().getContents()) {
-			if (item == null || item.getType() == Material.AIR) {
+			if (item == null) {
 				continue;
 			}
 			
@@ -76,21 +83,26 @@ public class Timebomb extends Scenario implements Listener {
 			chest.getInventory().addItem(item);
 		}
 		
+		event.setKeepInventory(true);
+		
+		User user = plugin.getUser(player);
 		user.resetInventory();
-		
-		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+
+		new BukkitRunnable() {
 			public void run() {
-				PlayerUtils.broadcast(Main.PREFIX.replaceAll("UHC", "Timebomb") + ChatColor.GREEN + player.getName() + "'s §7corpse has exploded!");
-				loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 10, false, true);
-				// Using actual lightning to kill the items.
+				PlayerUtils.broadcast(PREFIX + ChatColor.GREEN + player.getName() + "'s §7corpse has exploded!");
+				
+				loc.getBlock().setType(Material.AIR);
+				
+				loc.getWorld().createExplosion(loc.getBlockX() + 0.5, loc.getBlockY() + 0.5, loc.getBlockZ() + 0.5, 10, false, true);
+				loc.getWorld().strikeLightning(loc); // Using actual lightning to kill the items.
+			}
+		}.runTaskLater(plugin, 600);
+		
+		new BukkitRunnable() {
+			public void run() {
 				loc.getWorld().strikeLightning(loc);
 			}
-		}, 600);
-		
-		Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-			public void run() {
-				loc.getWorld().strikeLightning(loc);
-			}
-		}, 620);
+		}.runTaskLater(plugin, 620);
 	}
 }

@@ -87,9 +87,9 @@ public class Landmines extends Scenario implements Listener {
 		
 		if (block.getType() == Material.NETHERRACK) {
 			Location loc = block.getLocation();
-			loc = loc.clone().add(0.5, 0, 0.5);
+			block.setType(Material.AIR);
 			
-			block.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 10, false, true);
+			block.getWorld().createExplosion(loc.getX() + 0.5, loc.getY() + 0.5, loc.getZ() + 0.5, 10, false, true);
 		}
 	}
 }

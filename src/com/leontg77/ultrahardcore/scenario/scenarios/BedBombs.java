@@ -3,6 +3,7 @@ package com.leontg77.ultrahardcore.scenario.scenarios;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -32,8 +33,9 @@ public class BedBombs extends Scenario implements Listener {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
-
-		final Block block = event.getClickedBlock();
+		
+		Block block = event.getClickedBlock();
+		Player player = event.getPlayer();
 		
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
@@ -43,7 +45,7 @@ public class BedBombs extends Scenario implements Listener {
 			return;
 		}
 		
-		if (!game.getWorlds().contains(block.getWorld())) {
+		if (!game.getPlayers().contains(player)) {
 			return;
 		}
 		
@@ -54,7 +56,7 @@ public class BedBombs extends Scenario implements Listener {
 		block.setType(Material.AIR);
 		event.setCancelled(true);
 		
-		final Location loc = block.getLocation();
+		Location loc = block.getLocation();
 		block.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), NumberUtils.randomIntBetween(4, 6), false, true);
 	}
 }
