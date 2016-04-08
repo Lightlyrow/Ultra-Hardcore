@@ -228,12 +228,11 @@ public class TeamCommand extends UHCCommand {
 				throw new CommandException("Only players can create teams.");
 			}
 			
-			Player player = (Player) sender;
-			
 			if (!game.teamManagement()) {
 				throw new CommandException(PREFIX + "Team management is currently disabled.");
 			}
-		
+			
+			Player player = (Player) sender;
 			Team currentTeam = teams.getTeam(player);
 			
 			if (currentTeam != null && !currentTeam.getName().equals("spec")) {
@@ -258,14 +257,18 @@ public class TeamCommand extends UHCCommand {
 				throw new CommandException("Only players can invite people to teams.");
 			}
 			
-			if (args.length == 1) {
-				throw new CommandException(Main.PREFIX + "Usage: /team invite <player>");
+			if (!game.teamManagement()) {
+				throw new CommandException(PREFIX + "Team management is currently disabled.");
 			}
 			
 			Player player = (Player) sender;
+
+			if (!invites.containsKey(player.getName())) {
+				throw new CommandException(PREFIX + "Only the team leader can invite players to the team.");
+			}
 			
-			if (!game.teamManagement()) {
-				throw new CommandException(PREFIX + "Team management is currently disabled.");
+			if (args.length == 1) {
+				throw new CommandException(Main.PREFIX + "Usage: /team invite <player>");
 			}
 			
 			Team team = teams.getTeam(player);
@@ -273,25 +276,21 @@ public class TeamCommand extends UHCCommand {
 			if (team == null || team.getName().equals("spec")) {
 				throw new CommandException("You are not on a team, create one using /team create.");
 			}
+			
+			if (team.getSize() >= game.getTeamManagementTeamsize()) {
+				throw new CommandException("Your team is currently full.");
+			}
 
 			Player target = Bukkit.getPlayer(args[1]);
 			
 			if (target == null) {
 				throw new CommandException("'" + args[1] + "' is not online.");
 			}
-			
-			if (team.getSize() >= game.getTeamManagementTeamsize()) {
-				throw new CommandException("Your team is currently full.");
-			}
 
 			Team targetTeam = teams.getTeam(target);
 			
 			if (targetTeam != null) {
 				throw new CommandException("'" + target.getName() + "' is already on a team.");
-			}
-
-			if (!invites.containsKey(player.getName())) {
-				throw new CommandException(PREFIX + "Only the team leader can invite players to the team.");
 			}
 			
 			invites.get(player.getName()).add(target.getName());
@@ -314,30 +313,30 @@ public class TeamCommand extends UHCCommand {
 				throw new CommandException("Only players can accept team requests.");
 			}
 			
+			if (!game.teamManagement()) {
+				throw new CommandException(PREFIX + "Team management is currently disabled.");
+			}
+			
 			if (args.length == 1) {
 				throw new CommandException(Main.PREFIX + "Usage: /team accept <player>");
 			}
 			
 			Player player = (Player) sender;
-			
-			if (!game.teamManagement()) {
-				throw new CommandException(PREFIX + "Team management is currently disabled.");
-			}
 
 			Player target = Bukkit.getPlayer(args[1]);
 			
 			if (target == null) {
 				throw new CommandException("'" + args[1] + "' is not online.");
 			}
+			
+			if (!invites.containsKey(target.getName()) || !invites.get(target.getName()).contains(player.getName())) {
+				throw new CommandException("'" + target.getName() + "' has not sent you any requests.");
+			}
 		
 			Team currentTeam = teams.getTeam(player);
 			
 			if (currentTeam != null && !currentTeam.getName().equals("spec")) {
 				throw new CommandException("You are already on a team.");
-			}
-			
-			if (!invites.containsKey(target.getName()) || !invites.get(target.getName()).contains(player.getName())) {
-				throw new CommandException("'" + target.getName() + "' has not sent you any requests.");
 			}
 			
 			Team team = teams.getTeam(target);
@@ -363,16 +362,15 @@ public class TeamCommand extends UHCCommand {
 				throw new CommandException("Only players can deny team requests.");
 			}
 			
+			if (!game.teamManagement()) {
+				throw new CommandException(PREFIX + "Team management is currently disabled.");
+			}
+			
 			if (args.length == 1) {
 				throw new CommandException(Main.PREFIX + "Usage: /team deny <player>");
 			}
 			
 			Player player = (Player) sender;
-			
-			if (!game.teamManagement()) {
-				throw new CommandException(PREFIX + "Team management is currently disabled.");
-			}
-
 			Player target = Bukkit.getPlayer(args[1]);
 			
 			if (target == null) {
@@ -392,7 +390,7 @@ public class TeamCommand extends UHCCommand {
 		
 		if (args[0].equalsIgnoreCase("leave")) {
 			if (!(sender instanceof Player)) {
-				throw new CommandException("Only players can create and manage teams.");
+				throw new CommandException("Only players can leave teams.");
 			}
 			
 			Player player = (Player) sender;
@@ -414,7 +412,7 @@ public class TeamCommand extends UHCCommand {
 		
 		if (args[0].equalsIgnoreCase("kick")) {
 			if (!(sender instanceof Player)) {
-				throw new CommandException("Only players can create and manage teams.");
+				throw new CommandException("Only players can kick someone from a team.");
 			}
 			
 			if (args.length == 1) {
@@ -432,15 +430,15 @@ public class TeamCommand extends UHCCommand {
 			if (team == null || team.getName().equals("spec")) {
 				throw new CommandException("You are not on a team.");
 			}
+
+			if (!invites.containsKey(player.getName())) {
+				throw new CommandException(PREFIX + "Only the team leader can kick players from the team.");
+			}
 			
 			Player target = Bukkit.getPlayer(args[1]);
 			
 			if (target == null) {
 				throw new CommandException("'" + args[1] + "' is not online.");
-			}
-
-			if (!invites.containsKey(player.getName())) {
-				throw new CommandException(PREFIX + "Only the team leader can kick players from the team.");
 			}
 			
 			if (!team.getEntries().contains(target.getName())) {
