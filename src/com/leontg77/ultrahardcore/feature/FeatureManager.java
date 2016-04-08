@@ -62,6 +62,8 @@ import com.leontg77.ultrahardcore.feature.serverlist.ServerMOTDFeature;
 import com.leontg77.ultrahardcore.feature.tablist.HeartsOnTabFeature;
 import com.leontg77.ultrahardcore.feature.tablist.PercentOnTabFeature;
 import com.leontg77.ultrahardcore.feature.tablist.TabHealthColorFeature;
+import com.leontg77.ultrahardcore.feature.world.BigTreesInForestsFeature;
+import com.leontg77.ultrahardcore.feature.world.JungleTempleFeature;
 import com.leontg77.ultrahardcore.feature.world.WeatherFeature;
 import com.leontg77.ultrahardcore.feature.world.WorldUpdaterFeature;
 import com.leontg77.ultrahardcore.feature.xp.NerfedQuartzXPFeature;
@@ -243,6 +245,8 @@ public class FeatureManager {
 		addFeature(new TabHealthColorFeature(plugin, spec));
 		
 		// world
+		addFeature(new BigTreesInForestsFeature());
+		addFeature(new JungleTempleFeature(plugin));
 		addFeature(new WeatherFeature(timer, game));
 		addFeature(new WorldUpdaterFeature(plugin));
 		
