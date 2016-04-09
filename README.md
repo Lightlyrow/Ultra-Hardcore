@@ -1,5 +1,5 @@
 # Ultra Hardcore
-UHC Plugin designed for ArcticUHC **ONLY**, Stealing or using this code without permission is not allowed.
+UHC Plugin designed for ArcticUHC **ONLY**, Stealing or using this code without permission is not allowed. 
 
 This code is all rights reserved and is only on github for viewing purposes. (mostly for @D4mnX and @Eluinhost which are helping me with some parts of the code)
 
