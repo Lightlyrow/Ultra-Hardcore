@@ -14,6 +14,7 @@ import com.leontg77.ultrahardcore.feature.Feature;
 import com.leontg77.ultrahardcore.feature.FeatureManager;
 import com.leontg77.ultrahardcore.feature.ToggleableFeature;
 import com.leontg77.ultrahardcore.gui.GUI;
+import com.leontg77.ultrahardcore.gui.GUIManager;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -22,20 +23,25 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * @author LeonTG77.
  */
 public class ConfigGUI extends GUI implements Listener {
-	private final FeatureManager feat;
 	private final Settings settings;
+	
+	private final FeatureManager feat;
+	private final GUIManager gui;
 	
 	/**
 	 * Config inventory GUI class constructor.
 	 * 
 	 * @param settings The settings class.
 	 * @param feat The feature manager class.
+	 * @param gui The gui manager class.
 	 */
-	public ConfigGUI(Settings settings, FeatureManager feat) {
+	public ConfigGUI(Settings settings, FeatureManager feat, GUIManager gui) {
 		super("Config", "A inventory to toggle options for a game.");
 		
 		this.settings = settings;
+		
 		this.feat = feat;
+		this.gui = gui;
 	}
 
 	private Inventory inv;
@@ -112,5 +118,7 @@ public class ConfigGUI extends GUI implements Listener {
 		item.setItemMeta(meta);
 		
 		PlayerUtils.broadcast(Main.PREFIX + "§6" + name + " §7has been " + (toggle.isEnabled() ? "§aenabled" : "§cdisabled") + "§7.");
+		
+		gui.getGUI(GameInfoGUI.class).update();
 	}
 }
