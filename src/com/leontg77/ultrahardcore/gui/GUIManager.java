@@ -88,7 +88,7 @@ public class GUIManager {
 	 * Setup all the GUI inventories.
 	 */
 	public void registerGUIs(Game game, Timer timer, Settings settings, FeatureManager feat, ScenarioManager scen, WorldManager manager) {
-		addGUI(new ConfigGUI(settings, feat));
+		addGUI(new ConfigGUI(settings, feat, this));
 		addGUI(new GameInfoGUI(plugin, settings, game, timer, feat, scen));
 		addGUI(new HallOfFameGUI(plugin, settings));
 		addGUI(new InvseeGUI(plugin));
