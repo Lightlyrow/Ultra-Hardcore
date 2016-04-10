@@ -73,7 +73,7 @@ public class ServerMOTDFeature extends Feature implements Listener {
 	private String getInformationMessage() {
 		final State current = State.getState();
 
-		final String scen = game.getScenarios().replaceAll(",", "§8§o,§7§o");
+		final String scen = game.getScenarios().replaceAll(", ", "§8§o, §7§o");
 		final String ingameAfter = "§8§o. §4§oHost: §a§o" + game.getHost();
 		
 		final String ingameVersion = "§7§o" + game.getAdvancedTeamSize(false, true).replaceAll("-", "§8§o-§7§o") + "§7§o" + scen.substring(0, Math.min(59 - ingameAfter.length(), scen.length())) + ingameAfter;
