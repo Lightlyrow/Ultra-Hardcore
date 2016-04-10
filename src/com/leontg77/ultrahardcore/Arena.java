@@ -415,6 +415,11 @@ public class Arena {
 		}
 		
 		for (int i = 0; i < 36; i++) {
+			if (!user.getFile().contains("hotbar." + i)) {
+				giveDefaultKit(player);
+				return;
+			}
+			
 			ItemStack item = ItemStack.deserialize(user.getFile().getConfigurationSection("hotbar." + i).getValues(false));
 			
 			if (item == null) {
