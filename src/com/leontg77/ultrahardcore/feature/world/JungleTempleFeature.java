@@ -52,14 +52,7 @@ public class JungleTempleFeature extends Feature implements Listener {
 		for (int x = start.getBlockX(); x <= end.getBlockX(); x++) {
 			for (int y = start.getBlockY(); y <= end.getBlockY(); y++) {
 				for (int z = start.getBlockZ(); z <= end.getBlockZ(); z++) {
-					Location loc = new Location(world, x, y, z);
-					Chunk chunk = loc.getChunk();
-					
-					if (!chunk.isLoaded()) {
-						chunk.load(true);
-					}
-					
-					templeBlocks.add(loc);
+					templeBlocks.add(new Location(world, x, y, z));
 				}
 			}
 		}
@@ -81,7 +74,7 @@ public class JungleTempleFeature extends Feature implements Listener {
 			return;
 		}
 		
-		if (rand.nextInt(400) >= 1) {
+		if (rand.nextInt(300) >= 1) {
 			return;
 		}
 		
@@ -132,7 +125,7 @@ public class JungleTempleFeature extends Feature implements Listener {
 					Block cBlock = current.getBlock();
 					Block block = tLoc.getBlock();
 					
-					if (block.isEmpty()) {
+					if (block.getType() == Material.BARRIER) {
 						continue;
 					}
 
@@ -173,9 +166,13 @@ public class JungleTempleFeature extends Feature implements Listener {
 	 * @param dis The dispenser to add it to.
 	 */
 	private void addLoot(Dispenser dis) {
-		int slot = rand.nextInt(dis.getInventory().getSize());
+		int rolls = rand.nextInt(2) + 1; // 1-2 rolls (aka 1-2 items)
 		
-		dis.getInventory().setItem(slot, new ItemStack(Material.ARROW, rand.nextInt(6) + 2));
+		for (int i = 0; i < rolls; i++) {
+			int slot = rand.nextInt(dis.getInventory().getSize());
+			
+			dis.getInventory().setItem(slot, new ItemStack(Material.ARROW, rand.nextInt(6) + 2));
+		}
 	}
 	
 	/**
