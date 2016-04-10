@@ -1,7 +1,6 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,22 +51,22 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 		super("MysteryTeams", "Teams are unknown until meeting and comparing banners.");
 		
 		plugin.getCommand("mt").setExecutor(this);
-		
 		this.game = game;
-		
+
 		orgTeams = new HashMap<MysteryTeam, List<UUID>>();
-		teams = Arrays.asList(MysteryTeam.values());
+		teams = new ArrayList<MysteryTeam>();
 	}
 
 	@Override
 	public void onDisable() {
 		orgTeams.clear();
+		teams.clear();
 	}
 
 	@Override
 	public void onEnable() {
-		// this does not disable the scenario.
-		onDisable();
+		orgTeams.clear();
+		teams.clear();
 	}
 	
 	@Override
@@ -87,9 +86,10 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 			for (MysteryTeam team : teams) {
 				sender.sendMessage(PREFIX + team.getChatColor() + team.getName() + "'s teamsize: §f" + team.getSize());
 			}
+			return true;
 		} 
 		
-		if (!sender.hasPermission("uhc.mysteryteams")) {
+		if (!sender.hasPermission("uhc." + getName().toLowerCase())) {
 			return helpMenu(sender);
 		}
 		
@@ -103,8 +103,8 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 			
 			try {
 				teamSize = parseInt(args[1]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + e.getMessage());
+			} catch (Exception ex) {
+				sender.sendMessage(ChatColor.RED + ex.getMessage());
 				return true;
 			}
 			
@@ -112,8 +112,8 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 			
 			try {
 				amount = parseInt(args[2]);
-			} catch (Exception e) {
-				sender.sendMessage(ChatColor.RED + e.getMessage());
+			} catch (Exception ex) {
+				sender.sendMessage(ChatColor.RED + ex.getMessage());
 				return true;
 			}
 			
@@ -132,6 +132,14 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 	    		if (team == null) {
 					sender.sendMessage(ChatColor.RED + "There are no more available teams.");
 					break;
+	    		}
+	    		
+	    		if (!orgTeams.containsKey(team)) {
+	    			orgTeams.put(team, new ArrayList<UUID>());
+	    		}
+	    		
+	    		if (!teams.contains(team)) {
+	    			teams.add(team);
 	    		}
 	    		
 				for (int j = 0; j < teamSize; j++) {
@@ -187,8 +195,16 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 			return true;
 		}
 		
+		if (args[0].equalsIgnoreCase("clear")) {
+			orgTeams.clear();
+			teams.clear();
+			
+			sender.sendMessage(PREFIX + "Cleared all teams");
+    		return true;
+		}
+		
 		if (args[0].equalsIgnoreCase("give")) {
-			if (args.length == 0) {
+			if (args.length == 1) {
 				sender.sendMessage(PREFIX + "Gave item to everyone.");
 				
 				for (Player online : Bukkit.getOnlinePlayers()) {
@@ -204,6 +220,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 		    		item.setItemMeta(meta);
 		    		PlayerUtils.giveItem(online, item);
 				}
+				return true;
 			}
 
 			Player target = Bukkit.getPlayer(args[1]);
@@ -239,7 +256,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 	 * @return The fake team created.
 	 */
 	public MysteryTeam findAvailableTeam() {
-		for (MysteryTeam team : teams) {
+		for (MysteryTeam team : MysteryTeam.values()) {
 			if (team.getSize() == 0) {
 				return team;
 			}
@@ -280,18 +297,17 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 	 * Print the help menu to the given sender.
 	 * 
 	 * @param sender The sender printing too
-	 * @return 
-	 * @return Always true;
+	 * @return Always true.
 	 */
 	public boolean helpMenu(CommandSender sender) {
 		sender.sendMessage(PREFIX + "MysteryTeams Command");
 	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt teamsize");
 	    
-	    if (!sender.hasPermission("mysteryteams.admin")) {
+	    if (!sender.hasPermission("uhc." + getName().toLowerCase())) {
 	    	return true;
 	    }
 	    
-		sender.sendMessage(" - " + ChatColor.BLUE + "/mt randomize <teamsize>");
+		sender.sendMessage(" - " + ChatColor.BLUE + "/mt randomize <teamsize> <amount of teams>");
 	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt give [player]");
 	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt clear");
 	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt list");
@@ -313,12 +329,13 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
     		BannerMeta meta = (BannerMeta) item.getItemMeta();
     		meta.setBaseColor(team.getDyeColor());
     		item.setItemMeta(meta);
+    		
     		PlayerUtils.giveItem(online, item);
 		}
 	}
 	
 	@EventHandler
-	public void onPrepareCraft(PrepareItemCraftEvent event) {
+	public void on(PrepareItemCraftEvent event) {
 		CraftingInventory inv = event.getInventory();
 		ItemStack result = inv.getResult();
 		
@@ -332,7 +349,7 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 	}
 
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
+	public void on(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		MysteryTeam team = getTeam(player);
 
@@ -361,6 +378,10 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 		for (MysteryTeam mTeam : teams) {
 			killerTeam = mTeam;
 			break;
+		}
+		
+		if (killerTeam == null) {
+			return;
 		}
 		
 		PlayerUtils.broadcast(PREFIX + team.getChatColor() + "Team " + team.getName() + " eliminated. " + killerTeam.getChatColor() + "The " + killerTeam.getName() + " team won!");
