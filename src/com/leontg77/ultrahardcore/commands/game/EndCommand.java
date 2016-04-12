@@ -116,7 +116,7 @@ public class EndCommand extends UHCCommand {
 			winners.add(winner.getName());
 		}
 		
-		if (winners.size() < 2) {
+		if (winners.size() > 1) {
 			PlayerUtils.broadcast(Main.PREFIX + "With a total of §a" + totalKills + "§7 kills.");
 		}
 		
