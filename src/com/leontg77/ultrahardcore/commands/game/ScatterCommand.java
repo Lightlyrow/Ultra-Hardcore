@@ -194,6 +194,8 @@ public class ScatterCommand extends UHCCommand {
 				worlds.setThundering(false);
 				worlds.setStorm(false);
 				
+				world.setSpawnFlags(false, true);
+				
 				for (Entity mob : worlds.getEntities()) {
 					if (EntityUtils.isButcherable(mob.getType())) {
 						mob.remove();
