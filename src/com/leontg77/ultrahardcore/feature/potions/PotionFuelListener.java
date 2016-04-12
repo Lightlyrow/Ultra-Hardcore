@@ -20,7 +20,8 @@ import com.google.common.base.Optional;
 /**
  * Potion Fuel listener class.
  * 
- * @author LeonTG77
+ * @author ghowden
+ * @see https://github.com/Eluinhost/UHC/blob/master/src/main/java/gg/uhc/uhc/modules/potions/PotionFuelsListener.java
  */
 public class PotionFuelListener implements Listener {
 	private final Map<Material, String> messages = new HashMap<Material, String>();
