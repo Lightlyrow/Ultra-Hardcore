@@ -312,6 +312,8 @@ public class Timer {
 					world.setThundering(false);
 					world.setStorm(false);
 					
+					world.setSpawnFlags(false, true);
+					
 					for (Entity mob : world.getEntities()) {
 						if (EntityUtils.isButcherable(mob.getType())) {
 							mob.remove();
@@ -438,9 +440,6 @@ public class Timer {
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					PlayerUtils.broadcast(" ");
 					PlayerUtils.broadcast(ChatColor.RED + " Meetup is now, head to 0,0!");
-					PlayerUtils.broadcast(" ");
-					PlayerUtils.broadcast(ChatColor.RED + " You may be do anything you want as long");
-					PlayerUtils.broadcast(ChatColor.RED + " as your inside 300x300 on the surface!");
 					PlayerUtils.broadcast(" ");
 					PlayerUtils.broadcast(ChatColor.DARK_GRAY + "»»»»»»»»»»»»»»»«««««««««««««««");
 					
@@ -660,11 +659,11 @@ public class Timer {
 					world.setPVP(false);
 					world.setTime(0);
 					
-					world.setSpawnFlags(true, true);
-					
 					world.setGameRuleValue("doDaylightCycle", "true");
 					world.setThundering(false);
 					world.setStorm(false);
+					
+					world.setSpawnFlags(false, true);
 					
 					for (Entity mob : world.getEntities()) {
 						if (EntityUtils.isButcherable(mob.getType())) {
@@ -760,6 +759,10 @@ public class Timer {
 					final User user = plugin.getUser(online);
 					user.resetHealth();
 					user.resetFood();
+					
+					for (World world : game.getWorlds()) {
+						world.setSpawnFlags(true, true);
+					}
 				}
 			}
 		}.runTaskLater(plugin, 380);
