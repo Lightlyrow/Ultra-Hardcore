@@ -135,7 +135,7 @@ public class ScenarioManager {
 		scenarios.add(new BetaZombies());
 		scenarios.add(new BigCrack(plugin));
 		scenarios.add(new BiomeParanoia(plugin, spec));
-		scenarios.add(new Birds());
+		scenarios.add(new Birds(timer));
 		scenarios.add(new Blitz(plugin, timer, game));
 		scenarios.add(new Blocked());
 		scenarios.add(new BlockRush());
