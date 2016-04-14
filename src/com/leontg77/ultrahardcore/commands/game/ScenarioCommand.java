@@ -32,7 +32,7 @@ public class ScenarioCommand extends UHCCommand {
 	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("enable")) {
-				if (sender.hasPermission("uhc.scenario.manage")) {
+				if (sender.hasPermission(getPermission() + ".manage")) {
 					if (args.length == 1) {
 						return false;
 					}
@@ -55,7 +55,7 @@ public class ScenarioCommand extends UHCCommand {
 			} 
 
 			if (args[0].equalsIgnoreCase("disable")) {
-				if (sender.hasPermission("uhc.scenario.manage")) {
+				if (sender.hasPermission(getPermission() + ".manage")) {
 					if (args.length == 1) {
 						return false;
 					}
@@ -139,7 +139,7 @@ public class ScenarioCommand extends UHCCommand {
         	toReturn.add("list");
         	toReturn.add("info");
         	
-        	if (sender.hasPermission("uhc.scenario.manage")) {
+        	if (sender.hasPermission(getPermission() + ".manage")) {
         		toReturn.add("enable");
 	        	toReturn.add("disable");
         	}
@@ -152,19 +152,18 @@ public class ScenarioCommand extends UHCCommand {
         		}
         	}
 			
-        	if (!sender.hasPermission("uhc.scenario.manage")) {
-	        	return null;
+        	if (sender.hasPermission(getPermission() + ".manage")) {
+        		if (args[0].equalsIgnoreCase("enable")) {
+        			for (Scenario scen : manager.getDisabledScenarios()) {
+        				toReturn.add(scen.getName());
+        			}
+        		} else if (args[0].equalsIgnoreCase("disable")) {
+        			for (Scenario scen : manager.getEnabledScenarios()) {
+        				toReturn.add(scen.getName());
+        			}
+        		}
         	}
         	
-        	if (args[0].equalsIgnoreCase("enable")) {
-        		for (Scenario scen : manager.getDisabledScenarios()) {
-    				toReturn.add(scen.getName());
-        		}
-        	} else if (args[0].equalsIgnoreCase("disable")) {
-        		for (Scenario scen : manager.getEnabledScenarios()) {
-    				toReturn.add(scen.getName());
-        		}
-        	}
 		}
 		
     	return toReturn;

@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.TeamManager;
@@ -40,7 +39,7 @@ public class RandomCommand extends UHCCommand {
 		int amount = parseInt(args[1], "amount");
 		int size = parseInt(args[0], "teamsize");
 		
-		PlayerUtils.broadcast(Main.PREFIX + "Randomizing §6" + amount + "§7 teams of §6" + size + "§7.");
+		PlayerUtils.broadcast(TeamCommand.PREFIX + "Randomizing §6" + amount + "§7 teams of §6" + size + "§7.");
 		
 		for (int i = 0; i < amount; i++) {
 			List<Player> list = new ArrayList<Player>();
@@ -70,7 +69,7 @@ public class RandomCommand extends UHCCommand {
 			}
 			
 			if (team.getSize() > 0) {
-				teams.sendMessage(team, Main.PREFIX + "You were added to team §6" + team.getName() + "§7.");
+				teams.sendMessage(team, TeamCommand.PREFIX + "You were added to team §6" + team.getName() + "§7.");
 				
 				for (OfflinePlayer entry : teams.getPlayers(team)) {
 					Player player = entry.getPlayer();
@@ -80,29 +79,29 @@ public class RandomCommand extends UHCCommand {
 					}
 					
 					if (team.getSize() == 1) {
-						player.sendMessage(Main.PREFIX + "You are a solo."); 
+						player.sendMessage(TeamCommand.PREFIX + "You are a solo."); 
 						continue;
 					}
 
-					player.sendMessage(Main.PREFIX + "Your teammates are:"); 
+					player.sendMessage(TeamCommand.PREFIX + "Your teammates are:"); 
 					
 					for (String entryTwo : team.getEntries()) {
 						if (entry.getName().equals(entryTwo)) {
 							continue;
 						}
 						
-						player.sendMessage(Main.PREFIX + "§a" + entryTwo);
+						player.sendMessage(TeamCommand.PREFIX + "§a" + entryTwo);
 					}
 				}
 			}
 		}
 		
-		PlayerUtils.broadcast(Main.PREFIX + "Teams has been randomized.");
+		PlayerUtils.broadcast(TeamCommand.PREFIX + "Teams has been randomized.");
 		return true;
 	}
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		return null;
+		return new ArrayList<String>();
 	}
 }

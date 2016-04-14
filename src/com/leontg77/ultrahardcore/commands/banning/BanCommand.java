@@ -89,9 +89,7 @@ public class BanCommand extends UHCCommand {
 		List<String> toReturn = new ArrayList<String>();
 		
 		if (args.length == 1) {
-			for (Player online : Bukkit.getOnlinePlayers()) {
-				toReturn.add(online.getName());
-			}
+			return allPlayers();
 		}
 		
 		if (args.length > 1) {

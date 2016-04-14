@@ -50,13 +50,13 @@ public class SpecAndStaffChatCommand extends UHCCommand {
             online.sendMessage(PREFIX + sender.getName() + "§8: §f" + message);
         }
 
-        Bukkit.getLogger().info(message);
+        Bukkit.getLogger().info(PREFIX + sender.getName() + "§8: §f" + message);
         return true;
     }
 
     @Override
     public List<String> tabComplete(CommandSender sender, String[] args) {
-        return null;
+        return allVisiblePlayers(sender);
     }
 
     protected class CanAccessChatPredicate implements Predicate<CommandSender> {

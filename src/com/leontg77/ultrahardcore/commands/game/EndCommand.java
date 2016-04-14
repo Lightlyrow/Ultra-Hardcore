@@ -237,12 +237,6 @@ public class EndCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		List<String> toReturn = new ArrayList<String>();
-
-		for (Player online : Bukkit.getOnlinePlayers()) {
-			toReturn.add(online.getName());
-		}
-		
-		return toReturn;
+		return allPlayers();
 	}
 }

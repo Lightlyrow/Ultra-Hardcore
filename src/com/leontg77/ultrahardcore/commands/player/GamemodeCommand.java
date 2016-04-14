@@ -91,7 +91,7 @@ public class GamemodeCommand extends UHCCommand {
 		}
 		
 		if (args.length == 2) {
-			return null;
+    		return allPlayers();
 		}
 		
 		return toReturn;

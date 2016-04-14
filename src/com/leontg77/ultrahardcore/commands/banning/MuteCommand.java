@@ -86,7 +86,7 @@ public class MuteCommand extends UHCCommand {
 		List<String> toReturn = new ArrayList<String>();
 		
 		if (args.length == 1) {
-			return null;
+			return allPlayers();
 		}
 		
 		if (args.length == 2 && !args[1].isEmpty()) {

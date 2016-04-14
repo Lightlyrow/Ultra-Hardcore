@@ -79,14 +79,6 @@ public class BanIPCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		List<String> toReturn = new ArrayList<String>();
-		
-		if (args.length == 1) {
-			for (Player online : Bukkit.getOnlinePlayers()) {
-				toReturn.add(online.getName());
-			}
-		}
-		
-		return toReturn;
+		return allPlayers();
 	}
 }

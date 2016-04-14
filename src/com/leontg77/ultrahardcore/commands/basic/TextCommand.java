@@ -50,6 +50,6 @@ public class TextCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(final CommandSender sender, final String[] args) {
-		return null;
+		return allPlayers();
 	}
 }

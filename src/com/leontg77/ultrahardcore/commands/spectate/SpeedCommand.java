@@ -47,7 +47,7 @@ public class SpeedCommand extends UHCCommand {
 		float orgSpeed = speed;
 		Player target;
 		
-		if (args.length == 1) {
+		if (args.length == 1 || !sender.hasPermission(getPermission() + ".others")) {
 			if (!(sender instanceof Player)) {
 				throw new CommandException("Only players can change their walk/fly speed.");
 			}
@@ -97,7 +97,7 @@ public class SpeedCommand extends UHCCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
 		if (args.length == 2) {
-			return null;
+			return allPlayers();
 		}
 		
 		return new ArrayList<String>();

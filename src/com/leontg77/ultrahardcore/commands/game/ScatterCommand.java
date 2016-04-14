@@ -261,8 +261,8 @@ public class ScatterCommand extends UHCCommand {
 		if (args.length == 2) {
 			toReturn.add("*");
 			
-			for (Player online : Bukkit.getOnlinePlayers()) {
-				toReturn.add(online.getName());
+			for (String name : allPlayers()) {
+				toReturn.add(name);
 			}
 		}
 		

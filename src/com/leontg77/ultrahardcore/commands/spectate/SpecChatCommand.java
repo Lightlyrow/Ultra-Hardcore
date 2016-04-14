@@ -58,6 +58,6 @@ public class SpecChatCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		return null;
+		return allVisiblePlayers(sender);
 	}
 }

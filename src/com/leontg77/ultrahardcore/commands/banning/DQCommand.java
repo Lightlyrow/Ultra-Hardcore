@@ -1,23 +1,17 @@
 package com.leontg77.ultrahardcore.commands.banning;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Joiner;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.commands.CommandException;
 import com.leontg77.ultrahardcore.commands.UHCCommand;
 import com.leontg77.ultrahardcore.managers.BoardManager;
-import com.leontg77.ultrahardcore.utils.BlockUtils;
 import com.leontg77.ultrahardcore.utils.PlayerUtils;
 
 /**
@@ -67,33 +61,7 @@ public class DQCommand extends UHCCommand {
 		board.resetScore(args[0]);
     	
     	target.setWhitelisted(false);
-    	
-    	Location toDrop = target.getLocation().clone();
-
-    	toDrop.setX(toDrop.getBlockX() + 0.5);
-    	toDrop.setY(toDrop.getBlockY() + 0.7);
-    	toDrop.setZ(toDrop.getBlockZ() + 0.5);
-    	
-    	for (ItemStack item : target.getInventory().getContents()) {
-    		if (item == null || item.getType() == Material.AIR) {
-    			continue;
-    		}
-    		
-    		BlockUtils.dropItem(toDrop, item);
-    	}
-    	
-    	for (ItemStack item : target.getInventory().getArmorContents()) {
-    		if (item == null || item.getType() == Material.AIR) {
-    			continue;
-    		}
-    		
-    		BlockUtils.dropItem(toDrop, item);
-    	}
-    	
-    	target.getInventory().clear();
-    	
-    	PlayerDeathEvent event = new PlayerDeathEvent(target, new ArrayList<ItemStack>(), 0, null);
-    	Bukkit.getPluginManager().callEvent(event);
+    	target.setHealth(0);
 		
     	target.kickPlayer(
     	"§8» §7You have been §cdisqualified §7from this game §8«" +
@@ -109,14 +77,6 @@ public class DQCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		List<String> toReturn = new ArrayList<String>();
-		
-		if (args.length == 1) {
-			for (Player online : Bukkit.getOnlinePlayers()) {
-				toReturn.add(online.getName());
-			}
-		}
-		
-		return toReturn;
+		return allPlayers();
 	}
 }

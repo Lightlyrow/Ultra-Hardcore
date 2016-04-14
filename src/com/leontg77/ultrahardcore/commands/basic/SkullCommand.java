@@ -65,7 +65,7 @@ public class SkullCommand extends UHCCommand {
 	@Override
 	public List<String> tabComplete(final CommandSender sender, final String[] args) {
 		if (args.length < 3) {
-			return null;
+			return allPlayers();
 		}
 		
 		return new ArrayList<String>();

@@ -73,7 +73,7 @@ public class ClearXPCommand extends UHCCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
 		if (args.length == 1) {
-			return null;
+    		return allPlayers();
 		}
 		
 		return new ArrayList<String>();

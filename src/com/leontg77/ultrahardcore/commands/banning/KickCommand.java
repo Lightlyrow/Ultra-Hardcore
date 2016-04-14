@@ -78,8 +78,8 @@ public class KickCommand extends UHCCommand {
 			toReturn.add("*");
 			toReturn.add("**");
 			
-			for (Player online : Bukkit.getOnlinePlayers()) {
-				toReturn.add(online.getName());
+			for (String name : allPlayers()) {
+				toReturn.add(name);
 			}
 		}
 		

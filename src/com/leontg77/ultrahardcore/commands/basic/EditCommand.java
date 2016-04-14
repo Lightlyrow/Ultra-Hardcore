@@ -30,30 +30,30 @@ public class EditCommand extends UHCCommand {
 	}
 
 	@Override
-	public boolean execute(final CommandSender sender, final String[] args) throws CommandException {
+	public boolean execute(CommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof Player)) {
 			throw new CommandException("Only players can change sign lines.");
 		}
 		
-		final Player player = (Player) sender;
+		Player player = (Player) sender;
 		
 		if (args.length < 2) {
 			return false;
 		}
 		
-		final Block block = player.getTargetBlock((Set<Material>) null, BLOCK_REACH);
+		Block block = player.getTargetBlock((Set<Material>) null, BLOCK_REACH);
 		
 		if (block == null) {
 			throw new CommandException("You are not looking at a block.");
 		}
 		
-		final BlockState state = block.getState();
+		BlockState state = block.getState();
 		
 		if (!(state instanceof Sign)) {
 			throw new CommandException("You are not looking at a sign.");
 		}
 		
-		final Sign sign = (Sign) state;
+		Sign sign = (Sign) state;
 		int line = parseInt(args[0], "line number");
 		
 		if (line < 1) {
@@ -64,7 +64,7 @@ public class EditCommand extends UHCCommand {
 			line = 4;
 		}
 		
-		final String message = ChatColor.translateAlternateColorCodes('&', Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length)));
+		String message = ChatColor.translateAlternateColorCodes('&', Joiner.on(' ').join(Arrays.copyOfRange(args, 1, args.length)));
 		
 		player.sendMessage(Main.PREFIX + "You set the sign's §a" + line + " §7line to: §6" + message);
 		line--;
@@ -76,6 +76,6 @@ public class EditCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		return null;
+		return allPlayers();
 	}
 }

@@ -47,12 +47,12 @@ public class PMCommand extends UHCCommand {
 		}
 		
 		String msg = Joiner.on(' ').join(Arrays.copyOfRange(args, 0, args.length));
-        teams.sendMessage(team, "§4Team §8» §6§o" + player.getName() + "§8§o: §f" + msg);
+        teams.sendMessage(team, TeamCommand.PREFIX + "§6§o" + player.getName() + "§8§o: §f" + msg);
 		return true;
 	}
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		return null;
+		return allVisiblePlayers(sender);
 	}
 }

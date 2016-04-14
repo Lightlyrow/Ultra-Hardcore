@@ -36,12 +36,13 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public class TeamCommand extends UHCCommand {
 	private static final String ADMIN_PERM = "uhc.team.admin";
-	private static final String PREFIX = "§4Team §8» §7";
 	
 	private final Game game;
 	
 	private final BoardManager board;
 	private final TeamManager teams;
+	
+	public static final String PREFIX = "§4Team §8» §7";
 	
 	public TeamCommand(Game game, BoardManager board, TeamManager teams) {
 		super("team", "");
@@ -140,12 +141,12 @@ public class TeamCommand extends UHCCommand {
 			
 			sender.sendMessage(PREFIX + "List of all teams:");
 			
-			for (String teamName : teams.getSavedTeams().keySet()) {
-				if (teamName.equalsIgnoreCase("spec")) {
+			for (Team team : teams.getTeamsWithPlayers()) {
+				if (team.getName().equalsIgnoreCase("spec")) {
 					continue;
 				}
 				
-				Set<String> savedTeam = teams.getSavedTeams().get(teamName);
+				Set<String> savedTeam = teams.getSavedTeams().get(team.getName());
 				
 				StringBuilder teammates = new StringBuilder();
 				int current = 1;
@@ -161,12 +162,6 @@ public class TeamCommand extends UHCCommand {
 					
 					teammates.append(entry);
 					current++;
-				}
-				
-				Team team = teams.getTeam(teamName);
-				
-				if (team == null) {
-					continue;
 				}
 				
 				sender.sendMessage(team.getPrefix() + team.getName() + ": §f" + teammates.toString().trim() + ".");
@@ -571,7 +566,7 @@ public class TeamCommand extends UHCCommand {
 			}
 			
 			if (args.length == 1) {
-				throw new CommandException(Main.PREFIX + "Usage: /team kickout <teamsize>");
+				throw new CommandException(Main.PREFIX + "Usage: /team " + args[0] + " <teamsize>");
 			}
 			
 			if (!Bukkit.hasWhitelist()) {
@@ -617,6 +612,81 @@ public class TeamCommand extends UHCCommand {
 			}
 			return true;
 		}
+		
+		if (args[0].equalsIgnoreCase("createteam") || args[0].equalsIgnoreCase("ct")) {
+			if (!sender.hasPermission(ADMIN_PERM)) {
+				return helpMenu(sender);
+			}
+			
+			if (args.length == 1) {
+				throw new CommandException(Main.PREFIX + "Usage: /team " + args[0] + " <players...>");
+			}
+			
+			Team team = teams.findAvailableTeam();
+			
+			if (team == null) {
+				throw new CommandException("There are no more available teams.");
+			}
+			
+			invites.put(args[0], new ArrayList<String>());
+			
+			for (int i = 1; i < args.length; i++) {
+				OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[i]);
+				teams.joinTeam(team, target);
+			}
+			
+			if (team.getSize() > 1) {
+				teams.sendMessage(team, PREFIX + "You have been put on a team with the following people:" );
+				
+				
+				for (OfflinePlayer entry : teams.getPlayers(team)) {
+					Player player = entry.getPlayer();
+					
+					if (player == null) {
+						continue;
+					}
+					
+					if (team.getSize() == 1) {
+						player.sendMessage(PREFIX + "§cNo one, you are a solo."); 
+						break;
+					}
+					
+					StringBuilder list = new StringBuilder();
+					int i = 2;
+					
+					for (String entryTwo : team.getEntries()) {
+						if (entry.getName().equals(entryTwo)) {
+							continue;
+						}
+
+						if (list.length() > 0) {
+							if (i == team.getSize()) {
+								list.append(" §8and §7");
+							} else {
+								list.append("§8, §7");
+							}
+						}
+						
+						OfflinePlayer teammate = PlayerUtils.getOfflinePlayer(entryTwo);
+						
+						if (teammate.isOnline()) {
+							list.append(ChatColor.GREEN + entryTwo);
+						} else {
+							list.append(ChatColor.RED + entryTwo);
+							teammate.setWhitelisted(true);
+						}
+						
+						i++;
+					}
+					
+					player.sendMessage(PREFIX + list.toString());
+				}
+				
+				teams.sendMessage(team, PREFIX + "Names in §cred §7are offline, but have been whitelisted.");
+				teams.sendMessage(team, PREFIX + "Mistake? Immediately '§a/helpop WRONG TEAM!§7'.");
+			}
+			return true;
+		}
 
 		return helpMenu(sender);
 	}
@@ -643,6 +713,8 @@ public class TeamCommand extends UHCCommand {
 				toReturn.add("dq");
 				toReturn.add("enable");
 				toReturn.add("disable");
+				toReturn.add("ct");
+				toReturn.add("createteam");
 				toReturn.add("add");
 				toReturn.add("remove");
 				toReturn.add("delete");
@@ -661,7 +733,7 @@ public class TeamCommand extends UHCCommand {
 			case "accept":
 			case "deny":
 			case "info":
-				return null;
+				return allPlayers();
 			case "add":
 			case "delete":
 				for (Team team : teams.getTeams()) {
@@ -675,8 +747,14 @@ public class TeamCommand extends UHCCommand {
 			}
 		}
 		
-		if (args.length == 3 && args[0].equalsIgnoreCase("add")) {
-			return null;
+		if (args.length > 1) {
+			if (args.length == 3 && args[0].equalsIgnoreCase("add")) {
+				return allPlayers();
+			}
+			
+			if (args[0].equalsIgnoreCase("createteam") || args[0].equalsIgnoreCase("ct")) {
+				return allPlayers();
+			}
 		}
 		
 		return toReturn;
@@ -707,13 +785,14 @@ public class TeamCommand extends UHCCommand {
 		
 		if (sender.hasPermission(ADMIN_PERM)) {
 			sender.sendMessage(PREFIX + "Team management Admin help:");
-			sender.sendMessage("§8» §f/team kickout <size> §7- §f§oKicks all players on a team with the that teamsize.");
 			sender.sendMessage("§8» §f/team enable <teamsize> §7- §f§oEnable team management.");
 			sender.sendMessage("§8» §f/team disable §7- §f§oDisable team management.");
+			sender.sendMessage("§8» §f/team ct <players...> §7- §f§oCreate a team with the following players.");
 			sender.sendMessage("§8» §f/team add <team> <player> §7- §f§oAdd a player to a team.");
 			sender.sendMessage("§8» §f/team remove <player> §7- §f§oRemove a player from his team.");
 			sender.sendMessage("§8» §f/team delete <team> §7- §f§oEmpty a specific team.");
 			sender.sendMessage("§8» §f/team friendlyfire <true|false> §7- §f§oToggle FriendlyFire.");
+			sender.sendMessage("§8» §f/team dq <size> §7- §f§oKicks all players on a team with the that teamsize.");
 			sender.sendMessage("§8» §f/team color §7- §f§oRecolor all teams.");
 			sender.sendMessage("§8» §f/team clear §7- §f§oClear all teams.");
 		}

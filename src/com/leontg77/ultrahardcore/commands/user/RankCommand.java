@@ -3,10 +3,8 @@ package com.leontg77.ultrahardcore.commands.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.User.Rank;
@@ -59,9 +57,7 @@ public class RankCommand extends UHCCommand {
 		List<String> toReturn = new ArrayList<String>();
 		
 		if (args.length == 1) {
-    		for (Player online : Bukkit.getOnlinePlayers()) {
-				toReturn.add(online.getName());
-    		}
+    		return allPlayers();
         }
 		
 		if (args.length == 2) {

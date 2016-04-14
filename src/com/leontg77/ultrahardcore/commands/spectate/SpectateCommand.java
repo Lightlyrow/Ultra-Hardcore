@@ -233,17 +233,11 @@ public class SpectateCommand extends UHCCommand {
     				}
         		}
         	} else if (args[0].equalsIgnoreCase("toggle")) {
-        		for (Player online : Bukkit.getOnlinePlayers()) {
-    				toReturn.add(online.getName());
-        		}
+        		return allPlayers();
         	} else if (args[0].equalsIgnoreCase("cmdspy")) {
-        		for (Player online : Bukkit.getOnlinePlayers()) {
-    				toReturn.add(online.getName());
-    			}
+        		return allPlayers();
         	} else if (args[0].equalsIgnoreCase("info")) {
-        		for (Player online : Bukkit.getOnlinePlayers()) {
-    				toReturn.add(online.getName());
-    			}
+        		return allPlayers();
         	}
         }
 		

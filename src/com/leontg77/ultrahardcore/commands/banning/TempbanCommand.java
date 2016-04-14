@@ -50,14 +50,13 @@ public class TempbanCommand extends UHCCommand {
 			return false;
 		}
     	
-    	final Player target = Bukkit.getPlayer(args[0]);
-    	
-    	final BanList list = Bukkit.getBanList(Type.NAME);
+    	Player target = Bukkit.getPlayer(args[0]);
+    	BanList list = Bukkit.getBanList(Type.NAME);
     	
     	long time = DateUtils.parseDateDiff(args[1], true);
 		Date date = new Date(time);
     	
-		final String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 2, args.length));
+		String message = Joiner.on(' ').join(Arrays.copyOfRange(args, 2, args.length));
 
     	if (target == null) {
 			PlayerUtils.broadcast(Main.PREFIX + "§6" + args[0] + " §7has been temp-banned for §a" + message + "§7. §8(§a" + DateUtils.formatDateDiff(time) + "§8)");
@@ -73,7 +72,7 @@ public class TempbanCommand extends UHCCommand {
 		
 		PlayerUtils.broadcast(Main.PREFIX + "§6" + target.getName() + " §7has been temp-banned for §a" + message + "§7. §8(§a" + DateUtils.formatDateDiff(time) + "§8)");
     	
-    	final BanEntry ban = list.addBan(target.getName(), message, date, sender.getName());
+    	BanEntry ban = list.addBan(target.getName(), message, date, sender.getName());
     	target.setWhitelisted(false);
     	
 		board.resetScore(args[0]);
@@ -102,14 +101,6 @@ public class TempbanCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		List<String> toReturn = new ArrayList<String>();
-		
-		if (args.length == 1) {
-			for (Player online : Bukkit.getOnlinePlayers()) {
-				toReturn.add(online.getName());
-			}
-		}
-		
-		return toReturn;
+		return allPlayers();
 	}
 }

@@ -76,6 +76,6 @@ public class StatsCommand extends UHCCommand {
 			return new ArrayList<String>();
 		}
 		
-		return null;
+		return allPlayers();
 	}
 }

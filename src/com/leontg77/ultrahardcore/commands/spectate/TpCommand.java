@@ -72,7 +72,7 @@ public class TpCommand extends UHCCommand {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
 		if (args.length < 3) {
-			return null;
+			return allPlayers();
 		}
 		
 		return new ArrayList<String>();

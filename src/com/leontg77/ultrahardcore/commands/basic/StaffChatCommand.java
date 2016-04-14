@@ -34,6 +34,6 @@ public class StaffChatCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		return null;
+		return allPlayers();
 	}
 }

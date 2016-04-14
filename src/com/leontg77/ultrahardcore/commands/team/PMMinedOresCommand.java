@@ -59,7 +59,7 @@ public class PMMinedOresCommand extends UHCCommand {
 		int gold = info.getTotal(player).get(Material.GOLD_ORE);
 		int dias = info.getTotal(player).get(Material.DIAMOND_ORE);
 		
-        teams.sendMessage(team, "§4Team §8» §6§o" + player.getName() + "§8§o: §7Iron: §a" + iron + " §7Gold: §a" + gold + " §7Diamonds: §a" + dias);
+        teams.sendMessage(team, TeamCommand.PREFIX + "§6§o" + player.getName() + "§8§o: §7Iron: §a" + iron + " §7Gold: §a" + gold + " §7Diamonds: §a" + dias);
 		return true;
 	}
 

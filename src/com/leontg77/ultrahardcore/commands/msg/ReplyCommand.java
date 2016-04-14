@@ -90,6 +90,6 @@ public class ReplyCommand extends UHCCommand {
 
 	@Override
 	public List<String> tabComplete(CommandSender sender, String[] args) {
-		return null; // returning null actually returns a list of all online player names.
+		return allVisiblePlayers(sender);
 	}
 }
