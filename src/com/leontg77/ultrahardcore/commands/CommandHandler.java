@@ -3,14 +3,12 @@ package com.leontg77.ultrahardcore.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 
 import com.leontg77.ultrahardcore.Arena;
 import com.leontg77.ultrahardcore.Data;
@@ -163,7 +161,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 			
 			// if the list is null, replace it with everyone online.
 			if (list == null) {
-				list = getAllPlayerNames(sender);
+				return null;
 			}
 			
 			// I don't want anything done if the list is empty.
@@ -208,26 +206,6 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
         
         return null;
     }
-	
-    /**
-     * Get a list of all players online's names
-     * 
-     * @param sender The sender, if a player it will not add hidden players to the list, adds everyone if it's the console.
-     * @return List of player names.
-     */
-	private List<String> getAllPlayerNames(CommandSender sender) {
-		List<String> list = new ArrayList<String>();
-		
-		for (Player online : Bukkit.getOnlinePlayers()) {
-			if (sender instanceof Player && !((Player) sender).canSee(online)) {
-				continue;
-			}
-			
-			list.add(online.getName());
-		}
-		
-		return list;
-	}
 	
 	/**
 	 * Register all the commands.
