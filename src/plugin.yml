@@ -243,8 +243,9 @@ commands:
     description: Chat with your mole team.
   mcp:
     description: View your mole team.
-  mt:
+  mysteryteams:
     description: Mystery teams command.
+    aliases: [mt]
   dodge:
     description: Check the current needed death amount in damage dodgers.
   status:
