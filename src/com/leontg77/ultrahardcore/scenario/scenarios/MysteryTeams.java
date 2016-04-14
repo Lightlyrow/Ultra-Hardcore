@@ -1,6 +1,7 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,279 +42,35 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  * 
  * @author EXSolo, modified by LeonTG77
  */
-public class MysteryTeams extends Scenario implements Listener, CommandExecutor {
+public class MysteryTeams extends Scenario implements Listener, CommandExecutor, TabCompleter {
 	private static final String PREFIX = "§6[§cMysteryTeams§6] §f";
 	
 	private final Game game;
 
-	private static Map<MysteryTeam, List<UUID>> orgTeams;
-	private static List<MysteryTeam> teams;
+	private final Map<MysteryTeam, List<UUID>> originalTeams;
+	private final List<MysteryTeam> currentTeams;
 
 	public MysteryTeams(Main plugin, Game game) {
 		super("MysteryTeams", "Teams are unknown until meeting and comparing banners.");
 		
-		plugin.getCommand("mt").setExecutor(this);
 		this.game = game;
 
-		orgTeams = new HashMap<MysteryTeam, List<UUID>>();
-		teams = new ArrayList<MysteryTeam>();
+		originalTeams = new HashMap<MysteryTeam, List<UUID>>();
+		currentTeams = new ArrayList<MysteryTeam>();
+		
+		plugin.getCommand("mysteryteams").setExecutor(this);
 	}
 
 	@Override
 	public void onDisable() {
-		orgTeams.clear();
-		teams.clear();
+		originalTeams.clear();
+		currentTeams.clear();
 	}
 
 	@Override
 	public void onEnable() {
-		orgTeams.clear();
-		teams.clear();
-	}
-	
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!isEnabled()) {
-			sender.sendMessage(PREFIX + "MysteryTeams is not enabled.");
-			return true;
-		}
-		
-		if (args.length == 0) {
-			return helpMenu(sender);
-		}
-		
-		if (args[0].equalsIgnoreCase("teamsize")) {
-			sender.sendMessage(PREFIX + "Existing teamsizes:");
-			
-			for (MysteryTeam team : teams) {
-				sender.sendMessage(PREFIX + team.getChatColor() + team.getName() + "'s teamsize: §f" + team.getSize());
-			}
-			return true;
-		} 
-		
-		if (!sender.hasPermission("uhc." + getName().toLowerCase())) {
-			return helpMenu(sender);
-		}
-		
-		if (args[0].equalsIgnoreCase("randomize")) {
-			if (args.length == 1) {
-				sender.sendMessage(PREFIX + "Usage: /mt randomize <teamsize> <amount of teams>");
-				return true;
-			}
-			
-			int teamSize;
-			
-			try {
-				teamSize = parseInt(args[1]);
-			} catch (Exception ex) {
-				sender.sendMessage(ChatColor.RED + ex.getMessage());
-				return true;
-			}
-			
-			int amount;
-			
-			try {
-				amount = parseInt(args[2]);
-			} catch (Exception ex) {
-				sender.sendMessage(ChatColor.RED + ex.getMessage());
-				return true;
-			}
-			
-			for (int i = 0; i < amount; i++) {
-				List<Player> players = new ArrayList<Player>();
-				
-				for (Player online : Bukkit.getOnlinePlayers()) {
-					if (getTeam(online) == null && game.getPlayers().contains(online)) {
-						players.add(online);
-					}
-				}
-
-				Collections.shuffle(players);
-	    		MysteryTeam team = findAvailableTeam();
-				
-	    		if (team == null) {
-					sender.sendMessage(ChatColor.RED + "There are no more available teams.");
-					break;
-	    		}
-	    		
-	    		if (!orgTeams.containsKey(team)) {
-	    			orgTeams.put(team, new ArrayList<UUID>());
-	    		}
-	    		
-	    		if (!teams.contains(team)) {
-	    			teams.add(team);
-	    		}
-	    		
-				for (int j = 0; j < teamSize; j++) {
-					if (players.isEmpty()) {
-						sender.sendMessage(ChatColor.RED + "No more players to add to the team.");
-						break;
-					}
-					
-					Player player = players.remove(0);
-					
-		    		orgTeams.get(team).add(player.getUniqueId());
-		    		team.addPlayer(player);
-				}
-			}
-			
-			sender.sendMessage(PREFIX + "Randomized " + amount + " teams of " + teamSize + ".");
-			return true;
-		}
-		
-		if (args[0].equalsIgnoreCase("list")) {
-			if (orgTeams.isEmpty()) {
-				sender.sendMessage(PREFIX + "There are no teams set.");
-				return true;
-			}
-
-			sender.sendMessage(PREFIX + "All teams: §o(Names in red means they are dead)");
-			
-			for (Entry<MysteryTeam, List<UUID>> team : orgTeams.entrySet()) { 
-				StringBuilder members = new StringBuilder();
-				int i = 1;
-				
-				for (UUID member : team.getValue()) {
-					if (members.length() > 0) {
-						if (i == team.getValue().size()) {
-							members.append(" §8and §f");
-						} else {
-							members.append("§8, §f");
-						}
-					}
-					
-					OfflinePlayer offline = Bukkit.getOfflinePlayer(member);
-					
-					if (teams.contains(team.getKey())) {
-						members.append(team.getKey().hasPlayer(offline) ? ChatColor.GREEN + offline.getName() : ChatColor.RED + offline.getName());
-					} else {
-						members.append(ChatColor.RED + offline.getName());
-					}
-					i++;
-				}
-				
-				sender.sendMessage(team.getKey().getChatColor() + team.getKey().getName() + ": §f" + members.toString().trim());
-			}
-			return true;
-		}
-		
-		if (args[0].equalsIgnoreCase("clear")) {
-			orgTeams.clear();
-			teams.clear();
-			
-			sender.sendMessage(PREFIX + "Cleared all teams");
-    		return true;
-		}
-		
-		if (args[0].equalsIgnoreCase("give")) {
-			if (args.length == 1) {
-				sender.sendMessage(PREFIX + "Gave item to everyone.");
-				
-				for (Player online : Bukkit.getOnlinePlayers()) {
-					MysteryTeam team = getTeam(online);
-					
-					if (team == null) {
-						continue;
-					}
-					
-					ItemStack item = new ItemStack(Material.BANNER);
-		    		BannerMeta meta = (BannerMeta) item.getItemMeta();
-		    		meta.setBaseColor(team.getDyeColor());
-		    		item.setItemMeta(meta);
-		    		PlayerUtils.giveItem(online, item);
-				}
-				return true;
-			}
-
-			Player target = Bukkit.getPlayer(args[1]);
-			
-			if (target == null) {
-				sender.sendMessage(ChatColor.RED + "'" + args[1] + "' is not online.");
-				return true;
-			}
-			
-			MysteryTeam team = getTeam(target);
-			
-			if (team == null) {
-				sender.sendMessage(ChatColor.RED + "'" + args[1] + "' is not on a team.");
-				return true;
-			}
-			
-			sender.sendMessage(PREFIX + "Gave item to player.");
-			
-			ItemStack item = new ItemStack(Material.BANNER);
-    		BannerMeta meta = (BannerMeta) item.getItemMeta();
-    		meta.setBaseColor(team.getDyeColor());
-    		item.setItemMeta(meta);
-    		PlayerUtils.giveItem(target, item);
-    		return true;
-		}
-		
-		return helpMenu(sender);
-	}
-	
-	/**
-	 * Register a new fake team.
-	 * 
-	 * @return The fake team created.
-	 */
-	public MysteryTeam findAvailableTeam() {
-		for (MysteryTeam team : MysteryTeam.values()) {
-			if (team.getSize() == 0) {
-				return team;
-			}
-		}
-		
-		return null;
-	}
-	
-	private MysteryTeam getTeam(Player player) {
-		for (MysteryTeam team : teams) {
-			if (team.hasPlayer(player)) {
-				return team;
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Get a Set of all the fake teams.
-	 * 
-	 * @return A set of fake teams.
-	 */
-	public Set<MysteryTeam> getTeams() {
-		return ImmutableSet.copyOf(teams);
-	}
-	
-	/**
-	 * Get a Set of all the orgiginal fake teams.
-	 * 
-	 * @return A set of orgiginal fake teams.
-	 */
-	public Map<MysteryTeam, List<UUID>> getOrgTeams() {
-		return orgTeams;
-	}
-
-	/**
-	 * Print the help menu to the given sender.
-	 * 
-	 * @param sender The sender printing too
-	 * @return Always true.
-	 */
-	public boolean helpMenu(CommandSender sender) {
-		sender.sendMessage(PREFIX + "MysteryTeams Command");
-	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt teamsize");
-	    
-	    if (!sender.hasPermission("uhc." + getName().toLowerCase())) {
-	    	return true;
-	    }
-	    
-		sender.sendMessage(" - " + ChatColor.BLUE + "/mt randomize <teamsize> <amount of teams>");
-	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt give [player]");
-	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt clear");
-	    sender.sendMessage(" - " + ChatColor.BLUE + "/mt list");
-    	return true;
+		originalTeams.clear();
+		currentTeams.clear();
 	}
 	
 	@EventHandler
@@ -367,16 +125,16 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 			return;
 		}
 		
-		teams.remove(team);
+		currentTeams.remove(team);
 		
-		if (teams.size() > 1) {
-			PlayerUtils.broadcast(PREFIX + team.getChatColor() + "Team " + team.getName() + " eliminated. There are §f" + teams.size() + team.getChatColor() + " teams left.");
+		if (currentTeams.size() > 1) {
+			PlayerUtils.broadcast(PREFIX + team.getChatColor() + "Team " + team.getName() + " eliminated. There are §f" + currentTeams.size() + team.getChatColor() + " teams left.");
 			return;
 		}
 		
 		MysteryTeam killerTeam = null;
 		
-		for (MysteryTeam mTeam : teams) {
+		for (MysteryTeam mTeam : currentTeams) {
 			killerTeam = mTeam;
 			break;
 		}
@@ -387,41 +145,348 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 		
 		PlayerUtils.broadcast(PREFIX + team.getChatColor() + "Team " + team.getName() + " eliminated. " + killerTeam.getChatColor() + "The " + killerTeam.getName() + " team won!");
 	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!isEnabled()) {
+			sender.sendMessage(PREFIX + "MysteryTeams is not enabled.");
+			return true;
+		}
+		
+		if (args.length == 0) {
+			return helpMenu(sender);
+		}
+		
+		if (args[0].equalsIgnoreCase("teamsize")) {
+			sender.sendMessage(PREFIX + "Existing teamsizes:");
+			
+			for (MysteryTeam team : currentTeams) {
+				sender.sendMessage(PREFIX + team.getChatColor() + "Team " + team.getName().toLowerCase() + "'s teamsize: §f" + team.getSize());
+			}
+			return true;
+		} 
+		
+		if (!sender.hasPermission("uhc." + getName().toLowerCase())) {
+			return helpMenu(sender);
+		}
+		
+		if (args[0].equalsIgnoreCase("randomize")) {
+			if (args.length == 1) {
+				sender.sendMessage(PREFIX + "Usage: /mt randomize <teamsize> <amount of teams>");
+				return true;
+			}
+			
+			int teamSize;
+			
+			try {
+				teamSize = parseInt(args[1]);
+			} catch (Exception ex) {
+				sender.sendMessage(ChatColor.RED + ex.getMessage());
+				return true;
+			}
+			
+			int amount;
+			
+			try {
+				amount = parseInt(args[2]);
+			} catch (Exception ex) {
+				sender.sendMessage(ChatColor.RED + ex.getMessage());
+				return true;
+			}
+			
+			for (int i = 0; i < amount; i++) {
+				List<Player> players = new ArrayList<Player>();
+				
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					if (getTeam(online) == null && game.getPlayers().contains(online)) {
+						players.add(online);
+					}
+				}
+
+				Collections.shuffle(players);
+	    		MysteryTeam team = findAvailableTeam();
+				
+	    		if (team == null) {
+					sender.sendMessage(ChatColor.RED + "There are no more available teams.");
+					break;
+	    		}
+	    		
+	    		if (!originalTeams.containsKey(team)) {
+	    			originalTeams.put(team, new ArrayList<UUID>());
+	    		}
+	    		
+	    		if (!currentTeams.contains(team)) {
+	    			currentTeams.add(team);
+	    		}
+	    		
+				for (int j = 0; j < teamSize; j++) {
+					if (players.isEmpty()) {
+						sender.sendMessage(ChatColor.RED + "No more players to add to the team.");
+						break;
+					}
+					
+					Player player = players.remove(0);
+					
+		    		originalTeams.get(team).add(player.getUniqueId());
+		    		team.addPlayer(player);
+				}
+			}
+			
+			sender.sendMessage(PREFIX + "Randomized " + amount + " teams of " + teamSize + ".");
+			return true;
+		}
+		
+		if (args[0].equalsIgnoreCase("list")) {
+			if (originalTeams.isEmpty()) {
+				sender.sendMessage(PREFIX + "There are no teams set.");
+				return true;
+			}
+
+			sender.sendMessage(PREFIX + "All teams: §o(Names in red means they are dead)");
+			
+			for (Entry<MysteryTeam, List<UUID>> team : originalTeams.entrySet()) { 
+				StringBuilder members = new StringBuilder();
+				int i = 1;
+				
+				for (UUID member : team.getValue()) {
+					if (members.length() > 0) {
+						if (i == team.getValue().size()) {
+							members.append(" §8and §f");
+						} else {
+							members.append("§8, §f");
+						}
+					}
+					
+					OfflinePlayer offline = Bukkit.getOfflinePlayer(member);
+					
+					if (currentTeams.contains(team.getKey())) {
+						members.append(team.getKey().hasPlayer(offline) ? ChatColor.GREEN + offline.getName() : ChatColor.RED + offline.getName());
+					} else {
+						members.append(ChatColor.RED + offline.getName());
+					}
+					i++;
+				}
+				
+				sender.sendMessage(team.getKey().getChatColor() + team.getKey().getName() + ": §f" + members.toString().trim());
+			}
+			return true;
+		}
+		
+		if (args[0].equalsIgnoreCase("clear")) {
+			originalTeams.clear();
+			currentTeams.clear();
+			
+			sender.sendMessage(PREFIX + "Cleared all teams");
+    		return true;
+		}
+		
+		if (args[0].equalsIgnoreCase("give")) {
+			if (args.length == 1) {
+				sender.sendMessage(PREFIX + "Gave item to everyone.");
+				
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					MysteryTeam team = getTeam(online);
+					
+					if (team == null) {
+						continue;
+					}
+					
+					ItemStack item = new ItemStack(Material.BANNER);
+		    		BannerMeta meta = (BannerMeta) item.getItemMeta();
+		    		meta.setBaseColor(team.getDyeColor());
+		    		item.setItemMeta(meta);
+		    		PlayerUtils.giveItem(online, item);
+				}
+				return true;
+			}
+
+			Player target = Bukkit.getPlayer(args[1]);
+			
+			if (target == null) {
+				sender.sendMessage(ChatColor.RED + "'" + args[1] + "' is not online.");
+				return true;
+			}
+			
+			MysteryTeam team = getTeam(target);
+			
+			if (team == null) {
+				sender.sendMessage(ChatColor.RED + "'" + args[1] + "' is not on a team.");
+				return true;
+			}
+			
+			sender.sendMessage(PREFIX + "Gave item to player.");
+			
+			ItemStack item = new ItemStack(Material.BANNER);
+    		BannerMeta meta = (BannerMeta) item.getItemMeta();
+    		meta.setBaseColor(team.getDyeColor());
+    		item.setItemMeta(meta);
+    		PlayerUtils.giveItem(target, item);
+    		return true;
+		}
+		
+		return helpMenu(sender);
+	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender arg0, Command arg1, String arg2, String[] arg3) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * Print the help menu to the given sender.
+	 * 
+	 * @param sender The sender printing too
+	 * @return Always true.
+	 */
+	public boolean helpMenu(CommandSender sender) {
+		sender.sendMessage(PREFIX + "MysteryTeams Help Menu:");
+	    sender.sendMessage("§8- §f/mt teamsize §8- §7§oDisplay all teams current teamsize.");
+	    
+	    if (!sender.hasPermission("uhc." + getName().toLowerCase())) {
+	    	return true;
+	    }
+
+	    sender.sendMessage("§8- §f/mt add <team> <player> §8- §7§oAdd the player to the team.");
+	    sender.sendMessage("§8- §f/mt remove <player> §8- §7§oRemove the player from his team.");
+	    sender.sendMessage("§8- §f/mt delete <team> §8- §7§oRemove all players from the team.");
+		sender.sendMessage("§8- §f/mt randomize <teamsize> <amount of teams> §8- §7§oRandomize the teams.");
+	    sender.sendMessage("§8- §f/mt give [player] §8- §7§oGive the banners to the given player or everyone.");
+	    sender.sendMessage("§8- §f/mt list §8- §7§oDisplay all teams.");
+	    sender.sendMessage("§8- §f/mt clear §8- §7§oClear all teams.");
+    	return true;
+	}
+	
+	/**
+	 * Register a new mystery team.
+	 * 
+	 * @return The mystery team created.
+	 */
+	public MysteryTeam findAvailableTeam() {
+		List<MysteryTeam> list = Arrays.asList(MysteryTeam.values());
+		Collections.shuffle(list);
+		
+		for (MysteryTeam team : list) {
+			if (team.getSize() == 0) {
+				return team;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Get the mystery team of the given player.
+	 * 
+	 * @param player The player to check with.
+	 * @return The team if any, null otherwise.
+	 */
+	private MysteryTeam getTeam(Player player) {
+		for (MysteryTeam team : currentTeams) {
+			if (team.hasPlayer(player)) {
+				return team;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Get a Set of all the mystery teams.
+	 * 
+	 * @return A set of mystery teams.
+	 */
+	public Set<MysteryTeam> getTeams() {
+		return ImmutableSet.copyOf(currentTeams);
+	}
+	
+	/**
+	 * Get a Set of all the original mystery teams.
+	 * 
+	 * @return A set of original mystery teams.
+	 */
+	public Map<MysteryTeam, List<UUID>> getOriginalTeams() {
+		return originalTeams;
+	}
 
 	public enum MysteryTeam {
-		GREEN(ChatColor.DARK_GREEN, DyeColor.GREEN, "Green"), 
-		ORANGE(ChatColor.GOLD, DyeColor.ORANGE, "Orange"), 
-		RED(ChatColor.RED, DyeColor.RED, "Red"), 
-		LIGHT_BLUE(ChatColor.AQUA, DyeColor.LIGHT_BLUE, "Light blue"), 
-		YELLOW(ChatColor.YELLOW, DyeColor.YELLOW, "Yellow"), 
-		LIME(ChatColor.GREEN, DyeColor.LIME, "Light Green"), 
-		PINK(ChatColor.LIGHT_PURPLE, DyeColor.PINK, "Pink"), 
-		GRAY(ChatColor.DARK_GRAY, DyeColor.GRAY, "Gray"), 
-		SILVER(ChatColor.GRAY, DyeColor.SILVER, "Light Gray"), 
-		PURPLE(ChatColor.DARK_PURPLE, DyeColor.PURPLE, "Purple"), 
-		BLUE(ChatColor.BLUE, DyeColor.BLUE, "Blue"), 
-		CYAN(ChatColor.DARK_AQUA, DyeColor.CYAN, "Cyan"), 
-		WHITE(ChatColor.WHITE, DyeColor.WHITE, "White"), 
-		BLACK(ChatColor.BLACK, DyeColor.BLACK, "Black");
+		/**
+		 * Green team.
+		 */
+		GREEN("Green", ChatColor.DARK_GREEN, DyeColor.GREEN), 
+		/**
+		 * Orange team.
+		 */
+		ORANGE("Orange", ChatColor.GOLD, DyeColor.ORANGE), 
+		/**
+		 * Red team.
+		 */
+		RED("Red", ChatColor.RED, DyeColor.RED), 
+		/**
+		 * Light blue team.
+		 */
+		LIGHT_BLUE("Light blue", ChatColor.AQUA, DyeColor.LIGHT_BLUE), 
+		/**
+		 * Yellow team.
+		 */
+		YELLOW("Yellow", ChatColor.YELLOW, DyeColor.YELLOW), 
+		/**
+		 * Light Green team.
+		 */
+		LIME("Light Green", ChatColor.GREEN, DyeColor.LIME), 
+		/**
+		 * Pink team.
+		 */
+		PINK("Pink", ChatColor.LIGHT_PURPLE, DyeColor.PINK), 
+		/**
+		 * Gray team.
+		 */
+		GRAY("Gray", ChatColor.DARK_GRAY, DyeColor.GRAY), 
+		/**
+		 * Light Gray team.
+		 */
+		SILVER("Light Gray", ChatColor.GRAY, DyeColor.SILVER), 
+		/**
+		 * Purple team.
+		 */
+		PURPLE("Purple", ChatColor.DARK_PURPLE, DyeColor.PURPLE), 
+		/**
+		 * Blue team.
+		 */
+		BLUE("Blue", ChatColor.BLUE, DyeColor.BLUE), 
+		/**
+		 * Cyan team.
+		 */
+		CYAN("Cyan", ChatColor.DARK_AQUA, DyeColor.CYAN), 
+		/**
+		 * White team.
+		 */
+		WHITE("White", ChatColor.WHITE, DyeColor.WHITE), 
+		/**
+		 * Black team.
+		 */
+		BLACK("Black", ChatColor.BLACK, DyeColor.BLACK);
 
-		private ChatColor cColor;
-		private DyeColor dColor;
-		private String name;
+		private final String name;
 		
-		private Set<UUID> players = new HashSet<UUID>();
+		private final ChatColor chat;
+		private final DyeColor dye;
 
 		/**
-		 * Constructor for mystery teams.
+		 * Mystery Team class constructor.
 		 * 
-		 * @param cColor The chat color.
-		 * @param dColor The dye color.
-		 * @param name The name.
+		 * @param name The team name.
+		 * @param chat The team chat color.
+		 * @param dye The team dye color.
 		 */
-		private MysteryTeam(ChatColor cColor, DyeColor dColor, String name) {
-			this.cColor = cColor;
-			this.dColor = dColor;
+		private MysteryTeam(String name, ChatColor chat, DyeColor dye) {
 			this.name = name;
+			
+			this.chat = chat;
+			this.dye = dye;
 		}
+		
+		private final Set<UUID> players = new HashSet<UUID>();
 
 		/**
 		 * Get the name of the team.
@@ -433,27 +498,27 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 		}
 
 		/**
-		 * Get the chat color of the team.
+		 * Get the chat color for the team.
 		 * 
 		 * @return The chat color.
 		 */
 		public ChatColor getChatColor() {
-			return cColor;
+			return chat;
 		}
 
 		/**
-		 * Get the dye color of the team.
+		 * Get the dye color for the team.
 		 * 
 		 * @return The dye color.
 		 */
 		public DyeColor getDyeColor() {
-			return dColor;
+			return dye;
 		}
 
 		/**
-		 * Get a set of all UUID's on this team.
+		 * Get a set of all players on this team.
 		 * 
-		 * @return A set of UUID's.
+		 * @return A set of players.
 		 */
 		public Set<OfflinePlayer> getPlayers() {
 			Set<OfflinePlayer> list = new HashSet<OfflinePlayer>();
@@ -480,12 +545,6 @@ public class MysteryTeams extends Scenario implements Listener, CommandExecutor 
 		 * @param player The player adding.
 		 */
 		public void addPlayer(OfflinePlayer player) {
-			for (MysteryTeam team : teams) {
-				if (team.hasPlayer(player)) {
-					team.removePlayer(player);
-				}
-			}
-			
 			players.add(player.getUniqueId());
 		}
 		
