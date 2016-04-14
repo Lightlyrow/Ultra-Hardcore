@@ -59,7 +59,7 @@ public class Announcer {
 	public void setup() {
 		new BukkitRunnable() {
 			public void run() {
-				if (game.isRecordedRound() || State.isState(State.SCATTER)) {
+				if (game.isRecordedRound() || game.isPrivateGame() || State.isState(State.SCATTER)) {
 					return;
 				}
 				
