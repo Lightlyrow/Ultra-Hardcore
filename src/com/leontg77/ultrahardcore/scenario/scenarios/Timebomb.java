@@ -27,22 +27,16 @@ import com.leontg77.ultrahardcore.utils.PlayerUtils;
  */
 public class Timebomb extends Scenario implements Listener {
 	public static final String PREFIX = "§4Timebomb §8» §7";
-	
+
 	private final Main plugin;
 	private final Game game;
 
 	public Timebomb(Main plugin, Game game) {
 		super("Timebomb", "After killing a player all of their items will appear in a double chest rather than dropping on the ground. You then have 30 seconds to loot what you want and get the hell away from it. This is because the chest explodes after the time is up.");
-	
+
 		this.plugin = plugin;
 		this.game = game;
 	}
-
-	@Override
-	public void onDisable() {}
-
-	@Override
-	public void onEnable() {}
 	
 	@EventHandler
 	public void on(PlayerDeathEvent event) {
@@ -53,7 +47,7 @@ public class Timebomb extends Scenario implements Listener {
 		final Player player = event.getEntity();
 		final Location loc = player.getLocation().clone();
 		
-		if (!game.getPlayers().contains(player)) {
+		if (!game.getWorlds().contains(loc.getWorld())) {
 			return;
 		}
 		
