@@ -1,5 +1,12 @@
 package com.leontg77.ultrahardcore.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 /**
  * Class for parsing things.
  * 
@@ -141,5 +148,40 @@ public class Parser {
 		}
 
 		throw new CommandException("'" + parse + "' is not true or false.");
+	}
+	
+	/**
+	 * Get a list of all online player names.
+	 * 
+	 * @return The list.
+	 */
+	public List<String> allPlayers() {
+		List<String> list = new ArrayList<String>();
+		
+		for (Player online : Bukkit.getOnlinePlayers()) {
+			list.add(online.getName());
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * Get a list of all online player namesvisisble for the given sender.
+	 * 
+	 * @param sender The sender to check for visibility.
+	 * @return The list.
+	 */
+	public List<String> allVisiblePlayers(CommandSender sender) {
+		List<String> list = new ArrayList<String>();
+		
+		for (Player online : Bukkit.getOnlinePlayers()) {
+			if (sender instanceof Player && !((Player) sender).canSee(online)) {
+				continue;
+			}
+			
+			list.add(online.getName());
+		}
+		
+		return list;
 	}
 }
