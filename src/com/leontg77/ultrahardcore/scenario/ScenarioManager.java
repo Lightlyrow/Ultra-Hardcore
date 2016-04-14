@@ -167,7 +167,7 @@ public class ScenarioManager {
 		scenarios.add(new Eggs());
 		scenarios.add(new EightLeggedFreaks(game));
 		scenarios.add(new EnchantedDeath());
-//		/* TODO: Enchanted Books */ scenarios.add(new EnchantParanoia());
+//		scenarios.add(new EnchantParanoia()); // TODO: Enchanted Books
 		scenarios.add(new Entropy(plugin, game));
 		scenarios.add(new Fallout(plugin, game));
 		scenarios.add(new FlowerPower());
@@ -205,7 +205,7 @@ public class ScenarioManager {
 		scenarios.add(new Pyrophobia(plugin));
 		scenarios.add(new RewardingLongshots());
 		scenarios.add(new RewardingLongshotsPlus());
-		scenarios.add(new SharedHealth(plugin, teams));
+		scenarios.add(new SharedHealth(plugin, game, teams));
 		scenarios.add(new SkyClean());
 		scenarios.add(new Skyhigh(plugin, game));
 		scenarios.add(new SlaveMarket(plugin, teams));
