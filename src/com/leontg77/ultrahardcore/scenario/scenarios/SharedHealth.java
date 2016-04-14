@@ -1,10 +1,13 @@
 package com.leontg77.ultrahardcore.scenario.scenarios;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,38 +20,41 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
+import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
 import com.leontg77.ultrahardcore.State;
 import com.leontg77.ultrahardcore.managers.TeamManager;
 import com.leontg77.ultrahardcore.scenario.Scenario;
 
 /**
- * SharedHealth scenario class
+ * Shared Health scenario class.
  * 
- * @author dans1988
+ * @author LeonTG77 (Used to be dans1988 but I completly rewrote it)
  */
 public class SharedHealth extends Scenario implements Listener {
-	private final TeamManager manager;
 	private final Main plugin;
 	
-	private Map<String, Double> damageBalance;
-    private Map<String, Boolean> sharedDamage;
+	private final TeamManager teams;
+	private final Game game;
 	
-	public SharedHealth(Main plugin, TeamManager manager) {
+	/**
+	 * Shared Health class constructor.
+	 * 
+	 * @param plugin The main class.
+	 * @param game The game class.
+	 * @param teams The team manager class.
+	 */
+	public SharedHealth(Main plugin, Game game, TeamManager teams) {
 		super("SharedHealth", "All teammates share their health, does not apply for lava, fire or poison damage");
-		
-		damageBalance = new HashMap<String, Double>();
-        sharedDamage = new HashMap<String, Boolean>();
 
-        this.manager = manager;
         this.plugin = plugin;
+        
+        this.teams = teams;
+        this.game = game;
 	}
-
-	@Override
-	public void onDisable() {}
-
-	@Override
-	public void onEnable() {}
+	
+	private final Map<UUID, Double> loggedOut = new HashMap<UUID, Double>();
+	private final List<UUID> sharedDamage = new ArrayList<UUID>();
 
 	@EventHandler
     public void on(PlayerJoinEvent event) {
@@ -57,40 +63,130 @@ public class SharedHealth extends Scenario implements Listener {
 		}
 		
         Player player = event.getPlayer();
-        double balance = getPlayersDamageBalance(player.getName());
-
-        if (balance == 0.0D) {
+        
+        if (!game.getPlayers().contains(player)) {
         	return;
         }
         
-        double newHealth = (player.getHealth() + balance > 0.0D) ? player.getHealth() + balance : 0.0D;
+        if (!loggedOut.containsKey(player.getUniqueId())) {
+        	return;
+        }
+        
+        double damage = loggedOut.get(player.getUniqueId());
+
+        if (damage == 0.0) {
+        	return;
+        }
+        
+        double newHealth = ((player.getHealth() + damage) > 0.0 ? player.getHealth() + damage : 0.0);
         
         if (newHealth > player.getMaxHealth()) {
             newHealth = player.getMaxHealth();
         }
-        
+
+        loggedOut.remove(player.getUniqueId());
         player.setHealth(newHealth);
-        resetPlayersDamageBalance(player.getName());
+    }
+	
+	@EventHandler(priority = EventPriority.LOW)
+    public void on(PlayerDeathEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+
+        Player player = event.getEntity();
+        
+        if (!game.getPlayers().contains(player)) {
+        	return;
+        }
+        
+        Team team = teams.getTeam(player);
+
+        if (team == null) {
+        	return;
+        }
+
+    	teams.leaveTeam(player, false);
+    	
+        if (sharedDamage.contains(player.getUniqueId())) {
+            event.setDeathMessage(team.getPrefix() + player.getName() + team.getSuffix() + " died of sheaing health");
+        }
     }
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onDamage(final EntityDamageEvent event) {
+    public void on(EntityRegainHealthEvent event) {
 		if (!State.isState(State.INGAME)) {
 			return;
 		}
 		
-		if (!(event.getEntity() instanceof Player)) {
+		Entity entity = event.getEntity();
+
+        if (!(entity instanceof Player)) {
+            return;
+        }
+        
+        Player player = (Player) entity;
+        
+        if (!game.getPlayers().contains(player)) {
+        	return;
+        }
+        
+        Team team = teams.getTeam(player);
+
+        if (team == null || team.getSize() <= 1) {
             return;
         }
 
-        final Player player = (Player) event.getEntity();
-        setSharedDamage(player.getName(), false);
+        double healAmount = event.getAmount();
+        double teamSize = team.getSize();
+        
+        double gain = healAmount / teamSize;
+
+        for (OfflinePlayer offline : teams.getPlayers(team)) {
+            Player teammate = offline.getPlayer();
+
+            if (teammate == null) {
+            	if (loggedOut.containsKey(offline.getUniqueId())) {
+                	loggedOut.put(offline.getUniqueId(), loggedOut.get(offline.getUniqueId()) + gain);
+            	} else {
+                	loggedOut.put(offline.getUniqueId(), gain);
+            	}
+            	continue;
+            }
+        	
+            double health = teammate.getHealth();
+            double finalHP = health + gain;
+            
+            if (finalHP > teammate.getMaxHealth()) {
+                finalHP = teammate.getMaxHealth();
+            }
+            
+            teammate.setHealth(finalHP);
+        }
+
+        event.setCancelled(true);
+    }
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void on(final EntityDamageEvent event) {
+		if (!State.isState(State.INGAME)) {
+			return;
+		}
+		
+		Entity entity = event.getEntity();
+		
+		if (!(entity instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) entity;
+        sharedDamage.remove(player.getUniqueId());
 
         if (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.POISON) {
         	return;
         }
 
-        final Team team = manager.getTeam(player);
+        Team team = teams.getTeam(player);
 
         if (team == null || team.getSize() <= 1) {
             return;
@@ -98,156 +194,61 @@ public class SharedHealth extends Scenario implements Listener {
 
         double damage = event.getFinalDamage();
         double teamSize = team.getSize();
-        double sharedDamage = damage / teamSize;
+        
+        double toDamage = damage / teamSize;
 
-        for (OfflinePlayer teammate : manager.getPlayers(team)) {
-            if (!teammate.isOnline()) {
-                setPlayersDamageBalance(teammate.getName(), sharedDamage * -1.0D);
-                setSharedDamage(teammate.getName(), true);
+        for (OfflinePlayer offline : teams.getPlayers(team)) {
+            Player teammate = offline.getPlayer();
+            
+            if (teammate == null) {
+            	if (loggedOut.containsKey(offline.getUniqueId())) {
+                	loggedOut.put(offline.getUniqueId(), loggedOut.get(offline.getUniqueId()) - toDamage);
+            	} else {
+                	loggedOut.put(offline.getUniqueId(), toDamage);
+            	}
+            	
+            	sharedDamage.add(offline.getUniqueId());
                 continue;
             }
-                
-            Player onlineTeammate = teammate.getPlayer();
             
-            double currentHealth = onlineTeammate.getHealth();
-            double finalHealth = currentHealth - sharedDamage;
+            double currentHealth = teammate.getHealth();
+            double finalHealth = currentHealth - toDamage;
 
             if (finalHealth < 0.0D) {
                 finalHealth = 0.0D;
             }
 
-            final double finalHealthAsynch = finalHealth;
-
-            if (!onlineTeammate.getUniqueId().equals(player.getUniqueId())) {
-                setSharedDamage(onlineTeammate.getName(), true);
-        		onlineTeammate.damage(0);
-                onlineTeammate.setHealth(finalHealthAsynch);
+            if (teammate == player) {
+                continue;
             }
+            
+            sharedDamage.add(teammate.getUniqueId());
+            
+    		teammate.damage(0);
+            teammate.setHealth(finalHealth);
         }
 
-        double currentHealth = player.getHealth();
-        double finalHealth = currentHealth - sharedDamage;
+        double health = player.getHealth();
+        double finalHP = health - toDamage;
 
-        if (finalHealth < 0.0D) {
-            finalHealth = 0;
+        if (finalHP < 0.0D) {
+            finalHP = 0;
         }
 
-        if (finalHealth == 0) {
+        if (finalHP == 0) {
         	event.setDamage(event.getDamage() * 1000);
         	return;
         }
         
-        final double finalHealthAsynch = finalHealth;
         event.setDamage(0.0D);
+        
+        final Player toSet = player;
+        final double healthToSet = finalHP;
 
         new BukkitRunnable() {
             public void run() {
-                player.setHealth(finalHealthAsynch);
+            	toSet.setHealth(healthToSet);
             }
         }.runTaskLater(plugin, 1);
-    }
-	
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onEntityRegainHealth(EntityRegainHealthEvent event) {
-		if (!State.isState(State.INGAME)) {
-			return;
-		}
-
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-        
-        Player player = (Player) event.getEntity();
-        Team team = manager.getTeam(player);
-
-        if (team == null || team.getSize() <= 1) {
-            return;
-        }
-
-        double divider = team.getSize();
-        double amount = event.getAmount();
-        double gain = amount / divider;
-
-        for (OfflinePlayer offlinePlayer : manager.getPlayers(team)) {
-            Player teammate = offlinePlayer.getPlayer();
-
-            if (teammate == null) {
-            	setPlayersDamageBalance(offlinePlayer.getName(), gain);
-            	continue;
-            }
-        	
-            double teammateHealth = teammate.getHealth();
-            double finalHealth = teammateHealth + gain;
-            
-            if (finalHealth > teammate.getMaxHealth()) {
-                finalHealth = teammate.getMaxHealth();
-            }
-            
-            teammate.setHealth(finalHealth);
-        }
-
-        event.setCancelled(true);
-    }
-	
-	@EventHandler
-    public void onPlayerDeath(final PlayerDeathEvent event) {
-		if (!State.isState(State.INGAME)) {
-			return;
-		}
-		
-        String playerName = event.getEntity().getName();
-
-        Player player = event.getEntity();
-        Team team = manager.getTeam(player);
-        
-        String playerDisplayName = event.getEntity().getName();
-
-        if (team != null) {
-        	playerDisplayName = team.getPrefix() + playerDisplayName;
-        	team.removeEntry(player.getName());
-        }
-        
-        if (getSharedDamage().get(playerName) != null && getSharedDamage().get(playerName) == true) {
-            event.setDeathMessage(playerDisplayName + ChatColor.WHITE + " died from sharing health");
-        }
-    }
-	
-    public Double getPlayersDamageBalance(String player) {
-        if (damageBalance.containsKey(player)) {
-            return damageBalance.get(player);
-        } else {
-            return 0.0D;
-        }
-    }
-
-    public void setPlayersDamageBalance(String player, Double balance) {
-        if (!damageBalance.containsKey(player)) {
-            damageBalance.put(player, balance);
-        } else {
-            Double previousBalance = damageBalance.get(player);
-            damageBalance.put(player, previousBalance + balance);
-        }
-    }
-
-    public void resetDamageBalance() {
-        this.damageBalance = new HashMap<String, Double>();
-    }
-
-    public void resetPlayersDamageBalance(String player) {
-        if (damageBalance.containsKey(player)) {
-            damageBalance.put(player, 0.0D);
-        }
-    }
-
-    public Map<String, Boolean> getSharedDamage() {
-        return sharedDamage;
-    }
-
-    public void setSharedDamage(String name, Boolean wasShared) {
-        sharedDamage.put(name, wasShared);
-    }
-
-    public void resetSharedDamage() {
-        sharedDamage = new HashMap<String, Boolean>();
     }
 }
