@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
 import com.leontg77.ultrahardcore.Game;
 import com.leontg77.ultrahardcore.Main;
+import com.leontg77.ultrahardcore.State;
 
 /**
  * Online count class.
@@ -47,6 +48,10 @@ public class OnlineCount extends PacketAdapter {
         
         if (game.isPrivateGame() || game.isRecordedRound()) {
         	count = 0;
+        }
+        
+        if (State.isState(State.INGAME)) {
+        	count = game.getPlayers().size();
         }
         
         WrappedServerPing ping = event.getPacket().getServerPings().read(0);
