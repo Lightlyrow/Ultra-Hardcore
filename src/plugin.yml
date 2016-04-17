@@ -182,6 +182,9 @@ commands:
   unbanip:
     description: Unban a ip adress.
     aliases: [ipunban]
+  viewdistance:
+    description: Set the servers view distance.
+    aliases: [vd]
   vote:
     description: Start or end a vote.
   whitelist:
