@@ -1,6 +1,7 @@
 package com.leontg77.ultrahardcore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -22,6 +23,8 @@ import com.leontg77.ultrahardcore.utils.PacketUtils;
  * @author LeonTG77
  */
 public class Game {
+	private final Main plugin;
+	
 	private final Settings settings;
 	private final GUIManager gui;
 	
@@ -36,7 +39,9 @@ public class Game {
 	 * @param board The board manager class.
 	 * @param spec The spectator manager clas.
 	 */
-	public Game(Settings settings, GUIManager gui, BoardManager board, SpecManager spec) {
+	public Game(Main plugin, Settings settings, GUIManager gui, BoardManager board, SpecManager spec) {
+		this.plugin = plugin;
+		
 		this.settings = settings;
 		this.gui = gui;
 
@@ -56,29 +61,54 @@ public class Game {
 	}
 	
 	/**
+	 * Set the world to be used for the game.
+	 * <p> 
+	 * This will automaticly use all the same worlds 
+	 * that has the world name with _end or _nether at the end.
+	 * 
+	 * @param name The new world name.
+	 */
+	public void setWorld(String... names) {
+		settings.getConfig().set("world", Arrays.asList(names));
+		settings.saveConfig();
+
+		gui.getGUI(GameInfoGUI.class).update();
+	}
+
+	/**
+	 * Get the world to be used for the game.
+	 * 
+	 * @return The game world
+	 */
+	public World getWorld() {
+		return Bukkit.getWorld(settings.getConfig().getStringList("world").get(0));
+	}
+	
+	/**
 	 * Get all the worlds being used by the game.
 	 * 
 	 * @return A list of game worlds.
 	 */
 	public List<World> getWorlds() {
 		List<World> worlds = new ArrayList<World>();
-		World main = getWorld();
 		
-		if (main == null) {
-			return worlds;
-		}
-		
-		worlds.add(main);
-		
-		World nether = Bukkit.getWorld(main.getName() + "_nether");
-		World end = Bukkit.getWorld(main.getName() + "_end");
-		
-		if (nether != null) {
-			worlds.add(nether);
-		}
-		
-		if (end != null) {
-			worlds.add(end);
+		for (String name : settings.getConfig().getStringList("world")) {
+			World world = Bukkit.getWorld(name);
+			
+			if (world != null) {
+				worlds.add(world);
+				
+				World nether = Bukkit.getWorld(world.getName() + "_nether");
+				World end = Bukkit.getWorld(world.getName() + "_end");
+				
+				if (nether != null) {
+					worlds.add(nether);
+				}
+				
+				if (end != null) {
+					worlds.add(end);
+				}
+			}
 		}
 		
 		return worlds;
@@ -249,7 +279,7 @@ public class Game {
 		settings.saveConfig();
 		
 		for (Player online : Bukkit.getOnlinePlayers()) {
-			PacketUtils.setTabList(online, this);
+			PacketUtils.setTabList(online, plugin, this);
 		}
 		
 		if (pregameBoard()) {
@@ -288,7 +318,7 @@ public class Game {
 		settings.saveConfig();
 		
 		for (Player online : Bukkit.getOnlinePlayers()) {
-			PacketUtils.setTabList(online, this);
+			PacketUtils.setTabList(online, plugin, this);
 		}
 		
 		gui.getGUI(GameInfoGUI.class).update();
@@ -312,7 +342,7 @@ public class Game {
 		}
 		
 		for (Player online : Bukkit.getOnlinePlayers()) {
-			PacketUtils.setTabList(online, this);
+			PacketUtils.setTabList(online, plugin, this);
 		}
 
 		gui.getGUI(GameInfoGUI.class).update();
@@ -367,30 +397,6 @@ public class Game {
 	 */
 	public String getMatchPost() {
 		return settings.getConfig().getString("matchpost", "No_Post_Set");
-	}
-	
-	/**
-	 * Set the world to be used for the game.
-	 * <p> 
-	 * This will automaticly use all the same worlds 
-	 * that has the world name with _end or _nether at the end.
-	 * 
-	 * @param name The new world name.
-	 */
-	public void setWorld(String name) {
-		settings.getConfig().set("world", name);
-		settings.saveConfig();
-
-		gui.getGUI(GameInfoGUI.class).update();
-	}
-
-	/**
-	 * Get the world to be used for the game.
-	 * 
-	 * @return The game world
-	 */
-	public World getWorld() {
-		return Bukkit.getWorld(settings.getConfig().getString("world", "girhgqeruiogh"));
 	}
 
 	/**
@@ -511,15 +517,15 @@ public class Game {
 	 * @param enable True to enable, false to disable.
 	 */
 	public void setRecordedRound(boolean enable) {
-		settings.getConfig().set("recordedround", enable);
+		settings.getConfig().set("recordedround.enabled", enable);
 		settings.saveConfig();
 		
 		for (Player online : Bukkit.getOnlinePlayers()) {
-			PacketUtils.setTabList(online, this);
+			PacketUtils.setTabList(online, plugin, this);
 		}
 		
 		if (enable) {
-			board.getKillsObjective().setDisplayName("Kills");
+			board.getKillsObjective().setDisplayName("§8» §6" + getRRName() + "§8 «");
 		} else {
 			board.getKillsObjective().setDisplayName("§4Arctic §8» §7§o" + getHost().substring(0, Math.min(getHost().length(), 13)) + "§r");
 		}
@@ -531,7 +537,30 @@ public class Game {
 	 * @return True if it is, false otherwise.
 	 */
 	public boolean isRecordedRound() {
-		return settings.getConfig().getBoolean("recordedround", false);
+		return settings.getConfig().getBoolean("recordedround.enabled", false);
+	}
+
+	/**
+	 * Enable or disable recordedround mode.
+	 * 
+	 * @param enable True to enable, false to disable.
+	 */
+	public void setRRName(String name) {
+		settings.getConfig().set("recordedround.name", name);
+		settings.saveConfig();
+		
+		if (isRecordedRound()) {
+			board.getKillsObjective().setDisplayName("§8» §6" + getRRName() + "§8 «");
+		}
+	}
+
+	/**
+	 * Get if recordedround mode is enabled.
+	 * 
+	 * @return True if it is, false otherwise.
+	 */
+	public String getRRName() {
+		return settings.getConfig().getString("recordedround.name", "N/A");
 	}
 
 	/**
