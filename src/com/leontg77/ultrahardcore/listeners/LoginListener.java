@@ -229,7 +229,9 @@ public class LoginListener implements Listener {
 				}
 
 				BanEntry ban = name.getBanEntry(player.getName());
-				PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " for:§c " + ban.getReason(), "uhc.staff");
+				if (!(ban.getReason().equalsIgnoreCase("MCLeaks")) {
+					PlayerUtils.broadcast(Main.PREFIX + ChatColor.RED + player.getName() + " §7tried to join while being " + (ban.getExpiration() == null ? "banned" : "temp-banned") + " for:§c " + ban.getReason(), "uhc.staff");
+				}
 				
 				event.setKickMessage(
 				"§8» §7You have been §4" + (ban.getExpiration() == null ? "banned" : "temp-banned") + " §7from §6Arctic UHC §8«" +
